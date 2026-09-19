@@ -1,0 +1,74 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import PlaceholderImage from '../components/PlaceholderImage.astro';
+import TagCloud from '../components/TagCloud.astro';
+
+interface Props {
+  readonly title: string;
+  /** The <h1>, where it differs from the browser title. */
+  readonly heading?: string;
+  readonly description: string;
+  readonly eyebrow?: string;
+  readonly seed: string;
+  readonly showTagCloud?: boolean;
+}
+
+const {
+  title,
+  heading,
+  description,
+  eyebrow,
+  seed,
+  showTagCloud = false,
+} = Astro.props;
+---
+
+<BaseLayout title={`${title} | Shiv Kumar`} description={description}>
+  <header class="section-hero">
+    <div class="page">
+      <PlaceholderImage seed={seed} ratio="wide" label={`${title} banner placeholder`} />
+
+      <div class="section-hero__text prose">
+        {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+        <h1>{heading ?? title}</h1>
+        <p class="section-hero__lede">{description}</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="page section-body">
+    <slot />
+  </div>
+
+  {
+    showTagCloud && (
+      <div class="page section-tags">
+        <TagCloud />
+      </div>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .section-hero {
+    padding-top: var(--space-m);
+  }
+
+  .section-hero__text {
+    margin-top: var(--space-m);
+  }
+
+  .section-hero__lede {
+    font-size: var(--step-1);
+    color: var(--color-text-muted);
+    line-height: 1.55;
+  }
+
+  .section-body {
+    margin-top: var(--space-xl);
+  }
+
+  .section-tags {
+    margin-top: var(--space-2xl);
+  }
+</style>

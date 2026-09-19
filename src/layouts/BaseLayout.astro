@@ -1,0 +1,101 @@
+---
+import SiteNav from '../components/SiteNav.astro';
+import '../styles/tokens.css';
+import '../styles/base.css';
+
+interface Props {
+  readonly title: string;
+  readonly description: string;
+  /** Set on the homepage only, which declares the Person and sameAs block. */
+  readonly isHome?: boolean;
+  /** Published path of the raw markdown twin, where one exists. */
+  readonly markdownHref?: string;
+}
+
+const { title, description, isHome = false, markdownHref } = Astro.props;
+
+const site = Astro.site ?? new URL('https://matlus.github.io');
+const canonical = new URL(Astro.url.pathname, site);
+
+const SAME_AS = [
+  'https://github.com/matlus',
+  // TODO: add the YouTube channel URL. This is the block that lets search and
+  // retrieval systems resolve these accounts as one identity.
+];
+
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Shiv Kumar',
+  url: site.href,
+  sameAs: SAME_AS,
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+
+    <meta property="og:type" content={isHome ? 'website' : 'article'} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {
+      markdownHref && (
+        <link rel="alternate" type="text/markdown" href={markdownHref} title="Markdown" />
+      )
+    }
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    {isHome && <script type="application/ld+json" set:html={JSON.stringify(personLd)} />}
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <SiteNav pathname={Astro.url.pathname} />
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="page site-footer__inner">
+        <p class="muted">Shiv Kumar. Programming With Intent.</p>
+        <p class="muted">
+          <a href="/llms.txt">llms.txt</a> ·
+          <a href="https://github.com/matlus">GitHub</a>
+        </p>
+      </div>
+    </footer>
+
+    <style>
+      .site-footer {
+        border-top: 1px solid var(--color-border);
+        margin-top: var(--space-2xl);
+        padding: var(--space-l) 0;
+        font-size: var(--step--1);
+      }
+
+      .site-footer__inner {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-s);
+        justify-content: space-between;
+      }
+
+      .site-footer p {
+        margin: 0;
+      }
+    </style>
+  </body>
+</html>

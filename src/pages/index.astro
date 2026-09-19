@@ -1,17 +1,186 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PlaceholderImage from '../components/PlaceholderImage.astro';
+import TagCloud from '../components/TagCloud.astro';
 
+const ENTRY_POINTS = [
+  {
+    label: 'PWI',
+    href: '/pwi/',
+    blurb:
+      'Programming With Intent. Four pillars of operationalized guidance, with worked ' +
+      'examples in Python and C#.',
+  },
+  {
+    label: 'Acceptance Testing',
+    href: '/acceptance-testing/',
+    blurb:
+      'Functional acceptance testing at the boundary, plus the surrounding discipline ' +
+      'of strategy, structure, naming, and assertions.',
+  },
+  {
+    label: 'Writing',
+    href: '/writing/',
+    blurb: 'Essays on building software, and on building it alongside language models.',
+  },
+  {
+    label: 'Research',
+    href: '/research/',
+    blurb: 'Work in progress. Ideas being tested rather than conclusions being reported.',
+  },
+  {
+    label: 'Videos',
+    href: '/videos/',
+    blurb: 'Written companions to the YouTube material, cross-linked to their sources.',
+  },
+];
+
+// Placeholder weights so the cloud reads like a cloud before content exists.
+const DEMO_WEIGHTS = {
+  testing: 14,
+  'acceptance-testing': 11,
+  'method-design': 9,
+  naming: 8,
+  architecture: 7,
+  'class-design': 6,
+  python: 12,
+  csharp: 8,
+  'error-handling': 5,
+  'code-review': 4,
+  'llm-systems': 3,
+  'data-access': 3,
+};
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout
+  title="Shiv Kumar"
+  description="Programming With Intent, acceptance testing at the boundary, and notes on building software alongside language models."
+  isHome={true}
+>
+  <header class="hero">
+    <div class="page">
+      <PlaceholderImage seed="matlus-home" ratio="tall" label="Site banner placeholder" />
+
+      <div class="hero__text prose">
+        <h1>Programming With Intent</h1>
+        <p class="hero__lede">
+          I write about how software should be built, and about keeping that judgment
+          intact when a language model is doing the typing. The guidance here is
+          operationalized, meaning each rule is specific enough that a reviewer can apply
+          it the same way twice.
+        </p>
+        <p class="muted">
+          Shiv Kumar. Most of this began as videos. It lives here now so it can be read,
+          searched, and cited.
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <section class="page sections" aria-labelledby="sections-heading">
+    <h2 id="sections-heading" class="visually-hidden">Sections</h2>
+
+    <ul class="sections__grid">
+      {
+        ENTRY_POINTS.map((entry) => (
+          <li class="card">
+            <a href={entry.href} class="card__link">
+              <h3 class="card__title">{entry.label}</h3>
+              <p class="card__blurb">{entry.blurb}</p>
+              <span class="card__more" aria-hidden="true">
+                Read on
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="page">
+    <TagCloud weights={DEMO_WEIGHTS} />
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-top: var(--space-l);
+  }
+
+  .hero__text {
+    margin-top: var(--space-l);
+  }
+
+  .hero h1 {
+    margin-bottom: var(--space-s);
+  }
+
+  .hero__lede {
+    font-size: var(--step-1);
+    color: var(--color-text-muted);
+    line-height: 1.55;
+  }
+
+  .sections {
+    margin-top: var(--space-2xl);
+  }
+
+  .sections__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+
+  .card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .card:hover {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .card__link {
+    display: block;
+    padding: var(--space-m);
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+
+  .card__title {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .card__blurb {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    margin-bottom: var(--space-s);
+  }
+
+  .card__more {
+    font-size: var(--step--1);
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card {
+      transition: none;
+    }
+    .card:hover {
+      transform: none;
+    }
+  }
+</style>

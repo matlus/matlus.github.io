@@ -1,0 +1,121 @@
+---
+import SectionLayout from '../../layouts/SectionLayout.astro';
+import TopicList from '../../components/TopicList.astro';
+import { topicsInSection } from '../../data/topics';
+
+const topics = topicsInSection('acceptance-testing');
+const headline = topics.find((topic) => topic.slug === 'functional-acceptance-testing');
+const rest = topics.filter((topic) => topic.slug !== 'functional-acceptance-testing');
+---
+
+<SectionLayout
+  title="Acceptance Testing"
+  heading="Functional Acceptance Testing at the Boundary"
+  eyebrow="Acceptance Testing"
+  description="Exercising a system through its front door as a black box, with attention to where test data comes from and what keeps a scenario true as seeds evolve."
+  seed="acceptance-testing"
+  showTagCloud={true}
+>
+  <section class="prose">
+    <p>
+      Acceptance tests go through the front door. That much is uncontroversial. The part
+      that decides whether they keep their value is test-data provenance: where arranged
+      data comes from, how expectations derive from it, and what happens to a scenario
+      when the seed underneath it changes.
+    </p>
+    <p>
+      A test that copies reference data is correct on the day it is written and reads as
+      helpful documentation. It becomes a lie the day the seed changes, and the failure
+      surfaces far from the constants that caused it.
+    </p>
+  </section>
+
+  {
+    headline && (
+      <section class="headline">
+        <a href={`/acceptance-testing/${headline.slug}/`} class="headline__link">
+          <p class="eyebrow">Start here</p>
+          <h2 class="headline__title">{headline.title}</h2>
+          <p class="headline__blurb">
+            Store-derived expectations, pinned-scenario guards, bounded selection, and
+            collision-proof identities.
+          </p>
+        </a>
+      </section>
+    )
+  }
+
+  <section class="topics-section" aria-labelledby="topics-heading">
+    <h2 id="topics-heading">The surrounding discipline</h2>
+    <p class="muted topics-section__note">
+      Strategy, structure, naming, and assertions. These carry examples in both
+      languages.
+    </p>
+
+    <TopicList topics={rest} basePath="/acceptance-testing/" />
+  </section>
+
+  <section class="prose coverage">
+    <h2>A note on C# coverage</h2>
+    <p>
+      Python has a dedicated chapter for functional acceptance testing. C# does not yet.
+      On the C# side the same ground is covered inside
+      <a href="/acceptance-testing/service-boundary-testing/">Service-Boundary Testing</a
+      >, which includes domain-boundary functional acceptance tests.
+    </p>
+    <p class="muted">
+      The guidance itself is language-independent. Only the worked examples differ.
+    </p>
+  </section>
+</SectionLayout>
+
+<style>
+  .headline {
+    margin-top: var(--space-xl);
+  }
+
+  .headline__link {
+    display: block;
+    padding: var(--space-m);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-accent);
+    border-radius: var(--radius-lg);
+    background: var(--color-accent-wash);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .headline__title {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .headline__link:hover .headline__title {
+    color: var(--color-accent);
+  }
+
+  .headline__blurb {
+    margin: 0;
+    color: var(--color-text-muted);
+    max-width: var(--measure);
+  }
+
+  .topics-section {
+    margin-top: var(--space-2xl);
+  }
+
+  .topics-section__note {
+    font-size: var(--step--1);
+    max-width: var(--measure);
+  }
+
+  .coverage {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .coverage h2 {
+    font-size: var(--step-1);
+  }
+</style>

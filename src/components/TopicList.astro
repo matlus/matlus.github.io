@@ -1,0 +1,110 @@
+---
+import type { Topic } from '../data/topics';
+
+interface Props {
+  readonly topics: readonly Topic[];
+  readonly basePath: string;
+}
+
+const { topics, basePath } = Astro.props;
+
+const LANGUAGE_LABEL = { python: 'Python', csharp: 'C#' } as const;
+---
+
+<ul class="topics">
+  {
+    topics.map((topic) => (
+      <li class="topics__item">
+        <a href={`${basePath}${topic.slug}/`} class="topics__link">
+          {topic.title}
+        </a>
+
+        <span class="topics__meta">
+          {topic.examples.map((language) => (
+            <span class="chip" data-language={language}>
+              {LANGUAGE_LABEL[language]}
+            </span>
+          ))}
+
+          {topic.scope === 'neutral' && topic.examples.length === 1 && (
+            <span class="chip chip--note">Applies to both</span>
+          )}
+        </span>
+
+        {topic.note && <p class="topics__note">{topic.note}</p>}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .topics {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .topics__item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: var(--space-2xs) var(--space-s);
+    padding: var(--space-xs) 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .topics__link {
+    font-size: var(--step-0);
+    text-decoration: none;
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  .topics__link:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .topics__meta {
+    display: flex;
+    gap: var(--space-3xs);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .topics__note {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--color-text-faint);
+    max-width: var(--measure);
+  }
+
+  .chip {
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-border-strong);
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+
+  .chip--note {
+    border-style: dashed;
+    color: var(--color-text-faint);
+  }
+
+  @media (max-width: 560px) {
+    .topics__item {
+      grid-template-columns: 1fr;
+    }
+
+    .topics__meta {
+      justify-content: flex-start;
+    }
+  }
+</style>

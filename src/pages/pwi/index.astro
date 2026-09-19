@@ -1,0 +1,109 @@
+---
+import SectionLayout from '../../layouts/SectionLayout.astro';
+import TopicList from '../../components/TopicList.astro';
+import { PILLARS } from '../../data/nav';
+import { topicsInSection } from '../../data/topics';
+
+const topics = topicsInSection('pwi');
+---
+
+<SectionLayout
+  title="PWI"
+  heading="Programming With Intent"
+  eyebrow="Operationalized guidance"
+  description="Four pillars covering how code is structured, written, verified, and how it fails. Each rule is specific enough to apply the same way twice."
+  seed="pwi"
+  showTagCloud={true}
+>
+  <section class="prose">
+    <p>
+      Programming With Intent began as a long-running video series. The chapters below
+      carry that material as text, with worked examples in Python and C#.
+    </p>
+    <p>
+      Guidance is written to be applied rather than admired. Most rules exist because a
+      specific class of defect kept recurring, and the chapter says which one.
+    </p>
+  </section>
+
+  <section class="pillars" aria-labelledby="pillars-heading">
+    <h2 id="pillars-heading">The four pillars</h2>
+
+    <ul class="pillars__grid">
+      {
+        PILLARS.map((pillar) => (
+          <li class="pillar">
+            <a href={pillar.href} class="pillar__link">
+              <h3 class="pillar__title">{pillar.label}</h3>
+              <p class="pillar__blurb">{pillar.blurb}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="topics-section" aria-labelledby="topics-heading">
+    <h2 id="topics-heading">All topics</h2>
+    <p class="muted topics-section__note">
+      {topics.length} topics. Chapter numbers are deliberately absent, because the two
+      language families number their chapters independently.
+    </p>
+
+    <TopicList topics={topics} basePath="/pwi/" />
+  </section>
+</SectionLayout>
+
+<style>
+  .pillars {
+    margin-top: var(--space-xl);
+  }
+
+  .pillars__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+
+  .pillar {
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-accent);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+
+  .pillar__link {
+    display: block;
+    padding: var(--space-s) var(--space-m);
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+
+  .pillar__link:hover .pillar__title {
+    color: var(--color-accent);
+  }
+
+  .pillar__title {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-3xs);
+  }
+
+  .pillar__blurb {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .topics-section {
+    margin-top: var(--space-2xl);
+  }
+
+  .topics-section__note {
+    font-size: var(--step--1);
+    max-width: var(--measure);
+  }
+</style>

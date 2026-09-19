@@ -1,0 +1,98 @@
+---
+/**
+ * Stand-in hero art until generated images exist.
+ *
+ * This is the per-section fallback the spec calls for, expressed as inline SVG
+ * so there is nothing to commit and nothing to optimize. When real images
+ * arrive, the fallback stays: a page without custom art still renders
+ * correctly, which is what stops "no image yet" from blocking publication.
+ *
+ * The seed derives a stable hue from the section name, so a section looks the
+ * same on every page without hard-coding colours per section.
+ */
+
+interface Props {
+  readonly seed: string;
+  readonly ratio?: 'wide' | 'tall';
+  readonly label?: string;
+}
+
+const { seed, ratio = 'wide', label } = Astro.props;
+
+function hueFrom(text: string): number {
+  let hash = 0;
+  for (const char of text) {
+    hash = (hash * 31 + char.codePointAt(0)!) % 360;
+  }
+  return hash;
+}
+
+const hue = hueFrom(seed);
+const hueAlt = (hue + 48) % 360;
+const height = ratio === 'tall' ? 420 : 260;
+const gradientId = `ph-${seed.replace(/[^a-z0-9]/gi, '')}`;
+---
+
+<div class="placeholder" data-ratio={ratio}>
+  <svg
+    viewBox={`0 0 1200 ${height}`}
+    preserveAspectRatio="none"
+    role="img"
+    aria-label={label ?? `Placeholder artwork for ${seed}`}
+  >
+    <defs>
+      <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color={`hsl(${hue} 42% 62%)`} />
+        <stop offset="100%" stop-color={`hsl(${hueAlt} 38% 44%)`} />
+      </linearGradient>
+    </defs>
+
+    <rect width="1200" height={height} fill={`url(#${gradientId})`} />
+
+    <g fill="none" stroke="rgb(255 255 255 / 22%)" stroke-width="1.5">
+      {
+        Array.from({ length: 9 }, (_, index) => (
+          <path d={`M${-200 + index * 170} ${height} L${120 + index * 170} 0`} />
+        ))
+      }
+    </g>
+  </svg>
+
+  <span class="placeholder__note">Placeholder</span>
+</div>
+
+<style>
+  .placeholder {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-surface-sunken);
+  }
+
+  .placeholder svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .placeholder[data-ratio='tall'] svg {
+    aspect-ratio: 1200 / 420;
+  }
+
+  .placeholder[data-ratio='wide'] svg {
+    aspect-ratio: 1200 / 260;
+  }
+
+  .placeholder__note {
+    position: absolute;
+    right: var(--space-2xs);
+    bottom: var(--space-2xs);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 75%);
+    background: rgb(0 0 0 / 28%);
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius);
+  }
+</style>
