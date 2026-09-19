@@ -63,16 +63,23 @@ converting the site.
 ### Top-level navigation
 
 ```
-PWI · Writing · Research · Videos · About
+PWI · Acceptance Testing · Writing · Research · Videos · About
 ```
 
 - **PWI**, the four pillars. Evergreen reference material.
+- **Acceptance Testing**, the testing chapter family, headlined by Functional
+  Acceptance Testing at the Boundary. Owns its content outright rather than linking
+  into PWI. See section 4a.
 - **Writing**, essays on coding and AI. Time-stamped, feeds chronologically.
 - **Research**, in-progress ideas and experiments. (DevWeave work lives here but the
   product name is deliberately not used in navigation.)
 - **Videos**, pages derived from YouTube content, cross-linked into whichever section
   each one belongs to.
 - **About**, bio, contact, links out.
+
+Six items still fit one line comfortably. The nav label is deliberately shorter than
+the concept name, so the section landing page carries the full "Functional Acceptance
+Testing at the Boundary" as its H1.
 
 ### Navigation behavior
 
@@ -129,6 +136,57 @@ source, so there is no duplication cost.
 
 Java and TypeScript guidelines stay **unpublished**, being outside current expertise.
 
+### Chapter numbers never appear in URLs
+
+The two language families number their chapters differently. Python ch50 is test
+naming conventions, while C# cs50 is testing strategy. A numeric slug would therefore
+mean different topics in the two trees.
+
+Slugs are always topical: `/test-naming-conventions`, never `/chapter-50`. This also
+keeps URLs stable if the corpus is ever renumbered.
+
+---
+
+## 4a. Acceptance Testing section
+
+A top-level section owning the testing chapters outright, rather than a hub linking
+back into PWI. Headlined by Functional Acceptance Testing at the Boundary.
+
+```
+/acceptance-testing/
+/acceptance-testing/<language>/<topic>
+```
+
+### Chapter inventory
+
+| Topic | Python | C# |
+|---|---|---|
+| Testing strategy | ch53 | cs50 |
+| Test structure and organization | ch51 | cs51 |
+| Test naming conventions | ch50 | cs52 |
+| Test assertions | ch52 | cs53 |
+| Test mediators and spies | ch54 | cs54 |
+| Functional acceptance testing at the boundary | ch55 | **none** |
+| Service-boundary testing | ch56 | cs55 |
+
+### The C# gap
+
+Python has a dedicated chapter for functional acceptance testing. C# has no
+equivalent. The coverage is folded into cs55, Service-Boundary Testing in C#, whose
+summary mentions domain-boundary functional acceptance tests.
+
+This matters because the section is named after a concept the C# tree cannot show on
+its own page. Until a C# chapter exists, the section landing page states plainly where
+the C# coverage lives and links to cs55. Authoring a C# counterpart is listed in
+section 14.
+
+### Rule namespace
+
+Chapter 55 emits four rules under `pwi.functional-acceptance-testing.*`. Those IDs are
+tooling identifiers in the PWI repo and stay exactly as they are. The website's
+information architecture is a separate concern from the rule namespace, and the two do
+not need to agree.
+
 ---
 
 ## 5. Content model
@@ -138,6 +196,7 @@ Java and TypeScript guidelines stay **unpublished**, being outside current exper
 | Collection | Kind | Dated | Feeds chronologically | Reached via |
 |---|---|---|---|---|
 | `pwi` | evergreen reference | yes | no | navigation |
+| `acceptance-testing` | evergreen reference | yes | no | navigation |
 | `writing` | time-stamped | yes | yes | feed + navigation |
 | `research` | time-stamped | yes | yes | feed + navigation |
 | `videos` | evergreen | yes | partially | navigation + cross-links |
@@ -464,7 +523,9 @@ The site is the hub of a deliberate link graph:
 ## 14. Open decisions
 
 - Visual theme and style descriptor for generated images.
-- Whether `Research` is the right label for the fourth section.
+- Whether `Research` is the right label for that section.
+- Whether to author a C# functional acceptance testing chapter, so the
+  Acceptance Testing section is symmetric across both languages.
 - Exact tag vocabulary (initial list to be drafted from existing content).
 - Which existing YouTube videos get transcribed first.
 - Registrar DNS specifics for `matlus.com`.
