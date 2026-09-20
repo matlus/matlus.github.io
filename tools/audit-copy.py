@@ -105,6 +105,19 @@ RULES: tuple[Rule, ...] = (
 
 SKIP_PREFIXES = ("|", "#", "```", ">", "---", "    ", "\t")
 
+# A document can exempt a deliberate phrase from the word-pattern rules with a
+# marker anywhere in the file:
+#
+#     <!-- audit-allow: Verified, not trusted -->
+#
+# This exists because a recurring refrain is the opposite of a tic. "Skills
+# versus Controlled Workflows" closes every teaching passage with "(Verified,
+# not trusted.)", and the antithesis rules flagged all nine instances. Flagging
+# a motif is a false positive, and a checker that cries wolf gets ignored.
+#
+# Punctuation rules are never exempted. An em dash is an em dash.
+ALLOW_MARKER = re.compile(r"<!--\s*audit-allow:\s*(.+?)\s*-->", re.IGNORECASE)
+
 
 def prose_lines(text: str) -> list[tuple[int, str]]:
     """Return (line_number, line) for prose lines only, skipping fenced code."""
@@ -127,15 +140,27 @@ def prose_lines(text: str) -> list[tuple[int, str]]:
     return lines
 
 
+def allowed_phrases(text: str) -> list[str]:
+    """Phrases this document has declared deliberate, lowercased for matching."""
+    return [match.lower() for match in ALLOW_MARKER.findall(text)]
+
+
 def audit(path: Path) -> tuple[int, int]:
     """Report violations in one file. Returns (hard_count, advisory_count)."""
     text = path.read_text(encoding="utf-8")
+    allowed = allowed_phrases(text)
     hard = 0
     advisory = 0
 
     for number, line in prose_lines(text):
         lowered = line.lower()
+        exempt = any(phrase in lowered for phrase in allowed)
+
         for rule in RULES:
+            # Punctuation rules ignore the allowlist; word patterns respect it.
+            if exempt and rule.lowercase:
+                continue
+
             haystack = lowered if rule.lowercase else line
             if rule.pattern.search(haystack) is None:
                 continue
