@@ -50,6 +50,20 @@ export type Scope = 'language-independent' | Language;
 
 export type Section = 'pwi' | 'acceptance-testing';
 
+/**
+ * The four PWI pillars.
+ *
+ * Verification with Intent is the Acceptance Testing section. It is promoted
+ * to top-level navigation rather than living under PWI, because functional
+ * acceptance testing at the boundary is the practice that earns confidence to
+ * ship. It is not a separate thing from the pillar; it is the pillar, surfaced.
+ */
+export type Pillar =
+  | 'architecture-with-intent'
+  | 'programming-with-intent'
+  | 'verification-with-intent'
+  | 'programming-to-exceptions';
+
 export interface Topic {
   /** URL segment. Topical, never numeric. */
   readonly slug: string;
@@ -64,10 +78,14 @@ export interface Topic {
    */
   readonly examples: readonly [Language, ...Language[]];
   /**
-   * PWI pillar. Unassigned pending review, because pillar membership is an
-   * editorial decision rather than something derivable from the corpus.
+   * PWI pillar. Assigned by the rule: architecture chapters to Architecture,
+   * the exception chapters to Programming to Exceptions, testing to
+   * Verification, everything else to Programming with Intent.
+   *
+   * Topics in the acceptance-testing section carry no pillar of their own,
+   * because that section IS Verification with Intent, surfaced at top level.
    */
-  readonly pillar?: string;
+  readonly pillar?: Pillar;
   /** Free-text note surfaced on the topic page. */
   readonly note?: string;
 }
@@ -79,17 +97,17 @@ const PY_SQL = ['python', 'sql'] as const;
 
 export const TOPICS = [
   // ------------------- language-independent, examples in Python and C# -----
-  { slug: 'architecture-layers', title: 'Architecture Layers', section: 'pwi', scope: 'language-independent', examples: PY_CS },
-  { slug: 'class-design', title: 'Class Design', section: 'pwi', scope: 'language-independent', examples: PY_CS },
-  { slug: 'method-design', title: 'Method Design', section: 'pwi', scope: 'language-independent', examples: PY_CS },
-  { slug: 'naming-conventions', title: 'Naming Conventions', section: 'pwi', scope: 'language-independent', examples: PY_CS },
-  { slug: 'configuration-provider', title: 'Configuration Provider', section: 'pwi', scope: 'language-independent', examples: PY_CS },
-  { slug: 'gateway-design-pattern', title: 'Gateway Design Pattern', section: 'pwi', scope: 'language-independent', examples: PY_CS },
-  { slug: 'messaging-patterns', title: 'Messaging Patterns', section: 'pwi', scope: 'language-independent', examples: PY_CS },
+  { slug: 'architecture-layers', title: 'Architecture Layers', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY_CS },
+  { slug: 'class-design', title: 'Class Design', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY_CS },
+  { slug: 'method-design', title: 'Method Design', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY_CS },
+  { slug: 'naming-conventions', title: 'Naming Conventions', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY_CS },
+  { slug: 'configuration-provider', title: 'Configuration Provider', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY_CS },
+  { slug: 'gateway-design-pattern', title: 'Gateway Design Pattern', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY_CS },
+  { slug: 'messaging-patterns', title: 'Messaging Patterns', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY_CS },
   {
     slug: 'validation-exception-handling',
     title: 'Validation and Exception Handling',
-    section: 'pwi',
+    section: 'pwi', pillar: 'programming-to-exceptions',
     scope: 'language-independent',
     examples: PY_CS,
     note:
@@ -125,7 +143,7 @@ export const TOPICS = [
   {
     slug: 'stored-procedure-data-access',
     title: 'Stored Procedure Data Access',
-    section: 'pwi',
+    section: 'pwi', pillar: 'architecture-with-intent',
     scope: 'language-independent',
     examples: PY_SQL,
     note:
@@ -136,7 +154,7 @@ export const TOPICS = [
   {
     slug: 'llm-based-processor-design',
     title: 'LLM-Based Processor Design',
-    section: 'pwi',
+    section: 'pwi', pillar: 'architecture-with-intent',
     scope: 'language-independent',
     examples: PY,
     note: 'Processor and engine guidance applies across languages. Examples are Python today.',
@@ -144,29 +162,29 @@ export const TOPICS = [
   {
     slug: 'llm-gateway-implementation',
     title: 'LLM Gateway Implementation',
-    section: 'pwi',
+    section: 'pwi', pillar: 'architecture-with-intent',
     scope: 'language-independent',
     examples: PY,
     note: 'Applies across languages. Examples are Python today.',
   },
-  { slug: 'need-to-know-principle', title: 'Need-to-Know Principle', section: 'pwi', scope: 'language-independent', examples: PY },
-  { slug: 'domain-facade', title: 'Domain Facade', section: 'pwi', scope: 'language-independent', examples: PY },
-  { slug: 'service-locator-configuration', title: 'Service Locator Configuration', section: 'pwi', scope: 'language-independent', examples: PY },
-  { slug: 'anti-patterns', title: 'Anti-Patterns', section: 'pwi', scope: 'language-independent', examples: PY },
-  { slug: 'async-resource-lifecycle', title: 'Async Resource Lifecycle', section: 'pwi', scope: 'language-independent', examples: PY },
-  { slug: 'encapsulating-third-party-libraries', title: 'Encapsulating Third-Party Libraries', section: 'pwi', scope: 'language-independent', examples: PY },
-  { slug: 'boundary-validation', title: 'Boundary Validation', section: 'pwi', scope: 'language-independent', examples: PY },
-  { slug: 'code-correctness-runtime-safety', title: 'Code Correctness and Runtime Safety', section: 'pwi', scope: 'language-independent', examples: PY },
-  { slug: 'intentional-model-design', title: 'Intentional Model Design', section: 'pwi', scope: 'language-independent', examples: PY },
-  { slug: 'artifact-persistence-callbacks', title: 'Artifact Persistence Callbacks', section: 'pwi', scope: 'language-independent', examples: PY },
-  { slug: 'adapter-pattern', title: 'Adapter Pattern', section: 'pwi', scope: 'language-independent', examples: PY },
-  { slug: 'strategy-pattern', title: 'Strategy Pattern', section: 'pwi', scope: 'language-independent', examples: PY },
-  { slug: 'factory-pattern', title: 'Factory Pattern', section: 'pwi', scope: 'language-independent', examples: PY },
-  { slug: 'factory-method-pattern', title: 'Factory Method Pattern', section: 'pwi', scope: 'language-independent', examples: PY },
+  { slug: 'need-to-know-principle', title: 'Need-to-Know Principle', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
+  { slug: 'domain-facade', title: 'Domain Facade', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY },
+  { slug: 'service-locator-configuration', title: 'Service Locator Configuration', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY },
+  { slug: 'anti-patterns', title: 'Anti-Patterns', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
+  { slug: 'async-resource-lifecycle', title: 'Async Resource Lifecycle', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
+  { slug: 'encapsulating-third-party-libraries', title: 'Encapsulating Third-Party Libraries', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY },
+  { slug: 'boundary-validation', title: 'Boundary Validation', section: 'pwi', pillar: 'programming-to-exceptions', scope: 'language-independent', examples: PY },
+  { slug: 'code-correctness-runtime-safety', title: 'Code Correctness and Runtime Safety', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
+  { slug: 'intentional-model-design', title: 'Intentional Model Design', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
+  { slug: 'artifact-persistence-callbacks', title: 'Artifact Persistence Callbacks', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY },
+  { slug: 'adapter-pattern', title: 'Adapter Pattern', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
+  { slug: 'strategy-pattern', title: 'Strategy Pattern', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
+  { slug: 'factory-pattern', title: 'Factory Pattern', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
+  { slug: 'factory-method-pattern', title: 'Factory Method Pattern', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
   {
     slug: 'decorator-pattern',
     title: 'Decorator Pattern',
-    section: 'pwi',
+    section: 'pwi', pillar: 'programming-with-intent',
     scope: 'language-independent',
     examples: PY,
     note:
@@ -175,15 +193,15 @@ export const TOPICS = [
   },
 
   // ------------------------- genuinely language-specific guidance ----------
-  { slug: 'python-language-style', title: 'Python Language Style', section: 'pwi', scope: 'python', examples: PY },
-  { slug: 'type-annotations', title: 'Type Annotations', section: 'pwi', scope: 'python', examples: PY },
-  { slug: 'linq-query-semantics', title: 'LINQ Query Semantics', section: 'pwi', scope: 'csharp', examples: CS },
+  { slug: 'python-language-style', title: 'Python Language Style', section: 'pwi', pillar: 'programming-with-intent', scope: 'python', examples: PY },
+  { slug: 'type-annotations', title: 'Type Annotations', section: 'pwi', pillar: 'programming-with-intent', scope: 'python', examples: PY },
+  { slug: 'linq-query-semantics', title: 'LINQ Query Semantics', section: 'pwi', pillar: 'programming-with-intent', scope: 'csharp', examples: CS },
 
   // ----------------------------- language-independent, C# examples only ----
   {
     slug: 'data-manager-design',
     title: 'Data Manager Design',
-    section: 'pwi',
+    section: 'pwi', pillar: 'architecture-with-intent',
     scope: 'language-independent',
     examples: CS,
     note: 'Examples are C# today.',

@@ -35,9 +35,13 @@ export const PILLARS = [
     blurb: 'Classes, methods, naming, and the shape of everyday code.',
   },
   {
+    // Not a page under /pwi/. This pillar IS the Acceptance Testing section,
+    // promoted to top-level navigation because it is the practice that earns
+    // confidence to ship. Pointing the card at the section avoids a duplicate
+    // hub that would split retrieval between two URLs.
     label: 'Verification with Intent',
-    href: '/pwi/verification-with-intent/',
-    blurb: 'Proving the thing does what it claims.',
+    href: '/acceptance-testing/',
+    blurb: 'Functional acceptance testing at the boundary. Proving the thing does what it claims.',
   },
   {
     label: 'Programming to Exceptions',
