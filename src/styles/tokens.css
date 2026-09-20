@@ -64,6 +64,28 @@
   --shadow-md: 0 2px 8px rgb(28 26 23 / 8%);
 
   --nav-height: 3.5rem;
+
+  /*
+   * Diagram palette. Diagrams reference these and never a literal hex, so a
+   * re-skin carries them along and dark mode needs no separate artwork.
+   * One colour per node type in the workflow taxonomy.
+   */
+  --diagram-line: #8a8276;
+  --diagram-label: #1c1a17;
+  --diagram-surface: #ffffff;
+
+  --diagram-controller: #2b5c8a;
+  --diagram-controller-fill: #e8f0f7;
+  --diagram-worker: #7a4a9e;
+  --diagram-worker-fill: #f2ebf8;
+  --diagram-validation: #0f6f6b;
+  --diagram-validation-fill: #e6f2f1;
+  --diagram-artifact: #8a6a1f;
+  --diagram-artifact-fill: #f8f1de;
+  --diagram-ok: #2f7a3e;
+  --diagram-ok-fill: #e8f4ea;
+  --diagram-fail: #a83232;
+  --diagram-fail-fill: #f9eaea;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -84,6 +106,23 @@
 
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
     --shadow-md: 0 2px 8px rgb(0 0 0 / 40%);
+
+    --diagram-line: #857f73;
+    --diagram-label: #f2efe8;
+    --diagram-surface: #1e1c17;
+
+    --diagram-controller: #7db4e0;
+    --diagram-controller-fill: #1b2c3a;
+    --diagram-worker: #c4a2e8;
+    --diagram-worker-fill: #2a1f36;
+    --diagram-validation: #58c7c0;
+    --diagram-validation-fill: #16302f;
+    --diagram-artifact: #d9b45c;
+    --diagram-artifact-fill: #332a14;
+    --diagram-ok: #7bc98a;
+    --diagram-ok-fill: #1a2e1f;
+    --diagram-fail: #e08a8a;
+    --diagram-fail-fill: #331c1c;
   }
 }
 
@@ -104,4 +143,21 @@
 
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
   --shadow-md: 0 2px 8px rgb(0 0 0 / 40%);
+
+  --diagram-line: #857f73;
+  --diagram-label: #f2efe8;
+  --diagram-surface: #1e1c17;
+
+  --diagram-controller: #7db4e0;
+  --diagram-controller-fill: #1b2c3a;
+  --diagram-worker: #c4a2e8;
+  --diagram-worker-fill: #2a1f36;
+  --diagram-validation: #58c7c0;
+  --diagram-validation-fill: #16302f;
+  --diagram-artifact: #d9b45c;
+  --diagram-artifact-fill: #332a14;
+  --diagram-ok: #7bc98a;
+  --diagram-ok-fill: #1a2e1f;
+  --diagram-fail: #e08a8a;
+  --diagram-fail-fill: #331c1c;
 }

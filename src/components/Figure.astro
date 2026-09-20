@@ -1,0 +1,51 @@
+---
+/**
+ * Wrapper for any diagram. Keeps figure semantics in one place so individual
+ * diagrams only carry their own drawing.
+ */
+
+interface Props {
+  readonly caption: string;
+  /** Rendered small under the caption, for provenance or a reading note. */
+  readonly note?: string;
+}
+
+const { caption, note } = Astro.props;
+---
+
+<figure class="figure">
+  <div class="figure__canvas">
+    <slot />
+  </div>
+  <figcaption class="figure__caption">
+    {caption}
+    {note && <span class="figure__note">{note}</span>}
+  </figcaption>
+</figure>
+
+<style>
+  .figure {
+    margin: var(--space-xl) 0;
+  }
+
+  .figure__canvas {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-s);
+    overflow-x: auto;
+  }
+
+  .figure__caption {
+    margin-top: var(--space-2xs);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+    max-width: var(--measure);
+  }
+
+  .figure__note {
+    display: block;
+    color: var(--color-text-faint);
+    margin-top: var(--space-3xs);
+  }
+</style>

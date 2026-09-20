@@ -1,0 +1,246 @@
+---
+/**
+ * Controlled verification workflow, drawn from the DevWeave spec-to-test
+ * architecture.
+ *
+ * Authored SVG rather than a generated image, for three reasons. Labels are
+ * exact, because they are written rather than drawn. Colours come from design
+ * tokens, so the diagram follows the site into dark mode. And the labels are
+ * real text, which means a crawler or a retrieval agent can read the diagram,
+ * where a raster image would be opaque to both.
+ *
+ * Nodes are data. Adding a stage is an entry in NODES plus an edge, never
+ * hand-edited path arithmetic.
+ */
+
+type NodeType = 'controller' | 'worker' | 'validation' | 'artifact' | 'ok' | 'fail';
+
+interface Node {
+  readonly id: string;
+  readonly type: NodeType;
+  readonly x: number;
+  readonly y: number;
+  readonly w: number;
+  readonly h: number;
+  readonly label: string;
+  readonly sub?: string;
+}
+
+const W = 880;
+const H = 1150;
+
+/** Right-hand rail that every fail-closed edge joins. */
+const FAIL_RAIL_X = 858;
+
+const NODES: readonly Node[] = [
+  { id: 'bind', type: 'controller', x: 240, y: 16, w: 400, h: 54, label: 'Bind authority and source', sub: 'Identity and requirement identities' },
+  { id: 'scope', type: 'controller', x: 240, y: 104, w: 400, h: 54, label: 'Discover scope, construct manifests' },
+  { id: 'plan', type: 'validation', x: 240, y: 192, w: 400, h: 54, label: 'Validate the prepared run' },
+
+  { id: 'pa', type: 'worker', x: 12, y: 292, w: 200, h: 62, label: 'Production finder A', sub: 'Cold source-only inspection' },
+  { id: 'pb', type: 'worker', x: 232, y: 292, w: 200, h: 62, label: 'Production finder B', sub: 'Independent second pass' },
+  { id: 'ta', type: 'worker', x: 452, y: 292, w: 200, h: 62, label: 'Test finder A', sub: 'Test-evidence scope' },
+  { id: 'tb', type: 'worker', x: 672, y: 292, w: 156, h: 62, label: 'Test finder B', sub: 'Independent challenge' },
+
+  { id: 'oa', type: 'worker', x: 120, y: 400, w: 280, h: 58, label: 'Observer-soundness checkpoint A' },
+  { id: 'ob', type: 'worker', x: 460, y: 400, w: 280, h: 58, label: 'Observer-soundness checkpoint B' },
+
+  { id: 'reports', type: 'validation', x: 190, y: 504, w: 500, h: 54, label: 'Validate reports, reconcile coverage' },
+  { id: 'atomize', type: 'worker', x: 190, y: 592, w: 500, h: 54, label: 'Atomize and deduplicate candidates' },
+  { id: 'admit', type: 'controller', x: 190, y: 680, w: 500, h: 60, label: 'Admit candidates', sub: 'Freeze provenance, enforce the cap, hide the finder' },
+  { id: 'verify', type: 'worker', x: 190, y: 774, w: 500, h: 58, label: 'One cold verifier per candidate', sub: 'Try to refute' },
+  { id: 'evaluate', type: 'validation', x: 190, y: 866, w: 500, h: 54, label: 'Deterministic evaluation and assembly' },
+  { id: 'artifact', type: 'artifact', x: 190, y: 954, w: 500, h: 54, label: 'Run receipt and detailed matrix' },
+
+  { id: 'end', type: 'ok', x: 120, y: 1046, w: 280, h: 54, label: 'END: return validated advisory' },
+  { id: 'fail', type: 'fail', x: 500, y: 1046, w: 300, h: 54, label: 'FAIL: stop with retained evidence' },
+];
+
+const byId = new Map(NODES.map((node) => [node.id, node]));
+
+function node(id: string): Node {
+  const found = byId.get(id);
+  if (!found) throw new Error(`Unknown diagram node: ${id}`);
+  return found;
+}
+
+/** Centre-bottom to centre-top, with a right-angle jog when x differs. */
+function edge(fromId: string, toId: string): string {
+  const a = node(fromId);
+  const b = node(toId);
+  const ax = a.x + a.w / 2;
+  const ay = a.y + a.h;
+  const bx = b.x + b.w / 2;
+  const by = b.y;
+
+  if (Math.abs(ax - bx) < 1) return `M${ax} ${ay} L${bx} ${by - 7}`;
+
+  const mid = ay + (by - ay) / 2;
+  return `M${ax} ${ay} L${ax} ${mid} L${bx} ${mid} L${bx} ${by - 7}`;
+}
+
+/** Fail-closed edge: out to the right-hand rail, then down to FAIL. */
+function failEdge(fromId: string): string {
+  const a = node(fromId);
+  const ax = a.x + a.w;
+  const ay = a.y + a.h / 2;
+  return `M${ax} ${ay} L${FAIL_RAIL_X} ${ay}`;
+}
+
+const EDGES: readonly (readonly [string, string])[] = [
+  ['bind', 'scope'],
+  ['scope', 'plan'],
+  ['plan', 'pa'],
+  ['plan', 'pb'],
+  ['plan', 'ta'],
+  ['plan', 'tb'],
+  ['pa', 'oa'],
+  ['pb', 'oa'],
+  ['ta', 'ob'],
+  ['tb', 'ob'],
+  ['oa', 'reports'],
+  ['ob', 'reports'],
+  ['reports', 'atomize'],
+  ['atomize', 'admit'],
+  ['admit', 'verify'],
+  ['verify', 'evaluate'],
+  ['evaluate', 'artifact'],
+  ['artifact', 'end'],
+];
+
+/** Gates that can stop the run rather than letting it continue. */
+const FAIL_SOURCES = ['plan', 'reports', 'evaluate'] as const;
+
+const failTop = node('plan').y + node('plan').h / 2;
+const failBottom = node('fail').y;
+const failNode = node('fail');
+---
+
+<svg
+  class="workflow"
+  viewBox={`0 0 ${W} ${H}`}
+  role="img"
+  aria-label="Controlled verification workflow. A controller binds authority and source, discovers scope, and validates the prepared run. Four bounded workers act as production and test finders, feeding two observer-soundness checkpoints. Reports are validated and coverage reconciled, candidates are atomized, deduplicated and admitted with provenance frozen and the finder hidden, then one cold verifier per candidate tries to refute it. Deterministic evaluation assembles a run receipt and detailed matrix before returning a validated advisory. Three validation gates can instead stop the run with retained evidence."
+>
+  <defs>
+    <marker id="wf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" class="arrowhead" />
+    </marker>
+    <marker id="wf-arrow-fail" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" class="arrowhead arrowhead--fail" />
+    </marker>
+  </defs>
+
+  <g class="edges">
+    {EDGES.map(([from, to]) => <path d={edge(from, to)} class="edge" marker-end="url(#wf-arrow)" />)}
+  </g>
+
+  <g class="fail-edges">
+    {FAIL_SOURCES.map((from) => <path d={failEdge(from)} class="edge edge--fail" />)}
+    <path
+      d={`M${FAIL_RAIL_X} ${failTop} L${FAIL_RAIL_X} ${failBottom - 20} L${failNode.x + failNode.w / 2} ${failBottom - 20} L${failNode.x + failNode.w / 2} ${failBottom - 7}`}
+      class="edge edge--fail"
+      marker-end="url(#wf-arrow-fail)"
+    />
+    <text x={FAIL_RAIL_X - 6} y={failTop - 12} class="rail-label" text-anchor="end">fail closed</text>
+  </g>
+
+  <g class="nodes">
+    {
+      NODES.map((n) => (
+        <g class={`node node--${n.type}`}>
+          <rect x={n.x} y={n.y} width={n.w} height={n.h} rx="7" />
+          <text
+            x={n.x + n.w / 2}
+            y={n.sub ? n.y + n.h / 2 - 4 : n.y + n.h / 2 + 4}
+            class="node__label"
+            text-anchor="middle"
+          >
+            {n.label}
+          </text>
+          {n.sub && (
+            <text x={n.x + n.w / 2} y={n.y + n.h / 2 + 14} class="node__sub" text-anchor="middle">
+              {n.sub}
+            </text>
+          )}
+        </g>
+      ))
+    }
+  </g>
+</svg>
+
+<style>
+  .workflow {
+    display: block;
+    width: 100%;
+    min-width: 620px;
+    height: auto;
+    font-family: var(--font-sans);
+  }
+
+  .edge {
+    fill: none;
+    stroke: var(--diagram-line);
+    stroke-width: 1.4;
+  }
+
+  .edge--fail {
+    stroke: var(--diagram-fail);
+    stroke-dasharray: 5 4;
+  }
+
+  .arrowhead {
+    fill: var(--diagram-line);
+  }
+
+  .arrowhead--fail {
+    fill: var(--diagram-fail);
+  }
+
+  .rail-label {
+    font-size: 11px;
+    fill: var(--diagram-fail);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .node rect {
+    stroke-width: 1.5;
+  }
+
+  .node__label {
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--diagram-label);
+  }
+
+  .node__sub {
+    font-size: 11px;
+    fill: var(--color-text-muted);
+  }
+
+  .node--controller rect {
+    fill: var(--diagram-controller-fill);
+    stroke: var(--diagram-controller);
+  }
+  .node--worker rect {
+    fill: var(--diagram-worker-fill);
+    stroke: var(--diagram-worker);
+  }
+  .node--validation rect {
+    fill: var(--diagram-validation-fill);
+    stroke: var(--diagram-validation);
+  }
+  .node--artifact rect {
+    fill: var(--diagram-artifact-fill);
+    stroke: var(--diagram-artifact);
+  }
+  .node--ok rect {
+    fill: var(--diagram-ok-fill);
+    stroke: var(--diagram-ok);
+  }
+  .node--fail rect {
+    fill: var(--diagram-fail-fill);
+    stroke: var(--diagram-fail);
+  }
+</style>

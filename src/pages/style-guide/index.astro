@@ -1,0 +1,166 @@
+---
+import SectionLayout from '../../layouts/SectionLayout.astro';
+import Figure from '../../components/Figure.astro';
+import ControlledWorkflow from '../../components/diagrams/ControlledWorkflow.astro';
+
+/**
+ * Living style reference. Exists so the theme can be iterated in one place
+ * rather than by opening five pages and comparing from memory.
+ */
+
+const COLOR_GROUPS = [
+  {
+    name: 'Surfaces and text',
+    tokens: ['--color-bg', '--color-surface', '--color-surface-sunken', '--color-border', '--color-border-strong', '--color-text', '--color-text-muted', '--color-text-faint'],
+  },
+  {
+    name: 'Accent',
+    tokens: ['--color-accent', '--color-accent-hover', '--color-accent-wash'],
+  },
+  {
+    name: 'Diagram nodes',
+    tokens: ['--diagram-controller', '--diagram-worker', '--diagram-validation', '--diagram-artifact', '--diagram-ok', '--diagram-fail'],
+  },
+];
+
+const TYPE_STEPS = ['--step--1', '--step-0', '--step-1', '--step-2', '--step-3', '--step-4'];
+---
+
+<SectionLayout
+  title="Style Guide"
+  heading="Style Guide"
+  eyebrow="Living reference"
+  description="Design tokens, type scale, and the diagram vocabulary, on one page so the theme can be changed and checked in one place."
+  seed="style-guide"
+>
+  <section class="prose">
+    <p>
+      Everything here reads from the token file. Changing a token changes this page and
+      the rest of the site together, which is the point of keeping colour and type in one
+      place.
+    </p>
+  </section>
+
+  <section aria-labelledby="color-heading">
+    <h2 id="color-heading">Colour</h2>
+    {
+      COLOR_GROUPS.map((group) => (
+        <>
+          <h3 class="group-name">{group.name}</h3>
+          <ul class="swatches">
+            {group.tokens.map((token) => (
+              <li class="swatch">
+                <span class="swatch__chip" style={`background: var(${token})`} />
+                <code class="swatch__name">{token}</code>
+              </li>
+            ))}
+          </ul>
+        </>
+      ))
+    }
+  </section>
+
+  <section aria-labelledby="type-heading">
+    <h2 id="type-heading">Type scale</h2>
+    <ul class="type-list">
+      {
+        TYPE_STEPS.map((step) => (
+          <li>
+            <span style={`font-size: var(${step})`}>Programming With Intent</span>
+            <code>{step}</code>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="muted">
+      Headings are serif, body and interface are sans. The scale is fluid, so these
+      shift with viewport width.
+    </p>
+  </section>
+
+  <section aria-labelledby="diagram-heading">
+    <h2 id="diagram-heading">Diagrams</h2>
+    <div class="prose">
+      <p>
+        Diagrams are authored SVG, never generated images. Labels are real text, so a
+        crawler and a retrieval agent can read them. Colours come from tokens, so a
+        diagram follows the site into dark mode without separate artwork.
+      </p>
+      <p>
+        Workflow diagrams reuse one node vocabulary, so the same colour means the same
+        thing across articles.
+      </p>
+    </div>
+
+    <Figure
+      caption="A controlled verification workflow, drawn from the DevWeave spec-to-test architecture."
+      note="Controller in blue, bounded worker in purple, validation gate in teal, artifact in amber. The dashed rail is the fail-closed path: an incomplete run cannot become a clean result."
+    >
+      <ControlledWorkflow />
+    </Figure>
+  </section>
+</SectionLayout>
+
+<style>
+  section + section {
+    margin-top: var(--space-2xl);
+  }
+
+  .group-name {
+    font-size: var(--step-0);
+    font-family: var(--font-sans);
+    color: var(--color-text-muted);
+    margin-top: var(--space-m);
+  }
+
+  .swatches {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-2xs);
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  }
+
+  .swatch {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .swatch__chip {
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border-strong);
+    flex: none;
+  }
+
+  .swatch__name {
+    font-size: 0.72rem;
+    background: none;
+    color: var(--color-text-muted);
+  }
+
+  .type-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .type-list li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding: var(--space-2xs) 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .type-list code {
+    font-size: 0.72rem;
+    color: var(--color-text-faint);
+    background: none;
+    flex: none;
+  }
+</style>
