@@ -150,7 +150,7 @@ Diagrams are inline SVG, authored rather than generated.
 ### Node taxonomy
 
 Workflow diagrams reuse a fixed vocabulary, so the same shape means the same thing
-across articles. Taken from the DevWeave spec-to-test architecture:
+across articles. Taken from a production spec-to-test verification pipeline:
 
 | Node type | Meaning |
 |---|---|
