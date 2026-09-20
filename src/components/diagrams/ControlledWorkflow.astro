@@ -41,7 +41,12 @@ interface NodeSpec {
 }
 
 interface Row {
-  readonly y: number;
+  /**
+   * Vertical space above this row, measured from the previous row's bottom.
+   * Scatter and gather transitions get more, so the fanning curves stay
+   * legible and the concurrency label is not crossed by them.
+   */
+  readonly gapBefore: number;
   readonly h: number;
   /** Fraction of the content width this row occupies, centred. */
   readonly span: number;
@@ -51,7 +56,13 @@ interface Row {
 }
 
 const W = 880;
-const H = 1290;
+
+/** Ordinary step-to-step spacing. */
+const GAP_STEP = 76;
+/** Into a concurrent row: the fan-out needs room to spread. */
+const GAP_SCATTER = 140;
+/** Out of a concurrent row: the fan-in plus the bracket label below it. */
+const GAP_GATHER = 150;
 const MARGIN = 12;
 const GAP = 14;
 const CONTENT = W - MARGIN * 2;
@@ -59,7 +70,7 @@ const FAIL_RAIL_X = 862;
 
 const ROWS: readonly Row[] = [
   {
-    y: 16, h: 54, span: 0.52,
+    gapBefore: 16, h: 54, span: 0.52,
     nodes: [{
       id: 'bind', type: 'controller', label: 'Bind authority and source', sub: 'Identity and requirement identities',
       detail: 'Pins the run to a specific source revision and a specific set of requirement identities.',
@@ -67,7 +78,7 @@ const ROWS: readonly Row[] = [
     }],
   },
   {
-    y: 104, h: 54, span: 0.52,
+    gapBefore: GAP_STEP, h: 54, span: 0.52,
     nodes: [{
       id: 'scope', type: 'controller', label: 'Discover scope, construct manifests',
       detail: 'Enumerates the units in scope and builds the manifest of required work.',
@@ -75,7 +86,7 @@ const ROWS: readonly Row[] = [
     }],
   },
   {
-    y: 192, h: 54, span: 0.52,
+    gapBefore: GAP_STEP, h: 54, span: 0.52,
     nodes: [{
       id: 'plan', type: 'validation', label: 'Validate the prepared run',
       detail: 'Checks the manifest and routes before any worker is dispatched.',
@@ -83,7 +94,7 @@ const ROWS: readonly Row[] = [
     }],
   },
   {
-    y: 296, h: 64, span: 1, concurrency: 'Fan-out: four independent finders, separate contexts',
+    gapBefore: GAP_SCATTER, h: 64, span: 1, concurrency: 'Fan-out: four independent finders, separate contexts',
     nodes: [
       { id: 'pa', type: 'worker', label: 'Production finder A', sub: 'Cold source-only pass',
         detail: 'Inspects production source for concrete defects, with no sight of test code.',
@@ -100,7 +111,7 @@ const ROWS: readonly Row[] = [
     ],
   },
   {
-    y: 414, h: 58, span: 0.82, concurrency: 'Cross-challenge, one per lane',
+    gapBefore: GAP_GATHER, h: 58, span: 0.82, concurrency: 'Cross-challenge, one per lane',
     nodes: [
       { id: 'oa', type: 'worker', label: 'Observer-soundness checkpoint A',
         detail: 'Challenges negative and exact-count assertions in the production lane.',
@@ -111,7 +122,7 @@ const ROWS: readonly Row[] = [
     ],
   },
   {
-    y: 530, h: 54, span: 0.64,
+    gapBefore: GAP_GATHER, h: 54, span: 0.64,
     nodes: [{
       id: 'reports', type: 'validation', label: 'Validate reports, reconcile coverage',
       detail: 'Fan-in. Compares returned assessments against the required manifest.',
@@ -119,7 +130,7 @@ const ROWS: readonly Row[] = [
     }],
   },
   {
-    y: 618, h: 54, span: 0.64,
+    gapBefore: GAP_STEP, h: 54, span: 0.64,
     nodes: [{
       id: 'atomize', type: 'worker', label: 'Atomize and deduplicate candidates',
       detail: 'Splits findings into independently falsifiable claims, then groups equivalents.',
@@ -127,7 +138,7 @@ const ROWS: readonly Row[] = [
     }],
   },
   {
-    y: 706, h: 60, span: 0.64,
+    gapBefore: GAP_STEP, h: 60, span: 0.64,
     nodes: [{
       id: 'admit', type: 'controller', label: 'Admit candidates', sub: 'Freeze provenance, enforce the cap, hide the finder',
       detail: 'Freezes the candidate registry and constructs each verifier input.',
@@ -135,7 +146,7 @@ const ROWS: readonly Row[] = [
     }],
   },
   {
-    y: 812, h: 64, span: 1, concurrency: 'Fan-out: one cold verifier per admitted candidate, run concurrently',
+    gapBefore: GAP_SCATTER, h: 64, span: 1, concurrency: 'Fan-out: one cold verifier per admitted candidate, run concurrently',
     nodes: [
       { id: 'v1', type: 'worker', label: 'Cold verifier 1', sub: 'Try to refute',
         detail: 'Attempts to refute one admitted candidate from source alone.',
@@ -152,7 +163,7 @@ const ROWS: readonly Row[] = [
     ],
   },
   {
-    y: 930, h: 54, span: 0.64,
+    gapBefore: GAP_GATHER, h: 54, span: 0.64,
     nodes: [{
       id: 'evaluate', type: 'validation', label: 'Deterministic evaluation and assembly',
       detail: 'Fan-in. Applies outcome rules in code to the validated verdicts.',
@@ -160,7 +171,7 @@ const ROWS: readonly Row[] = [
     }],
   },
   {
-    y: 1018, h: 54, span: 0.64,
+    gapBefore: GAP_STEP, h: 54, span: 0.64,
     nodes: [{
       id: 'artifact', type: 'artifact', label: 'Run receipt and detailed matrix',
       detail: 'Persists provenance for every candidate alongside the run outcome.',
@@ -168,7 +179,7 @@ const ROWS: readonly Row[] = [
     }],
   },
   {
-    y: 1116, h: 54, span: 0.9,
+    gapBefore: GAP_STEP, h: 54, span: 0.9,
     nodes: [
       { id: 'end', type: 'ok', label: 'END: return validated advisory',
         detail: 'Presents validated artifacts and lets the user choose the next action.',
@@ -187,16 +198,29 @@ interface Placed extends NodeSpec {
   readonly h: number;
 }
 
-const NODES: Placed[] = ROWS.flatMap((row) => {
+/** Row tops, accumulated from each row's requested gap. */
+const ROW_Y: number[] = [];
+let cursor = 0;
+for (const row of ROWS) {
+  cursor += row.gapBefore;
+  ROW_Y.push(cursor);
+  cursor += row.h;
+}
+
+/** Room under the last row for the bracket label and a little breathing space. */
+const H = cursor + 46;
+
+const NODES: Placed[] = ROWS.flatMap((row, rowIndex) => {
   const rowW = CONTENT * row.span;
   const startX = MARGIN + (CONTENT - rowW) / 2;
   const count = row.nodes.length;
   const nodeW = (rowW - GAP * (count - 1)) / count;
+  const y = ROW_Y[rowIndex]!;
 
   return row.nodes.map((spec, i) => ({
     ...spec,
     x: startX + i * (nodeW + GAP),
-    y: row.y,
+    y,
     w: nodeW,
     h: row.h,
   }));
@@ -210,18 +234,24 @@ function node(id: string): Placed {
   return found;
 }
 
-/** Centre-bottom to centre-top, with a right-angle jog when x differs. */
+/**
+ * Centre-bottom to centre-top as a cubic bezier. Control points sit at 45% and
+ * 55% of the vertical run, which keeps the curve leaving and arriving
+ * vertically while bending smoothly across any horizontal offset. A straight
+ * line is used when the two centres align, since a curve there would wobble.
+ */
 function edge(fromId: string, toId: string): string {
   const a = node(fromId);
   const b = node(toId);
   const ax = a.x + a.w / 2;
   const ay = a.y + a.h;
   const bx = b.x + b.w / 2;
-  const by = b.y;
+  const by = b.y - 7;
 
-  if (Math.abs(ax - bx) < 1) return `M${ax} ${ay} L${bx} ${by - 7}`;
-  const mid = ay + (by - ay) / 2;
-  return `M${ax} ${ay} L${ax} ${mid} L${bx} ${mid} L${bx} ${by - 7}`;
+  if (Math.abs(ax - bx) < 1) return `M${ax} ${ay} L${bx} ${by}`;
+
+  const run = by - ay;
+  return `M${ax} ${ay} C${ax} ${ay + run * 0.45}, ${bx} ${by - run * 0.45}, ${bx} ${by}`;
 }
 
 function failEdge(fromId: string): string {
@@ -253,12 +283,24 @@ const BRACKETS = ROWS.filter((r) => r.concurrency !== undefined).map((row) => {
   const placed = row.nodes.map((n) => node(n.id));
   const first = placed[0]!;
   const last = placed[placed.length - 1]!;
-  const y = row.y + row.h + 9;
+  const y = first.y + row.h + 9;
+  const label = row.concurrency!;
+  const cx = (first.x + last.x + last.w) / 2;
+  const ty = y + 20;
+
+  // The fan-in curves pass through this band, so the label sits on a halo
+  // rect filled with the canvas colour. Width is estimated from the character
+  // count, since text cannot be measured before render.
+  const haloW = label.length * 5.5 + 16;
+
   return {
-    label: row.concurrency!,
+    label,
     d: `M${first.x} ${y} L${first.x} ${y + 5} L${last.x + last.w} ${y + 5} L${last.x + last.w} ${y}`,
-    cx: (first.x + last.x + last.w) / 2,
-    ty: y + 19,
+    cx,
+    ty,
+    haloX: cx - haloW / 2,
+    haloY: ty - 12,
+    haloW,
   };
 });
 
@@ -307,6 +349,7 @@ const LEGEND: readonly NodeType[] = ['controller', 'worker', 'validation', 'arti
       {BRACKETS.map((b) => (
         <>
           <path d={b.d} class="bracket" />
+          <rect x={b.haloX} y={b.haloY} width={b.haloW} height="16" rx="3" class="bracket__halo" />
           <text x={b.cx} y={b.ty} class="bracket__label" text-anchor="middle">{b.label}</text>
         </>
       ))}
@@ -376,6 +419,7 @@ const LEGEND: readonly NodeType[] = ['controller', 'worker', 'validation', 'arti
   .arrowhead--fail { fill: var(--diagram-fail); }
 
   .bracket { fill: none; stroke: var(--color-text-faint); stroke-width: 1; }
+  .bracket__halo { fill: var(--color-surface); }
   .bracket__label {
     font-size: 11px;
     fill: var(--color-text-muted);
