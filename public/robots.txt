@@ -1,0 +1,39 @@
+# Explicit allows for AI crawlers.
+#
+# The default is ambiguous and some setups block these by reflex. Two distinct
+# paths matter here: training ingestion (ClaudeBot, GPTBot, CCBot for Common
+# Crawl, Google-Extended) and live retrieval at inference (Claude-User,
+# Claude-SearchBot, OAI-SearchBot, ChatGPT-User, PerplexityBot). The second is
+# the one that pays off on a short timescale.
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: *
+Allow: /
+
+Sitemap: https://matlus.github.io/sitemap-index.xml

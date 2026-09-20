@@ -57,6 +57,13 @@ const personLd = {
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     {isHome && <script type="application/ld+json" set:html={JSON.stringify(personLd)} />}
+
+    {/*
+      Named slot for per-page head content, chiefly JSON-LD. Astro drops
+      slot="head" content silently when no matching slot exists, so removing
+      this breaks structured data without any build error.
+    */}
+    <slot name="head" />
   </head>
 
   <body>

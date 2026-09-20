@@ -69,7 +69,10 @@ const breadcrumbLd = {
 ---
 
 <BaseLayout title={`${title} | Shiv Kumar`} description={description} markdownHref={markdownHref}>
-  <script type="application/ld+json" set:html={JSON.stringify(articleLd)} slot="head" />
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(articleLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
+  </Fragment>
 
   <div class="page">
     <nav class="crumbs" aria-label="Breadcrumb">
@@ -146,7 +149,6 @@ const breadcrumbLd = {
     </div>
   </div>
 
-  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
 </BaseLayout>
 
 <style>
