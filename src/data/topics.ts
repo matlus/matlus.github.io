@@ -95,7 +95,13 @@ const PY = ['python'] as const;
 const CS = ['csharp'] as const;
 const PY_SQL = ['python', 'sql'] as const;
 
-export const TOPICS = [
+/*
+ * Annotated rather than `as const satisfies`, deliberately, and for the same
+ * reason as NAV. Preserving literal types makes `pillar` absent from the union
+ * members that lack it (the acceptance-testing topics), so every consumer
+ * would have to narrow before reading an optional property.
+ */
+export const TOPICS: readonly Topic[] = [
   // ------------------- language-independent, examples in Python and C# -----
   { slug: 'architecture-layers', title: 'Architecture Layers', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY_CS },
   { slug: 'class-design', title: 'Class Design', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY_CS },
@@ -206,9 +212,10 @@ export const TOPICS = [
     examples: CS,
     note: 'Examples are C# today.',
   },
-] as const satisfies readonly Topic[];
+];
 
-export type TopicSlug = (typeof TOPICS)[number]['slug'];
+/** Slugs are validated at runtime below, so a literal union is not needed. */
+export type TopicSlug = string;
 
 /** Slugs are URL segments, so duplicates are a build error. */
 const seen = new Set<string>();
