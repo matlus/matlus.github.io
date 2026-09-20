@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import SectionLayout from '../../layouts/SectionLayout.astro';
+import { TAGS } from '../../data/tags';
+
+/**
+ * One pre-built page per tag.
+ *
+ * These are real HTML files on disk, generated at build time, not a
+ * client-side filter. A crawler arriving at /tags/verification/ finds content
+ * rather than an empty shell, which is why the static pages exist alongside
+ * any interactive filtering.
+ */
+export const getStaticPaths = (async () => {
+  const posts = await getCollection('writing', ({ data }) => !data.draft);
+
+  return TAGS.map((tag) => ({
+    params: { tag: tag.slug },
+    props: {
+      tag,
+      posts: posts
+        .filter((post) => (post.data.tags as readonly string[]).includes(tag.slug))
+        .sort((a, b) => b.data.datePublished.getTime() - a.data.datePublished.getTime()),
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const { tag, posts } = Astro.props;
+
+const fmt = (date: Date) =>
+  date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<SectionLayout
+  title={tag.label}
+  heading={tag.label}
+  eyebrow="Topic"
+  description={tag.description}
+  seed={`tag-${tag.slug}`}
+>
+  <p class="muted count">{posts.length} {posts.length === 1 ? 'article' : 'articles'}</p>
+
+  <ul class="list">
+    {
+      posts.map((post) => (
+        <li>
+          <p class="list__date">{fmt(post.data.datePublished)}</p>
+          <h2 class="list__title"><a href={`/writing/${post.id}/`}>{post.data.title}</a></h2>
+          <p class="list__blurb">{post.data.description}</p>
+        </li>
+      ))
+    }
+  </ul>
+
+  {posts.length === 0 && <p class="muted">Nothing tagged this yet.</p>}
+
+  <p class="back"><a href="/tags/">All topics</a></p>
+</SectionLayout>
+
+<style>
+  .count { font-size: var(--step--1); }
+  .list { list-style: none; padding: 0; margin: var(--space-m) 0 0; display: grid; gap: var(--space-m); }
+  .list li { max-width: var(--measure); padding-bottom: var(--space-m); border-bottom: 1px solid var(--color-border); }
+  .list__date { font-size: var(--step--1); color: var(--color-text-faint); margin: 0 0 var(--space-3xs); }
+  .list__title { font-size: var(--step-1); margin-bottom: var(--space-3xs); }
+  .list__title a { color: var(--color-text); text-decoration: none; }
+  .list__title a:hover { color: var(--color-accent); }
+  .list__blurb { color: var(--color-text-muted); margin: 0; }
+  .back { margin-top: var(--space-l); font-size: var(--step--1); }
+</style>

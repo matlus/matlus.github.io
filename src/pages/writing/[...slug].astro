@@ -1,0 +1,75 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import Figure from '../../components/Figure.astro';
+import ControlledWorkflow from '../../components/diagrams/ControlledWorkflow.astro';
+
+export const getStaticPaths = (async () => {
+  const posts = await getCollection('writing', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+/**
+ * Hero images live under src/assets so Astro optimizes them per breakpoint.
+ * Resolved eagerly by name, since frontmatter carries a slug rather than a path.
+ */
+const heroes = import.meta.glob<{ default: ImageMetadata }>('../../assets/heroes/*.webp', {
+  eager: true,
+});
+const heroKey = post.data.hero
+  ? Object.keys(heroes).find((key) => key.endsWith(`/${post.data.hero}.webp`))
+  : undefined;
+const hero = heroKey ? heroes[heroKey]?.default : undefined;
+
+/**
+ * Diagrams are named in frontmatter rather than embedded in the markdown. That
+ * keeps the `.md` twin free of several hundred lines of SVG, which is the
+ * point of offering it. Placement is above the body for now.
+ */
+const DIAGRAMS = {
+  'controlled-workflow': {
+    component: ControlledWorkflow,
+    caption: 'A controlled verification workflow, drawn from the DevWeave spec-to-test architecture.',
+    note: 'Hover or focus any step for detail. Rows with several boxes run concurrently.',
+  },
+} as const;
+
+type DiagramName = keyof typeof DIAGRAMS;
+
+const diagrams = (post.data.diagrams ?? []).filter(
+  (name): name is DiagramName => name in DIAGRAMS,
+);
+---
+
+<ArticleLayout
+  title={post.data.title}
+  description={post.data.description}
+  datePublished={post.data.datePublished}
+  dateModified={post.data.dateModified}
+  tags={post.data.tags}
+  crumbs={[{ label: 'Home', href: '/' }, { label: 'Writing', href: '/writing/' }]}
+  hero={hero}
+  audio={post.data.audio}
+  youtube={post.data.youtube}
+  status={post.data.status}
+  markdownHref={`/writing/${post.id}.md`}
+  seed={post.id}
+>
+  {
+    diagrams.map((name) => {
+      const entry = DIAGRAMS[name];
+      const Diagram = entry.component;
+      return (
+        <Figure caption={entry.caption} note={entry.note}>
+          <Diagram />
+        </Figure>
+      );
+    })
+  }
+
+  <Content />
+</ArticleLayout>

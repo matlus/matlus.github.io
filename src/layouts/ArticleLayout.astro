@@ -1,0 +1,287 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from './BaseLayout.astro';
+import PlaceholderImage from '../components/PlaceholderImage.astro';
+import { TAGS } from '../data/tags';
+
+interface Crumb {
+  readonly label: string;
+  readonly href: string;
+}
+
+interface Props {
+  readonly title: string;
+  readonly description: string;
+  readonly datePublished: Date;
+  readonly dateModified?: Date | undefined;
+  readonly tags: readonly string[];
+  readonly crumbs: readonly Crumb[];
+  /** Resolved hero image, when the entry names one. */
+  readonly hero?: ImageMetadata | undefined;
+  readonly audio?: string | undefined;
+  readonly youtube?: string | undefined;
+  readonly status?: string | undefined;
+  /** Evergreen pages show "updated" prominently; dated posts lead with published. */
+  readonly evergreen?: boolean;
+  /** Path of the raw markdown twin. */
+  readonly markdownHref: string;
+  readonly seed: string;
+}
+
+const {
+  title, description, datePublished, dateModified, tags, crumbs,
+  hero, audio, youtube, status, evergreen = false, markdownHref, seed,
+} = Astro.props;
+
+const fmt = (date: Date) =>
+  date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long' });
+
+// Widened to string keys: the article's tags are validated by the content
+// schema, so they are known-good, but they arrive typed as plain strings.
+const tagsBySlug = new Map<string, (typeof TAGS)[number]>(
+  TAGS.map((tag) => [tag.slug, tag]),
+);
+
+const site = Astro.site ?? new URL('https://matlus.github.io');
+const canonical = new URL(Astro.url.pathname, site);
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: title,
+  description,
+  datePublished: datePublished.toISOString(),
+  dateModified: (dateModified ?? datePublished).toISOString(),
+  author: { '@type': 'Person', name: 'Shiv Kumar' },
+  url: canonical.href,
+};
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: crumbs.map((crumb, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: crumb.label,
+    item: new URL(crumb.href, site).href,
+  })),
+};
+---
+
+<BaseLayout title={`${title} | Shiv Kumar`} description={description} markdownHref={markdownHref}>
+  <script type="application/ld+json" set:html={JSON.stringify(articleLd)} slot="head" />
+
+  <div class="page">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <ol>
+        {crumbs.map((crumb) => <li><a href={crumb.href}>{crumb.label}</a></li>)}
+        <li aria-current="page">{title}</li>
+      </ol>
+    </nav>
+
+    <header class="article-head">
+      {
+        hero
+          ? <Image src={hero} alt="" class="article-head__hero" widths={[640, 1024, 1600]} sizes="(max-width: 72rem) 100vw, 72rem" loading="eager" />
+          : <PlaceholderImage seed={seed} ratio="wide" label="" />
+      }
+
+      <div class="article-head__text prose">
+        <h1>{title}</h1>
+        <p class="article-head__lede">{description}</p>
+
+        <p class="article-head__meta">
+          {
+            evergreen && dateModified
+              ? <>Published {fmt(datePublished)} · Updated {fmt(dateModified)}</>
+              : <>Published {fmt(datePublished)}</>
+          }
+          {status === 'exploratory' && <span class="badge">Exploratory</span>}
+        </p>
+      </div>
+    </header>
+
+    {
+      (audio || youtube) && (
+        <div class="companions">
+          {youtube && <a class="companion" href={youtube} rel="noopener">Watch the video</a>}
+          {audio && (
+            <div class="companion companion--audio">
+              <audio controls preload="none" src={audio}></audio>
+              <a href={audio} download>Download audio</a>
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    <div class="article-body">
+      <article class="prose">
+        <slot />
+      </article>
+
+      <aside class="article-side">
+        <section>
+          <h2 class="side-heading">Topics</h2>
+          <ul class="side-tags">
+            {
+              tags.map((slug) => {
+                const tag = tagsBySlug.get(slug);
+                return <li><a href={`/tags/${slug}/`}>{tag?.label ?? slug}</a></li>;
+              })
+            }
+          </ul>
+          <p class="side-more"><a href="/tags/">All topics</a></p>
+        </section>
+
+        <section>
+          <h2 class="side-heading">Read as markdown</h2>
+          <p class="side-note">
+            Clean article text with no navigation or sidebar, for machines and for
+            quoting.
+          </p>
+          <p><a href={markdownHref}>{markdownHref}</a></p>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
+</BaseLayout>
+
+<style>
+  .crumbs {
+    margin: var(--space-m) 0 var(--space-s);
+    font-size: var(--step--1);
+  }
+
+  .crumbs ol {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+    padding: 0;
+    margin: 0;
+    color: var(--color-text-faint);
+  }
+
+  .crumbs li + li::before {
+    content: '›';
+    margin-right: var(--space-3xs);
+    color: var(--color-text-faint);
+  }
+
+  .crumbs a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+  .crumbs a:hover { color: var(--color-accent); text-decoration: underline; }
+
+  .article-head__hero {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+  }
+
+  .article-head__text { margin-top: var(--space-l); }
+
+  .article-head__lede {
+    font-size: var(--step-1);
+    color: var(--color-text-muted);
+    line-height: 1.55;
+  }
+
+  .article-head__meta {
+    font-size: var(--step--1);
+    color: var(--color-text-faint);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 0.1rem 0.4rem;
+    border: 1px dashed var(--color-border-strong);
+    border-radius: 999px;
+  }
+
+  .companions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    align-items: center;
+    margin-top: var(--space-m);
+    padding: var(--space-xs) var(--space-s);
+    background: var(--color-surface-sunken);
+    border-radius: var(--radius);
+    font-size: var(--step--1);
+  }
+
+  .companion--audio {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    flex-wrap: wrap;
+  }
+
+  .companion audio { height: 2.2rem; }
+
+  .article-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 15rem;
+    gap: var(--space-2xl);
+    margin-top: var(--space-xl);
+    align-items: start;
+  }
+
+  .article-side {
+    position: sticky;
+    top: calc(var(--nav-height) + var(--space-s));
+    font-size: var(--step--1);
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .side-heading {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-faint);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .side-tags {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+  }
+
+  .side-tags a {
+    display: inline-block;
+    padding: 0.1rem 0.45rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    text-decoration: none;
+    color: var(--color-text-muted);
+  }
+
+  .side-tags a:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .side-more, .side-note { margin: var(--space-2xs) 0 0; color: var(--color-text-faint); }
+
+  @media (max-width: 60rem) {
+    .article-body { grid-template-columns: 1fr; gap: var(--space-xl); }
+    .article-side { position: static; }
+  }
+</style>

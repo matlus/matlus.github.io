@@ -1,5 +1,13 @@
 ---
+import { getCollection } from 'astro:content';
 import SectionLayout from '../../layouts/SectionLayout.astro';
+
+const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.datePublished.getTime() - a.data.datePublished.getTime(),
+);
+
+const fmt = (date: Date) =>
+  date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 
 <SectionLayout
@@ -9,11 +17,60 @@ import SectionLayout from '../../layouts/SectionLayout.astro';
   seed="writing"
   showTagCloud={true}
 >
-  <section class="prose">
-    <p>
-      Dated pieces, newest first. Unlike the chapter material, these are written at a
-      moment and stay attached to it.
-    </p>
-    <p class="muted">Nothing published yet. The first essays land here.</p>
-  </section>
+  <ul class="posts">
+    {
+      posts.map((post) => (
+        <li class="post">
+          <p class="post__date">
+            {fmt(post.data.datePublished)}
+            {post.data.status === 'exploratory' && <span class="badge">Exploratory</span>}
+          </p>
+          <h2 class="post__title">
+            <a href={`/writing/${post.id}/`}>{post.data.title}</a>
+          </h2>
+          <p class="post__blurb">{post.data.description}</p>
+          <p class="post__md">
+            <a href={`/writing/${post.id}.md`}>Read as markdown</a>
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+
+  {posts.length === 0 && <p class="muted">Nothing published yet.</p>}
 </SectionLayout>
+
+<style>
+  .posts { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-l); }
+
+  .post {
+    padding-bottom: var(--space-l);
+    border-bottom: 1px solid var(--color-border);
+    max-width: var(--measure);
+  }
+
+  .post__date {
+    font-size: var(--step--1);
+    color: var(--color-text-faint);
+    margin: 0 0 var(--space-3xs);
+    display: flex;
+    gap: var(--space-2xs);
+    align-items: center;
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 0.1rem 0.4rem;
+    border: 1px dashed var(--color-border-strong);
+    border-radius: 999px;
+  }
+
+  .post__title { font-size: var(--step-2); margin-bottom: var(--space-2xs); }
+  .post__title a { color: var(--color-text); text-decoration: none; }
+  .post__title a:hover { color: var(--color-accent); }
+
+  .post__blurb { color: var(--color-text-muted); margin-bottom: var(--space-2xs); }
+  .post__md { font-size: var(--step--1); margin: 0; }
+</style>

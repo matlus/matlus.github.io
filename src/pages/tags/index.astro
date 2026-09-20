@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content';
+import SectionLayout from '../../layouts/SectionLayout.astro';
+import TagCloud from '../../components/TagCloud.astro';
+import { TAGS } from '../../data/tags';
+
+const posts = await getCollection('writing', ({ data }) => !data.draft);
+
+/** Real counts, computed from frontmatter. No hand-maintained weights. */
+const weights: Record<string, number> = {};
+for (const post of posts) {
+  for (const slug of post.data.tags as readonly string[]) {
+    weights[slug] = (weights[slug] ?? 0) + 1;
+  }
+}
+---
+
+<SectionLayout
+  title="Topics"
+  heading="All Topics"
+  eyebrow="Index"
+  description="Every subject on the site, with a description of what it covers. Tags come from a controlled vocabulary, so the build fails on one that is not declared."
+  seed="tags"
+>
+  <TagCloud weights={weights} heading="The cloud" />
+
+  <ul class="glossary">
+    {
+      TAGS.map((tag) => (
+        <li>
+          <h2 class="glossary__term">
+            <a href={`/tags/${tag.slug}/`}>{tag.label}</a>
+            <span class="glossary__count">{weights[tag.slug] ?? 0}</span>
+          </h2>
+          <p class="glossary__desc">{tag.description}</p>
+        </li>
+      ))
+    }
+  </ul>
+</SectionLayout>
+
+<style>
+  .glossary { list-style: none; padding: 0; margin: var(--space-2xl) 0 0; display: grid; gap: var(--space-m); }
+  .glossary li { max-width: var(--measure); }
+  .glossary__term { font-size: var(--step-1); margin-bottom: var(--space-3xs); display: flex; align-items: baseline; gap: var(--space-2xs); }
+  .glossary__term a { color: var(--color-text); text-decoration: none; }
+  .glossary__term a:hover { color: var(--color-accent); }
+  .glossary__count { font-size: var(--step--1); color: var(--color-text-faint); font-family: var(--font-sans); font-weight: 400; }
+  .glossary__desc { color: var(--color-text-muted); margin: 0; }
+</style>

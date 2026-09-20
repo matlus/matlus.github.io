@@ -105,6 +105,21 @@ export const TAGS = [
       'where the failure modes cluster.',
   },
   {
+    slug: 'verification',
+    label: 'Verification',
+    description:
+      'Establishing that required work actually happened, rather than accepting a ' +
+      'confident report that it did. Coverage, completion, and what evidence supports ' +
+      'a claim.',
+  },
+  {
+    slug: 'agent-orchestration',
+    label: 'Agent Orchestration',
+    description:
+      'Coordinating multiple model workers: who decides what, what each one may see, ' +
+      'what runs concurrently, and what stops a run.',
+  },
+  {
     slug: 'code-review',
     label: 'Code Review',
     description:
