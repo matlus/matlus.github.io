@@ -1,0 +1,251 @@
+---
+/**
+ * The two-beat trap from "Stampede at the Gates".
+ *
+ * Beat one is the conversation the industry is having: a crowd massed at code
+ * review. Beat two is where that conversation leads: the gate widened, the
+ * same crowd now massed at verification.
+ *
+ * Drawn as two stacked panels rather than an interactive reveal, because the
+ * comparison is the argument and a reader should see both states at once.
+ *
+ * The herd is changesets, never people, so density is drawn as stacked cards.
+ */
+
+interface Beat {
+  readonly id: string;
+  readonly y: number;
+  readonly label: string;
+  readonly caption: string;
+  /** Gate one aperture in pixels. Widening it is the whole point of beat two. */
+  readonly gate1Gap: number;
+  readonly gate2Gap: number;
+  readonly queue1: number;
+  readonly queue2: number;
+}
+
+const W = 900;
+const BEAT_H = 250;
+const GAP = 60;
+const H = BEAT_H * 2 + GAP + 30;
+
+const ROAD_Y = 150;
+const GATE1_X = 372;
+const GATE2_X = 648;
+const ROAD_HALF = 54;
+
+const BEATS: readonly Beat[] = [
+  {
+    id: 'now',
+    y: 10,
+    label: 'Beat one',
+    caption: 'The gap the industry is discussing. Changesets mass at code review.',
+    gate1Gap: 22,
+    gate2Gap: 30,
+    queue1: 16,
+    queue2: 2,
+  },
+  {
+    id: 'next',
+    y: BEAT_H + GAP,
+    label: 'Beat two',
+    caption: 'Gate one is widened. The queue does not disappear, it moves.',
+    gate1Gap: 52,
+    gate2Gap: 30,
+    queue1: 3,
+    queue2: 16,
+  },
+];
+
+/** A pile of changeset cards, densest nearest the gate. */
+function pile(count: number, gateX: number, baseY: number) {
+  const cards: { x: number; y: number }[] = [];
+  const perColumn = 4;
+  const cw = 13;
+  const ch = 9;
+
+  for (let i = 0; i < count; i += 1) {
+    const column = Math.floor(i / perColumn);
+    const row = i % perColumn;
+    cards.push({
+      x: gateX - 26 - column * (cw + 3),
+      y: baseY - 18 - row * (ch + 3),
+    });
+  }
+  return cards;
+}
+---
+
+<div class="gates">
+  <svg class="gates__svg" viewBox={`0 0 ${W} ${H}`} role="group" aria-labelledby="gates-title">
+    <title id="gates-title">The stampede relocates rather than dissolving</title>
+    <desc>
+      Two panels of the same pipeline. In beat one, changesets flow in fast from the left,
+      mass in a dense queue at a narrow first gate labelled Code Review, and only a few
+      reach the second gate labelled Verification before production. In beat two the first
+      gate has been widened, so almost nothing waits there, and the same dense queue has
+      formed at the unchanged second gate instead. Relieving the first gate relocates the
+      crowd to the second, which is the last gate before production and the more expensive
+      one to fail at.
+    </desc>
+
+    <defs>
+      <marker id="gates-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" class="arrowhead" />
+      </marker>
+    </defs>
+
+    {
+      BEATS.map((beat) => {
+        const y = beat.y;
+        const road = y + ROAD_Y;
+        return (
+          <g class="beat">
+            <text x="0" y={y + 22} class="beat__label">{beat.label}</text>
+            <text x="0" y={y + 40} class="beat__caption">{beat.caption}</text>
+
+            {/* The road. Gates sit in series along it, which is the argument. */}
+            <rect x="0" y={road - ROAD_HALF} width={W} height={ROAD_HALF * 2} class="road" rx="4" />
+
+            {/* Inflow: thick and fast. */}
+            <path d={`M4 ${road} L${GATE1_X - 150} ${road}`} class="inflow" marker-end="url(#gates-arrow)" />
+            <text x="8" y={road - ROAD_HALF - 8} class="flow-label">AI-generated changesets</text>
+
+            {/* Queue at gate one. */}
+            {pile(beat.queue1, GATE1_X, road + ROAD_HALF).map((c) => (
+              <rect x={c.x} y={c.y} width="13" height="9" rx="1.5" class="card" />
+            ))}
+
+            {/* Gate one. */}
+            <g class="gate">
+              <rect x={GATE1_X - 5} y={road - ROAD_HALF} width="10" height={ROAD_HALF - beat.gate1Gap / 2} rx="2" />
+              <rect x={GATE1_X - 5} y={road + beat.gate1Gap / 2} width="10" height={ROAD_HALF - beat.gate1Gap / 2} rx="2" />
+            </g>
+            <text x={GATE1_X} y={road + ROAD_HALF + 22} class="gate__label" text-anchor="middle">Code Review</text>
+            <text x={GATE1_X} y={road + ROAD_HALF + 36} class="gate__sub" text-anchor="middle">the gap everyone sees</text>
+
+            {/* Between the gates. */}
+            <path d={`M${GATE1_X + 12} ${road} L${GATE2_X - 110} ${road}`} class="between" marker-end="url(#gates-arrow)" />
+
+            {/* Queue at gate two. */}
+            {pile(beat.queue2, GATE2_X, road + ROAD_HALF).map((c) => (
+              <rect x={c.x} y={c.y} width="13" height="9" rx="1.5" class="card" />
+            ))}
+
+            {/* Gate two, unchanged in both beats. */}
+            <g class="gate gate--two">
+              <rect x={GATE2_X - 5} y={road - ROAD_HALF} width="10" height={ROAD_HALF - beat.gate2Gap / 2} rx="2" />
+              <rect x={GATE2_X - 5} y={road + beat.gate2Gap / 2} width="10" height={ROAD_HALF - beat.gate2Gap / 2} rx="2" />
+            </g>
+            <text x={GATE2_X} y={road + ROAD_HALF + 22} class="gate__label" text-anchor="middle">Verification</text>
+            <text x={GATE2_X} y={road + ROAD_HALF + 36} class="gate__sub" text-anchor="middle">the gap no one is pricing in</text>
+
+            {/* Out to production: thin and slow. */}
+            <path d={`M${GATE2_X + 12} ${road} L${W - 96} ${road}`} class="outflow" marker-end="url(#gates-arrow)" />
+            <text x={W - 88} y={road + 4} class="production">Production</text>
+
+            {beat.id === 'next' && (
+              <text x={GATE2_X - 24} y={road - ROAD_HALF - 10} class="callout" text-anchor="end">
+                the queue does not disappear, it moves
+              </text>
+            )}
+          </g>
+        );
+      })
+    }
+  </svg>
+</div>
+
+<style>
+  .gates__svg {
+    display: block;
+    width: 100%;
+    min-width: 640px;
+    height: auto;
+    font-family: var(--font-sans);
+  }
+
+  .road {
+    fill: var(--color-surface-sunken);
+    stroke: var(--color-border);
+    stroke-width: 1;
+  }
+
+  .beat__label {
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--color-text);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .beat__caption {
+    font-size: 12px;
+    fill: var(--color-text-muted);
+  }
+
+  .inflow {
+    fill: none;
+    stroke: var(--diagram-worker);
+    stroke-width: 7;
+    stroke-linecap: round;
+  }
+
+  .between {
+    fill: none;
+    stroke: var(--diagram-worker);
+    stroke-width: 4;
+    stroke-linecap: round;
+  }
+
+  .outflow {
+    fill: none;
+    stroke: var(--diagram-ok);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  .arrowhead { fill: var(--diagram-line); }
+
+  .card {
+    fill: var(--diagram-worker-fill);
+    stroke: var(--diagram-worker);
+    stroke-width: 1;
+  }
+
+  .gate rect {
+    fill: var(--diagram-validation);
+  }
+
+  .gate--two rect {
+    fill: var(--diagram-fail);
+  }
+
+  .gate__label {
+    font-size: 12px;
+    font-weight: 600;
+    fill: var(--diagram-label);
+  }
+
+  .gate__sub {
+    font-size: 11px;
+    fill: var(--color-text-faint);
+  }
+
+  .flow-label {
+    font-size: 11px;
+    fill: var(--color-text-muted);
+  }
+
+  .production {
+    font-size: 12px;
+    font-weight: 600;
+    fill: var(--diagram-ok);
+  }
+
+  .callout {
+    font-size: 12px;
+    font-style: italic;
+    fill: var(--diagram-fail);
+  }
+</style>
