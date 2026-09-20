@@ -63,23 +63,41 @@ converting the site.
 ### Top-level navigation
 
 ```
-PWI · Acceptance Testing · Writing · Research · Videos · About
+PWI · Acceptance Testing · Writing · Media · About
 ```
 
 - **PWI**, the four pillars. Evergreen reference material.
 - **Acceptance Testing**, the testing chapter family, headlined by Functional
   Acceptance Testing at the Boundary. Owns its content outright rather than linking
   into PWI. See section 4a.
-- **Writing**, essays on coding and AI. Time-stamped, feeds chronologically.
-- **Research**, in-progress ideas and experiments. (DevWeave work lives here but the
-  product name is deliberately not used in navigation.)
-- **Videos**, pages derived from YouTube content, cross-linked into whichever section
-  each one belongs to.
+- **Writing**, all prose, whatever its maturity. Time-stamped, feeds chronologically.
+- **Media**, a table of every article carrying a video or an audio companion. A view
+  over the content rather than a section that owns any.
 - **About**, bio, contact, links out.
 
-Six items still fit one line comfortably. The nav label is deliberately shorter than
-the concept name, so the section landing page carries the full "Functional Acceptance
+Five items fit one line comfortably. The nav label is deliberately shorter than the
+concept name, so the section landing page carries the full "Functional Acceptance
 Testing at the Boundary" as its H1.
+
+### Sections are subjects, never maturity levels
+
+An earlier draft had a Research section. It was dropped, because a section defined by
+maturity is unstable by construction: an idea that firms up has to move, which breaks
+its URL and invalidates anything that cited it.
+
+Maturity is therefore a **field on the post**, not a location. All prose lives at
+`/writing/<slug>` permanently, and a `status` of `exploratory` or `established`
+changes a label rather than an address.
+
+A subject that later deserves prominence is promoted with a **hub page** that links to
+posts which never moved. Promotion costs one new page and zero redirects.
+
+### Media is a view, not a section
+
+A recorded or narrated version of an article is never a page of its own. The article
+stays canonical, and `/media/` lists every article carrying video or audio with the
+title linking back. Someone who wants to browse only videos gets one page, and no
+title exists in two places.
 
 ### Navigation behavior
 

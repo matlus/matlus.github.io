@@ -80,8 +80,7 @@ export const NAV: readonly NavItem[] = [
     ],
   },
   { label: 'Writing', href: '/writing/' },
-  { label: 'Research', href: '/research/' },
-  { label: 'Videos', href: '/videos/' },
+  { label: 'Media', href: '/media/' },
   { label: 'About', href: '/about/' },
 ];
 
