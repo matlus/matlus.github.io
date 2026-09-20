@@ -22,3 +22,7 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Generated image originals. Convert with tools/prepare-image.mjs; commit the webp.
+public/images/generated/
+*.original.png

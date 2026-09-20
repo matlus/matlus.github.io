@@ -77,6 +77,47 @@ sketch illustration**.
 | Article hero | 1200 x 260 | 2400 x 520 at 2x |
 | OG card | 1200 x 630 | generated at build time |
 
+### Generating one
+
+Use the **desktop app's** bundled codex binary, never the standalone CLI. The desktop
+app self-updates, so it runs ahead. At the time of writing the CLI was 0.147.0 and
+refused outright, its default model returning "requires a newer version of Codex",
+while the desktop build was 0.155.0-alpha.9.2 and worked.
+
+The binary sits under a content-hashed directory that changes on every update, so
+`tools/codex-desktop.sh` resolves the newest by modification time rather than pinning a
+path.
+
+```bash
+tools/codex-desktop.sh exec --skip-git-repo-check --sandbox workspace-write "Use the built-in image_gen tool to generate ONE landscape image at the widest landscape size available.
+
+Style (use verbatim): <the style clause above>
+
+Subject: <one sentence>
+
+No text or lettering anywhere in the image. Then copy the final image into the current workspace at <path> and report that path."
+```
+
+Observed output is 1881 x 836, a ratio of 2.25, which sits close to the article hero
+slot. Ask explicitly for no lettering: the model will otherwise add garbled text.
+
+### Originals stay out of the repo
+
+The generator returns multi-megabyte PNGs. The first one was 2.76 MB. Committing those
+compounds badly, because git history keeps every version forever, Pages caps a
+published site at 1GB, and Git LFS cannot help since Pages does not resolve LFS
+pointers.
+
+Convert before committing:
+
+```bash
+node tools/prepare-image.mjs <generated.png> <slug>
+```
+
+That writes `src/assets/heroes/<slug>.webp`. The first conversion went from 2.76 MB to
+0.29 MB at identical dimensions, an 89.6% saving. Astro then optimizes further per
+breakpoint at build time, which only happens for images under `src/`, not `public/`.
+
 ### Provenance
 
 Each image's specific prompt is saved next to the image, so a regenerated or replaced
@@ -139,8 +180,9 @@ The component resolves the name against `src/components/diagrams/`.
 
 ## 3. Open questions
 
-- Which generator to use for hero images. NotebookLM produced the existing set;
-  a scriptable path would let the build request art for a new post.
-- Whether the Drive folder of existing samples should be mirrored into the repo, or
-  referenced and downloaded at build time.
+- Whether the Drive folder of 30 existing samples should be mirrored into the repo, or
+  referenced and converted on demand.
+- Whether to wire generation into the build, or keep it a deliberate manual step.
+  Manual is the current default, since an image is cheap to make and expensive to
+  regret.
 - Whether OG cards should use the hero art or a generated text card.
