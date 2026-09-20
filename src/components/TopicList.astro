@@ -1,5 +1,5 @@
 ---
-import type { Topic } from '../data/topics';
+import type { Language, Topic } from '../data/topics';
 
 interface Props {
   readonly topics: readonly Topic[];
@@ -8,7 +8,15 @@ interface Props {
 
 const { topics, basePath } = Astro.props;
 
-const LANGUAGE_LABEL = { python: 'Python', csharp: 'C#' } as const;
+/**
+ * Typed as a full Record, so adding a language to the union fails the build
+ * here until it has a label. The chips name languages and never count them.
+ */
+const LANGUAGE_LABEL: Record<Language, string> = {
+  python: 'Python',
+  csharp: 'C#',
+  sql: 'SQL',
+};
 ---
 
 <ul class="topics">
@@ -26,8 +34,8 @@ const LANGUAGE_LABEL = { python: 'Python', csharp: 'C#' } as const;
             </span>
           ))}
 
-          {topic.scope === 'neutral' && topic.examples.length === 1 && (
-            <span class="chip chip--note">Applies to both</span>
+          {topic.scope === 'language-independent' && (
+            <span class="chip chip--note">Language-independent</span>
           )}
         </span>
 
