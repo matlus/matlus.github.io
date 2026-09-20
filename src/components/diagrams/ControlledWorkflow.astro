@@ -3,62 +3,208 @@
  * Controlled verification workflow, drawn from the DevWeave spec-to-test
  * architecture.
  *
- * Authored SVG rather than a generated image, for three reasons. Labels are
- * exact, because they are written rather than drawn. Colours come from design
- * tokens, so the diagram follows the site into dark mode. And the labels are
- * real text, which means a crawler or a retrieval agent can read the diagram,
- * where a raster image would be opaque to both.
+ * Authored SVG rather than a generated image. Labels are exact because they
+ * are written rather than drawn, colours come from design tokens so the
+ * diagram follows the site into dark mode, and the labels are real text that a
+ * crawler or retrieval agent can read.
  *
- * Nodes are data. Adding a stage is an entry in NODES plus an edge, never
- * hand-edited path arithmetic.
+ * Layout is row-based rather than hand-placed. A row holds one or more nodes
+ * and spreads them across its span, so **concurrency is structural**: a stage
+ * that runs N instances is N boxes, and the fan-out and fan-in are visible in
+ * the shape of the graph. Collapsing a concurrent stage into a single box
+ * would hide the thing the diagram exists to show.
  */
 
 type NodeType = 'controller' | 'worker' | 'validation' | 'artifact' | 'ok' | 'fail';
 
-interface Node {
+/** Human names for the taxonomy, used by the legend and the detail panel. */
+const KIND_LABEL: Record<NodeType, string> = {
+  controller: 'Controller',
+  worker: 'Bounded worker',
+  validation: 'Validation gate',
+  artifact: 'Artifact',
+  ok: 'Terminal',
+  fail: 'Fail-closed stop',
+};
+
+interface NodeSpec {
   readonly id: string;
   readonly type: NodeType;
+  readonly label: string;
+  readonly sub?: string;
+  /** What the step does. Shown in the detail panel. */
+  readonly detail: string;
+  /** What constrains it. Shown in the detail panel. */
+  readonly bounded: string;
+  /** Dashed outline, for "and so on" placeholders in a fan-out. */
+  readonly elided?: boolean;
+}
+
+interface Row {
+  readonly y: number;
+  readonly h: number;
+  /** Fraction of the content width this row occupies, centred. */
+  readonly span: number;
+  /** Bracket label drawn beneath a concurrent row. */
+  readonly concurrency?: string;
+  readonly nodes: readonly NodeSpec[];
+}
+
+const W = 880;
+const H = 1290;
+const MARGIN = 12;
+const GAP = 14;
+const CONTENT = W - MARGIN * 2;
+const FAIL_RAIL_X = 862;
+
+const ROWS: readonly Row[] = [
+  {
+    y: 16, h: 54, span: 0.52,
+    nodes: [{
+      id: 'bind', type: 'controller', label: 'Bind authority and source', sub: 'Identity and requirement identities',
+      detail: 'Pins the run to a specific source revision and a specific set of requirement identities.',
+      bounded: 'Imperative code. No model judgment is involved in deciding what the run is bound to.',
+    }],
+  },
+  {
+    y: 104, h: 54, span: 0.52,
+    nodes: [{
+      id: 'scope', type: 'controller', label: 'Discover scope, construct manifests',
+      detail: 'Enumerates the units in scope and builds the manifest of required work.',
+      bounded: 'The manifest is the accounting unit. Work absent from it cannot later be claimed as done.',
+    }],
+  },
+  {
+    y: 192, h: 54, span: 0.52,
+    nodes: [{
+      id: 'plan', type: 'validation', label: 'Validate the prepared run',
+      detail: 'Checks the manifest and routes before any worker is dispatched.',
+      bounded: 'A gate. An invalid plan stops the run rather than producing a partial result.',
+    }],
+  },
+  {
+    y: 296, h: 64, span: 1, concurrency: 'Fan-out: four independent finders, separate contexts',
+    nodes: [
+      { id: 'pa', type: 'worker', label: 'Production finder A', sub: 'Cold source-only pass',
+        detail: 'Inspects production source for concrete defects, with no sight of test code.',
+        bounded: 'Receives a constructed evidence packet. Cannot widen its own scope.' },
+      { id: 'pb', type: 'worker', label: 'Production finder B', sub: 'Independent second pass',
+        detail: 'Repeats the production sweep in a fresh context.',
+        bounded: 'Does not see finder A output. Independence is enforced by input construction.' },
+      { id: 'ta', type: 'worker', label: 'Test finder A', sub: 'Test-evidence scope',
+        detail: 'Examines whether tests actually demonstrate the specified behaviour.',
+        bounded: 'Test-evidence findings stay separate from production-defect findings.' },
+      { id: 'tb', type: 'worker', label: 'Test finder B', sub: 'Independent challenge',
+        detail: 'Second independent pass over the same test-evidence scope.',
+        bounded: 'Fresh context. Agreement between A and B is not treated as proof.' },
+    ],
+  },
+  {
+    y: 414, h: 58, span: 0.82, concurrency: 'Cross-challenge, one per lane',
+    nodes: [
+      { id: 'oa', type: 'worker', label: 'Observer-soundness checkpoint A',
+        detail: 'Challenges negative and exact-count assertions in the production lane.',
+        bounded: 'Sees the claim without the finder identity.' },
+      { id: 'ob', type: 'worker', label: 'Observer-soundness checkpoint B',
+        detail: 'Repeats the challenge with independent judgment.',
+        bounded: 'Separate context from checkpoint A.' },
+    ],
+  },
+  {
+    y: 530, h: 54, span: 0.64,
+    nodes: [{
+      id: 'reports', type: 'validation', label: 'Validate reports, reconcile coverage',
+      detail: 'Fan-in. Compares returned assessments against the required manifest.',
+      bounded: 'Missing or invalid results stay visible. They cannot become clean assessments.',
+    }],
+  },
+  {
+    y: 618, h: 54, span: 0.64,
+    nodes: [{
+      id: 'atomize', type: 'worker', label: 'Atomize and deduplicate candidates',
+      detail: 'Splits findings into independently falsifiable claims, then groups equivalents.',
+      bounded: 'Every atomic member is preserved through grouping.',
+    }],
+  },
+  {
+    y: 706, h: 60, span: 0.64,
+    nodes: [{
+      id: 'admit', type: 'controller', label: 'Admit candidates', sub: 'Freeze provenance, enforce the cap, hide the finder',
+      detail: 'Freezes the candidate registry and constructs each verifier input.',
+      bounded: 'Finder identity is withheld from the input, rather than the worker being asked to ignore it.',
+    }],
+  },
+  {
+    y: 812, h: 64, span: 1, concurrency: 'Fan-out: one cold verifier per admitted candidate, run concurrently',
+    nodes: [
+      { id: 'v1', type: 'worker', label: 'Cold verifier 1', sub: 'Try to refute',
+        detail: 'Attempts to refute one admitted candidate from source alone.',
+        bounded: 'One candidate each. Cannot see the finder, the other candidates, or sibling verdicts.' },
+      { id: 'v2', type: 'worker', label: 'Cold verifier 2', sub: 'Try to refute',
+        detail: 'Same protocol, different candidate, separate context.',
+        bounded: 'Isolated from every other verifier in the row.' },
+      { id: 'v3', type: 'worker', label: 'Cold verifier 3', sub: 'Try to refute',
+        detail: 'Same protocol, different candidate, separate context.',
+        bounded: 'Isolated from every other verifier in the row.' },
+      { id: 'vn', type: 'worker', elided: true, label: 'Cold verifier n', sub: 'One per candidate',
+        detail: 'The row is as wide as the admitted candidate set. The cap is enforced at admission.',
+        bounded: 'Concurrency is a design decision here, valid because verifiers share no mutable state.' },
+    ],
+  },
+  {
+    y: 930, h: 54, span: 0.64,
+    nodes: [{
+      id: 'evaluate', type: 'validation', label: 'Deterministic evaluation and assembly',
+      detail: 'Fan-in. Applies outcome rules in code to the validated verdicts.',
+      bounded: 'Policy is computed, never reinterpreted by a model.',
+    }],
+  },
+  {
+    y: 1018, h: 54, span: 0.64,
+    nodes: [{
+      id: 'artifact', type: 'artifact', label: 'Run receipt and detailed matrix',
+      detail: 'Persists provenance for every candidate alongside the run outcome.',
+      bounded: 'Written before any result is presented, and checked after writing.',
+    }],
+  },
+  {
+    y: 1116, h: 54, span: 0.9,
+    nodes: [
+      { id: 'end', type: 'ok', label: 'END: return validated advisory',
+        detail: 'Presents validated artifacts and lets the user choose the next action.',
+        bounded: 'Reached only when the manifest is fully accounted for.' },
+      { id: 'fail', type: 'fail', label: 'FAIL: stop with retained evidence',
+        detail: 'Stops the run and preserves what happened.',
+        bounded: 'An incomplete run cannot become a clean verification result.' },
+    ],
+  },
+];
+
+interface Placed extends NodeSpec {
   readonly x: number;
   readonly y: number;
   readonly w: number;
   readonly h: number;
-  readonly label: string;
-  readonly sub?: string;
 }
 
-const W = 880;
-const H = 1150;
+const NODES: Placed[] = ROWS.flatMap((row) => {
+  const rowW = CONTENT * row.span;
+  const startX = MARGIN + (CONTENT - rowW) / 2;
+  const count = row.nodes.length;
+  const nodeW = (rowW - GAP * (count - 1)) / count;
 
-/** Right-hand rail that every fail-closed edge joins. */
-const FAIL_RAIL_X = 858;
+  return row.nodes.map((spec, i) => ({
+    ...spec,
+    x: startX + i * (nodeW + GAP),
+    y: row.y,
+    w: nodeW,
+    h: row.h,
+  }));
+});
 
-const NODES: readonly Node[] = [
-  { id: 'bind', type: 'controller', x: 240, y: 16, w: 400, h: 54, label: 'Bind authority and source', sub: 'Identity and requirement identities' },
-  { id: 'scope', type: 'controller', x: 240, y: 104, w: 400, h: 54, label: 'Discover scope, construct manifests' },
-  { id: 'plan', type: 'validation', x: 240, y: 192, w: 400, h: 54, label: 'Validate the prepared run' },
+const byId = new Map(NODES.map((n) => [n.id, n]));
 
-  { id: 'pa', type: 'worker', x: 12, y: 292, w: 200, h: 62, label: 'Production finder A', sub: 'Cold source-only inspection' },
-  { id: 'pb', type: 'worker', x: 232, y: 292, w: 200, h: 62, label: 'Production finder B', sub: 'Independent second pass' },
-  { id: 'ta', type: 'worker', x: 452, y: 292, w: 200, h: 62, label: 'Test finder A', sub: 'Test-evidence scope' },
-  { id: 'tb', type: 'worker', x: 672, y: 292, w: 156, h: 62, label: 'Test finder B', sub: 'Independent challenge' },
-
-  { id: 'oa', type: 'worker', x: 120, y: 400, w: 280, h: 58, label: 'Observer-soundness checkpoint A' },
-  { id: 'ob', type: 'worker', x: 460, y: 400, w: 280, h: 58, label: 'Observer-soundness checkpoint B' },
-
-  { id: 'reports', type: 'validation', x: 190, y: 504, w: 500, h: 54, label: 'Validate reports, reconcile coverage' },
-  { id: 'atomize', type: 'worker', x: 190, y: 592, w: 500, h: 54, label: 'Atomize and deduplicate candidates' },
-  { id: 'admit', type: 'controller', x: 190, y: 680, w: 500, h: 60, label: 'Admit candidates', sub: 'Freeze provenance, enforce the cap, hide the finder' },
-  { id: 'verify', type: 'worker', x: 190, y: 774, w: 500, h: 58, label: 'One cold verifier per candidate', sub: 'Try to refute' },
-  { id: 'evaluate', type: 'validation', x: 190, y: 866, w: 500, h: 54, label: 'Deterministic evaluation and assembly' },
-  { id: 'artifact', type: 'artifact', x: 190, y: 954, w: 500, h: 54, label: 'Run receipt and detailed matrix' },
-
-  { id: 'end', type: 'ok', x: 120, y: 1046, w: 280, h: 54, label: 'END: return validated advisory' },
-  { id: 'fail', type: 'fail', x: 500, y: 1046, w: 300, h: 54, label: 'FAIL: stop with retained evidence' },
-];
-
-const byId = new Map(NODES.map((node) => [node.id, node]));
-
-function node(id: string): Node {
+function node(id: string): Placed {
   const found = byId.get(id);
   if (!found) throw new Error(`Unknown diagram node: ${id}`);
   return found;
@@ -74,127 +220,166 @@ function edge(fromId: string, toId: string): string {
   const by = b.y;
 
   if (Math.abs(ax - bx) < 1) return `M${ax} ${ay} L${bx} ${by - 7}`;
-
   const mid = ay + (by - ay) / 2;
   return `M${ax} ${ay} L${ax} ${mid} L${bx} ${mid} L${bx} ${by - 7}`;
 }
 
-/** Fail-closed edge: out to the right-hand rail, then down to FAIL. */
 function failEdge(fromId: string): string {
   const a = node(fromId);
-  const ax = a.x + a.w;
-  const ay = a.y + a.h / 2;
-  return `M${ax} ${ay} L${FAIL_RAIL_X} ${ay}`;
+  return `M${a.x + a.w} ${a.y + a.h / 2} L${FAIL_RAIL_X} ${a.y + a.h / 2}`;
 }
+
+const FINDERS = ['pa', 'pb', 'ta', 'tb'] as const;
+const VERIFIERS = ['v1', 'v2', 'v3', 'vn'] as const;
 
 const EDGES: readonly (readonly [string, string])[] = [
   ['bind', 'scope'],
   ['scope', 'plan'],
-  ['plan', 'pa'],
-  ['plan', 'pb'],
-  ['plan', 'ta'],
-  ['plan', 'tb'],
-  ['pa', 'oa'],
-  ['pb', 'oa'],
-  ['ta', 'ob'],
-  ['tb', 'ob'],
-  ['oa', 'reports'],
-  ['ob', 'reports'],
+  ...FINDERS.map((f) => ['plan', f] as const),
+  ['pa', 'oa'], ['pb', 'oa'], ['ta', 'ob'], ['tb', 'ob'],
+  ['oa', 'reports'], ['ob', 'reports'],
   ['reports', 'atomize'],
   ['atomize', 'admit'],
-  ['admit', 'verify'],
-  ['verify', 'evaluate'],
+  ...VERIFIERS.map((v) => ['admit', v] as const),
+  ...VERIFIERS.map((v) => [v, 'evaluate'] as const),
   ['evaluate', 'artifact'],
   ['artifact', 'end'],
 ];
 
-/** Gates that can stop the run rather than letting it continue. */
 const FAIL_SOURCES = ['plan', 'reports', 'evaluate'] as const;
 
+/** Bracket under a concurrent row, spanning its nodes. */
+const BRACKETS = ROWS.filter((r) => r.concurrency !== undefined).map((row) => {
+  const placed = row.nodes.map((n) => node(n.id));
+  const first = placed[0]!;
+  const last = placed[placed.length - 1]!;
+  const y = row.y + row.h + 9;
+  return {
+    label: row.concurrency!,
+    d: `M${first.x} ${y} L${first.x} ${y + 5} L${last.x + last.w} ${y + 5} L${last.x + last.w} ${y}`,
+    cx: (first.x + last.x + last.w) / 2,
+    ty: y + 19,
+  };
+});
+
 const failTop = node('plan').y + node('plan').h / 2;
-const failBottom = node('fail').y;
 const failNode = node('fail');
+const LEGEND: readonly NodeType[] = ['controller', 'worker', 'validation', 'artifact', 'ok', 'fail'];
 ---
 
-<svg
-  class="workflow"
-  viewBox={`0 0 ${W} ${H}`}
-  role="img"
-  aria-label="Controlled verification workflow. A controller binds authority and source, discovers scope, and validates the prepared run. Four bounded workers act as production and test finders, feeding two observer-soundness checkpoints. Reports are validated and coverage reconciled, candidates are atomized, deduplicated and admitted with provenance frozen and the finder hidden, then one cold verifier per candidate tries to refute it. Deterministic evaluation assembles a run receipt and detailed matrix before returning a validated advisory. Three validation gates can instead stop the run with retained evidence."
->
-  <defs>
-    <marker id="wf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 0 L10 5 L0 10 z" class="arrowhead" />
-    </marker>
-    <marker id="wf-arrow-fail" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 0 L10 5 L0 10 z" class="arrowhead arrowhead--fail" />
-    </marker>
-  </defs>
+<div class="wf">
+  <svg class="wf__svg" viewBox={`0 0 ${W} ${H}`} role="group" aria-labelledby="wf-title">
+    <title id="wf-title">Controlled verification workflow</title>
+    <desc>
+      A controller binds authority and source, discovers scope, and validates the prepared
+      run. Four independent finders then run concurrently, feeding two cross-challenge
+      checkpoints which fan in to report validation. Candidates are atomized, deduplicated
+      and admitted with provenance frozen and the finder hidden. One cold verifier per
+      admitted candidate then runs concurrently, fanning in to deterministic evaluation, a
+      run receipt, and a validated advisory. Three validation gates can instead stop the
+      run with retained evidence.
+    </desc>
 
-  <g class="edges">
-    {EDGES.map(([from, to]) => <path d={edge(from, to)} class="edge" marker-end="url(#wf-arrow)" />)}
-  </g>
+    <defs>
+      <marker id="wf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" class="arrowhead" />
+      </marker>
+      <marker id="wf-arrow-fail" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" class="arrowhead arrowhead--fail" />
+      </marker>
+    </defs>
 
-  <g class="fail-edges">
-    {FAIL_SOURCES.map((from) => <path d={failEdge(from)} class="edge edge--fail" />)}
-    <path
-      d={`M${FAIL_RAIL_X} ${failTop} L${FAIL_RAIL_X} ${failBottom - 20} L${failNode.x + failNode.w / 2} ${failBottom - 20} L${failNode.x + failNode.w / 2} ${failBottom - 7}`}
-      class="edge edge--fail"
-      marker-end="url(#wf-arrow-fail)"
-    />
-    <text x={FAIL_RAIL_X - 6} y={failTop - 12} class="rail-label" text-anchor="end">fail closed</text>
-  </g>
+    <g class="edges">
+      {EDGES.map(([f, t]) => <path d={edge(f, t)} class="edge" data-from={f} data-to={t} marker-end="url(#wf-arrow)" />)}
+    </g>
 
-  <g class="nodes">
-    {
-      NODES.map((n) => (
-        <g class={`node node--${n.type}`}>
-          <rect x={n.x} y={n.y} width={n.w} height={n.h} rx="7" />
-          <text
-            x={n.x + n.w / 2}
-            y={n.sub ? n.y + n.h / 2 - 4 : n.y + n.h / 2 + 4}
-            class="node__label"
-            text-anchor="middle"
+    <g class="fail-edges">
+      {FAIL_SOURCES.map((f) => <path d={failEdge(f)} class="edge edge--fail" />)}
+      <path
+        d={`M${FAIL_RAIL_X} ${failTop} L${FAIL_RAIL_X} ${failNode.y - 20} L${failNode.x + failNode.w / 2} ${failNode.y - 20} L${failNode.x + failNode.w / 2} ${failNode.y - 7}`}
+        class="edge edge--fail"
+        marker-end="url(#wf-arrow-fail)"
+      />
+      <text x={FAIL_RAIL_X - 6} y={failTop - 12} class="rail-label" text-anchor="end">fail closed</text>
+    </g>
+
+    <g class="brackets">
+      {BRACKETS.map((b) => (
+        <>
+          <path d={b.d} class="bracket" />
+          <text x={b.cx} y={b.ty} class="bracket__label" text-anchor="middle">{b.label}</text>
+        </>
+      ))}
+    </g>
+
+    <g class="nodes">
+      {
+        NODES.map((n) => (
+          <g
+            class:list={['node', `node--${n.type}`, { 'node--elided': n.elided }]}
+            data-id={n.id}
+            data-kind={KIND_LABEL[n.type]}
+            data-label={n.label}
+            data-detail={n.detail}
+            data-bounded={n.bounded}
+            tabindex="0"
+            role="button"
+            aria-label={`${n.label}. ${KIND_LABEL[n.type]}. ${n.detail} ${n.bounded}`}
           >
-            {n.label}
-          </text>
-          {n.sub && (
-            <text x={n.x + n.w / 2} y={n.y + n.h / 2 + 14} class="node__sub" text-anchor="middle">
-              {n.sub}
-            </text>
-          )}
-        </g>
+            <rect x={n.x} y={n.y} width={n.w} height={n.h} rx="7" />
+            <text x={n.x + n.w / 2} y={n.sub ? n.y + n.h / 2 - 4 : n.y + n.h / 2 + 4} class="node__label" text-anchor="middle">{n.label}</text>
+            {n.sub && <text x={n.x + n.w / 2} y={n.y + n.h / 2 + 14} class="node__sub" text-anchor="middle">{n.sub}</text>}
+          </g>
+        ))
+      }
+    </g>
+  </svg>
+
+  <ul class="wf__legend">
+    {
+      LEGEND.map((type) => (
+        <li class={`wf__legend-item wf__legend-item--${type}`}>
+          <span class="wf__legend-chip" aria-hidden="true" />
+          {KIND_LABEL[type]}
+        </li>
       ))
     }
-  </g>
-</svg>
+    <li class="wf__legend-item wf__legend-item--dashed">
+      <span class="wf__legend-chip" aria-hidden="true" />
+      Repeats per candidate
+    </li>
+  </ul>
+
+  <div class="wf__panel" aria-live="polite">
+    <p class="wf__panel-hint">Hover or focus any step for detail.</p>
+    <div class="wf__panel-body" hidden>
+      <p class="wf__panel-kind"></p>
+      <p class="wf__panel-label"></p>
+      <p class="wf__panel-detail"></p>
+      <p class="wf__panel-bounded"><span class="wf__panel-tag">Bounded by</span> <span></span></p>
+    </div>
+  </div>
+</div>
 
 <style>
-  .workflow {
+  .wf__svg {
     display: block;
     width: 100%;
-    min-width: 620px;
+    min-width: 660px;
     height: auto;
     font-family: var(--font-sans);
   }
 
-  .edge {
-    fill: none;
-    stroke: var(--diagram-line);
-    stroke-width: 1.4;
-  }
+  .edge { fill: none; stroke: var(--diagram-line); stroke-width: 1.4; }
+  .edge--fail { stroke: var(--diagram-fail); stroke-dasharray: 5 4; }
+  .arrowhead { fill: var(--diagram-line); }
+  .arrowhead--fail { fill: var(--diagram-fail); }
 
-  .edge--fail {
-    stroke: var(--diagram-fail);
-    stroke-dasharray: 5 4;
-  }
-
-  .arrowhead {
-    fill: var(--diagram-line);
-  }
-
-  .arrowhead--fail {
-    fill: var(--diagram-fail);
+  .bracket { fill: none; stroke: var(--color-text-faint); stroke-width: 1; }
+  .bracket__label {
+    font-size: 11px;
+    fill: var(--color-text-muted);
+    font-style: italic;
   }
 
   .rail-label {
@@ -204,43 +389,146 @@ const failNode = node('fail');
     text-transform: uppercase;
   }
 
-  .node rect {
-    stroke-width: 1.5;
+  .node { cursor: pointer; }
+  .node rect { stroke-width: 1.5; transition: filter 0.12s ease; }
+  .node--elided rect { stroke-dasharray: 5 4; }
+  .node__label { font-size: 13px; font-weight: 600; fill: var(--diagram-label); }
+  .node__sub { font-size: 11px; fill: var(--color-text-muted); }
+
+  .node:hover rect,
+  .node:focus-visible rect,
+  .node.is-active rect {
+    filter: brightness(0.94) saturate(1.3);
+    stroke-width: 3;
   }
 
-  .node__label {
-    font-size: 13px;
+  .node:focus { outline: none; }
+  .node:focus-visible rect { stroke-dasharray: none; }
+
+  .node--controller rect { fill: var(--diagram-controller-fill); stroke: var(--diagram-controller); }
+  .node--worker rect { fill: var(--diagram-worker-fill); stroke: var(--diagram-worker); }
+  .node--validation rect { fill: var(--diagram-validation-fill); stroke: var(--diagram-validation); }
+  .node--artifact rect { fill: var(--diagram-artifact-fill); stroke: var(--diagram-artifact); }
+  .node--ok rect { fill: var(--diagram-ok-fill); stroke: var(--diagram-ok); }
+  .node--fail rect { fill: var(--diagram-fail-fill); stroke: var(--diagram-fail); }
+
+  /* ------------------------------------------------------------- legend */
+
+  .wf__legend {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-s);
+    padding: 0;
+    margin: var(--space-s) 0 0;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .wf__legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3xs);
+  }
+
+  .wf__legend-chip {
+    width: 1.1rem;
+    height: 0.85rem;
+    border-radius: 3px;
+    border: 1.5px solid currentColor;
+    flex: none;
+  }
+
+  .wf__legend-item--controller .wf__legend-chip { border-color: var(--diagram-controller); background: var(--diagram-controller-fill); }
+  .wf__legend-item--worker .wf__legend-chip { border-color: var(--diagram-worker); background: var(--diagram-worker-fill); }
+  .wf__legend-item--validation .wf__legend-chip { border-color: var(--diagram-validation); background: var(--diagram-validation-fill); }
+  .wf__legend-item--artifact .wf__legend-chip { border-color: var(--diagram-artifact); background: var(--diagram-artifact-fill); }
+  .wf__legend-item--ok .wf__legend-chip { border-color: var(--diagram-ok); background: var(--diagram-ok-fill); }
+  .wf__legend-item--fail .wf__legend-chip { border-color: var(--diagram-fail); background: var(--diagram-fail-fill); }
+  .wf__legend-item--dashed .wf__legend-chip {
+    border-color: var(--color-text-faint);
+    border-style: dashed;
+    background: none;
+  }
+
+  /* -------------------------------------------------------------- panel */
+
+  .wf__panel {
+    margin-top: var(--space-s);
+    padding: var(--space-xs) var(--space-s);
+    background: var(--color-surface-sunken);
+    border-radius: var(--radius);
+    min-height: 6.5rem;
+    font-size: var(--step--1);
+  }
+
+  .wf__panel p { margin: 0 0 var(--space-3xs); }
+  .wf__panel-hint { color: var(--color-text-faint); font-style: italic; }
+
+  .wf__panel-kind {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--color-text-faint);
+  }
+
+  .wf__panel-label {
     font-weight: 600;
-    fill: var(--diagram-label);
+    font-size: var(--step-0);
+    color: var(--color-text);
   }
 
-  .node__sub {
-    font-size: 11px;
-    fill: var(--color-text-muted);
+  .wf__panel-detail { color: var(--color-text-muted); }
+
+  .wf__panel-bounded { color: var(--color-text-muted); margin-top: var(--space-2xs); }
+
+  .wf__panel-tag {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--color-accent);
+    font-weight: 600;
   }
 
-  .node--controller rect {
-    fill: var(--diagram-controller-fill);
-    stroke: var(--diagram-controller);
-  }
-  .node--worker rect {
-    fill: var(--diagram-worker-fill);
-    stroke: var(--diagram-worker);
-  }
-  .node--validation rect {
-    fill: var(--diagram-validation-fill);
-    stroke: var(--diagram-validation);
-  }
-  .node--artifact rect {
-    fill: var(--diagram-artifact-fill);
-    stroke: var(--diagram-artifact);
-  }
-  .node--ok rect {
-    fill: var(--diagram-ok-fill);
-    stroke: var(--diagram-ok);
-  }
-  .node--fail rect {
-    fill: var(--diagram-fail-fill);
-    stroke: var(--diagram-fail);
+  @media (prefers-reduced-motion: reduce) {
+    .node rect { transition: none; }
   }
 </style>
+
+<script>
+  for (const wf of document.querySelectorAll<HTMLElement>('.wf')) {
+    const hint = wf.querySelector<HTMLElement>('.wf__panel-hint');
+    const body = wf.querySelector<HTMLElement>('.wf__panel-body');
+    const kind = wf.querySelector<HTMLElement>('.wf__panel-kind');
+    const label = wf.querySelector<HTMLElement>('.wf__panel-label');
+    const detail = wf.querySelector<HTMLElement>('.wf__panel-detail');
+    const bounded = wf.querySelector<HTMLElement>('.wf__panel-bounded span:last-child');
+
+    if (!body || !hint) continue;
+
+    const show = (node: HTMLElement) => {
+      for (const other of wf.querySelectorAll('.node.is-active')) other.classList.remove('is-active');
+      node.classList.add('is-active');
+
+      if (kind) kind.textContent = node.dataset['kind'] ?? '';
+      if (label) label.textContent = node.dataset['label'] ?? '';
+      if (detail) detail.textContent = node.dataset['detail'] ?? '';
+      if (bounded) bounded.textContent = node.dataset['bounded'] ?? '';
+
+      hint.hidden = true;
+      body.hidden = false;
+    };
+
+    for (const node of wf.querySelectorAll<HTMLElement>('.node')) {
+      node.addEventListener('mouseenter', () => show(node));
+      node.addEventListener('focus', () => show(node));
+      node.addEventListener('click', () => show(node));
+      node.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          show(node);
+        }
+      });
+    }
+  }
+</script>
