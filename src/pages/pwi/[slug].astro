@@ -1,0 +1,134 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import SectionLayout from '../../layouts/SectionLayout.astro';
+import TopicList from '../../components/TopicList.astro';
+import { TOPICS } from '../../data/topics';
+import { PILLAR_COPY } from '../../data/pillars';
+
+/**
+ * One route for both pillar hubs and topic hubs, because both sit one segment
+ * under /pwi/ and Astro cannot tell two same-shape dynamic routes apart.
+ *
+ * A pillar hub lists its topics. A topic hub lists the language chapters that
+ * exist for it. Chapters themselves live one level deeper.
+ */
+
+const LANGUAGE_LABEL: Record<string, string> = {
+  python: 'Python',
+  csharp: 'C#',
+  sql: 'SQL',
+};
+
+export const getStaticPaths = (async () => {
+  const chapters = await getCollection('chapters');
+
+  const pillarPaths = Object.entries(PILLAR_COPY).map(([slug, copy]) => ({
+    params: { slug },
+    props: {
+      kind: 'pillar' as const,
+      title: copy.title,
+      blurb: copy.blurb,
+      topics: TOPICS.filter((topic) => topic.pillar === slug),
+      chapters: [],
+    },
+  }));
+
+  const topicPaths = TOPICS.filter((topic) =>
+    chapters.some((chapter) => chapter.data.topic === topic.slug),
+  ).map((topic) => ({
+    params: { slug: topic.slug },
+    props: {
+      kind: 'topic' as const,
+      title: topic.title,
+      blurb: topic.note ?? '',
+      topic,
+      topics: [],
+      chapters: chapters
+        .filter((chapter) => chapter.data.topic === topic.slug)
+        .sort((a, b) => (a.data.language ?? '').localeCompare(b.data.language ?? '')),
+    },
+  }));
+
+  return [...pillarPaths, ...topicPaths];
+}) satisfies GetStaticPaths;
+
+const props = Astro.props;
+const isTopic = props.kind === 'topic';
+
+const description = isTopic
+  ? (props.chapters[0]?.data.description ?? props.title)
+  : props.blurb;
+---
+
+<SectionLayout
+  title={props.title}
+  heading={props.title}
+  eyebrow={isTopic ? 'PWI chapter' : 'PWI pillar'}
+  description={description}
+  seed={props.title}
+  showTagCloud={!isTopic}
+>
+  {
+    isTopic ? (
+      <>
+        <p class="muted scope">
+          {props.topic.scope === 'language-independent'
+            ? 'The guidance is language-independent. Implementations differ where the underlying library differs; the concept does not.'
+            : `Specific to ${LANGUAGE_LABEL[props.topic.scope] ?? props.topic.scope}.`}
+        </p>
+
+        <ul class="langs">
+          {props.chapters.map((chapter) => (
+            <li class="lang">
+              <a href={`/pwi/${props.topic.slug}/${chapter.data.language}/`} class="lang__link">
+                <h2 class="lang__title">
+                  {LANGUAGE_LABEL[chapter.data.language ?? ''] ?? chapter.data.language}
+                </h2>
+                <p class="lang__blurb">{chapter.data.description}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <p class="back"><a href="/pwi/">All of PWI</a></p>
+      </>
+    ) : (
+      <>
+        <p class="muted scope">
+          {props.topics.length} topics. Chapter numbers are deliberately absent, because
+          the two language families number their chapters independently.
+        </p>
+        <TopicList topics={props.topics} basePath="/pwi/" />
+        <p class="back"><a href="/pwi/">All of PWI</a></p>
+      </>
+    )
+  }
+</SectionLayout>
+
+<style>
+  .scope { font-size: var(--step--1); max-width: var(--measure); }
+
+  .langs {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-m) 0 0;
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  }
+
+  .lang {
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-accent);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+
+  .lang__link { display: block; padding: var(--space-m); text-decoration: none; color: inherit; height: 100%; }
+  .lang__link:hover .lang__title { color: var(--color-accent); }
+  .lang__title { font-size: var(--step-1); margin-bottom: var(--space-2xs); }
+  .lang__blurb { margin: 0; font-size: var(--step--1); color: var(--color-text-muted); }
+
+  .back { margin-top: var(--space-l); font-size: var(--step--1); }
+</style>
