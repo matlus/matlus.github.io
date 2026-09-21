@@ -16,7 +16,7 @@ export interface Aphorism {
   readonly category: string;
 }
 
-export const APHORISMS: readonly Aphorism[] = [
+const APHORISMS: readonly Aphorism[] = [
   {
     "slug": "express-your-intent-in-code-not-comments",
     "phrase": "Express your intent in code, not comments",
@@ -162,6 +162,28 @@ export const APHORISMS: readonly Aphorism[] = [
     "category": "Messaging and Test Aphorisms"
   }
 ];
+
+
+/**
+ * Local corrections to the generated categories.
+ *
+ * "State/behavior separation" ships in the corpus glossary under messaging and
+ * tests. It is a class-design concern: state-only models are immutable, and
+ * behavior lives in separate classes that accumulate no mutable state. Nothing
+ * about that is specific to messages or tests.
+ *
+ * Applied here rather than by editing the entries above, so regenerating from
+ * the corpus does not quietly drop the fix.
+ */
+const CATEGORY_OVERRIDES: Readonly<Record<string, string>> = {
+  'state-behavior-separation': 'Structure and Boundary Aphorisms',
+};
+
+const CORRECTED: readonly Aphorism[] = APHORISMS.map((a) =>
+  CATEGORY_OVERRIDES[a.slug] ? { ...a, category: CATEGORY_OVERRIDES[a.slug]! } : a,
+);
+
+export const APHORISMS_ALL: readonly Aphorism[] = CORRECTED;
 
 export const APHORISM_CATEGORIES: readonly string[] = [
   "Core Design Aphorisms",
