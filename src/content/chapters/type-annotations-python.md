@@ -2,7 +2,7 @@
 title: Type Annotations
 description: >-
   Annotations as intent rather than decoration: None used deliberately, dictionaries kept out of method boundaries, and capability types that tell the truth.
-datePublished: 2026-08-12
+datePublished: 2017-09-20
 dateModified: 2026-09-01
 tags:
   - python

@@ -222,8 +222,12 @@ not need to agree.
 **Everything carries a date.** What sinks old content is the *feed* it sits in, so
 the axis that matters is evergreen vs time-stamped. Evergreen content is reached
 through persistent navigation and never scrolls away. Time-stamped content flows
-through a feed. A PWI chapter is evergreen and dated, carrying its real YouTube
-publish date.
+through a feed. A PWI chapter is evergreen and dated.
+
+**PWI chapters carry 2017-09-20 as `datePublished`**, the date the body of work began.
+Git history is not a source for this: those dates record only when the markdown entered
+the repository, which is years later and misleading. `dateModified` does come from git,
+because those revisions are genuine.
 
 Evergreen pages display **"Published March 2024 · Updated September 2026"** and emit
 both `datePublished` and `dateModified` in JSON-LD. For reference material the update

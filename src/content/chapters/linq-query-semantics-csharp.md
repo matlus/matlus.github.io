@@ -2,7 +2,7 @@
 title: LINQ and Query Semantics
 description: >-
   A query does not run when you write it, and calling it twice may not give the same answer. Deferred execution, materialization, terminal operators, and untranslatable queries.
-datePublished: 2026-08-31
+datePublished: 2017-09-20
 dateModified: 2026-09-04
 tags:
   - csharp
