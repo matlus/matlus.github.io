@@ -1,9 +1,15 @@
 ---
+import { getCollection } from 'astro:content';
 import SectionLayout from '../../layouts/SectionLayout.astro';
 import TopicList from '../../components/TopicList.astro';
 import { topicsInSection } from '../../data/topics';
 
 const topics = topicsInSection('acceptance-testing');
+
+const chapterTopics = new Set(
+  (await getCollection('chapters')).map((chapter) => chapter.data.topic),
+);
+
 const headline = topics.find((topic) => topic.slug === 'functional-acceptance-testing');
 const rest = topics.filter((topic) => topic.slug !== 'functional-acceptance-testing');
 ---
@@ -52,7 +58,7 @@ const rest = topics.filter((topic) => topic.slug !== 'functional-acceptance-test
       languages.
     </p>
 
-    <TopicList topics={rest} basePath="/acceptance-testing/" />
+    <TopicList topics={rest} basePath="/acceptance-testing/" published={chapterTopics} />
   </section>
 
   <section class="prose coverage">

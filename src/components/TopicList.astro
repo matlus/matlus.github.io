@@ -4,9 +4,15 @@ import type { Language, Topic } from '../data/topics';
 interface Props {
   readonly topics: readonly Topic[];
   readonly basePath: string;
+  /**
+   * Topic slugs that have at least one published chapter. Anything else is
+   * rendered as plain text rather than a link, because the corpus is being
+   * converted in batches and a link to an unconverted topic is a 404.
+   */
+  readonly published: ReadonlySet<string>;
 }
 
-const { topics, basePath } = Astro.props;
+const { topics, basePath, published } = Astro.props;
 
 /**
  * Typed as a full Record, so adding a language to the union fails the build
@@ -23,9 +29,13 @@ const LANGUAGE_LABEL: Record<Language, string> = {
   {
     topics.map((topic) => (
       <li class="topics__item">
-        <a href={`${basePath}${topic.slug}/`} class="topics__link">
-          {topic.title}
-        </a>
+        {published.has(topic.slug) ? (
+          <a href={`${basePath}${topic.slug}/`} class="topics__link">
+            {topic.title}
+          </a>
+        ) : (
+          <span class="topics__link topics__link--pending">{topic.title}</span>
+        )}
 
         <span class="topics__meta">
           {topic.examples.map((language) => (
@@ -37,6 +47,8 @@ const LANGUAGE_LABEL: Record<Language, string> = {
           {topic.scope === 'language-independent' && (
             <span class="chip chip--note">Language-independent</span>
           )}
+
+          {!published.has(topic.slug) && <span class="chip chip--pending">Not yet published</span>}
         </span>
 
         {topic.note && <p class="topics__note">{topic.note}</p>}
@@ -104,6 +116,16 @@ const LANGUAGE_LABEL: Record<Language, string> = {
   .chip--note {
     border-style: dashed;
     color: var(--color-text-faint);
+  }
+
+  .chip--pending {
+    border-style: dotted;
+    color: var(--color-text-faint);
+  }
+
+  .topics__link--pending {
+    color: var(--color-text-faint);
+    font-weight: 400;
   }
 
   @media (max-width: 560px) {

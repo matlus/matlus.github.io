@@ -74,7 +74,7 @@ const breadcrumbLd = {
     <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
   </Fragment>
 
-  <div class="page">
+  <div class="page article-page">
     <nav class="crumbs" aria-label="Breadcrumb">
       <ol>
         {crumbs.map((crumb) => <li><a href={crumb.href}>{crumb.label}</a></li>)}
@@ -232,10 +232,24 @@ const breadcrumbLd = {
 
   .companion audio { height: 2.2rem; }
 
+  /*
+   * The article column is sized to the measure rather than to 1fr. With 1fr
+   * the track was 768px while the prose inside it capped at 639px, leaving
+   * 129px of dead space before the gap even started, which read as a chasm
+   * between the columns.
+   *
+   * minmax(0, ...) on both tracks matters: an `auto` minimum lets a wide code
+   * block or table set a floor on the track width, which is how a page ends up
+   * wider than a phone.
+   */
+  .article-page {
+    max-width: var(--width-article);
+  }
+
   .article-body {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 15rem;
-    gap: var(--space-2xl);
+    grid-template-columns: minmax(0, var(--measure)) minmax(0, 15rem);
+    gap: var(--space-xl);
     margin-top: var(--space-xl);
     align-items: start;
   }
@@ -283,7 +297,9 @@ const breadcrumbLd = {
   .side-more, .side-note { margin: var(--space-2xs) 0 0; color: var(--color-text-faint); }
 
   @media (max-width: 60rem) {
-    .article-body { grid-template-columns: 1fr; gap: var(--space-xl); }
+    /* minmax(0, 1fr), never a bare 1fr: the bare form has an `auto` minimum
+       and lets wide content push the page past the viewport. */
+    .article-body { grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); }
     .article-side { position: static; }
   }
 </style>

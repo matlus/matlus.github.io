@@ -31,6 +31,7 @@ export const getStaticPaths = (async () => {
       blurb: copy.blurb,
       topics: TOPICS.filter((topic) => topic.pillar === slug),
       chapters: [],
+      published: new Set(chapters.map((c) => c.data.topic)),
     },
   }));
 
@@ -44,6 +45,7 @@ export const getStaticPaths = (async () => {
       blurb: topic.note ?? '',
       topic,
       topics: [],
+      published: new Set(chapters.map((c) => c.data.topic)),
       chapters: chapters
         .filter((chapter) => chapter.data.topic === topic.slug)
         .sort((a, b) => (a.data.language ?? '').localeCompare(b.data.language ?? '')),
@@ -99,7 +101,7 @@ const description = isTopic
           {props.topics.length} topics. Chapter numbers are deliberately absent, because
           the two language families number their chapters independently.
         </p>
-        <TopicList topics={props.topics} basePath="/pwi/" />
+        <TopicList topics={props.topics} basePath="/pwi/" published={props.published} />
         <p class="back"><a href="/pwi/">All of PWI</a></p>
       </>
     )

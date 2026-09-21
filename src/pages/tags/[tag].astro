@@ -13,15 +13,44 @@ import { TAGS } from '../../data/tags';
  * any interactive filtering.
  */
 export const getStaticPaths = (async () => {
+  // Declared here rather than in frontmatter: Astro extracts getStaticPaths
+  // into a separate module, where frontmatter consts are out of scope.
+  const LANG: Record<string, string> = { python: 'Python', csharp: 'C#', sql: 'SQL' };
+
   const posts = await getCollection('writing', ({ data }) => !data.draft);
+  const chapters = await getCollection('chapters');
+
+  /*
+   * A tag page lists everything carrying the tag, articles and chapters alike.
+   * Leaving chapters out made 12 published chapters invisible to every topic
+   * page, and left tags that only chapters use looking empty.
+   */
+  const entries = [
+    ...posts.map((post) => ({
+      title: post.data.title,
+      description: post.data.description,
+      href: `/writing/${post.id}/`,
+      tags: post.data.tags as readonly string[],
+      date: post.data.datePublished,
+      kind: 'Writing',
+    })),
+    ...chapters.map((chapter) => ({
+      title: `${chapter.data.title} in ${LANG[chapter.data.language ?? ''] ?? ''}`.trim(),
+      description: chapter.data.description,
+      href: `/pwi/${chapter.data.topic}/${chapter.data.language}/`,
+      tags: chapter.data.tags as readonly string[],
+      date: chapter.data.datePublished,
+      kind: 'Chapter',
+    })),
+  ];
 
   return TAGS.map((tag) => ({
     params: { tag: tag.slug },
     props: {
       tag,
-      posts: posts
-        .filter((post) => (post.data.tags as readonly string[]).includes(tag.slug))
-        .sort((a, b) => b.data.datePublished.getTime() - a.data.datePublished.getTime()),
+      posts: entries
+        .filter((entry) => entry.tags.includes(tag.slug))
+        .sort((a, b) => b.date.getTime() - a.date.getTime()),
     },
   }));
 }) satisfies GetStaticPaths;
@@ -39,21 +68,24 @@ const fmt = (date: Date) =>
   description={tag.description}
   seed={`tag-${tag.slug}`}
 >
-  <p class="muted count">{posts.length} {posts.length === 1 ? 'article' : 'articles'}</p>
+  <p class="muted count">{posts.length} {posts.length === 1 ? 'page' : 'pages'}</p>
 
   <ul class="list">
     {
       posts.map((post) => (
         <li>
-          <p class="list__date">{fmt(post.data.datePublished)}</p>
-          <h2 class="list__title"><a href={`/writing/${post.id}/`}>{post.data.title}</a></h2>
-          <p class="list__blurb">{post.data.description}</p>
+          <p class="list__date">
+            <span class="kind">{post.kind}</span>
+            {fmt(post.date)}
+          </p>
+          <h2 class="list__title"><a href={post.href}>{post.title}</a></h2>
+          <p class="list__blurb">{post.description}</p>
         </li>
       ))
     }
   </ul>
 
-  {posts.length === 0 && <p class="muted">Nothing tagged this yet.</p>}
+  {posts.length === 0 && <p class="muted">Nothing carries this tag yet.</p>}
 
   <p class="back"><a href="/tags/">All topics</a></p>
 </SectionLayout>
@@ -62,7 +94,23 @@ const fmt = (date: Date) =>
   .count { font-size: var(--step--1); }
   .list { list-style: none; padding: 0; margin: var(--space-m) 0 0; display: grid; gap: var(--space-m); }
   .list li { max-width: var(--measure); padding-bottom: var(--space-m); border-bottom: 1px solid var(--color-border); }
-  .list__date { font-size: var(--step--1); color: var(--color-text-faint); margin: 0 0 var(--space-3xs); }
+  .list__date {
+    font-size: var(--step--1);
+    color: var(--color-text-faint);
+    margin: 0 0 var(--space-3xs);
+    display: flex;
+    gap: var(--space-2xs);
+    align-items: baseline;
+  }
+
+  .kind {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.05rem 0.4rem;
+  }
   .list__title { font-size: var(--step-1); margin-bottom: var(--space-3xs); }
   .list__title a { color: var(--color-text); text-decoration: none; }
   .list__title a:hover { color: var(--color-accent); }

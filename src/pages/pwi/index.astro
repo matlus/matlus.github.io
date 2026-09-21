@@ -3,8 +3,14 @@ import SectionLayout from '../../layouts/SectionLayout.astro';
 import TopicList from '../../components/TopicList.astro';
 import { PILLARS } from '../../data/nav';
 import { topicsInSection } from '../../data/topics';
+import { getCollection } from 'astro:content';
 
 const topics = topicsInSection('pwi');
+
+const chapterTopics = new Set(
+  (await getCollection('chapters')).map((chapter) => chapter.data.topic),
+);
+
 ---
 
 <SectionLayout
@@ -62,7 +68,7 @@ const topics = topicsInSection('pwi');
       language families number their chapters independently.
     </p>
 
-    <TopicList topics={topics} basePath="/pwi/" />
+    <TopicList topics={topics} basePath="/pwi/" published={chapterTopics} />
   </section>
 </SectionLayout>
 
