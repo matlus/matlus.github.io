@@ -105,6 +105,21 @@ RULES: tuple[Rule, ...] = (
 
 SKIP_PREFIXES = ("|", "#", "```", ">", "---", "    ", "\t")
 
+# Paths the audit deliberately does not touch.
+#
+# PWI chapters are corpus material rather than site copy. They answer to
+# terminological exactness and to consistency with their sibling chapters, and
+# a plain-language pass over them would soften the precision that rule
+# operationalization depends on. They are reproduced here unaltered, so
+# auditing them only produces findings nobody intends to act on.
+EXCLUDED_DIRS = ("src/content/chapters",)
+
+
+def is_excluded(path: Path) -> bool:
+    posix = path.as_posix()
+    return any(part in posix for part in EXCLUDED_DIRS)
+
+
 # A document can exempt a deliberate phrase from the word-pattern rules with a
 # marker anywhere in the file:
 #
@@ -196,6 +211,11 @@ def main() -> int:
             targets.extend(sorted(path.rglob("*.astro")))
         elif path.is_file():
             targets.append(path)
+
+    skipped = [t for t in targets if is_excluded(t)]
+    targets = [t for t in targets if not is_excluded(t)]
+    if skipped:
+        print(f"Skipped {len(skipped)} corpus chapter file(s); see EXCLUDED_DIRS.")
 
     if not targets:
         print("No files to audit.")
