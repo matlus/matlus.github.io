@@ -16,7 +16,7 @@ pillar: programming-with-intent
 
 ## Relevant Aphorisms
 
-Canonical definitions live in the Aphorism Glossary.
+Canonical definitions live in the [Aphorism Glossary](/pwi/aphorisms/).
 
 - "Don't make me wonder"
 - "Express your intent in code, not comments"

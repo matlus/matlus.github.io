@@ -173,7 +173,6 @@ export const TOPICS: readonly Topic[] = [
     examples: PY,
     note: 'Applies across languages. Examples are Python today.',
   },
-  { slug: 'need-to-know-principle', title: 'Need-to-Know Principle', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
   { slug: 'domain-facade', title: 'Domain Facade', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY },
   { slug: 'service-locator-configuration', title: 'Service Locator Configuration', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY },
   { slug: 'anti-patterns', title: 'Anti-Patterns', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },

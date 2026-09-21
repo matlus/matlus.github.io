@@ -1,0 +1,159 @@
+---
+import { getCollection } from 'astro:content';
+import SectionLayout from '../../../layouts/SectionLayout.astro';
+import { APHORISMS, APHORISM_CATEGORIES } from '../../../data/aphorisms';
+
+/**
+ * The aphorism glossary, with backlinks.
+ *
+ * Chapters open with a "Relevant Aphorisms" list. Those lists are parsed here
+ * at build time so each definition shows which chapters invoke it, which makes
+ * the link bidirectional without anyone maintaining a second list by hand.
+ */
+
+const chapters = await getCollection('chapters');
+
+/** Phrases quoted in a chapter's Relevant Aphorisms block. */
+function quotedPhrases(body: string): string[] {
+  const section = body.split(/^## /m).find((block) => block.startsWith('Relevant Aphorisms'));
+  if (!section) return [];
+  return [...section.matchAll(/"([^"]+)"/g)].map((m) => m[1]!);
+}
+
+const usage = new Map<string, { title: string; href: string; language: string }[]>();
+
+for (const chapter of chapters) {
+  const phrases = quotedPhrases(chapter.body ?? '');
+  for (const aphorism of APHORISMS) {
+    if (!phrases.some((p) => p.toLowerCase() === aphorism.phrase.toLowerCase())) continue;
+    const list = usage.get(aphorism.slug) ?? [];
+    list.push({
+      title: chapter.data.title,
+      href: `/pwi/${chapter.data.topic}/${chapter.data.language}/`,
+      language: chapter.data.language ?? '',
+    });
+    usage.set(aphorism.slug, list);
+  }
+}
+
+const LANG: Record<string, string> = { python: 'Python', csharp: 'C#', sql: 'SQL' };
+---
+
+<SectionLayout
+  title="Aphorisms"
+  heading="Aphorism Glossary"
+  eyebrow="PWI"
+  description="The recurring phrases used across the chapters, and what each one actually means. A phrase means one thing everywhere it appears, which is the point of writing the definitions down once."
+  seed="aphorisms"
+>
+  <section class="prose intro">
+    <p>
+      Chapters list which aphorisms apply to them. The definitions live here, so the same
+      phrase carries the same meaning in every chapter that invokes it.
+    </p>
+    <p class="muted">
+      Where a chapter on this site uses an aphorism, it is listed underneath the
+      definition.
+    </p>
+  </section>
+
+  {
+    APHORISM_CATEGORIES.map((category) => (
+      <section class="group" aria-labelledby={`g-${category.replace(/\W+/g, '-')}`}>
+        <h2 id={`g-${category.replace(/\W+/g, '-')}`} class="group__name">{category}</h2>
+
+        <dl class="aphorisms">
+          {APHORISMS.filter((a) => a.category === category).map((a) => (
+            <div class="aphorism" id={a.slug}>
+              <dt class="aphorism__phrase">
+                <a href={`#${a.slug}`} class="aphorism__anchor" aria-label={`Link to ${a.phrase}`}>#</a>
+                &ldquo;{a.phrase}&rdquo;
+              </dt>
+              <dd class="aphorism__meaning">
+                <p>{a.meaning}</p>
+                {usage.get(a.slug) && (
+                  <p class="aphorism__used">
+                    <span class="aphorism__used-label">Used in</span>
+                    {usage.get(a.slug)!.map((u, i) => (
+                      <>
+                        {i > 0 && ', '}
+                        <a href={u.href}>{u.title} in {LANG[u.language] ?? u.language}</a>
+                      </>
+                    ))}
+                  </p>
+                )}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    ))
+  }
+
+  <p class="back"><a href="/pwi/">All of PWI</a></p>
+</SectionLayout>
+
+<style>
+  .intro { margin-bottom: var(--space-xl); }
+
+  .group + .group { margin-top: var(--space-2xl); }
+
+  .group__name {
+    font-size: var(--step-1);
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--color-text-faint);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--space-2xs);
+  }
+
+  .aphorisms { margin: 0; }
+
+  .aphorism {
+    padding: var(--space-m) 0;
+    border-bottom: 1px solid var(--color-border);
+    scroll-margin-top: calc(var(--nav-height) + var(--space-s));
+  }
+
+  .aphorism__phrase {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    font-weight: 600;
+    position: relative;
+  }
+
+  .aphorism__anchor {
+    position: absolute;
+    left: -1.2em;
+    color: var(--color-text-faint);
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+  }
+
+  .aphorism:hover .aphorism__anchor,
+  .aphorism__anchor:focus { opacity: 1; }
+
+  .aphorism__meaning {
+    margin: var(--space-2xs) 0 0;
+    max-width: var(--measure);
+  }
+
+  .aphorism__meaning p { color: var(--color-text-muted); margin: 0; }
+
+  .aphorism__used {
+    margin-top: var(--space-2xs) !important;
+    font-size: var(--step--1);
+  }
+
+  .aphorism__used-label {
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-size: 0.7rem;
+    color: var(--color-text-faint);
+    margin-right: var(--space-3xs);
+  }
+
+  .back { margin-top: var(--space-l); font-size: var(--step--1); }
+</style>
