@@ -182,7 +182,7 @@ cannot drift. Status values: `pending` (prose, needs description and tags), `rea
 # 1. Fill topic, title, description and tags into the manifest, set status "ready"
 python tools/convert-chapters.py --dry-run
 python tools/convert-chapters.py
-npm run typecheck && npm run build && python tools/audit-copy.py src docs
+npm run typecheck && npm run build && python tools/audit-copy.py src docs prompts && python tools/check-tags.py
 ```
 
 ### Generating a hero image

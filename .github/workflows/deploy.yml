@@ -39,7 +39,7 @@ jobs:
           python-version: '3.12'
 
       - name: Copy audit
-        run: python tools/audit-copy.py src docs
+        run: python tools/audit-copy.py src docs prompts
 
       - name: Tag vocabulary
         run: python tools/check-tags.py
