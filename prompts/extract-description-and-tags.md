@@ -28,7 +28,7 @@ website. Both are read by search engines and language models before anything els
 the page, so both must be true of the whole post and specific to it.
 
 Read the entire post before writing either. A description or tag drawn from the
-opening sections describes the opening, not the post.
+opening sections describes only the opening.
 
 ### Part 1: the description
 
@@ -38,7 +38,8 @@ text before writing anything.
 1. **What does it claim or teach?** The central idea a reader leaves with. Posts often
    state it outright, in an Intent section or a bolded line.
 2. **What carries that claim?** The two or three mechanisms, rules, or examples the
-   post spends most of its length on. Measure by length, not by heading count.
+   post spends most of its length on. Judge this by how much text each one gets.
+   A short section counts for less than a long one, even though each has a heading.
 3. **What sets it apart from its sibling?** If a sibling was supplied, name what this
    post has that the sibling does not. For language siblings this is usually how the
    language shapes the idea: C# enforces visibility with the compiler, Python
@@ -52,11 +53,15 @@ text before writing anything.
   the first 160 must stand on their own.
 - Use the post's own terms, such as Domain Facade or Service Locator, not
   paraphrases. Retrieval matches on vocabulary.
-- Do not list section headings. "X, Y, and Z" is a table of contents, not a
-  description.
+- Do not list section headings. A list of topics tells the reader what the post
+  contains but not what it says.
 - Do not open with "This chapter", "This article", "Learn how" or "A guide to", and do
   not repeat the title.
 - No hype, and no adjectives that grade the content, such as "comprehensive".
+
+**Follow the professional-writing skill.** Every description is site copy, so it
+must meet that skill, and the caller also runs it through `tools/audit-copy.py`. If
+the skill is not available to you, the caller applies it to your draft.
 
 **Check it.** A reader who sees only the description should be able to predict what
 most of the post covers. If a sibling was supplied, the description should be wrong
@@ -65,14 +70,14 @@ for the sibling.
 ### Part 2: the tags
 
 A tag names a subject a reader might come looking for. The vocabulary is
-`src/data/tags.ts`; read every tag's description, not just its slug.
+`src/data/tags.ts`. Read each tag's description as well as its slug.
 
 There are three kinds of tag, each with its own rule.
 
 **Subject tags: two to five.** A subject the post is substantially about, meaning it
 gives the subject a section or more. A passing reference earns nothing.
 
-- Specific, not a buzzword. `levels-of-abstraction` is a subject. `best-practices`,
+- Specific enough to separate posts. `levels-of-abstraction` is a subject. `best-practices`,
   `clean-code`, `software-engineering`, `design` and `tips` are not: they would fit
   every post and so separate none.
 - Single-use is fine. A tag that only this post will ever carry still earns its place
