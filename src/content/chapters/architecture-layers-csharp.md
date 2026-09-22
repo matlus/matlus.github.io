@@ -1,13 +1,21 @@
 ---
 title: Architecture Layers
 description: >-
-  Layered architecture in C#, where the public surface is a language feature, plus the Domain Facade, the Service Locator, and the Service Interface layer.
+  Structure communicates intent: strict layers from Domain Facade to Gateway, internal by default with a public surface the compiler enforces, and folder depth that marks each class's level of abstraction.
 datePublished: 2017-09-20
 dateModified: 2026-09-19
 tags:
   - architecture
+  - public-surface
+  - levels-of-abstraction
+  - service-interface-layer
+  - design-patterns
+  - domain-facade
+  - service-locator
+  - configuration-provider
+  - gateway-pattern
+  - data-manager
   - csharp
-  - class-design
 section: pwi
 topic: architecture-layers
 language: csharp

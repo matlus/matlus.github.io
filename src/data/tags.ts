@@ -8,8 +8,9 @@
  * Each description becomes the opening paragraph of that tag's page, which
  * turns a bare link list into something worth retrieving and citing.
  *
- * Starter set, drawn from the existing corpus. Expect it to grow deliberately
- * rather than organically.
+ * New tags come from prompts/extract-description-and-tags.md, which checks each
+ * candidate against this list first, and tools/check-tags.py, which rejects
+ * near-duplicates in CI.
  */
 
 export interface Tag {
@@ -125,6 +126,78 @@ export const TAGS = [
     description:
       'Turning written guidance into rules a reviewer can apply consistently, by ' +
       'machine or by hand.',
+  },
+  {
+    slug: 'public-surface',
+    label: 'Public Surface',
+    description:
+      'The set of types a component exposes to its callers. Everything a caller can ' +
+      'receive, pass or must catch belongs on it, and everything else stays internal, ' +
+      'so the interior can change without breaking anyone.',
+  },
+  {
+    slug: 'levels-of-abstraction',
+    label: 'Levels of Abstraction',
+    description:
+      'Arranging classes by altitude, so each level states what happens and delegates ' +
+      'how to the level below. A class’s depth in the folder tree shows its level, ' +
+      'and dependencies run one level down.',
+  },
+  {
+    slug: 'service-interface-layer',
+    label: 'Service Interface Layer',
+    description:
+      'The thin host layer, such as a web API, CLI, worker or cloud function, that ' +
+      'connects the outside world to a system. It translates transport input and ' +
+      'forwards it to the domain, which must not depend on the host.',
+  },
+  {
+    slug: 'design-patterns',
+    label: 'Design Patterns',
+    description:
+      'Named, reusable solutions to recurring design problems, from the classic ' +
+      'catalogue and from this body of work, such as the Domain Facade, the Service ' +
+      'Locator and the Gateway.',
+  },
+  {
+    slug: 'domain-facade',
+    label: 'Domain Facade',
+    description:
+      'The single public entry point to a domain. It holds no logic of its own, ' +
+      'forwards each business operation to a Manager, and hides every internal layer ' +
+      'from callers.',
+  },
+  {
+    slug: 'service-locator',
+    label: 'Service Locator',
+    description:
+      'A narrow factory that creates only what must be swappable, such as ' +
+      'configuration, loggers and transport handlers, so tests can substitute them. ' +
+      'Only the Manager uses it, and only during construction.',
+  },
+  {
+    slug: 'configuration-provider',
+    label: 'Configuration Provider',
+    description:
+      'A typed wrapper over raw configuration that reads and validates settings ' +
+      'eagerly and returns typed settings objects. Only the Manager uses it, and it ' +
+      'passes values downstream, never the provider.',
+  },
+  {
+    slug: 'gateway-pattern',
+    label: 'Gateway Pattern',
+    description:
+      'A domain-owned boundary to an external service. It presents business-shaped ' +
+      'operations and models, and keeps provider types, resource models and failure ' +
+      'translation behind it as one deletable unit.',
+  },
+  {
+    slug: 'data-manager',
+    label: 'Data Manager',
+    description:
+      'The component that owns a domain’s whole conversation with a data store. It ' +
+      'presents business-shaped operations and keeps store technology, command ' +
+      'construction and fault translation behind its seam.',
   },
 ] as const satisfies readonly Tag[];
 

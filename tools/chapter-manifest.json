@@ -9,11 +9,19 @@
       "reason": "",
       "topic": "architecture-layers",
       "title": "Architecture Layers",
-      "description": "Layered architecture in C#, where the public surface is a language feature, plus the Domain Facade, the Service Locator, and the Service Interface layer.",
+      "description": "Structure communicates intent: strict layers from Domain Facade to Gateway, internal by default with a public surface the compiler enforces, and folder depth that marks each class's level of abstraction.",
       "tags": [
         "architecture",
-        "csharp",
-        "class-design"
+        "public-surface",
+        "levels-of-abstraction",
+        "service-interface-layer",
+        "design-patterns",
+        "domain-facade",
+        "service-locator",
+        "configuration-provider",
+        "gateway-pattern",
+        "data-manager",
+        "csharp"
       ]
     },
     {
@@ -25,11 +33,19 @@
       "reason": "",
       "topic": "architecture-layers",
       "title": "Architecture Layers",
-      "description": "Layered architecture, the public surface, the Service Interface layer, Manager orchestration, and how levels of abstraction map onto folder structure.",
+      "description": "Structure communicates intent: strict layers from Domain Facade to Gateway, a public surface declared in the boundary __init__.py, and folder depth that marks each class's level of abstraction.",
       "tags": [
         "architecture",
-        "python",
-        "class-design"
+        "public-surface",
+        "levels-of-abstraction",
+        "service-interface-layer",
+        "design-patterns",
+        "domain-facade",
+        "service-locator",
+        "configuration-provider",
+        "gateway-pattern",
+        "data-manager",
+        "python"
       ]
     },
     {

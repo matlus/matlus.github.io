@@ -16,6 +16,12 @@ this, it's that"), which the skill's own audit misses in its bare form. Run both
 read every flag, and expect to act on maybe a fifth. A recurring refrain is not a
 tic; a document can declare one with `<!-- audit-allow: phrase -->`.
 
+**Every post gets its description and tags from
+[prompts/extract-description-and-tags.md](prompts/extract-description-and-tags.md)**,
+run by a sub-agent before publishing. New tags go into `src/data/tags.ts` without
+asking Shiv, after `tools/check-tags.py` confirms they duplicate nothing. Every design
+pattern a post relies on gets a tag, plus `design-patterns`.
+
 **PWI chapter prose is never rewritten.** Chapters are corpus material and answer to
 terminological exactness and consistency with their siblings, not to this site's
 writing style. `tools/audit-copy.py` skips `src/content/chapters` for that reason.
@@ -54,10 +60,10 @@ incomplete. Do not repeat these.
 - **Verify deploys against the right commit.** `gh run list --limit 1` may still show
   the previous run. Match its `headSha` to `git log -1`.
 
-Before pushing, all three must be clean:
+Before pushing, all four must be clean:
 
 ```bash
-npm run typecheck && npm run build && python tools/audit-copy.py src docs
+npm run typecheck && npm run build && python tools/audit-copy.py src docs && python tools/check-tags.py
 ```
 
 ---
@@ -70,12 +76,13 @@ npm run build        # static build into dist/
 npm run typecheck    # astro check
 
 python tools/audit-copy.py src docs        # copy audit, gates CI
+python tools/check-tags.py                 # tag near-duplicates, gates CI
 python tools/convert-chapters.py           # convert chapters marked ready
 node tools/prepare-image.mjs <png> <slug>  # hero original to committable webp
 tools/codex-desktop.sh exec "<prompt>"     # image generation via the desktop binary
 ```
 
-Every push to `main` deploys. CI runs the copy audit, then typecheck, then build.
+Every push to `main` deploys. CI runs the copy audit, the tag check, typecheck, then build.
 
 The dev server backgrounds with `astro dev --background`, managed via
 `astro dev stop`, `astro dev status`, and `astro dev logs`. A server left running

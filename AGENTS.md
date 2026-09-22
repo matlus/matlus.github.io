@@ -20,3 +20,11 @@ Consult these guides before working on related tasks:
 - [Adding or managing content](https://docs.astro.build/en/guides/content-collections/)
 - [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
 - [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
+
+## Publishing a post
+
+Before publishing any article, chapter, or post, run
+[prompts/extract-description-and-tags.md](prompts/extract-description-and-tags.md)
+with a sub-agent to produce its description and tags. Add any new tags it returns to
+`src/data/tags.ts`, then run `python tools/check-tags.py`. See `CLAUDE.md` for the
+site's other standing rules.

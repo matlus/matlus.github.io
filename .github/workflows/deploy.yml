@@ -41,6 +41,9 @@ jobs:
       - name: Copy audit
         run: python tools/audit-copy.py src docs
 
+      - name: Tag vocabulary
+        run: python tools/check-tags.py
+
       - name: Typecheck
         run: npm run typecheck
 
