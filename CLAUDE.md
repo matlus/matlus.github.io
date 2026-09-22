@@ -1,22 +1,85 @@
-## Development
+# matlus.com
 
-When starting the dev server, use background mode:
+Personal website for Shiv Kumar. Astro, deployed to GitHub Pages at
+https://matlus.github.io. The domain `matlus.com` is owned but not yet pointed here.
 
+Read [docs/handoff.md](docs/handoff.md) first. It carries current state, open
+decisions, and the reasoning behind choices that look arbitrary without it.
+
+---
+
+## Standing rules
+
+**All site copy goes through the professional-writing skill**, then through
+`tools/audit-copy.py`. Shiv specifically objects to the antithesis tic ("it's not
+this, it's that"), which the skill's own audit misses in its bare form. Run both,
+read every flag, and expect to act on maybe a fifth. A recurring refrain is not a
+tic; a document can declare one with `<!-- audit-allow: phrase -->`.
+
+**PWI chapter prose is never rewritten.** Chapters are corpus material and answer to
+terminological exactness and consistency with their siblings, not to this site's
+writing style. `tools/audit-copy.py` skips `src/content/chapters` for that reason.
+Conversion makes exactly two mechanical edits: drop the chapter H1, and fix corpus
+links that do not resolve off-repo.
+
+**The product name "DevWeave" appears nowhere on this site.** Not in copy, not in
+diagram captions, not in repo docs, because the repository is public.
+
+**Diagrams are authored SVG, never generated images.** Labels must be real text a
+crawler can read, and colours must come from design tokens so diagrams follow the
+site into dark mode. Generated art is for hero images only.
+
+**Never break a published URL.** Citations and training snapshots freeze. Redirect
+rather than remove.
+
+**PWI chapters are dated 2017-09-20**, when the body of work began. Git history
+records only when the markdown entered the repository, years later, and is not a
+source for publication dates. Non-PWI video transcripts take their real YouTube
+dates.
+
+---
+
+## Verification, learned the hard way
+
+Three build failures reached `main` because checks ran but their output was hidden or
+incomplete. Do not repeat these.
+
+- **Never pipe a check through `tail -n` or `/dev/null`.** `npm run typecheck | tail -3`
+  prints the warnings and hints lines while cutting off the error count above them.
+  Grep for the error line explicitly.
+- **Typecheck passing does not mean the build passes.** Astro extracts
+  `getStaticPaths` into its own module, where constants declared in component
+  frontmatter are out of scope. That is a runtime failure a typecheck cannot see, and
+  it has happened twice. Run `npm run build` as well, every time.
+- **Verify deploys against the right commit.** `gh run list --limit 1` may still show
+  the previous run. Match its `headSha` to `git log -1`.
+
+Before pushing, all three must be clean:
+
+```bash
+npm run typecheck && npm run build && python tools/audit-copy.py src docs
 ```
-astro dev --background
+
+---
+
+## Commands
+
+```bash
+npm run dev          # dev server on 4321
+npm run build        # static build into dist/
+npm run typecheck    # astro check
+
+python tools/audit-copy.py src docs        # copy audit, gates CI
+python tools/convert-chapters.py           # convert chapters marked ready
+node tools/prepare-image.mjs <png> <slug>  # hero original to committable webp
+tools/codex-desktop.sh exec "<prompt>"     # image generation via the desktop binary
 ```
 
-Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
+Every push to `main` deploys. CI runs the copy audit, then typecheck, then build.
 
-## Documentation
+The dev server backgrounds with `astro dev --background`, managed via
+`astro dev stop`, `astro dev status`, and `astro dev logs`. A server left running
+from an earlier session serves stale routes, so restart it rather than trusting
+a 404.
 
-Full documentation: https://docs.astro.build
-
-Consult these guides before working on related tasks:
-
-- [Adding pages, dynamic routes, or middleware](https://docs.astro.build/en/guides/routing/)
-- [Working with Astro components](https://docs.astro.build/en/basics/astro-components/)
-- [Using React, Vue, Svelte, or other framework components](https://docs.astro.build/en/guides/framework-components/)
-- [Adding or managing content](https://docs.astro.build/en/guides/content-collections/)
-- [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
-- [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
+Astro documentation: https://docs.astro.build
