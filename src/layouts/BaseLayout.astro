@@ -1,5 +1,7 @@
 ---
 import SiteNav from '../components/SiteNav.astro';
+import '@fontsource-variable/inter/wght.css';
+import '@fontsource-variable/inter/wght-italic.css';
 import '../styles/tokens.css';
 import '../styles/base.css';
 
@@ -53,7 +55,7 @@ const personLd = {
       )
     }
 
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.svg?v=orange" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     {isHome && <script type="application/ld+json" set:html={JSON.stringify(personLd)} />}

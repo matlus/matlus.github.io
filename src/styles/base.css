@@ -31,7 +31,7 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   line-height: 1.2;
   margin: 0 0 var(--space-s);
   font-weight: 600;

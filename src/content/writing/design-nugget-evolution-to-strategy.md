@@ -39,8 +39,8 @@ Here's the requirement and the part of it we'll focus on.
     .requirements-diagram .dequeuer { fill: #faf0ff; stroke: #a463ba; stroke-width: 3; }
     .requirements-diagram .store { fill: #edf7e9; stroke: #5d8750; stroke-width: 3; }
     .requirements-diagram .store-rim { fill: none; stroke: #5d8750; stroke-width: 3; }
-    .requirements-diagram .label { fill: #1e252b; font: 600 27px/1.2 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
-    .requirements-diagram .edge-label { fill: #58616c; font: 500 19px/1.2 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .requirements-diagram .label { fill: #1e252b; font: 600 27px/1.2 var(--font-sans); }
+    .requirements-diagram .edge-label { fill: #58616c; font: 500 19px/1.2 var(--font-sans); }
     .requirements-diagram .input-path { fill: none; stroke-width: 3.5; stroke-linecap: round; }
     .requirements-diagram .input-path.ms { stroke: #4d85e6; marker-end: url(#arrow-ms); }
     .requirements-diagram .input-path.web { stroke: #e69b37; marker-end: url(#arrow-web); }
@@ -519,7 +519,7 @@ The baseline and both intermediate versions each used one class. The final versi
     .structure-link { stroke: var(--diagram-line); }
   </style>
   <rect x="1" y="1" width="798" height="518" rx="16" fill="#fff" style="fill:var(--diagram-surface)"/>
-  <text class="structure-label" x="30" y="42" fill="#1c1a17" font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" font-size="22" font-weight="650">FinalImplementation</text>
+  <text class="structure-label" x="30" y="42" fill="#1c1a17" font-family="var(--font-sans)" font-size="22" font-weight="650">FinalImplementation</text>
   <defs>
     <marker id="strategy-structure-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
       <path d="M0 0 L10 5 L0 10 Z" fill="#64748b" style="fill:var(--diagram-line)"/>
@@ -539,7 +539,7 @@ The baseline and both intermediate versions each used one class. The final versi
     <rect class="structure-ncsa" x="280" y="414" width="240" height="74" rx="12" fill="#f8f1de" stroke="#8a6a1f" fill-opacity="0.58" stroke-opacity="0.68" stroke-dasharray="6 4"/>
     <rect class="structure-splunk" x="540" y="414" width="240" height="74" rx="12" fill="#f2ebf8" stroke="#7a4a9e" fill-opacity="0.58" stroke-opacity="0.68" stroke-dasharray="6 4"/>
   </g>
-  <g class="structure-label" fill="#1c1a17" font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">
+  <g class="structure-label" fill="#1c1a17" font-family="var(--font-sans)" text-anchor="middle">
     <text x="400" y="128" font-size="19" font-weight="600">LogParserContext</text>
     <text x="140" y="304" font-size="16" font-weight="600">LogParseStrategyMsSql</text>
     <text x="400" y="304" font-size="16" font-weight="600">LogParseStrategyNcsa</text>
@@ -548,7 +548,7 @@ The baseline and both intermediate versions each used one class. The final versi
     <text x="400" y="448" font-size="16" font-weight="600"><tspan x="400">NcsaLogFormat</tspan><tspan x="400" dy="22">InvalidException</tspan></text>
     <text x="660" y="448" font-size="16" font-weight="600"><tspan x="660">SplunkLogFormat</tspan><tspan x="660" dy="22">InvalidException</tspan></text>
   </g>
-  <text class="structure-muted" x="400" y="383" fill="#64748b" font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" font-size="15" text-anchor="middle">Format exception classes in the same folder</text>
+  <text class="structure-muted" x="400" y="383" fill="#64748b" font-family="var(--font-sans)" font-size="15" text-anchor="middle">Format exception classes in the same folder</text>
 </svg>
 <figcaption>LogParserContext selects one of three independent parsers. The format exception classes are listed separately beneath them.</figcaption>
 </figure>
@@ -699,12 +699,12 @@ One more detail matters to me: the names of the three parser classes.
   <title id="strategy-naming-title">Strategy naming convention</title>
   <desc id="strategy-naming-desc">LogParseStrategy* prefix keeps related strategy classes grouped together in Solution Explorer.</desc>
   <rect width="780" height="420" fill="var(--diagram-surface)" rx="12"/>
-  <text x="32" y="36" fill="var(--diagram-label)" font-family="system-ui,Segoe UI,sans-serif" font-size="18" font-weight="600">Naming convention &#8212; strategies stay grouped</text>
-  <text x="32" y="58" fill="var(--diagram-line)" font-family="system-ui,Segoe UI,sans-serif" font-size="12">Prefix pattern: LogParseStrategy + Source</text>
+  <text x="32" y="36" fill="var(--diagram-label)" font-family="var(--font-sans)" font-size="18" font-weight="600">Naming convention &#8212; strategies stay grouped</text>
+  <text x="32" y="58" fill="var(--diagram-line)" font-family="var(--font-sans)" font-size="12">Prefix pattern: LogParseStrategy + Source</text>
 
   <!-- Explorer panel -->
   <rect x="40" y="90" width="340" height="280" rx="8" fill="var(--color-surface-sunken)" stroke="var(--color-border)"/>
-  <text x="56" y="118" fill="var(--diagram-line)" font-family="system-ui,Segoe UI,sans-serif" font-size="12">Solution Explorer · FinalImplementation</text>
+  <text x="56" y="118" fill="var(--diagram-line)" font-family="var(--font-sans)" font-size="12">Solution Explorer · FinalImplementation</text>
   <line x1="56" y1="130" x2="360" y2="130" stroke="var(--color-border)"/>
 
   <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13">
@@ -721,15 +721,15 @@ One more detail matters to me: the names of the three parser classes.
 
   <!-- Callout -->
   <rect x="420" y="120" width="320" height="220" rx="10" fill="var(--color-surface-sunken)" stroke="var(--diagram-artifact)" stroke-width="1.5"/>
-  <text x="440" y="155" fill="var(--diagram-label)" font-family="system-ui,Segoe UI,sans-serif" font-size="14" font-weight="600">Why this order?</text>
-  <text x="440" y="185" fill="var(--diagram-line)" font-family="system-ui,Segoe UI,sans-serif" font-size="13">Not MsSqlLogParser&#8230;</text>
+  <text x="440" y="155" fill="var(--diagram-label)" font-family="var(--font-sans)" font-size="14" font-weight="600">Why this order?</text>
+  <text x="440" y="185" fill="var(--diagram-line)" font-family="var(--font-sans)" font-size="13">Not MsSqlLogParser&#8230;</text>
   <text x="440" y="210" fill="var(--diagram-label)" font-family="ui-monospace,Menlo,monospace" font-size="13">LogParseStrategyMsSql</text>
   <text x="440" y="235" fill="var(--diagram-label)" font-family="ui-monospace,Menlo,monospace" font-size="13">LogParseStrategyNcsa</text>
   <text x="440" y="260" fill="var(--diagram-label)" font-family="ui-monospace,Menlo,monospace" font-size="13">LogParseStrategySplunk</text>
-  <text x="440" y="295" fill="var(--diagram-line)" font-family="system-ui,Segoe UI,sans-serif" font-size="12">Same prefix ⇒ they sort together.</text>
-  <text x="440" y="318" fill="var(--diagram-line)" font-family="system-ui,Segoe UI,sans-serif" font-size="12">Name signals “these are strategies.”</text>
+  <text x="440" y="295" fill="var(--diagram-line)" font-family="var(--font-sans)" font-size="12">Same prefix ⇒ they sort together.</text>
+  <text x="440" y="318" fill="var(--diagram-line)" font-family="var(--font-sans)" font-size="12">Name signals “these are strategies.”</text>
 
-  <text x="32" y="400" fill="var(--diagram-line)" font-family="system-ui,Segoe UI,sans-serif" font-size="11">Matches the naming beat in the chapter / video.</text>
+  <text x="32" y="400" fill="var(--diagram-line)" font-family="var(--font-sans)" font-size="11">Matches the naming beat in the chapter / video.</text>
 </svg>
 <figcaption>Strategy naming convention: LogParseStrategy classes grouped together</figcaption>
 </figure>
@@ -823,7 +823,7 @@ There's another reason to build a baseline: it gives you a place from which to e
     <rect class="variation-three" x="550" y="518" width="170" height="60" rx="12" fill="#f2ebf8" stroke="#7a4a9e"/>
     <rect class="variation-three" x="550" y="588" width="170" height="60" rx="12" fill="#f2ebf8" stroke="#7a4a9e"/>
   </g>
-  <g class="tree-label" fill="#1c1a17" font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" font-size="19" font-weight="600" text-anchor="middle">
+  <g class="tree-label" fill="#1c1a17" font-family="var(--font-sans)" font-size="19" font-weight="600" text-anchor="middle">
     <text x="119" y="344">Baseline</text>
     <text x="370" y="133">Variation 1</text>
     <text x="370" y="344">Variation 2</text>
