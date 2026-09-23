@@ -154,6 +154,36 @@ img {
   height: auto;
 }
 
+/* Keep the wide pipeline readable while allowing horizontal scrolling. */
+.article-diagram--requirements .article-diagram__image {
+  min-width: 75rem;
+}
+
+/* The SVG's own palette is a standalone fallback; the page uses theme tokens. */
+svg.requirements-diagram .canvas { fill: var(--diagram-surface); }
+svg.requirements-diagram .source.ms { fill: var(--diagram-requirements-sql-fill); stroke: var(--diagram-requirements-sql); }
+svg.requirements-diagram .source.web { fill: var(--diagram-requirements-web-fill); stroke: var(--diagram-requirements-web); }
+svg.requirements-diagram .source.splunk { fill: var(--diagram-requirements-splunk-fill); stroke: var(--diagram-requirements-splunk); }
+svg.requirements-diagram .source.others { fill: var(--diagram-requirements-others-fill); stroke: var(--diagram-requirements-others); }
+svg.requirements-diagram .parser { fill: var(--diagram-requirements-parser-fill); stroke: var(--diagram-requirements-parser); }
+svg.requirements-diagram .broker { fill: var(--diagram-requirements-broker-fill); stroke: var(--diagram-requirements-broker); }
+svg.requirements-diagram .dequeuer { fill: var(--diagram-requirements-dequeuer-fill); stroke: var(--diagram-requirements-dequeuer); }
+svg.requirements-diagram .store { fill: var(--diagram-requirements-store-fill); stroke: var(--diagram-requirements-store); }
+svg.requirements-diagram .store-rim { stroke: var(--diagram-requirements-store); }
+svg.requirements-diagram .label { fill: var(--diagram-label); }
+svg.requirements-diagram .edge-label { fill: var(--color-text-muted); }
+svg.requirements-diagram .input-path.ms,
+svg.requirements-diagram #arrow-ms path { stroke: var(--diagram-requirements-sql); }
+svg.requirements-diagram .input-path.web,
+svg.requirements-diagram #arrow-web path { stroke: var(--diagram-requirements-web); }
+svg.requirements-diagram .input-path.splunk,
+svg.requirements-diagram #arrow-splunk path { stroke: var(--diagram-requirements-splunk); }
+svg.requirements-diagram .input-path.others,
+svg.requirements-diagram #arrow-others path { stroke: var(--diagram-requirements-others); }
+svg.requirements-diagram .flow-path,
+svg.requirements-diagram .return-path,
+svg.requirements-diagram #arrow-flow path { stroke: var(--diagram-requirements-flow); }
+
 .article-diagram figcaption {
   margin-top: var(--space-2xs);
   color: var(--color-text-muted);

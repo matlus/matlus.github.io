@@ -92,6 +92,25 @@
   --diagram-ok-fill: #e8f4ea;
   --diagram-fail: #a83232;
   --diagram-fail-fill: #f9eaea;
+
+  /* Requirements diagram: distinct log sources and processing stages. */
+  --diagram-requirements-sql: #4d85e6;
+  --diagram-requirements-sql-fill: #eef5ff;
+  --diagram-requirements-web: #e69b37;
+  --diagram-requirements-web-fill: #fff5e9;
+  --diagram-requirements-splunk: #da6fa5;
+  --diagram-requirements-splunk-fill: #fff1f7;
+  --diagram-requirements-others: #bd9431;
+  --diagram-requirements-others-fill: #fff9e8;
+  --diagram-requirements-parser: #178a83;
+  --diagram-requirements-parser-fill: #eaf7f4;
+  --diagram-requirements-broker: #7468c8;
+  --diagram-requirements-broker-fill: #f1f2ff;
+  --diagram-requirements-dequeuer: #a463ba;
+  --diagram-requirements-dequeuer-fill: #faf0ff;
+  --diagram-requirements-store: #5d8750;
+  --diagram-requirements-store-fill: #edf7e9;
+  --diagram-requirements-flow: #65707a;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -129,6 +148,24 @@
     --diagram-ok-fill: #1a2e1f;
     --diagram-fail: #e08a8a;
     --diagram-fail-fill: #331c1c;
+
+    --diagram-requirements-sql: #7db4e0;
+    --diagram-requirements-sql-fill: #1b2c3a;
+    --diagram-requirements-web: #e9ae64;
+    --diagram-requirements-web-fill: #382819;
+    --diagram-requirements-splunk: #e8a0c2;
+    --diagram-requirements-splunk-fill: #362030;
+    --diagram-requirements-others: #d9b45c;
+    --diagram-requirements-others-fill: #332a14;
+    --diagram-requirements-parser: #58c7c0;
+    --diagram-requirements-parser-fill: #16302f;
+    --diagram-requirements-broker: #aaa1f0;
+    --diagram-requirements-broker-fill: #25223e;
+    --diagram-requirements-dequeuer: #c4a2e8;
+    --diagram-requirements-dequeuer-fill: #2a1f36;
+    --diagram-requirements-store: #7bc98a;
+    --diagram-requirements-store-fill: #1a2e1f;
+    --diagram-requirements-flow: #b3ac9f;
   }
 }
 
@@ -166,4 +203,22 @@
   --diagram-ok-fill: #1a2e1f;
   --diagram-fail: #e08a8a;
   --diagram-fail-fill: #331c1c;
+
+  --diagram-requirements-sql: #7db4e0;
+  --diagram-requirements-sql-fill: #1b2c3a;
+  --diagram-requirements-web: #e9ae64;
+  --diagram-requirements-web-fill: #382819;
+  --diagram-requirements-splunk: #e8a0c2;
+  --diagram-requirements-splunk-fill: #362030;
+  --diagram-requirements-others: #d9b45c;
+  --diagram-requirements-others-fill: #332a14;
+  --diagram-requirements-parser: #58c7c0;
+  --diagram-requirements-parser-fill: #16302f;
+  --diagram-requirements-broker: #aaa1f0;
+  --diagram-requirements-broker-fill: #25223e;
+  --diagram-requirements-dequeuer: #c4a2e8;
+  --diagram-requirements-dequeuer-fill: #2a1f36;
+  --diagram-requirements-store: #7bc98a;
+  --diagram-requirements-store-fill: #1a2e1f;
+  --diagram-requirements-flow: #b3ac9f;
 }

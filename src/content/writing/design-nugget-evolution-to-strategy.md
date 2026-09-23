@@ -21,86 +21,110 @@ The lessons may be small. That doesn't make them unimportant.
 Here's the requirement and the part of it we'll focus on.
 
 <!-- diagram:start requirements-overview -->
-<figure class="article-diagram">
-<svg class="article-diagram__image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400" role="img" aria-labelledby="requirements-overview-t requirements-overview-d">
-  <title id="requirements-overview-t">Requirement pipeline &#8212; multi-source logs to Cosmos DB</title>
-  <desc id="requirements-overview-d">MS SQL, Web Server, Splunk, and Others converge into Parse to Model, publish to Message Broker, dequeue, store in Cosmos DB.</desc>
-  <rect width="1000" height="400" rx="12" fill="var(--diagram-surface)"/>
+<figure class="article-diagram article-diagram--requirements" tabindex="0">
+<svg class="article-diagram__image requirements-diagram" xmlns="http://www.w3.org/2000/svg" width="1200" height="449" viewBox="0 0 2030 760" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="requirements-overview-t requirements-overview-d">
+  <title id="requirements-overview-t">Log sources to Cosmos DB</title>
+  <desc id="requirements-overview-d">MS SQL Logs, Web Server Logs, Splunk Logs, and Others flow along curved arrows into Parse to Model. The parser publishes a message to Message Broker. Message Broker exchanges messages with Message Dequeuer, which writes to Cosmos DB.</desc>
+
+  <!-- Standalone palette; the article applies the site theme tokens. -->
+  <style>
+    .requirements-diagram .canvas { fill: #ffffff; }
+    .requirements-diagram .source { stroke-width: 3; }
+    .requirements-diagram .source.ms { fill: #eef5ff; stroke: #4d85e6; }
+    .requirements-diagram .source.web { fill: #fff5e9; stroke: #e69b37; }
+    .requirements-diagram .source.splunk { fill: #fff1f7; stroke: #da6fa5; }
+    .requirements-diagram .source.others { fill: #fff9e8; stroke: #bd9431; }
+    .requirements-diagram .parser { fill: #eaf7f4; stroke: #178a83; stroke-width: 3; }
+    .requirements-diagram .broker { fill: #f1f2ff; stroke: #7468c8; stroke-width: 3; }
+    .requirements-diagram .dequeuer { fill: #faf0ff; stroke: #a463ba; stroke-width: 3; }
+    .requirements-diagram .store { fill: #edf7e9; stroke: #5d8750; stroke-width: 3; }
+    .requirements-diagram .store-rim { fill: none; stroke: #5d8750; stroke-width: 3; }
+    .requirements-diagram .label { fill: #1e252b; font: 600 27px/1.2 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .requirements-diagram .edge-label { fill: #58616c; font: 500 19px/1.2 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .requirements-diagram .input-path { fill: none; stroke-width: 3.5; stroke-linecap: round; }
+    .requirements-diagram .input-path.ms { stroke: #4d85e6; marker-end: url(#arrow-ms); }
+    .requirements-diagram .input-path.web { stroke: #e69b37; marker-end: url(#arrow-web); }
+    .requirements-diagram .input-path.splunk { stroke: #da6fa5; marker-end: url(#arrow-splunk); }
+    .requirements-diagram .input-path.others { stroke: #bd9431; marker-end: url(#arrow-others); }
+    .requirements-diagram .flow-path { fill: none; stroke: #65707a; stroke-width: 3; stroke-linecap: round; marker-end: url(#arrow-flow); }
+    .requirements-diagram .return-path { fill: none; stroke: #65707a; stroke-width: 2.5; stroke-linecap: round; marker-end: url(#arrow-flow); }
+  </style>
+
   <defs>
-    <marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--diagram-label)"/></marker>
-    <marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--diagram-label)"/></marker>
-    <!-- wavy document path helper via clip-ish: use path bottoms -->
+    <marker id="arrow-ms" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="15" refX="12" refY="7.5" orient="auto">
+      <path d="M2 2.5 12 7.5 2 12.5" fill="none" stroke="#4d85e6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arrow-web" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="15" refX="12" refY="7.5" orient="auto">
+      <path d="M2 2.5 12 7.5 2 12.5" fill="none" stroke="#e69b37" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arrow-splunk" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="15" refX="12" refY="7.5" orient="auto">
+      <path d="M2 2.5 12 7.5 2 12.5" fill="none" stroke="#da6fa5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arrow-others" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="15" refX="12" refY="7.5" orient="auto">
+      <path d="M2 2.5 12 7.5 2 12.5" fill="none" stroke="#bd9431" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arrow-flow" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="15" refX="12" refY="7.5" orient="auto">
+      <path d="M2 2.5 12 7.5 2 12.5" fill="none" stroke="#65707a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
   </defs>
 
-  <!-- Sources with slight wavy bottoms (simplified document shape) -->
-  <g font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" font-size="13" fill="var(--diagram-label)" text-anchor="middle">
-    <path d="M48 78 h140 v36 q0 10 -20 12 t-50 -4 t-50 4 t-20 -12 z" fill="var(--diagram-artifact)"/>
-    <text x="118" y="104">MS SQL Logs</text>
+  <rect class="canvas" width="2030" height="760" rx="22"/>
 
-    <path d="M48 138 h140 v36 q0 10 -20 12 t-50 -4 t-50 4 t-20 -12 z" fill="var(--diagram-artifact)"/>
-    <text x="118" y="164">Web Server Logs</text>
-
-    <path d="M48 198 h140 v36 q0 10 -20 12 t-50 -4 t-50 4 t-20 -12 z" fill="var(--diagram-artifact)"/>
-    <text x="118" y="224">Splunk Logs</text>
-
-    <!-- Others as stacked sheets -->
-    <path d="M56 270 h140 v34 q0 8 -18 10 t-52 -3 t-52 3 t-18 -10 z" fill="var(--diagram-worker)" opacity="0.55"/>
-    <path d="M52 262 h140 v34 q0 8 -18 10 t-52 -3 t-52 3 t-18 -10 z" fill="var(--diagram-worker)" opacity="0.75"/>
-    <path d="M48 254 h140 v36 q0 10 -20 12 t-50 -4 t-50 4 t-20 -12 z" fill="var(--diagram-worker)"/>
-    <text x="118" y="280">Others</text>
-  </g>
-
-  <!-- converging curves -->
-  <g fill="none" stroke-width="2.2" opacity="0.95">
-    <path d="M188 100 C250 100, 270 198, 320 205" stroke="var(--diagram-artifact)"/>
-    <path d="M188 160 C255 160, 280 200, 320 205" stroke="var(--diagram-artifact)"/>
-    <path d="M188 220 C255 220, 285 210, 320 205" stroke="var(--diagram-artifact)"/>
-    <path d="M188 275 C250 275, 285 220, 320 205" stroke="var(--diagram-worker)"/>
-  </g>
-
-  <!-- Parse to Model -->
-  <rect x="320" y="178" width="150" height="54" rx="4" fill="var(--diagram-ok)"/>
-  <text x="395" y="210" fill="var(--diagram-surface)" font-family="system-ui,Segoe UI,sans-serif" font-size="14" font-weight="700" text-anchor="middle">Parse to Model</text>
-
-  <!-- Publish Message -->
-  <line x1="470" y1="205" x2="545" y2="205" stroke="var(--diagram-label)" stroke-width="2" marker-end="url(#a)"/>
-  <text x="508" y="228" fill="var(--diagram-label)" font-family="system-ui,Segoe UI,sans-serif" font-size="11" text-anchor="middle">Publish Message</text>
-
-  <!-- Message Broker (striped) -->
+  <!-- The input order stays the same as the original slide. -->
   <g>
-    <rect x="550" y="168" width="170" height="74" rx="3" fill="var(--diagram-artifact)"/>
-    <rect x="568" y="176" width="12" height="58" fill="var(--diagram-fail)" opacity="0.55"/>
-    <rect x="590" y="176" width="12" height="58" fill="var(--diagram-fail)" opacity="0.55"/>
-    <rect x="612" y="176" width="22" height="58" fill="var(--diagram-artifact)"/>
-    <rect x="644" y="176" width="12" height="58" fill="var(--diagram-fail)" opacity="0.55"/>
-    <rect x="666" y="176" width="12" height="58" fill="var(--diagram-fail)" opacity="0.55"/>
-    <rect x="688" y="176" width="12" height="58" fill="var(--diagram-fail)" opacity="0.55"/>
-    <text x="635" y="212" fill="var(--diagram-label)" font-family="system-ui,Segoe UI,sans-serif" font-size="13" font-weight="700" text-anchor="middle">Message Broker</text>
+    <rect class="source ms" x="52" y="52" width="280" height="116" rx="18"/>
+    <text class="label" x="192" y="121" text-anchor="middle">MS SQL Logs</text>
+
+    <rect class="source web" x="52" y="220" width="280" height="116" rx="18"/>
+    <text class="label" x="192" y="289" text-anchor="middle">Web Server Logs</text>
+
+    <rect class="source splunk" x="52" y="388" width="280" height="116" rx="18"/>
+    <text class="label" x="192" y="457" text-anchor="middle">Splunk Logs</text>
+
+    <rect class="source others" x="52" y="556" width="280" height="116" rx="18"/>
+    <text class="label" x="192" y="625" text-anchor="middle">Others</text>
   </g>
 
-  <!-- bidirectional to dequeuer -->
-  <line x1="720" y1="200" x2="760" y2="200" stroke="var(--diagram-label)" stroke-width="2"/>
-  <polygon points="720,200 728,196 728,204" fill="var(--diagram-label)"/>
-  <polygon points="760,200 752,196 752,204" fill="var(--diagram-label)"/>
-
-  <rect x="765" y="178" width="100" height="54" rx="4" fill="var(--diagram-artifact)"/>
-  <text x="815" y="201" fill="var(--diagram-label)" font-family="system-ui,Segoe UI,sans-serif" font-size="11" font-weight="700" text-anchor="middle">Message</text>
-  <text x="815" y="217" fill="var(--diagram-label)" font-family="system-ui,Segoe UI,sans-serif" font-size="11" font-weight="700" text-anchor="middle">Dequeuer</text>
-
-  <line x1="865" y1="205" x2="900" y2="205" stroke="var(--diagram-label)" stroke-width="2" marker-end="url(#a2)"/>
-
-  <!-- Cosmos DB cylinder -->
+  <!-- Distinct curved paths keep every input visible at the parser. -->
   <g>
-    <ellipse cx="940" cy="178" rx="42" ry="14" fill="var(--diagram-worker)"/>
-    <rect x="898" y="178" width="84" height="50" fill="var(--diagram-worker)"/>
-    <ellipse cx="940" cy="228" rx="42" ry="14" fill="var(--diagram-worker)"/>
-    <ellipse cx="940" cy="178" rx="42" ry="14" fill="var(--diagram-worker)"/>
-    <text x="940" y="210" fill="var(--diagram-label)" font-family="system-ui,Segoe UI,sans-serif" font-size="12" font-weight="700" text-anchor="middle">Cosmos DB</text>
+    <path class="input-path ms" d="M332 110 C450 110 446 339 531 339"/>
+    <path class="input-path web" d="M332 278 C450 278 455 362 531 362"/>
+    <path class="input-path splunk" d="M332 446 C450 446 455 386 531 386"/>
+    <path class="input-path others" d="M332 614 C450 614 446 409 531 409"/>
   </g>
 
-  <text x="24" y="380" fill="var(--diagram-line)" font-family="system-ui,Segoe UI,sans-serif" font-size="11">D1 · video ~0:50–2:00 (clean recreation of requirement pipeline slide)</text>
+  <g>
+    <rect class="parser" x="540" y="316" width="280" height="116" rx="18"/>
+    <text class="label" x="680" y="384" text-anchor="middle">Parse to Model</text>
+  </g>
+
+  <path class="flow-path" d="M820 374 C869 374 919 374 968 374"/>
+  <text class="edge-label" x="900" y="346" text-anchor="middle">Publish Message</text>
+
+  <g>
+    <rect class="broker" x="980" y="316" width="280" height="116" rx="18"/>
+    <text class="label" x="1120" y="384" text-anchor="middle">Message Broker</text>
+  </g>
+
+  <!-- Two paths preserve the original two-way broker/dequeuer relationship. -->
+  <path class="flow-path" d="M1260 352 C1285 330 1310 330 1328 352"/>
+  <path class="return-path" d="M1340 397 C1315 418 1290 418 1272 397"/>
+
+  <g>
+    <rect class="dequeuer" x="1340" y="316" width="280" height="116" rx="18"/>
+    <text class="label" x="1480" y="367" text-anchor="middle">Message</text>
+    <text class="label" x="1480" y="401" text-anchor="middle">Dequeuer</text>
+  </g>
+
+  <path class="flow-path" d="M1620 374 C1645 374 1663 374 1688 374"/>
+
+  <g>
+    <path class="store" d="M1700 340 C1700 327 1762 316 1840 316 C1918 316 1980 327 1980 340 L1980 408 C1980 421 1918 432 1840 432 C1762 432 1700 421 1700 408 Z"/>
+    <path class="store-rim" d="M1700 340 C1700 353 1762 364 1840 364 C1918 364 1980 353 1980 340"/>
+    <text class="label" x="1840" y="399" text-anchor="middle">Cosmos DB</text>
+  </g>
 </svg>
-<figcaption>Requirements overview: log sources flow into a parser, produce models, then a store</figcaption>
+<figcaption>MS SQL Logs, Web Server Logs, Splunk Logs, and Others feed Parse to Model. It publishes to Message Broker, which exchanges messages with Message Dequeuer before Cosmos DB. Scroll horizontally to view the full diagram.</figcaption>
 </figure>
 <!-- diagram:end requirements-overview -->
 
@@ -496,63 +520,55 @@ The baseline and both intermediate versions each used one class. The final versi
 
 <!-- diagram:start strategy-structure -->
 <figure class="article-diagram">
-<svg class="article-diagram__image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 480" role="img" aria-labelledby="strategy-structure-title strategy-structure-desc">
-  <title id="strategy-structure-title">Final implementation &#8212; strategy structure</title>
-  <desc id="strategy-structure-desc">LogParserContext selects among LogParseStrategyMsSql, Ncsa, and Splunk; each strategy has a format-invalid exception.</desc>
-  <rect width="920" height="480" fill="var(--diagram-surface)" rx="12"/>
-  <text x="32" y="36" fill="var(--diagram-label)" font-family="system-ui,Segoe UI,sans-serif" font-size="18" font-weight="600">Final implementation &#8212; strategy structure</text>
-  <text x="32" y="58" fill="var(--diagram-line)" font-family="system-ui,Segoe UI,sans-serif" font-size="12">Baseline / intermediates: one class · Final: context + strategies (+ format exceptions)</text>
-
+<svg class="article-diagram__image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="strategy-structure-title strategy-structure-desc">
+  <title id="strategy-structure-title">FinalImplementation strategy structure</title>
+  <desc id="strategy-structure-desc">LogParserContext selects one of three independent parser classes: LogParseStrategyMsSql, LogParseStrategyNcsa, or LogParseStrategySplunk. The same folder also contains three format exception classes, shown separately below.</desc>
+  <style>
+    .structure-context { fill: var(--diagram-validation-fill); stroke: var(--diagram-validation); }
+    .structure-ms { fill: var(--diagram-controller-fill); stroke: var(--diagram-controller); }
+    .structure-ncsa { fill: var(--diagram-artifact-fill); stroke: var(--diagram-artifact); }
+    .structure-splunk { fill: var(--diagram-worker-fill); stroke: var(--diagram-worker); }
+    .structure-label { fill: var(--diagram-label); }
+    .structure-muted { fill: var(--diagram-line); }
+    .structure-link { stroke: var(--diagram-line); }
+  </style>
+  <rect x="1" y="1" width="798" height="518" rx="16" fill="#fff" style="fill:var(--diagram-surface)"/>
+  <text class="structure-label" x="30" y="42" fill="#1c1a17" font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" font-size="22" font-weight="650">FinalImplementation</text>
   <defs>
-    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L6,3 L0,6 Z" fill="var(--diagram-validation)"/>
+    <marker id="strategy-structure-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#64748b" style="fill:var(--diagram-line)"/>
     </marker>
   </defs>
-
-  <!-- Context -->
-  <rect x="300" y="90" width="320" height="70" rx="10" fill="var(--diagram-ok)"/>
-  <text x="460" y="120" fill="var(--diagram-surface)" font-family="system-ui,Segoe UI,sans-serif" font-size="16" font-weight="700" text-anchor="middle">LogParserContext</text>
-  <text x="460" y="142" fill="var(--diagram-surface)" font-family="system-ui,Segoe UI,sans-serif" font-size="11" text-anchor="middle">Parse(log) · DetermineLogSource · switch → strategy</text>
-
-  <!-- arrows down -->
-  <path d="M360 160 C360 200, 160 200, 160 230" stroke="var(--diagram-validation)" stroke-width="2" fill="none" marker-end="url(#arr)"/>
-  <path d="M460 160 V230" stroke="var(--diagram-validation)" stroke-width="2" fill="none" marker-end="url(#arr)"/>
-  <path d="M560 160 C560 200, 760 200, 760 230" stroke="var(--diagram-validation)" stroke-width="2" fill="none" marker-end="url(#arr)"/>
-
-  <!-- Strategies -->
-  <g font-family="system-ui,Segoe UI,sans-serif" text-anchor="middle">
-    <rect x="50" y="240" width="220" height="70" rx="8" fill="var(--diagram-artifact)"/>
-    <text x="160" y="270" fill="var(--diagram-label)" font-size="13" font-weight="600">LogParseStrategyMsSql</text>
-    <text x="160" y="292" fill="var(--diagram-label)" font-size="11" opacity="0.9">Parse · IsLogFormatValid</text>
-
-    <rect x="350" y="240" width="220" height="70" rx="8" fill="var(--diagram-artifact)"/>
-    <text x="460" y="270" fill="var(--diagram-label)" font-size="13" font-weight="600">LogParseStrategyNcsa</text>
-    <text x="460" y="292" fill="var(--diagram-label)" font-size="11" opacity="0.9">Parse · IsLogFormatValid</text>
-
-    <rect x="650" y="240" width="220" height="70" rx="8" fill="var(--diagram-fail)"/>
-    <text x="760" y="270" fill="var(--diagram-label)" font-size="13" font-weight="600">LogParseStrategySplunk</text>
-    <text x="760" y="292" fill="var(--diagram-label)" font-size="11" opacity="0.9">Parse · IsLogFormatValid</text>
+  <g class="structure-link" fill="none" stroke="#64748b" stroke-width="2.4">
+    <path d="M340 158 C340 210 140 208 140 260" marker-end="url(#strategy-structure-arrow)"/>
+    <path d="M400 158 C420 190 420 228 400 260" marker-end="url(#strategy-structure-arrow)"/>
+    <path d="M460 158 C460 210 660 208 660 260" marker-end="url(#strategy-structure-arrow)"/>
   </g>
-
-  <!-- Exceptions lightly -->
-  <g font-family="system-ui,Segoe UI,sans-serif" text-anchor="middle" fill="var(--diagram-line)" font-size="10">
-    <rect x="60" y="340" width="200" height="36" rx="6" fill="var(--color-surface-sunken)" stroke="var(--diagram-line)" stroke-width="1" stroke-dasharray="4 3"/>
-    <text x="160" y="362">MsSqlLogFormatInvalidException</text>
-    <rect x="360" y="340" width="200" height="36" rx="6" fill="var(--color-surface-sunken)" stroke="var(--diagram-line)" stroke-width="1" stroke-dasharray="4 3"/>
-    <text x="460" y="362">NcsaLogFormatInvalidException</text>
-    <rect x="660" y="340" width="200" height="36" rx="6" fill="var(--color-surface-sunken)" stroke="var(--diagram-line)" stroke-width="1" stroke-dasharray="4 3"/>
-    <text x="760" y="362">SplunkLogFormatInvalidException</text>
+  <g stroke-width="2">
+    <rect class="structure-context" x="280" y="84" width="240" height="74" rx="12" fill="#e6f2f1" stroke="#0f6f6b"/>
+    <rect class="structure-ms" x="20" y="260" width="240" height="74" rx="12" fill="#e8f0f7" stroke="#2b5c8a"/>
+    <rect class="structure-ncsa" x="280" y="260" width="240" height="74" rx="12" fill="#f8f1de" stroke="#8a6a1f"/>
+    <rect class="structure-splunk" x="540" y="260" width="240" height="74" rx="12" fill="#f2ebf8" stroke="#7a4a9e"/>
+    <rect class="structure-ms" x="20" y="414" width="240" height="74" rx="12" fill="#e8f0f7" stroke="#2b5c8a" fill-opacity="0.58" stroke-opacity="0.68" stroke-dasharray="6 4"/>
+    <rect class="structure-ncsa" x="280" y="414" width="240" height="74" rx="12" fill="#f8f1de" stroke="#8a6a1f" fill-opacity="0.58" stroke-opacity="0.68" stroke-dasharray="6 4"/>
+    <rect class="structure-splunk" x="540" y="414" width="240" height="74" rx="12" fill="#f2ebf8" stroke="#7a4a9e" fill-opacity="0.58" stroke-opacity="0.68" stroke-dasharray="6 4"/>
   </g>
-  <path d="M160 310 V340" stroke="var(--diagram-line)" stroke-width="1" stroke-dasharray="3 3"/>
-  <path d="M460 310 V340" stroke="var(--diagram-line)" stroke-width="1" stroke-dasharray="3 3"/>
-  <path d="M760 310 V340" stroke="var(--diagram-line)" stroke-width="1" stroke-dasharray="3 3"/>
-
-  <text x="32" y="420" fill="var(--diagram-line)" font-family="system-ui,Segoe UI,sans-serif" font-size="12">Returns LogInfoBase to the call site (persist at caller).</text>
-  <text x="32" y="450" fill="var(--diagram-line)" font-family="system-ui,Segoe UI,sans-serif" font-size="11">From FinalImplementation folder structure in the video.</text>
+  <g class="structure-label" fill="#1c1a17" font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">
+    <text x="400" y="128" font-size="19" font-weight="600">LogParserContext</text>
+    <text x="140" y="304" font-size="16" font-weight="600">LogParseStrategyMsSql</text>
+    <text x="400" y="304" font-size="16" font-weight="600">LogParseStrategyNcsa</text>
+    <text x="660" y="304" font-size="16" font-weight="600">LogParseStrategySplunk</text>
+    <text x="140" y="448" font-size="16" font-weight="600"><tspan x="140">MsSqlLogFormat</tspan><tspan x="140" dy="22">InvalidException</tspan></text>
+    <text x="400" y="448" font-size="16" font-weight="600"><tspan x="400">NcsaLogFormat</tspan><tspan x="400" dy="22">InvalidException</tspan></text>
+    <text x="660" y="448" font-size="16" font-weight="600"><tspan x="660">SplunkLogFormat</tspan><tspan x="660" dy="22">InvalidException</tspan></text>
+  </g>
+  <text class="structure-muted" x="400" y="383" fill="#64748b" font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" font-size="15" text-anchor="middle">Format exception classes in the same folder</text>
 </svg>
-<figcaption>Strategy structure: LogParserContext and LogParseStrategy classes</figcaption>
+<figcaption>LogParserContext selects one of three independent parsers. The format exception classes are listed separately beneath them.</figcaption>
 </figure>
 <!-- diagram:end strategy-structure -->
+
+In `FinalImplementation`, `LogParserContext` chooses between `LogParseStrategyMsSql`, `LogParseStrategyNcsa`, and `LogParseStrategySplunk`. The folder also contains `MsSqlLogFormatInvalidException`, `NcsaLogFormatInvalidException`, and `SplunkLogFormatInvalidException`.
 
 Set the three exception classes aside. We still have four classes instead of one. Whether that helps depends on what is likely to change.
 
@@ -775,85 +791,86 @@ There's another reason to build a baseline: it gives you a place from which to e
 
 <!-- diagram:start baseline-variations-graph -->
 <figure class="article-diagram">
-<svg class="article-diagram__image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 520" role="img" aria-labelledby="baseline-variations-graph-t baseline-variations-graph-d">
-  <title id="baseline-variations-graph-t">Evolution tree &#8212; baseline variations and design principles</title>
-  <desc id="baseline-variations-graph-d">Baseline branches to Variation 1–3, then further variations; right side lists Baseline Implementation, Design, and Refactoring principles.</desc>
-  <rect width="1100" height="520" rx="12" fill="var(--diagram-surface)"/>
-
-  <!-- LEFT: graph -->
-  <rect x="36" y="200" width="100" height="44" rx="4" fill="var(--diagram-artifact)"/>
-  <text x="86" y="228" fill="var(--diagram-label)" font-family="system-ui,Segoe UI,sans-serif" font-size="13" font-weight="700" text-anchor="middle">Baseline</text>
-
-  <g font-family="system-ui,Segoe UI,sans-serif" font-size="12" font-weight="700" fill="var(--diagram-label)" text-anchor="middle">
-    <rect x="220" y="90" width="108" height="38" rx="4" fill="var(--diagram-artifact)"/><text x="274" y="114">Variation 1</text>
-    <rect x="220" y="200" width="108" height="38" rx="4" fill="var(--diagram-artifact)"/><text x="274" y="224">Variation 2</text>
-    <rect x="220" y="310" width="108" height="38" rx="4" fill="var(--diagram-artifact)"/><text x="274" y="334">Variation 3</text>
+<svg class="article-diagram__image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 754 674" role="img" aria-labelledby="baseline-variations-graph-t baseline-variations-graph-d">
+  <title id="baseline-variations-graph-t">Variations branching from a baseline</title>
+  <desc id="baseline-variations-graph-d">A baseline branches to Variations 1, 2, and 3. Each variation branches to three more possibilities. The first possibility from Variation 1 is labeled Variation 4; the others remain open.</desc>
+  <style>
+    .baseline-node { fill: var(--diagram-validation-fill); stroke: var(--diagram-validation); }
+    .variation-one { fill: var(--diagram-controller-fill); stroke: var(--diagram-controller); }
+    .variation-two { fill: var(--diagram-artifact-fill); stroke: var(--diagram-artifact); }
+    .variation-three { fill: var(--diagram-worker-fill); stroke: var(--diagram-worker); }
+    .tree-label { fill: var(--diagram-label); }
+    .tree-branch { stroke: var(--diagram-line); }
+  </style>
+  <rect x="1" y="1" width="752" height="672" rx="16" fill="#fff" style="fill:var(--diagram-surface)"/>
+  <defs>
+    <marker id="baseline-tree-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#64748b" style="fill:var(--diagram-line)"/>
+    </marker>
+  </defs>
+  <g class="tree-branch" fill="none" stroke="#64748b" stroke-width="2.4" marker-end="url(#baseline-tree-arrow)">
+    <path d="M204 337 C245 337 245 126 285 126"/>
+    <path d="M204 337 H285"/>
+    <path d="M204 337 C245 337 245 548 285 548"/>
+    <path d="M455 126 C502 126 502 56 550 56"/>
+    <path d="M455 126 H550"/>
+    <path d="M455 126 C502 126 502 196 550 196"/>
+    <path d="M455 337 C502 337 502 267 550 267"/>
+    <path d="M455 337 H550"/>
+    <path d="M455 337 C502 337 502 407 550 407"/>
+    <path d="M455 548 C502 548 502 478 550 478"/>
+    <path d="M455 548 H550"/>
+    <path d="M455 548 C502 548 502 618 550 618"/>
   </g>
-
-  <g fill="none" stroke="var(--diagram-validation)" stroke-width="2">
-    <path d="M136 222 C175 222, 175 109, 220 109"/>
-    <path d="M136 222 H220"/>
-    <path d="M136 222 C175 222, 175 329, 220 329"/>
+  <g stroke-width="2">
+    <rect class="baseline-node" x="34" y="307" width="170" height="60" rx="12" fill="#e6f2f1" stroke="#0f6f6b"/>
+    <rect class="variation-one" x="285" y="96" width="170" height="60" rx="12" fill="#e8f0f7" stroke="#2b5c8a"/>
+    <rect class="variation-two" x="285" y="307" width="170" height="60" rx="12" fill="#f8f1de" stroke="#8a6a1f"/>
+    <rect class="variation-three" x="285" y="518" width="170" height="60" rx="12" fill="#f2ebf8" stroke="#7a4a9e"/>
+    <rect class="variation-one" x="550" y="26" width="170" height="60" rx="12" fill="#e8f0f7" stroke="#2b5c8a"/>
+    <rect class="variation-one" x="550" y="96" width="170" height="60" rx="12" fill="#e8f0f7" stroke="#2b5c8a"/>
+    <rect class="variation-one" x="550" y="166" width="170" height="60" rx="12" fill="#e8f0f7" stroke="#2b5c8a"/>
+    <rect class="variation-two" x="550" y="237" width="170" height="60" rx="12" fill="#f8f1de" stroke="#8a6a1f"/>
+    <rect class="variation-two" x="550" y="307" width="170" height="60" rx="12" fill="#f8f1de" stroke="#8a6a1f"/>
+    <rect class="variation-two" x="550" y="377" width="170" height="60" rx="12" fill="#f8f1de" stroke="#8a6a1f"/>
+    <rect class="variation-three" x="550" y="448" width="170" height="60" rx="12" fill="#f2ebf8" stroke="#7a4a9e"/>
+    <rect class="variation-three" x="550" y="518" width="170" height="60" rx="12" fill="#f2ebf8" stroke="#7a4a9e"/>
+    <rect class="variation-three" x="550" y="588" width="170" height="60" rx="12" fill="#f2ebf8" stroke="#7a4a9e"/>
   </g>
-
-  <!-- Level 3: from V1 three (Variation 4 + 2 blank); V2 two blank; V3 two blank = 7 terminal? Slide said 9 total in column.
-       Inventory: further branch → column of 9 boxes; top Variation 4, rest blank. From V1:3, V2:3, V3:3 = 9. -->
-  <g>
-    <rect x="420" y="48" width="86" height="30" rx="3" fill="var(--diagram-artifact)"/>
-    <text x="463" y="68" fill="var(--diagram-label)" font-family="system-ui,Segoe UI,sans-serif" font-size="11" font-weight="700" text-anchor="middle">Variation 4</text>
-    <rect x="420" y="86" width="86" height="26" rx="3" fill="var(--diagram-fail)"/>
-    <rect x="420" y="120" width="86" height="26" rx="3" fill="var(--diagram-fail)"/>
-    <rect x="420" y="168" width="86" height="26" rx="3" fill="var(--diagram-fail)"/>
-    <rect x="420" y="202" width="86" height="26" rx="3" fill="var(--diagram-fail)"/>
-    <rect x="420" y="236" width="86" height="26" rx="3" fill="var(--diagram-fail)"/>
-    <rect x="420" y="286" width="86" height="26" rx="3" fill="var(--diagram-fail)"/>
-    <rect x="420" y="320" width="86" height="26" rx="3" fill="var(--diagram-fail)"/>
-    <rect x="420" y="354" width="86" height="26" rx="3" fill="var(--diagram-fail)"/>
+  <g class="tree-label" fill="#1c1a17" font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" font-size="19" font-weight="600" text-anchor="middle">
+    <text x="119" y="344">Baseline</text>
+    <text x="370" y="133">Variation 1</text>
+    <text x="370" y="344">Variation 2</text>
+    <text x="370" y="555">Variation 3</text>
+    <text x="635" y="63">Variation 4</text>
   </g>
-  <g fill="none" stroke="var(--diagram-validation)" stroke-width="1.6">
-    <path d="M328 109 C370 109, 370 63, 420 63"/>
-    <path d="M328 109 C370 109, 370 99, 420 99"/>
-    <path d="M328 109 C370 109, 370 133, 420 133"/>
-    <path d="M328 219 C370 219, 370 181, 420 181"/>
-    <path d="M328 219 C370 219, 370 215, 420 215"/>
-    <path d="M328 219 C370 219, 370 249, 420 249"/>
-    <path d="M328 329 C370 329, 370 299, 420 299"/>
-    <path d="M328 329 C370 329, 370 333, 420 333"/>
-    <path d="M328 329 C370 329, 370 367, 420 367"/>
-  </g>
-
-  <!-- RIGHT: bullets -->
-  <g font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" fill="var(--diagram-label)">
-    <text x="560" y="56" font-size="15" font-weight="700">Baseline Implementation</text>
-    <g font-size="12" fill="var(--diagram-line)">
-      <text x="560" y="80">• Always start with a baseline implementation</text>
-      <text x="560" y="98">• Helps with understanding all of the nuances and complexities of the domain</text>
-      <text x="560" y="116">• Verify complete functionality by writing tests</text>
-      <text x="560" y="134">• Leaving yourself open to a multitude of possibilities (not married to a solution)</text>
-      <text x="560" y="152">• With decades of experience you might arrive at the best/correct design in one step, but&#8230;</text>
-    </g>
-
-    <text x="560" y="200" font-size="15" font-weight="700" fill="var(--diagram-label)">Design</text>
-    <g font-size="12" fill="var(--diagram-line)">
-      <text x="560" y="224">• Simplicity</text>
-      <text x="560" y="242">• Reduction process not an additive process</text>
-      <text x="560" y="260">• Complexity undermines your ability to comprehend</text>
-    </g>
-
-    <text x="560" y="308" font-size="15" font-weight="700" fill="var(--diagram-label)">Refactoring</text>
-    <g font-size="12" fill="var(--diagram-line)">
-      <text x="560" y="332">• To clean up</text>
-      <text x="560" y="350">• To improve readability and maintainability</text>
-      <text x="560" y="368">• Verify proper functionality using tests written previously</text>
-      <text x="560" y="386">• Not to design for “What if” and “Just in case” scenarios (KISS &amp; YAGNI)</text>
-    </g>
-  </g>
-
-  <text x="24" y="500" fill="var(--diagram-line)" font-family="system-ui,Segoe UI,sans-serif" font-size="11">D2 · video ~55:00–55:25 (clean recreation of evolution tree slide)</text>
 </svg>
-<figcaption>Baseline variations branching from a baseline implementation</figcaption>
+<figcaption>A working baseline leaves room to explore several variations. The unlabeled boxes represent further possibilities.</figcaption>
 </figure>
 <!-- diagram:end baseline-variations-graph -->
+
+The slide at 55:02 in the video puts the principles beside this diagram:
+
+#### Baseline Implementation
+
+- Always start with a baseline implementation
+- Helps with understanding all of the nuances and complexities of the domain
+- Verify Complete functionality by writing tests
+- Leaving yourself open to a multitude of possibilities (not married to a solution)
+- With decades of experience you might arrive at the best/correct design in one step, but....
+
+#### Design
+
+- Simplicity
+- Reduction process not an additive process
+- Complexity undermines your ability to comprehend
+
+#### Refactoring
+
+- To clean up
+- To improve readability and maintainability
+- Verify proper functionality using tests written previously
+- Not to design for “What if” and “Just in case” scenarios (KISS & YAGNI)
 
 Once it exists, you can try one change, then another. The graph shows several variations branching from the same working implementation. Each one can reveal a problem or a solution you hadn't considered.
 
