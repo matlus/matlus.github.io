@@ -1,5 +1,6 @@
 import type { APIRoute, GetStaticPaths } from 'astro';
 import { getCollection } from 'astro:content';
+import { readableArticleBody } from '../../lib/article-markdown';
 
 /**
  * The markdown twin.
@@ -22,7 +23,7 @@ export const getStaticPaths = (async () => {
   return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
 }) satisfies GetStaticPaths;
 
-export const GET: APIRoute = ({ props }) => {
+export const GET: APIRoute = ({ props, site }) => {
   const { post } = props as { post: Awaited<ReturnType<typeof getCollection<'writing'>>>[number] };
 
   const iso = (date: Date) => date.toISOString().slice(0, 10);
@@ -36,7 +37,7 @@ export const GET: APIRoute = ({ props }) => {
     '',
     `Published: ${iso(post.data.datePublished)}`,
     post.data.dateModified ? `Updated: ${iso(post.data.dateModified)}` : undefined,
-    `Source: https://matlus.com/writing/${post.id}`,
+    `Source: ${new URL(`/writing/${post.id}/`, site ?? 'https://matlus.github.io').href}`,
     `Tags: ${post.data.tags.join(', ')}`,
     '',
     '---',
@@ -45,7 +46,7 @@ export const GET: APIRoute = ({ props }) => {
     .filter((line) => line !== undefined)
     .join('\n');
 
-  return new Response(header + post.body, {
+  return new Response(header + readableArticleBody(post.body), {
     headers: { 'Content-Type': 'text/markdown; charset=utf-8' },
   });
 };

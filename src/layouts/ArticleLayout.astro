@@ -25,12 +25,14 @@ interface Props {
   readonly evergreen?: boolean;
   /** Path of the raw markdown twin. */
   readonly markdownHref: string;
+  readonly schemaType?: 'BlogPosting' | 'TechArticle' | undefined;
   readonly seed: string;
 }
 
 const {
   title, description, datePublished, dateModified, tags, crumbs,
   hero, audio, youtube, status, evergreen = false, markdownHref, seed,
+  schemaType = 'TechArticle',
 } = Astro.props;
 
 const fmt = (date: Date) =>
@@ -47,13 +49,17 @@ const canonical = new URL(Astro.url.pathname, site);
 
 const articleLd = {
   '@context': 'https://schema.org',
-  '@type': 'TechArticle',
+  '@type': schemaType,
   headline: title,
   description,
   datePublished: datePublished.toISOString(),
   dateModified: (dateModified ?? datePublished).toISOString(),
-  author: { '@type': 'Person', name: 'Shiv Kumar' },
+  author: { '@type': 'Person', name: 'Shiv Kumar', url: site.href },
   url: canonical.href,
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonical.href },
+  inLanguage: 'en',
+  keywords: tags.map((slug) => tagsBySlug.get(slug)?.label ?? slug).join(', '),
+  ...(hero ? { image: new URL(hero.src, site).href } : {}),
 };
 
 const breadcrumbLd = {

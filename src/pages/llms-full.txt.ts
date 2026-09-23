@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
+import { readableArticleBody } from '../lib/article-markdown';
 
 /**
  * /llms-full.txt
@@ -31,7 +32,7 @@ export const GET: APIRoute = async ({ site }) => {
       '',
       '---',
       '',
-      post.body,
+      readableArticleBody(post.body),
     ].join('\n'),
   );
 

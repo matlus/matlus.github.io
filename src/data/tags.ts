@@ -199,6 +199,20 @@ export const TAGS = [
       'presents business-shaped operations and keeps store technology, command ' +
       'construction and fault translation behind its seam.',
   },
+  { slug: 'strategy-pattern', label: 'Strategy Pattern', description: 'Selecting one of several interchangeable behaviors through a common role.' },
+  { slug: 'delegates', label: 'Delegates', description: 'Using C# delegates to pass behavior and compare that choice with named strategy classes.' },
+  { slug: 'composition-over-inheritance', label: 'Composition Over Inheritance', description: 'Building capabilities from collaborating objects while keeping inheritance narrow and deliberate.' },
+  { slug: 'dependency-injection', label: 'Dependency Injection', description: 'Passing collaborators into objects and deciding which dependencies callers should control.' },
+  { slug: 'factory-pattern', label: 'Factory Pattern', description: 'Creating the right implementation behind a focused construction boundary.' },
+  { slug: 'template-method', label: 'Template Method', description: 'Defining an operation in a base type while subclasses provide selected steps.' },
+  { slug: 'extension-methods', label: 'Extension Methods', description: 'C# methods called as if they belong to a type, and their effect on discoverability and meaning.' },
+  { slug: 'data-transfer-objects', label: 'Data Transfer Objects', description: 'Immutable data carriers that keep state separate from the behavior operating on it.' },
+  { slug: 'type-casting', label: 'Type Casting', description: 'Choosing casts and type checks according to whether a mismatch is expected or a defect.' },
+  { slug: 'mocking', label: 'Mocking', description: 'Replacing collaborators in tests and evaluating the effect on coupling and regression coverage.' },
+  { slug: 'test-driven-development', label: 'Test Driven Development', description: 'Using tests to establish behavior before implementation and preserving them through design changes.' },
+  { slug: 'interfaces', label: 'Interfaces', description: 'C# interface roles, their costs, and when a consumer needs a narrow capability.' },
+  { slug: 'interface-segregation', label: 'Interface Segregation', description: 'Presenting each consumer with only the operations it needs.' },
+  { slug: 'boundary-validation', label: 'Boundary Validation', description: 'Checking untrusted input and output at system boundaries while keeping internal flows clear.' },
 ] as const satisfies readonly Tag[];
 
 export type TagSlug = (typeof TAGS)[number]['slug'];

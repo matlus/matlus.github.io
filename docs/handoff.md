@@ -1,7 +1,7 @@
 # Handoff
 
 Written 2026-09-22, at the end of the session that built this site from nothing.
-Everything below is committed and deployed.
+Updated 2026-09-23 for the ten ratified video chapters.
 
 The purpose of this document is to let a fresh session pick up without
 re-litigating settled decisions. Where a choice looks arbitrary, the reason is
@@ -31,20 +31,28 @@ Full specification: [website-spec.md](website-spec.md).
 
 ## Current state
 
-Live at **https://matlus.github.io**, 50 pages.
+The current build produces 83 pages for **https://matlus.github.io**.
 
 | | Count |
 |---|---|
-| Articles | 3 |
+| Articles | 13 |
 | PWI chapters | 12, across 6 topics |
 | Aphorisms | 24, with computed backlinks |
-| Tags | 16, controlled vocabulary |
+| Tags | 39, controlled vocabulary |
 
 **Articles**
 
 - `Skills versus Controlled Workflows` with an interactive workflow diagram
 - `Stampede at the Gates`, the problem statement
 - `The AI-Native Lifecycle`, the answer to it
+- Ten ratified chapters derived from videos, each published as a writing post with
+  an HTML page and a Markdown twin. Their publication dates follow the original
+  YouTube videos; their modification dates record the editorial pass. The Design
+  Nugget post retains a visible note that its code and video match is pending.
+  The conversion preserves their prose. Character entities in some source files
+  retain ratified punctuation in the rendered HTML; the Markdown response decodes
+  them back to the original characters. Two deliberate phrases in Design Nugget
+  have narrow copy-audit allowances.
 
 **Chapters**: architecture-layers, class-design, method-design and
 naming-conventions and validation-exception-handling all bilingual, plus
@@ -52,7 +60,8 @@ linq-query-semantics in C# and type-annotations in Python.
 
 **Infrastructure in place**: markdown twins on every article and chapter, generated
 `llms.txt` and `llms-full.txt`, `robots.txt` with explicit AI-crawler allows, sitemap,
-`Person` with `sameAs` on the homepage, `TechArticle` and `BreadcrumbList` per page,
+`Person` with `sameAs` on the homepage, `BlogPosting` for writing, `TechArticle`
+for PWI chapters, and `BreadcrumbList` per article,
 design tokens with dark mode, a style guide page, hero image generation, and a copy
 audit gating CI.
 
