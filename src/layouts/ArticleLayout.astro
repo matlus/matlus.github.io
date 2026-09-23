@@ -238,26 +238,23 @@ const breadcrumbLd = {
 
   .companion audio { height: 2.2rem; }
 
-  /*
-   * The article column is sized to the measure rather than to 1fr. With 1fr
-   * the track was 768px while the prose inside it capped at 639px, leaving
-   * 129px of dead space before the gap even started, which read as a chasm
-   * between the columns.
-   *
-   * minmax(0, ...) on both tracks matters: an `auto` minimum lets a wide code
-   * block or table set a floor on the track width, which is how a page ends up
-   * wider than a phone.
-   */
+  /* The diagram and prose share a wider column on desktop. */
   .article-page {
+    width: min(100% - (var(--gutter) * 2), var(--width-article));
     max-width: var(--width-article);
   }
 
   .article-body {
     display: grid;
-    grid-template-columns: minmax(0, var(--measure)) minmax(0, 15rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 15rem);
     gap: var(--space-xl);
     margin-top: var(--space-xl);
     align-items: start;
+  }
+
+  .article-body > .prose {
+    max-width: none;
+    min-width: 0;
   }
 
   .article-side {

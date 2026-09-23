@@ -21,11 +21,11 @@ The lessons may be small. That doesn't make them unimportant.
 Here's the requirement and the part of it we'll focus on.
 
 <!-- diagram:start requirements-overview -->
+<!-- Keep the SVG block contiguous: blank lines make Markdown parse indented SVG elements as code. -->
 <figure class="article-diagram article-diagram--requirements" tabindex="0">
 <svg class="article-diagram__image requirements-diagram" xmlns="http://www.w3.org/2000/svg" width="1200" height="449" viewBox="0 0 2030 760" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="requirements-overview-t requirements-overview-d">
   <title id="requirements-overview-t">Log sources to Cosmos DB</title>
   <desc id="requirements-overview-d">MS SQL Logs, Web Server Logs, Splunk Logs, and Others flow along curved arrows into Parse to Model. The parser publishes a message to Message Broker. Message Broker exchanges messages with Message Dequeuer, which writes to Cosmos DB.</desc>
-
   <!-- Standalone palette; the article applies the site theme tokens. -->
   <style>
     .requirements-diagram .canvas { fill: #ffffff; }
@@ -49,7 +49,6 @@ Here's the requirement and the part of it we'll focus on.
     .requirements-diagram .flow-path { fill: none; stroke: #65707a; stroke-width: 3; stroke-linecap: round; marker-end: url(#arrow-flow); }
     .requirements-diagram .return-path { fill: none; stroke: #65707a; stroke-width: 2.5; stroke-linecap: round; marker-end: url(#arrow-flow); }
   </style>
-
   <defs>
     <marker id="arrow-ms" markerUnits="userSpaceOnUse" markerWidth="15" markerHeight="15" refX="12" refY="7.5" orient="auto">
       <path d="M2 2.5 12 7.5 2 12.5" fill="none" stroke="#4d85e6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -67,24 +66,18 @@ Here's the requirement and the part of it we'll focus on.
       <path d="M2 2.5 12 7.5 2 12.5" fill="none" stroke="#65707a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
     </marker>
   </defs>
-
   <rect class="canvas" width="2030" height="760" rx="22"/>
-
   <!-- The input order stays the same as the original slide. -->
   <g>
     <rect class="source ms" x="52" y="52" width="280" height="116" rx="18"/>
     <text class="label" x="192" y="121" text-anchor="middle">MS SQL Logs</text>
-
     <rect class="source web" x="52" y="220" width="280" height="116" rx="18"/>
     <text class="label" x="192" y="289" text-anchor="middle">Web Server Logs</text>
-
     <rect class="source splunk" x="52" y="388" width="280" height="116" rx="18"/>
     <text class="label" x="192" y="457" text-anchor="middle">Splunk Logs</text>
-
     <rect class="source others" x="52" y="556" width="280" height="116" rx="18"/>
     <text class="label" x="192" y="625" text-anchor="middle">Others</text>
   </g>
-
   <!-- Distinct curved paths keep every input visible at the parser. -->
   <g>
     <path class="input-path ms" d="M332 110 C450 110 446 339 531 339"/>
@@ -92,32 +85,25 @@ Here's the requirement and the part of it we'll focus on.
     <path class="input-path splunk" d="M332 446 C450 446 455 386 531 386"/>
     <path class="input-path others" d="M332 614 C450 614 446 409 531 409"/>
   </g>
-
   <g>
     <rect class="parser" x="540" y="316" width="280" height="116" rx="18"/>
     <text class="label" x="680" y="384" text-anchor="middle">Parse to Model</text>
   </g>
-
   <path class="flow-path" d="M820 374 C869 374 919 374 968 374"/>
   <text class="edge-label" x="900" y="346" text-anchor="middle">Publish Message</text>
-
   <g>
     <rect class="broker" x="980" y="316" width="280" height="116" rx="18"/>
     <text class="label" x="1120" y="384" text-anchor="middle">Message Broker</text>
   </g>
-
   <!-- Two paths preserve the original two-way broker/dequeuer relationship. -->
   <path class="flow-path" d="M1260 352 C1285 330 1310 330 1328 352"/>
   <path class="return-path" d="M1340 397 C1315 418 1290 418 1272 397"/>
-
   <g>
     <rect class="dequeuer" x="1340" y="316" width="280" height="116" rx="18"/>
     <text class="label" x="1480" y="367" text-anchor="middle">Message</text>
     <text class="label" x="1480" y="401" text-anchor="middle">Dequeuer</text>
   </g>
-
   <path class="flow-path" d="M1620 374 C1645 374 1663 374 1688 374"/>
-
   <g>
     <path class="store" d="M1700 340 C1700 327 1762 316 1840 316 C1918 316 1980 327 1980 340 L1980 408 C1980 421 1918 432 1840 432 C1762 432 1700 421 1700 408 Z"/>
     <path class="store-rim" d="M1700 340 C1700 353 1762 364 1840 364 C1918 364 1980 353 1980 340"/>

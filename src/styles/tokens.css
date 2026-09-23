@@ -55,12 +55,8 @@
   /* Layout. */
   --measure: 68ch;
   --width-page: 72rem;
-  /*
-   * Article pages use a narrower container: measure + gap + sidebar. Sizing
-   * the shell to the content means the leftover space sits outside the pair
-   * rather than opening a gap between the prose and the sidebar.
-   */
-  --width-article: 58rem;
+  /* 75rem article column + 3rem gap + 15rem sidebar on wide screens. */
+  --width-article: 93rem;
   --gutter: var(--space-s);
 
   --radius: 6px;
