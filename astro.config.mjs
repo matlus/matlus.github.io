@@ -9,6 +9,11 @@ import sitemap from '@astrojs/sitemap';
 // GitHub user site, `base` stays '/' either way, so the switch is one line.
 export default defineConfig({
   site: 'https://matlus.github.io',
+  markdown: {
+    shikiConfig: {
+      theme: 'ayu-dark',
+    },
+  },
   integrations: [
     sitemap({
       // The markdown twins are alternates of pages already listed, so they
