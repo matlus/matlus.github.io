@@ -24,6 +24,12 @@ If a chapter already exists, edit a copy in the same chapter folder and preserve
 4. **Edit the prose, not the demonstration.** Preserve code blocks, syntax, identifiers, call order, and the relationship between code and explanation until their provenance is checked. If code is illustrative rather than taken from the video or repository, say so. Do not present plausible replacement code as the historical code.
 5. **Keep uncertainty visible.** A chapter may be prose-ratified while a code or source question remains open. Use a short reader-facing note when uncertainty would otherwise mislead a reader, and put detailed follow-up in `RATIFIED.md`.
 
+## Use of Write Naturally
+
+Use Shiv's installed `write-naturally` professional-writing skill when drafting or revising chapter prose. Read its current instructions. It is a guide to clarity and natural rhythm, subject to the content, voice, and deliberate-wording boundaries above. In particular, preserve precise technical terms, first-person claims, purposeful questions, code, direct quotations, and `Simplicate, don't Complify`. Do not flatten an existing chapter to satisfy a stylistic preference in the skill.
+
+Run the skill's audit against the exact final text where an export is available, then review every finding. Fix hard violations in the newly edited prose unless doing so would change required wording or meaning. Preserve a genuine conflict, record it, and never report an audit pass that did not occur. For a native Google Doc, preserve its structure during editing and audit a faithful export of its text. The first ten editorial passes used this writing guidance, but their ratification markers do not certify a clean whole-chapter audit under every mechanical rule. Keep that distinction in the next status record.
+
 ## Turning speech and screen references into page prose
 
 Remove transcription artifacts such as repeated words, false starts, filler, greetings that serve only the recording, redundant signposts, and summaries that repeat the same point. Repair punctuation and sentence boundaries. Split a long spoken sentence or join choppy fragments when doing so makes the existing thought clearer. Remove repeated explanations only after checking that each repetition adds no distinct claim, exception, or emphasis.
@@ -75,6 +81,6 @@ For the website, consume the **canonical ratified copy**, not the raw transcript
 2. Produce a distinct canonical chapter in the chapter folder. Keep first person, meaning, deliberate vocabulary, code, and useful structure. Remove spoken clutter and replace screen cues with grounded page references.
 3. Carry relevant video-description links into the chapter. Verify what each code sample and image actually represents. Label illustrative or later material. Record unresolved provenance.
 4. Compare the full chapter with its sources, inspect the rendered result, and check links. Add `RATIFIED.md` and update the central index with honest follow-up status.
-5. Hand the canonical chapter to the website pipeline. Apply site metadata and mechanical conversion there, then run that repository's audit, tag, typecheck, and build gates before publishing.
+5. Apply `write-naturally` and review its audit findings before handing the canonical chapter to the website pipeline. Apply site metadata and mechanical conversion there, then run that repository's copy audit, tag, typecheck, and build gates before publishing.
 
 The first ten canonical examples are linked from the Drive ratification index. Their markers show the actual editorial scope and exceptions for each chapter. The rules above define the next pass.
