@@ -2,12 +2,12 @@
 title: "Dependency Injection? No Thank You!"
 description: "Dependency injection exposes private collaborators to callers when used for every internal relationship. Keep classes self-contained and let business code choose real variation."
 datePublished: 2019-10-06
-dateModified: 2026-09-23
+dateModified: 2026-09-25
 tags: ["public-surface", "class-design", "design-patterns", "csharp", "dependency-injection", "strategy-pattern", "factory-pattern", "template-method"]
 youtube: "https://www.youtube.com/watch?v=UfBe_At-TGE"
 ---
 
-This chapter grows out of [my video on dependency injection](https://www.youtube.com/watch?v=UfBe_At-TGE). The examples are illustrative; the video does not walk through a code repository. I distinguish the dependency inversion principle from the habit of injecting every internal dependency, and ask whether the caller needs to know about those internals.
+I distinguish the dependency inversion principle from the habit of injecting every internal dependency, and ask whether the caller needs to know about those internals. The examples are illustrative; the video does not walk through a code repository.
 
 ## The Principle Is Not the Disease
 

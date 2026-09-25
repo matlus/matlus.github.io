@@ -1,0 +1,155 @@
+---
+interface LinkedResource {
+  readonly label: string;
+  readonly url: string;
+  readonly context?: string | undefined;
+}
+
+interface Props {
+  readonly youtube?: string | undefined;
+  readonly youtubeLabel?: string | undefined;
+  readonly additionalVideos?: readonly LinkedResource[] | undefined;
+  readonly audio?: string | undefined;
+  readonly repositories?: readonly LinkedResource[] | undefined;
+}
+
+const { youtube, youtubeLabel = 'Watch on YouTube', additionalVideos = [], audio, repositories = [] } = Astro.props;
+---
+
+{
+  (youtube || additionalVideos.length > 0 || audio || repositories.length > 0) && (
+    <aside class="article-resources" aria-labelledby="article-resources-heading">
+      <h2 id="article-resources-heading">Keep exploring</h2>
+      <div class="article-resources__grid">
+        {youtube && (
+          <a class="article-resource" href={youtube} rel="noopener noreferrer">
+            <svg class="article-resource__icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              <rect x="2" y="6" width="28" height="20" rx="6" fill="none" stroke="currentColor" stroke-width="2" />
+              <path d="m13 11 9 5-9 5z" fill="currentColor" />
+            </svg>
+            <span>
+              <span class="article-resource__kind">Video</span>
+              <strong>{youtubeLabel}</strong>
+            </span>
+            <span class="article-resource__arrow" aria-hidden="true">↗</span>
+          </a>
+        )}
+
+        {additionalVideos.map((video) => (
+          <a class="article-resource" href={video.url} rel="noopener noreferrer">
+            <svg class="article-resource__icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              <rect x="2" y="6" width="28" height="20" rx="6" fill="none" stroke="currentColor" stroke-width="2" />
+              <path d="m13 11 9 5-9 5z" fill="currentColor" />
+            </svg>
+            <span>
+              <span class="article-resource__kind">Video</span>
+              <strong>{video.label}</strong>
+              {video.context && <span class="article-resource__context">{video.context}</span>}
+            </span>
+            <span class="article-resource__arrow" aria-hidden="true">↗</span>
+          </a>
+        ))}
+
+        {repositories.map((repository) => (
+          <a class="article-resource" href={repository.url} rel="noopener noreferrer">
+            <svg class="article-resource__icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              <rect x="2" y="4" width="28" height="24" rx="5" fill="none" stroke="currentColor" stroke-width="2" />
+              <path d="m12 12-4 4 4 4m8-8 4 4-4 4m-2-11-4 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>
+              <span class="article-resource__kind">GitHub repository</span>
+              <strong>{repository.label}</strong>
+              {repository.context && <span class="article-resource__context">{repository.context}</span>}
+            </span>
+            <span class="article-resource__arrow" aria-hidden="true">↗</span>
+          </a>
+        ))}
+
+        {audio && (
+          <div class="article-resource article-resource--audio">
+            <span>
+              <span class="article-resource__kind">Audio</span>
+              <strong>Listen to this article</strong>
+              <audio controls preload="none" src={audio}></audio>
+              <a href={audio} download>Download audio</a>
+            </span>
+          </div>
+        )}
+      </div>
+    </aside>
+  )
+}
+
+<style>
+  .article-resources {
+    margin-top: var(--space-xl);
+    padding: var(--space-l);
+    background: var(--color-accent-wash);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .article-resources h2 {
+    margin: 0 0 var(--space-m);
+    font-family: var(--font-sans);
+    font-size: var(--step-0);
+    color: var(--color-text);
+  }
+
+  .article-resources__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-s);
+  }
+
+  .article-resource {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr) auto;
+    align-items: start;
+    gap: var(--space-xs);
+    min-width: 0;
+    padding: var(--space-s);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  a.article-resource:hover,
+  a.article-resource:focus-visible {
+    border-color: var(--color-accent);
+    outline-color: var(--color-accent);
+  }
+
+  .article-resource__icon {
+    width: 2rem;
+    height: 2rem;
+    color: var(--color-accent);
+  }
+
+  .article-resource__kind,
+  .article-resource__context {
+    display: block;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .article-resource__kind { margin-bottom: var(--space-3xs); }
+  .article-resource strong {
+    display: block;
+    overflow-wrap: anywhere;
+    font-size: var(--step-0);
+    line-height: 1.3;
+  }
+  .article-resource__context { margin-top: var(--space-3xs); }
+  .article-resource__arrow { color: var(--color-accent); }
+
+  .article-resource--audio { display: block; }
+  .article-resource audio { display: block; max-width: 100%; margin-top: var(--space-xs); }
+  .article-resource--audio a { display: inline-block; margin-top: var(--space-xs); }
+
+  @media (max-width: 40rem) {
+    .article-resources { padding: var(--space-s); }
+  }
+</style>

@@ -31,6 +31,19 @@ const base = z.object({
   audio: z.string().optional(),
   /** Source video, where the page derives from one. */
   youtube: z.url().optional(),
+  youtubeLabel: z.string().optional(),
+  /** Other recordings directly discussed by the article. */
+  additionalVideos: z.array(z.object({
+    label: z.string(),
+    url: z.url(),
+    context: z.string().optional(),
+  })).optional(),
+  /** Public code repositories directly associated with this article. */
+  repositories: z.array(z.object({
+    label: z.string(),
+    url: z.url(),
+    context: z.string().optional(),
+  })).optional(),
   /** Manual override for the computed related list. */
   related: z.array(z.string()).optional(),
   /** Named diagram components rendered in the body. */

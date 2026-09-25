@@ -2,12 +2,16 @@
 title: "Always Use the \"as\" Operator? No Thank You!"
 description: "Use a cast instead of `as` when the type is expected, so a mismatch raises InvalidCastException. Use `is` when the type genuinely varies and keep only guards backed by a real case."
 datePublished: 2021-01-17
-dateModified: 2026-09-23
+dateModified: 2026-09-25
 tags: ["error-handling", "csharp", "type-casting"]
 youtube: "https://www.youtube.com/watch?v=buUVmKAFiFo"
+repositories:
+  - label: MovieServiceYouTube
+    url: "https://github.com/matlus/MovieServiceYouTube"
+    context: Code examples
 ---
 
-This chapter grows out of [my video on the `as` operator](https://www.youtube.com/watch?v=buUVmKAFiFo). The code examples draw from [MovieServiceYouTube](https://github.com/matlus/MovieServiceYouTube). My argument is about what a cast communicates and when a failed type expectation should throw.
+My argument is about what a cast communicates and when a failed type expectation should throw.
 
 ## The Guideline Nobody Questions
 

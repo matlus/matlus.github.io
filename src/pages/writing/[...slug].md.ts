@@ -6,8 +6,8 @@ import { readableArticleBody } from '../../lib/article-markdown';
  * The markdown twin.
  *
  * Every article is served a second time at the same path plus `.md`, carrying
- * the article body and nothing else. No navigation, no sidebar, no related
- * list, no tag cloud, no footer.
+ * the article body and a short source header. No navigation, sidebar, related
+ * list, tag cloud, or footer.
  *
  * That emptiness is the whole point. It is the channel where a retrieval agent
  * gets the argument with zero boilerplate, and mirroring the full page here
@@ -38,6 +38,9 @@ export const GET: APIRoute = ({ props, site }) => {
     `Published: ${iso(post.data.datePublished)}`,
     post.data.dateModified ? `Updated: ${iso(post.data.dateModified)}` : undefined,
     `Source: ${new URL(`/writing/${post.id}/`, site ?? 'https://matlus.com').href}`,
+    post.data.youtube ? `Video: ${post.data.youtube}` : undefined,
+    ...(post.data.additionalVideos ?? []).map((video) => `Video: [${video.label}](${video.url})`),
+    ...(post.data.repositories ?? []).map((repository) => `Repository: [${repository.label}](${repository.url})`),
     `Tags: ${post.data.tags.join(', ')}`,
     '',
     '---',

@@ -2,12 +2,16 @@
 title: "Separate State from Behavior? Yes Please!"
 description: "Separating state from behavior simplifies object-oriented systems: immutable DTOs carry data, while managers compose collaborators and make operations explicit at call sites."
 datePublished: 2020-12-05
-dateModified: 2026-09-23
+dateModified: 2026-09-25
 tags: ["class-design", "public-surface", "service-locator", "configuration-provider", "gateway-pattern", "data-manager", "design-patterns", "csharp", "data-transfer-objects"]
 youtube: "https://www.youtube.com/watch?v=srCLY1n0HQI"
+repositories:
+  - label: MovieServiceYouTube
+    url: "https://github.com/matlus/MovieServiceYouTube"
+    context: Code examples
 ---
 
-This chapter grows out of [my video on separating state from behavior](https://www.youtube.com/watch?v=srCLY1n0HQI). The video uses general examples; the code excerpts here come from [MovieServiceYouTube](https://github.com/matlus/MovieServiceYouTube) to illustrate the same argument. I want data to carry state without mutable behavior and behavior classes to operate on that data.
+I want data to carry state without mutable behavior and behavior classes to operate on that data. The video uses general examples; the code excerpts here come from the Movie Service project linked below.
 
 ## The Real World Object Story Is the Trap
 

@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import BaseLayout from './BaseLayout.astro';
 import PlaceholderImage from '../components/PlaceholderImage.astro';
+import ArticleResources from '../components/ArticleResources.astro';
 import { TAGS } from '../data/tags';
 
 interface Crumb {
@@ -20,6 +21,17 @@ interface Props {
   readonly hero?: ImageMetadata | undefined;
   readonly audio?: string | undefined;
   readonly youtube?: string | undefined;
+  readonly youtubeLabel?: string | undefined;
+  readonly additionalVideos?: readonly {
+    readonly label: string;
+    readonly url: string;
+    readonly context?: string | undefined;
+  }[] | undefined;
+  readonly repositories?: readonly {
+    readonly label: string;
+    readonly url: string;
+    readonly context?: string | undefined;
+  }[] | undefined;
   readonly status?: string | undefined;
   /** Evergreen pages show "updated" prominently; dated posts lead with published. */
   readonly evergreen?: boolean;
@@ -31,7 +43,7 @@ interface Props {
 
 const {
   title, description, datePublished, dateModified, tags, crumbs,
-  hero, audio, youtube, status, evergreen = false, markdownHref, seed,
+  hero, audio, youtube, youtubeLabel, additionalVideos, repositories, status, evergreen = false, markdownHref, seed,
   schemaType = 'TechArticle',
 } = Astro.props;
 
@@ -110,23 +122,10 @@ const breadcrumbLd = {
       </div>
     </header>
 
-    {
-      (audio || youtube) && (
-        <div class="companions">
-          {youtube && <a class="companion" href={youtube} rel="noopener">Watch the video</a>}
-          {audio && (
-            <div class="companion companion--audio">
-              <audio controls preload="none" src={audio}></audio>
-              <a href={audio} download>Download audio</a>
-            </div>
-          )}
-        </div>
-      )
-    }
-
     <div class="article-body">
       <article class="prose">
         <slot />
+        <ArticleResources youtube={youtube} youtubeLabel={youtubeLabel} additionalVideos={additionalVideos} audio={audio} repositories={repositories} />
       </article>
 
       <aside class="article-side">
@@ -216,27 +215,6 @@ const breadcrumbLd = {
     border: 1px dashed var(--color-border-strong);
     border-radius: 999px;
   }
-
-  .companions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-s);
-    align-items: center;
-    margin-top: var(--space-m);
-    padding: var(--space-xs) var(--space-s);
-    background: var(--color-surface-sunken);
-    border-radius: var(--radius);
-    font-size: var(--step--1);
-  }
-
-  .companion--audio {
-    display: flex;
-    align-items: center;
-    gap: var(--space-s);
-    flex-wrap: wrap;
-  }
-
-  .companion audio { height: 2.2rem; }
 
   /* The diagram and prose share a wider column on desktop. */
   .article-page {

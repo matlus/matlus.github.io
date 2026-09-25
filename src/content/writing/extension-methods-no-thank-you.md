@@ -2,12 +2,16 @@
 title: "Extension Methods? No Thank You!"
 description: "Keep project-specific helpers as static methods: extension methods hide behavior behind namespaces and can change meaning with imports. Use them when they serve the wider C# community."
 datePublished: 2019-09-20
-dateModified: 2026-09-23
+dateModified: 2026-09-25
 tags: ["public-surface", "method-design", "csharp", "extension-methods"]
 youtube: "https://www.youtube.com/watch?v=3wBLnARrbDE"
+repositories:
+  - label: MovieServiceYouTube
+    url: "https://github.com/matlus/MovieServiceYouTube"
+    context: Code examples
 ---
 
-This chapter grows out of [my video on extension methods](https://www.youtube.com/watch?v=3wBLnARrbDE). Its code examples draw from [MovieServiceYouTube](https://github.com/matlus/MovieServiceYouTube). My concern is the public surface and discoverability of extension methods, not whether their syntax is convenient.
+My concern is the public surface and discoverability of extension methods, not whether their syntax is convenient.
 
 ## The Guideline Nobody Wants to Follow
 
