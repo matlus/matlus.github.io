@@ -2,14 +2,21 @@
 title: "The Configuration Provider: An Abstraction With Roles and Responsibilities"
 description: "A Configuration Provider hides the source, returns typed settings, validates required values, and reports useful errors. Composed providers let each system select its settings."
 datePublished: 2019-08-11
-dateModified: 2026-09-23
+dateModified: 2026-09-25
 tags: ["class-design", "error-handling", "configuration-provider", "design-patterns", "csharp", "composition-over-inheritance"]
 youtube: "https://www.youtube.com/watch?v=IPS8VSrGq94"
+repositories:
+  - label: Configuration Provider sample
+    url: "https://github.com/matlus/ConfigurationProviderNetFramework"
+    context: Code from the original video
+  - label: Process Manager sample
+    url: "https://github.com/matlus/Process-Manager-Using-Pub-Sub"
+    context: Current C# examples
 ---
 
-This chapter begins with the .NET Framework implementation in my [Configuration Provider Design Pattern video](https://www.youtube.com/watch?v=IPS8VSrGq94). The video's source code is in [ConfigurationProviderNetFramework](https://github.com/matlus/ConfigurationProviderNetFramework). The discussion of why the effort is justified, and the later sections on composition and testing, extend beyond that video and reflect my current practice. The current C# examples come from `PostBindOrchestrator.Core/SettingsProviders` and `PostBindOrchestrator.DomainLayer/Managers/ConfigurationProviders` in [Process Manager Using Pub/Sub](https://github.com/matlus/Process-Manager-Using-Pub-Sub).
-
 The point throughout is the **roles and responsibilities of a configuration provider**. It owns the source, strong typing, validation, and useful failure messages. The comparison of inheritance and composition follows from those responsibilities.
+
+The original .NET Framework implementation is shown in the video linked below. The later discussion of composition and testing reflects my current practice. The current C# examples come from `PostBindOrchestrator.Core/SettingsProviders` and `PostBindOrchestrator.DomainLayer/Managers/ConfigurationProviders` in the linked Process Manager project.
 
 ## Not a Pattern, and I Do Not Much Care
 

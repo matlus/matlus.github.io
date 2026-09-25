@@ -49,8 +49,8 @@ domain set with HTTPS enforced.
 - `The AI-Native Lifecycle`, the answer to it
 - Twelve ratified chapters derived from videos, each published
   by an HTML page and a Markdown twin. Their publication dates follow the original
-  YouTube videos; their modification dates record the editorial pass. The Design
-  Nugget post retains a visible note that its code and video match is pending.
+  YouTube videos; their modification dates record the editorial pass. Pending
+  code and recording checks are tracked in `docs/article-review-backlog.md`.
   The first ten retain their ratified prose; Factory and Factory Method were
   revised from their chapter drafts against the full transcripts. Character
   entities in some source files retain ratified punctuation in the rendered HTML;
@@ -58,7 +58,8 @@ domain set with HTTPS enforced.
   deliberate phrases in Design Nugget have narrow copy-audit allowances.
   Factory Method takes its publication date and primary video link from the 2013
   C# demonstration; the 2019 Let's Talk recording supplies later explanation and
-  tone. Its code examples still await a frame-by-frame provenance check.
+  tone. Its code examples still await a frame-by-frame provenance check in the
+  article review backlog.
 - `Clean Abstractions Around Libraries` and `Intentional Model Design` are new
   writing posts. They link back to the relevant PWI chapters, which link to them.
   Boundary validation was expanded within the Python Validation chapter; the C#
@@ -80,6 +81,10 @@ a media index generated from actual video and audio frontmatter, design tokens w
 dark mode, a style guide page, hero image generation, and copy and generated-link
 audits gating CI. Navigation and `llms.txt` link only to published chapter topics;
 the tag cloud uses actual published tag counts.
+
+Verified source videos and code repositories appear in resource cards after the
+article body. Editorial verification tasks remain in `docs/article-review-backlog.md`
+and do not appear in published articles or their Markdown twins.
 
 ---
 

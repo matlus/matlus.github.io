@@ -2,14 +2,18 @@
 title: "Prefer Composition Over Inheritance"
 description: "Composition keeps a configuration provider's capabilities limited to what its project needs. The refactor uses self-contained settings providers, a shallow base, and restrained reuse."
 datePublished: 2022-02-06
-dateModified: 2026-09-23
+dateModified: 2026-09-25
 tags: ["class-design", "configuration-provider", "design-patterns", "composition-over-inheritance"]
 youtube: "https://www.youtube.com/watch?v=bS-EcmMur8Q"
+repositories:
+  - label: Composition example project
+    url: "https://github.com/matlus/PreferCompositionOverInheritance"
+    context: Example project from the video
 ---
 
 ## A Real-World Example
 
-This chapter follows a real refactor of configuration providers across several systems. The [example project from the video](https://github.com/matlus/PreferCompositionOverInheritance) contains the resulting code. The chapter explains why a base class that offers every descendant more than it needs obscures intent, and how small, self-contained providers let each system compose only the capabilities it uses. I also explain why I resist inheritance for extension and premature reuse.
+This chapter follows a real refactor of configuration providers across several systems. A base class that offers every descendant more than it needs obscures intent. Small, self-contained providers let each system compose only the capabilities it uses. I also explain why I resist inheritance for extension and premature reuse.
 
 ## Not Another Toy Example
 

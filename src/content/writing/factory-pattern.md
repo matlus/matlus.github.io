@@ -2,12 +2,12 @@
 title: "Factory Pattern: The Enabler of Polymorphism"
 description: "A Factory selects and constructs a member of a class family from meaningful input, letting clients use the shared contract while the Factory owns recurring implementation choices."
 datePublished: 2019-09-10
-dateModified: 2026-09-23
+dateModified: 2026-09-25
 tags: ["class-design", "polymorphism", "factory-pattern", "strategy-pattern", "design-patterns", "csharp"]
 youtube: "https://www.youtube.com/watch?v=HQLXUyb0T2w"
 ---
 
-The Factory pattern solves a small but consequential problem: someone has to construct the concrete class, while the code using it should work through the family's shared contract. I explain the pattern in [the original video](https://www.youtube.com/watch?v=HQLXUyb0T2w). This chapter puts that explanation and its thumbnailer example on the page.
+The Factory pattern solves a small but consequential problem: someone has to construct the concrete class, while the code using it should work through the family's shared contract. This chapter uses a thumbnailer example to explain that choice.
 
 The Factory itself is not polymorphic. Its importance is that it enables the client to use another class family polymorphically.
 
@@ -21,7 +21,7 @@ If the client decides whether to construct `ThumbnailerImage`, `ThumbnailerAudio
 
 ## Put the decision in the Factory
 
-The video builds a thumbnailer family, then moves the selection into a separate Factory. The following C# excerpt illustrates that relationship. It is adapted from the existing chapter draft; an exact code-to-recording comparison remains to be done.
+The video builds a thumbnailer family, then moves the selection into a separate Factory. The following C# excerpt illustrates that relationship. It is adapted from the existing chapter draft.
 
 ```csharp
 public static class ThumbnailerFactory

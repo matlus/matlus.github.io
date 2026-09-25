@@ -2,15 +2,14 @@
 title: "Design Nugget: Evolution To Strategy"
 description: "Build a working baseline, then change the design for a concrete benefit; a log parser evolves through a switch, delegates, and Strategy to test that judgment."
 datePublished: 2020-05-25
-dateModified: 2026-09-23
+dateModified: 2026-09-25
 tags: ["method-design", "csharp", "design-patterns", "strategy-pattern", "delegates"]
 youtube: "https://www.youtube.com/watch?v=RozqbM7C5sE"
+repositories:
+  - label: Evolution to Strategy code
+    url: "https://github.com/matlus/DeisgnNuggetEvolutionToStrategy"
+    context: Four versions of the solution
 ---
-
-> Written chapter from the YouTube video [Design Nugget: Evolution To Strategy](https://www.youtube.com/watch?v=RozqbM7C5sE).  
-> Source code: [matlus/DeisgnNuggetEvolutionToStrategy](https://github.com/matlus/DeisgnNuggetEvolutionToStrategy)
-
-> **Review note:** The code excerpts and their match to the video still need to be checked against the recording and repository. The examples below have not been changed in this prose edit.
 
 Design can be simple and still be hard to explain. A video makes that harder: you can't stop me to ask a question when something isn't clear. That's why I'm starting **Design Nuggets**. Each one is a small exercise in the process of design. I'll start somewhere, build a working version, and show you where the choices lead.
 

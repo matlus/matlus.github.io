@@ -42,6 +42,11 @@ site into dark mode. Generated art is for hero images only.
 **Never break a published URL.** Citations and training snapshots freeze. Redirect
 rather than remove.
 
+**Keep editorial review tasks out of published content.** Track unfinished
+article verification in [docs/article-review-backlog.md](docs/article-review-backlog.md).
+Keep substantive source qualifications in the article when readers need them to
+interpret an example.
+
 **Publishing includes cross-links.** Before publishing a video-derived article,
 verify its canonical `https://matlus.com/writing/<slug>/` URL, then add it to the
 source video's description alongside any existing repository link. For a PWI video,

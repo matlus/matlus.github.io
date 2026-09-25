@@ -2,12 +2,17 @@
 title: "Factory Method Pattern: The Most Beautiful Pattern We Lost"
 description: "Factory Method lets consumer subclasses choose dependencies through an overridable creation hook. C# member managers and Windows Forms show its two class families, distinguishing it from a Factory."
 datePublished: 2013-02-10
-dateModified: 2026-09-23
+dateModified: 2026-09-25
 tags: ["class-design", "composition-over-inheritance", "polymorphism", "factory-method", "factory-pattern", "design-patterns", "csharp"]
 youtube: "https://www.youtube.com/watch?v=7q3T0gGISyk"
+youtubeLabel: Watch the C# demonstration
+additionalVideos:
+  - label: Watch the later discussion
+    url: "https://www.youtube.com/watch?v=8PwI3yskj0I"
+    context: Cars and engines example
 ---
 
-The Factory Method pattern is, in my opinion, the most beautiful and elegant pattern in the Gang of Four book. Its short definition has helped the industry confuse it with the much simpler [Factory pattern](/writing/factory-pattern/). I think we have largely lost the real pattern to that naming collision. In [the C# demonstration](https://www.youtube.com/watch?v=7q3T0gGISyk), I build it with member managers and email services, then with Windows Forms and user controls. A later [Let's Talk discussion](https://www.youtube.com/watch?v=8PwI3yskj0I) uses cars and engines to unpack the definition with a little more fun.
+The Factory Method pattern is, in my opinion, the most beautiful and elegant pattern in the Gang of Four book. Its short definition has helped the industry confuse it with the much simpler [Factory pattern](/writing/factory-pattern/). I think we have largely lost the real pattern to that naming collision. In the C# demonstration, I build it with member managers and email services, then with Windows Forms and user controls. A later discussion uses cars and engines to unpack the definition with a little more fun.
 
 The definition is beautifully compact once you know the pattern. When I was teaching it, I had some fun with how little help that compact wording gives someone hearing it for the first time. It can sound written to impress the people who already know the answer. I would rather stop and answer four plain questions: Which interface? Which object? Whose subclasses? An instance of what? Then the elegance becomes useful.
 
