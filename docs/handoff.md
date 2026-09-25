@@ -82,6 +82,10 @@ dark mode, a style guide page, hero image generation, and copy and generated-lin
 audits gating CI. Navigation and `llms.txt` link only to published chapter topics;
 the tag cloud uses actual published tag counts.
 
+The About page gives Shiv's two professional roles and points readers to the writing
+and Programming With Intent sections. It stays deliberately brief without a public
+employment history or contact details.
+
 Verified source videos and code repositories appear in resource cards after the
 article body. Editorial verification tasks remain in `docs/article-review-backlog.md`
 and do not appear in published articles or their Markdown twins.
@@ -121,21 +125,18 @@ and do not appear in published articles or their Markdown twins.
    present in the local writing collection. The remaining videos need the same editorial
    pass and real YouTube dates, unlike PWI chapters.
 
-6. **About page.** It still has placeholder text. Shiv's biography, contact choice,
-   and links need authoring and confirmation.
-
 ### Straightforward work
 
-7. **17 prose chapters pending.** Each needs a one-line description and tags from the
+6. **17 prose chapters pending.** Each needs a one-line description and tags from the
    controlled vocabulary. Both are judgment calls; everything else is mechanical. Fill
    those fields and `section` (`pwi` or `acceptance-testing`) into
    `tools/chapter-manifest.json`, mark `ready`, then run the converter. Both sections
    now have topic hubs, chapter pages, and Markdown companions.
 
-8. **A diagram for The AI-Native Lifecycle**, most usefully gate one's "authored
+7. **A diagram for The AI-Native Lifecycle**, most usefully gate one's "authored
     once, enforced at two points" flow with the integrity receipt.
 
-9. **Design Patterns as a top-level section.** The `design-patterns` tag and
+8. **Design Patterns as a top-level section.** The `design-patterns` tag and
     per-pattern tags exist. A dedicated section and navigation placement remain.
 
 ---
