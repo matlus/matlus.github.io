@@ -154,6 +154,11 @@ img {
   height: auto;
 }
 
+/* Let dense generated figures scroll on phones without shrinking labels to dust. */
+.article-diagram--raster .article-diagram__image {
+  min-width: 56rem;
+}
+
 /* Keep the wide pipeline readable while allowing horizontal scrolling. */
 .article-diagram--requirements .article-diagram__image {
   min-width: 75rem;
@@ -187,6 +192,11 @@ svg.requirements-diagram #arrow-flow path { stroke: var(--diagram-requirements-f
 .article-diagram figcaption {
   margin-top: var(--space-2xs);
   color: var(--color-text-muted);
+  font-size: var(--step--1);
+}
+
+.article-diagram__full {
+  margin: var(--space-3xs) 0 0;
   font-size: var(--step--1);
 }
 
