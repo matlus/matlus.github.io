@@ -3,6 +3,7 @@ title: "Factory Method Pattern: The Most Beautiful Pattern We Lost"
 description: "Factory Method lets consumer subclasses choose dependencies through an overridable creation hook. C# member managers and Windows Forms show its two class families, distinguishing it from a Factory."
 datePublished: 2013-02-10
 dateModified: 2026-09-25
+hero: factory-method-pattern
 tags: ["class-design", "composition-over-inheritance", "polymorphism", "factory-method", "factory-pattern", "design-patterns", "csharp"]
 youtube: "https://www.youtube.com/watch?v=7q3T0gGISyk"
 youtubeLabel: Watch the C# demonstration
