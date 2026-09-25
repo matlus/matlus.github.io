@@ -9,7 +9,7 @@ youtube: "https://www.youtube.com/watch?v=bS-EcmMur8Q"
 
 ## A Real-World Example
 
-This chapter follows a real refactor of configuration providers across several systems. It shows why a base class that offers every descendant more than it needs obscures intent, and how small, self-contained providers let each system compose only the capabilities it uses. The discussion also explains why I resist inheritance for extension and premature reuse.
+This chapter follows a real refactor of configuration providers across several systems. The [example project from the video](https://github.com/matlus/PreferCompositionOverInheritance) contains the resulting code. The chapter explains why a base class that offers every descendant more than it needs obscures intent, and how small, self-contained providers let each system compose only the capabilities it uses. I also explain why I resist inheritance for extension and premature reuse.
 
 ## Not Another Toy Example
 

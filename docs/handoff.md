@@ -31,7 +31,8 @@ Full specification: [website-spec.md](website-spec.md).
 
 ## Current state
 
-The current build produces 83 pages for **https://matlus.github.io**.
+The site's canonical origin is **https://matlus.com**. GitHub Pages has the custom
+domain set with HTTPS enforced.
 
 | | Count |
 |---|---|
@@ -123,10 +124,7 @@ audit gating CI.
 11. **Design Patterns as a top-level section.** Seven pattern topics already exist.
     Wants a `design-patterns` tag plus a per-pattern tag.
 
-12. **DNS cutover.** `astro.config.mjs` has `site: 'https://matlus.github.io'` with a
-    TODO. Because this is a user site, `base` stays `/`, so the switch is one line.
-
-13. **Media table** runs on placeholder rows in `src/data/media.ts`. Once content
+12. **Media table** runs on placeholder rows in `src/data/media.ts`. Once content
     carries `youtube` and `audio` frontmatter, generate it at build time instead.
 
 ---
@@ -180,6 +178,20 @@ typical saving is around 90%.
 ---
 
 ## Workflows
+
+### Publishing cross-links
+
+After an article is live at its canonical `https://matlus.com/` URL, add that URL
+to the matching YouTube video's description. Keep its existing repository and
+reference links. Add the PWI homepage to videos in the Programming with Intent
+playlist. If the article uses a public code repository, link the repository's
+README to the article and retain the repository link in the article. Verify each
+match against the video description and the repository before editing.
+
+As of 2026-09-25, all 132 channel videos link to the site homepage, all 52
+Programming with Intent playlist videos link to the PWI homepage, and ten videos
+with live matching articles have direct article links. Five matching public
+repositories link back to the live articles.
 
 ### Converting chapters
 

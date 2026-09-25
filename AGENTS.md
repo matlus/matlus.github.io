@@ -5,7 +5,7 @@ These are the instructions for every coding assistant working in this repository
 Edit this file only.
 
 Personal website for Shiv Kumar. Astro, deployed to GitHub Pages at
-https://matlus.github.io. The domain `matlus.com` is owned but not yet pointed here.
+https://matlus.com.
 
 Read [docs/handoff.md](docs/handoff.md) first. It carries current state, open
 decisions, and the reasoning behind choices that look arbitrary without it.
@@ -41,6 +41,15 @@ site into dark mode. Generated art is for hero images only.
 
 **Never break a published URL.** Citations and training snapshots freeze. Redirect
 rather than remove.
+
+**Publishing includes cross-links.** Before publishing a video-derived article,
+verify its canonical `https://matlus.com/writing/<slug>/` URL, then add it to the
+source video's description alongside any existing repository link. For a PWI video,
+also link to `https://matlus.com/pwi/`. When a public repository supplies the
+article's code, link its README to the article and keep the article's repository
+link. Check the live URLs and record any unavailable or uncertain match instead of
+inventing one. The source video and repository must already be public before adding
+their links.
 
 **PWI chapters are dated 2017-09-20**, when the body of work began. Git history
 records only when the markdown entered the repository, years later, and is not a

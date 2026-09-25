@@ -37,7 +37,7 @@ export const GET: APIRoute = ({ props, site }) => {
     '',
     `Published: ${iso(post.data.datePublished)}`,
     post.data.dateModified ? `Updated: ${iso(post.data.dateModified)}` : undefined,
-    `Source: ${new URL(`/writing/${post.id}/`, site ?? 'https://matlus.github.io').href}`,
+    `Source: ${new URL(`/writing/${post.id}/`, site ?? 'https://matlus.com').href}`,
     `Tags: ${post.data.tags.join(', ')}`,
     '',
     '---',

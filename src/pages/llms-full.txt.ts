@@ -13,7 +13,7 @@ import { readableArticleBody } from '../lib/article-markdown';
  */
 
 export const GET: APIRoute = async ({ site }) => {
-  const origin = (site ?? new URL('https://matlus.github.io')).origin;
+  const origin = (site ?? new URL('https://matlus.com')).origin;
   const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
     (a, b) => b.data.datePublished.getTime() - a.data.datePublished.getTime(),
   );

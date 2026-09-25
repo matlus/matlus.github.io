@@ -44,7 +44,7 @@ const tagsBySlug = new Map<string, (typeof TAGS)[number]>(
   TAGS.map((tag) => [tag.slug, tag]),
 );
 
-const site = Astro.site ?? new URL('https://matlus.github.io');
+const site = Astro.site ?? new URL('https://matlus.com');
 const canonical = new URL(Astro.url.pathname, site);
 
 const articleLd = {

@@ -7,7 +7,7 @@ tags: ["class-design", "error-handling", "configuration-provider", "design-patte
 youtube: "https://www.youtube.com/watch?v=IPS8VSrGq94"
 ---
 
-This chapter begins with the .NET Framework implementation in my [Configuration Provider Design Pattern video](https://www.youtube.com/watch?v=IPS8VSrGq94). The discussion of why the effort is justified, and the later sections on composition and testing, extend beyond that video and reflect my current practice. The current C# examples come from `PostBindOrchestrator.Core/SettingsProviders` and `PostBindOrchestrator.DomainLayer/Managers/ConfigurationProviders` in [Process Manager Using Pub/Sub](https://github.com/matlus/Process-Manager-Using-Pub-Sub).
+This chapter begins with the .NET Framework implementation in my [Configuration Provider Design Pattern video](https://www.youtube.com/watch?v=IPS8VSrGq94). The video's source code is in [ConfigurationProviderNetFramework](https://github.com/matlus/ConfigurationProviderNetFramework). The discussion of why the effort is justified, and the later sections on composition and testing, extend beyond that video and reflect my current practice. The current C# examples come from `PostBindOrchestrator.Core/SettingsProviders` and `PostBindOrchestrator.DomainLayer/Managers/ConfigurationProviders` in [Process Manager Using Pub/Sub](https://github.com/matlus/Process-Manager-Using-Pub-Sub).
 
 The point throughout is the **roles and responsibilities of a configuration provider**. It owns the source, strong typing, validation, and useful failure messages. The comparison of inheritance and composition follows from those responsibilities.
 

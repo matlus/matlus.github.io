@@ -16,13 +16,12 @@ interface Props {
 
 const { title, description, isHome = false, markdownHref } = Astro.props;
 
-const site = Astro.site ?? new URL('https://matlus.github.io');
+const site = Astro.site ?? new URL('https://matlus.com');
 const canonical = new URL(Astro.url.pathname, site);
 
 const SAME_AS = [
   'https://github.com/matlus',
-  // TODO: add the YouTube channel URL. This is the block that lets search and
-  // retrieval systems resolve these accounts as one identity.
+  'https://www.youtube.com/channel/UC1PhnlVt1hE1UrmOsZwblig',
 ];
 
 const personLd = {
@@ -82,7 +81,8 @@ const personLd = {
         <p class="muted">Shiv Kumar. Programming With Intent.</p>
         <p class="muted">
           <a href="/llms.txt">llms.txt</a> ·
-          <a href="https://github.com/matlus">GitHub</a>
+          <a href="https://github.com/matlus">GitHub</a> ·
+          <a href="https://www.youtube.com/channel/UC1PhnlVt1hE1UrmOsZwblig">YouTube</a>
         </p>
       </div>
     </footer>
