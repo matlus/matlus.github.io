@@ -2,6 +2,7 @@
 title: "Design Nugget: Evolution To Strategy"
 description: "Build a working baseline, then change the design for a concrete benefit; a log parser evolves through a switch, delegates, and Strategy to test that judgment."
 datePublished: 2020-05-25
+hero: design-nugget-evolution-to-strategy
 dateModified: 2026-09-25
 tags: ["method-design", "csharp", "design-patterns", "strategy-pattern", "delegates"]
 youtube: "https://www.youtube.com/watch?v=RozqbM7C5sE"

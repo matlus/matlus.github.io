@@ -2,6 +2,7 @@
 title: "Interfaces? No Thank You!"
 description: "C# interfaces do not inherently create contracts or loose coupling. Composition handles hierarchy conflicts; capability interfaces and structural typing let consumers see only what they need."
 datePublished: 2019-09-21
+hero: interfaces-no-thank-you
 dateModified: 2026-09-23
 tags: ["service-locator", "gateway-pattern", "design-patterns", "csharp", "interfaces", "interface-segregation", "composition-over-inheritance"]
 youtube: "https://www.youtube.com/watch?v=jgeDx9bT684"

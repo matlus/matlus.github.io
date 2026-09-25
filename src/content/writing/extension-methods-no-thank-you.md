@@ -2,6 +2,7 @@
 title: "Extension Methods? No Thank You!"
 description: "Keep project-specific helpers as static methods: extension methods hide behavior behind namespaces and can change meaning with imports. Use them when they serve the wider C# community."
 datePublished: 2019-09-20
+hero: extension-methods-no-thank-you
 dateModified: 2026-09-25
 tags: ["public-surface", "method-design", "csharp", "extension-methods"]
 youtube: "https://www.youtube.com/watch?v=3wBLnARrbDE"

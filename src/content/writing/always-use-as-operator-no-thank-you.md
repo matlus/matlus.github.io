@@ -2,6 +2,7 @@
 title: "Always Use the \"as\" Operator? No Thank You!"
 description: "Use a cast instead of `as` when the type is expected, so a mismatch raises InvalidCastException. Use `is` when the type genuinely varies and keep only guards backed by a real case."
 datePublished: 2021-01-17
+hero: always-use-as-operator-no-thank-you
 dateModified: 2026-09-25
 tags: ["error-handling", "csharp", "type-casting"]
 youtube: "https://www.youtube.com/watch?v=buUVmKAFiFo"

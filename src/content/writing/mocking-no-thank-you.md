@@ -2,6 +2,7 @@
 title: "Mocking? No Thank You!"
 description: "Test whole features through the public surface so regression tests survive later design changes. Class mocks bind tests to internals; transport doubles cover rare external failures."
 datePublished: 2019-10-12
+hero: mocking-no-thank-you
 dateModified: 2026-09-23
 tags: ["testing", "acceptance-testing", "mocking", "test-driven-development"]
 youtube: "https://www.youtube.com/watch?v=9BaDj8SSsdM"

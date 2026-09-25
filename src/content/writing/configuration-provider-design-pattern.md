@@ -2,6 +2,7 @@
 title: "The Configuration Provider: An Abstraction With Roles and Responsibilities"
 description: "A Configuration Provider hides the source, returns typed settings, validates required values, and reports useful errors. Composed providers let each system select its settings."
 datePublished: 2019-08-11
+hero: configuration-provider-design-pattern
 dateModified: 2026-09-25
 tags: ["class-design", "error-handling", "configuration-provider", "design-patterns", "csharp", "composition-over-inheritance"]
 youtube: "https://www.youtube.com/watch?v=IPS8VSrGq94"
