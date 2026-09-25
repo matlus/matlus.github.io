@@ -111,8 +111,9 @@ SKIP_PREFIXES = ("|", "#", "```", ">", "---", "    ", "\t")
 # terminological exactness and to consistency with their sibling chapters, and
 # a plain-language pass over them would soften the precision that rule
 # operationalization depends on. They are reproduced here unaltered, so
-# auditing them only produces findings nobody intends to act on.
-EXCLUDED_DIRS = ("src/content/chapters",)
+# auditing them only produces findings nobody intends to act on. The source
+# archive is likewise kept verbatim; its adapted article is audited in writing.
+EXCLUDED_DIRS = ("src/content/chapters", "docs/source-material")
 
 
 def is_excluded(path: Path) -> bool:
@@ -215,7 +216,7 @@ def main() -> int:
     skipped = [t for t in targets if is_excluded(t)]
     targets = [t for t in targets if not is_excluded(t)]
     if skipped:
-        print(f"Skipped {len(skipped)} corpus chapter file(s); see EXCLUDED_DIRS.")
+        print(f"Skipped {len(skipped)} source/corpus file(s); see EXCLUDED_DIRS.")
 
     if not targets:
         print("No files to audit.")

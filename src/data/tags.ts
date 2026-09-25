@@ -213,6 +213,36 @@ export const TAGS = [
   { slug: 'interfaces', label: 'Interfaces', description: 'C# interface roles, their costs, and when a consumer needs a narrow capability.' },
   { slug: 'interface-segregation', label: 'Interface Segregation', description: 'Presenting each consumer with only the operations it needs.' },
   { slug: 'boundary-validation', label: 'Boundary Validation', description: 'Checking untrusted input and output at system boundaries while keeping internal flows clear.' },
+  {
+    slug: 'jev',
+    label: 'Jev',
+    description: 'TypeSafe AI’s System One model for typed judgments about supplied text. Choice, Score, and Noul support bounded semantic decisions.',
+  },
+  {
+    slug: 'model-evaluation',
+    label: 'Model Evaluation',
+    description: 'Measuring model decisions on representative labeled cases, including error costs, calibration, thresholds, abstention, and performance after changes.',
+  },
+  {
+    slug: 'speculative-fan-out',
+    label: 'Speculative Fan-Out',
+    description: 'Asking independent questions about shared state in one request, including answers that some later routes will not use.',
+  },
+  {
+    slug: 'confidence-gated-routing',
+    label: 'Confidence-Gated Routing',
+    description: 'Using a model’s answer and tested confidence thresholds to choose between automatic action, another process, and human review.',
+  },
+  {
+    slug: 'composite-scoring',
+    label: 'Composite Scoring',
+    description: 'Scoring separate semantic dimensions and combining them with explicit weights to support a decision.',
+  },
+  {
+    slug: 'intent-routing',
+    label: 'Intent Routing',
+    description: 'Classifying a request’s intent to choose a handler, such as ordinary code, a specialist model, or a person.',
+  },
 ] as const satisfies readonly Tag[];
 
 export type TagSlug = (typeof TAGS)[number]['slug'];
