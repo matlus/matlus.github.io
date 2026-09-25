@@ -3,6 +3,7 @@ title: "Separate State from Behavior? Yes Please!"
 description: "Separating state from behavior simplifies object-oriented systems: immutable DTOs carry data, while managers compose collaborators and make operations explicit at call sites."
 datePublished: 2020-12-05
 dateModified: 2026-09-25
+hero: separate-state-from-behavior
 tags: ["class-design", "public-surface", "service-locator", "configuration-provider", "gateway-pattern", "data-manager", "design-patterns", "csharp", "data-transfer-objects"]
 youtube: "https://www.youtube.com/watch?v=srCLY1n0HQI"
 repositories:

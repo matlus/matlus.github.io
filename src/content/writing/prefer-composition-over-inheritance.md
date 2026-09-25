@@ -3,6 +3,7 @@ title: "Prefer Composition Over Inheritance"
 description: "Composition keeps a configuration provider's capabilities limited to what its project needs. The refactor uses self-contained settings providers, a shallow base, and restrained reuse."
 datePublished: 2022-02-06
 dateModified: 2026-09-25
+hero: prefer-composition-over-inheritance
 tags: ["class-design", "configuration-provider", "design-patterns", "composition-over-inheritance"]
 youtube: "https://www.youtube.com/watch?v=bS-EcmMur8Q"
 repositories:

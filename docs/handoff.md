@@ -177,11 +177,11 @@ language is a one-line union edit, and the build fails until it has a label.
 **Need-to-know is an aphorism, not a topic.** It belongs to method design: pass a
 method exactly what it needs, nothing more.
 
-**Two visual pipelines, kept separate.** Hero art is generated raster in the vintage
-engineering sketch style. Diagrams are authored SVG. The split is decided by
-retrieval: a generated picture of a directed graph contributes nothing because its
-labels are pixels. Generators also garble technical text, as an existing generated
-diagram's OCR demonstrates.
+**Two visual pipelines, kept separate.** Hero art is generated raster in a technical
+editorial ink style, with subjects drawn from each article. Diagrams are authored SVG.
+The split is decided by retrieval: a generated picture of a directed graph
+contributes nothing because its labels are pixels. Generators also garble technical
+text, as an existing generated diagram's OCR demonstrates.
 
 **Concurrency in diagrams is structural.** A stage running N instances is drawn as N
 boxes. Collapsing one into a single box hides the fan-out the diagram exists to show.
@@ -233,9 +233,10 @@ and runs ahead; the CLI at 0.147.0 refused outright while the desktop build at
 0.155.0 worked. The binary sits under a content-hashed directory, so
 `tools/codex-desktop.sh` resolves the newest by modification time.
 
-Ask explicitly for no lettering, or the model adds garbled text. The style clause is
-in [image-and-diagram-guide.md](image-and-diagram-guide.md) and should be used
-verbatim, with only the subject appended.
+Ask explicitly for no lettering, or the model adds garbled text. Use the shared
+visual traits in [image-and-diagram-guide.md](image-and-diagram-guide.md), then
+choose a concrete subject from the article's claim. Engineering machinery is
+optional subject matter.
 
 ---
 

@@ -28,10 +28,10 @@ evidence univer". That is not a tuning problem.
 
 ### Style
 
-The established look is **vintage engineering sketch illustration**: hand-drawn
-technical editorial illustration sitting between editorial illustration, industrial
-design sketch, and technical manual drawing. It is not comic art, not blueprint art,
-and not architectural sketching.
+The established look is **hand-drawn technical editorial illustration**. Fine ink
+linework, warm paper, and restrained colour tie the images together. Engineering
+sketches are one subject treatment in the set; people, software workspaces, screens,
+and other article-specific scenes belong in it too.
 
 Consistent traits:
 
@@ -39,35 +39,43 @@ Consistent traits:
 - Off-white or warm paper background
 - Mostly monochrome rendering
 - Very limited accent colours: red, orange, blue, green, cyan
-- Engineering, blueprint, and workshop imagery
+- Engineering, blueprint, and workshop imagery when it serves the article
 - Slightly retro instructional-manual aesthetic
 - Realistic objects, illustrated rather than photorealistic
 - Diagrammatic composition: gears, machines, screens, cables, architecture, annotations
 - Occasional exaggerated metaphorical scenes
 - Visible pencil and ink construction marks, so it reads as drawn
 
-Two related substyles run through the set. People, desks, servers, workshop scenes,
-computers and vehicles lean toward **vintage technical editorial illustration**.
-Engines, machinery, gears, testing devices and blueprints lean toward **industrial
+Two related substyles run through the set. People, desks, servers, software screens,
+computers, and vehicles lean toward **vintage technical editorial illustration**.
+Engines, machinery, gears, testing devices, and blueprints lean toward **industrial
 design sketch and patent-style technical illustration**, though more expressive than a
-true patent drawing.
+true patent drawing. Choose the subject from the article, then choose the treatment
+that makes that subject legible.
 
 ### Reusable prompt template
 
-Keep this verbatim as the style clause. Append only the subject.
+Keep the shared visual traits in the style clause. Before writing the subject, read
+the article and identify its central claim and a concrete consequence or scene that
+could make that claim visible. Avoid defaulting to gears or machinery for software
+topics. A hero should evoke the article; technical explanation belongs in an SVG
+diagram with readable text.
 
 ```
-Hand-drawn technical editorial illustration, pen-and-ink line art with detailed
-cross-hatching, warm ivory paper background, vintage engineering manual aesthetic,
-realistic mechanical forms, sparse selective color accents, visible drafting marks,
-sophisticated conceptual metaphor, clean white space, highly detailed but not
+Hand-drawn technical editorial illustration, fine pen-and-ink linework and
+cross-hatching, warm ivory paper background, mostly monochrome with sparse selective
+color accents, visible pencil construction marks, slightly retro instructional-manual
+character, sophisticated conceptual metaphor, clean white space, detailed but not
 photorealistic.
 
-Subject: <one sentence describing what the illustration depicts>
+Article idea: <the claim the reader should connect to the image>
+Subject: <one concrete scene or action that makes the idea visible>
+Composition: <a wide scene with the important relationship in the center band>
+No text, code, labels, logos, or watermark.
 ```
 
-Shorthand name for the style, where a generator accepts one: **vintage engineering
-sketch illustration**.
+Shorthand name for the style, where a generator accepts one: **technical editorial
+ink sketch**. Add **industrial design sketch** only when machinery is the subject.
 
 ### Fixed dimensions
 
@@ -79,27 +87,17 @@ sketch illustration**.
 
 ### Generating one
 
-Use the **desktop app's** bundled codex binary, never the standalone CLI. The desktop
-app self-updates, so it runs ahead. At the time of writing the CLI was 0.147.0 and
-refused outright, its default model returning "requires a newer version of Codex",
-while the desktop build was 0.155.0-alpha.9.2 and worked.
+In an interactive Codex task, use the built-in `image_gen` tool. Read the article,
+fill in the article idea, subject, and composition in the template above, and request
+one wide landscape image. Inspect the result for a clear relationship to the article,
+unrelated objects, and garbled text. Revise the prompt and regenerate when needed.
+The generator saves the original PNG outside the repository; convert the selected
+image with `tools/prepare-image.mjs` before adding it to `src/assets/heroes/`.
 
-The binary sits under a content-hashed directory that changes on every update, so
-`tools/codex-desktop.sh` resolves the newest by modification time rather than pinning a
-path.
-
-```bash
-tools/codex-desktop.sh exec --skip-git-repo-check --sandbox workspace-write "Use the built-in image_gen tool to generate ONE landscape image at the widest landscape size available.
-
-Style (use verbatim): <the style clause above>
-
-Subject: <one sentence>
-
-No text or lettering anywhere in the image. Then copy the final image into the current workspace at <path> and report that path."
-```
-
-Observed output is 1881 x 836, a ratio of 2.25, which sits close to the article hero
-slot. Ask explicitly for no lettering: the model will otherwise add garbled text.
+For a separate shell-driven Codex task, `tools/codex-desktop.sh` resolves the desktop
+binary and can ask that task to use its built-in image tool. The standalone CLI once
+lagged the desktop release and failed to run the image task. Keep the full article
+idea, subject, composition, and no-lettering instruction in either route.
 
 ### Originals stay out of the repo
 
