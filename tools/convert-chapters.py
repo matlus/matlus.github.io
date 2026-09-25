@@ -2,8 +2,8 @@
 """Convert PWI corpus chapters into site content.
 
 The campaign runs across many sessions, so the manifest is both the ledger and
-the input. `tools/chapter-manifest.json` records every chapter file, its shape,
-its status, and, for anything skipped, why.
+the input. `tools/chapter-manifest.json` records chapters considered for this
+site, their status, and, for anything skipped, why.
 
 Status values:
 
@@ -39,17 +39,6 @@ OUT_DIR = Path("src/content/chapters")
 # only when the markdown entered the repository, which is years later.
 PWI_ORIGIN = "2017-09-20"
 
-PILLARS = {
-    "architecture-layers": "architecture-with-intent",
-    "class-design": "programming-with-intent",
-    "naming-conventions": "programming-with-intent",
-    "method-design": "programming-with-intent",
-    "type-annotations": "programming-with-intent",
-    "linq-query-semantics": "programming-with-intent",
-    "validation-exception-handling": "programming-to-exceptions",
-}
-
-
 def last_modified(file_name: str) -> str:
     """Genuine revision date from the corpus repository."""
     import subprocess
@@ -76,8 +65,10 @@ def transform(body: str) -> str:
 
 
 def frontmatter(entry: dict, modified: str) -> str:
+    section = entry.get("section")
+    if section not in ("pwi", "acceptance-testing"):
+        raise ValueError(f"{entry['file']}: section must be pwi or acceptance-testing")
     tags = "\n".join(f"  - {tag}" for tag in entry["tags"])
-    pillar = PILLARS.get(entry["topic"], "programming-with-intent")
     return (
         "---\n"
         f"title: {entry['title']}\n"
@@ -87,10 +78,9 @@ def frontmatter(entry: dict, modified: str) -> str:
         f"dateModified: {modified}\n"
         "tags:\n"
         f"{tags}\n"
-        "section: pwi\n"
+        f"section: {section}\n"
         f"topic: {entry['topic']}\n"
         f"language: {entry['language']}\n"
-        f"pillar: {pillar}\n"
         "---\n\n"
     )
 
@@ -106,6 +96,11 @@ def main() -> int:
     if not ready:
         print("Nothing marked ready. Fill in topic, title, description and tags first.")
         return 0
+
+    for entry in ready:
+        if entry.get("section") not in ("pwi", "acceptance-testing"):
+            print(f"INVALID {entry['file']}: section must be pwi or acceptance-testing", file=sys.stderr)
+            return 1
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 

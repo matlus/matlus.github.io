@@ -115,6 +115,8 @@ This allows for:
 
 ### State-only Classes
 
+[Intentional Model Design](/writing/intentional-model-design/) takes the state-only principle further: a model's required and optional fields should describe one honest data shape, so consumers do not need repeated guards to infer what it carries. The article also connects model design to [clean library boundaries](/writing/clean-abstractions-around-libraries/).
+
 - No behavior beyond data access
 - Should be implemented as either:
     - **Pydantic frozen models (immutable)** - preferred when JSON serialization/deserialization is needed

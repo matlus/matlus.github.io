@@ -32,21 +32,6 @@ const ENTRY_POINTS = [
   },
 ];
 
-// Placeholder weights so the cloud reads like a cloud before content exists.
-const DEMO_WEIGHTS = {
-  testing: 14,
-  'acceptance-testing': 11,
-  'method-design': 9,
-  naming: 8,
-  architecture: 7,
-  'class-design': 6,
-  python: 12,
-  csharp: 8,
-  'error-handling': 5,
-  'code-review': 4,
-  'llm-systems': 3,
-  'data-access': 3,
-};
 ---
 
 <BaseLayout
@@ -95,7 +80,7 @@ const DEMO_WEIGHTS = {
   </section>
 
   <section class="page">
-    <TagCloud weights={DEMO_WEIGHTS} />
+    <TagCloud />
   </section>
 </BaseLayout>
 

@@ -219,6 +219,8 @@ The goal is a clean abstraction. Changing the implementation while preserving th
 
 Interfaces, protocols, factories, configuration, or runtime dispatch may support those choices, but they are mechanisms rather than the governing intent.
 
+[Clean Abstractions Around Libraries](/writing/clean-abstractions-around-libraries/) develops this seam with Gateways, Data Managers, Configuration Providers, message brokers, and an in-process library example. [Intentional Model Design](/writing/intentional-model-design/) explains why the domain models crossing these seams must express their own requirements clearly. The [Validation and Exception Handling chapter](/pwi/validation-exception-handling/python/) covers the checks and failure translation at those doors.
+
 ### Where Gateways and Resource Models Live
 
 A gateway is **constructed and owned by the Manager**, the construction owner, and lives in a **single `gateways/` folder under `managers/`**, never duplicated elsewhere in the tree. The Manager **passes the gateway by reference** down to any engine or LLM processor that needs it; an Engine in turn passes it to its own LLM processors. This is injection, not folder navigation: the receiver uses what it was handed, so passing a gateway down neither violates the one-level-down rule nor creates a second `gateways/` folder beneath the consumer. An Engine owns its own processors and LLM processors, but **not** gateways: those always come from the Manager's one gateways folder. Along with the gateway, the Manager passes down the **configuration values** a downstream engine or processor needs (the data, never the ConfigurationProvider itself, which stops at the Manager).

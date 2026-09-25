@@ -10,14 +10,14 @@ import { getCollection } from 'astro:content';
  */
 
 export const getStaticPaths = (async () => {
-  const chapters = await getCollection('chapters', ({ data }) => data.section === 'pwi');
+  const chapters = await getCollection('chapters', ({ data }) => !data.draft && data.section === 'pwi');
   return chapters.map((chapter) => ({
     params: { topic: chapter.data.topic, language: chapter.data.language ?? 'shared' },
     props: { chapter },
   }));
 }) satisfies GetStaticPaths;
 
-export const GET: APIRoute = ({ props }) => {
+export const GET: APIRoute = ({ props, site }) => {
   const { chapter } = props as {
     chapter: Awaited<ReturnType<typeof getCollection<'chapters'>>>[number];
   };
@@ -35,7 +35,7 @@ export const GET: APIRoute = ({ props }) => {
     '',
     `Published: ${iso(chapter.data.datePublished)}`,
     chapter.data.dateModified ? `Updated: ${iso(chapter.data.dateModified)}` : undefined,
-    `Source: https://matlus.com/pwi/${chapter.data.topic}/${chapter.data.language}/`,
+    `Source: ${new URL(`/pwi/${chapter.data.topic}/${chapter.data.language}/`, site ?? 'https://matlus.com').href}`,
     `Tags: ${chapter.data.tags.join(', ')}`,
     '',
     '---',

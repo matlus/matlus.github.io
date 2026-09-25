@@ -1,33 +1,28 @@
 # Chapter Conversion Ledger
 
-Status of every chapter in the corpus. The machine-readable version is
+Status of the corpus chapters considered for this website. The machine-readable version is
 `tools/chapter-manifest.json`, which is also the input to
 `tools/convert-chapters.py`, so the ledger and the conversion cannot drift apart.
+Review-only rule catalogs remain in the PWI code review system and are outside
+this site's manifest and conversion workflow.
 
 The campaign runs across many sessions. Anything marked `ready` converts on the next
 run; anything `pending` needs a description and tags first, which are judgment calls
 rather than something derivable from the file.
 
-**12 converted · 17 pending · 22 skipped · 51 total**
+**12 converted · 17 pending · 6 skipped · 35 total**
 
 ## Why chapters get skipped
 
-Chapters fall into three shapes, and only one converts mechanically.
+The site tracks teaching prose and mixed chapters. Teaching prose converts mechanically.
 
 **Teaching prose** carries an argument and reads as a chapter. It converts with two
 mechanical edits and no rewriting.
 
-**Rule catalogues** are written for the review runtime, not for a reader. They carry
-rule IDs such as `pwi.domain-facade.internal-classes-exposed-as-public`, evidence
-scopes, and severities. Published raw, they would read as internal tooling
-documentation. These need a decision: publish as-is, add framing that explains what a
-rule ID is, or leave unpublished.
-
-**Mixed** chapters are mostly prose with a few rule IDs embedded. They follow whatever
-is decided for the catalogues.
-
-Notably, the C# family is almost entirely teaching prose while several Python chapters
-are catalogues, so the split is not even across languages.
+**Mixed** chapters are mostly prose with a few rule IDs embedded. The six mixed
+chapters now have individual editorial routes. They stay skipped by the mechanical
+converter; their reader-facing material comes from videos or purpose-written posts,
+or joins a related published chapter.
 
 ## Converted
 
@@ -72,34 +67,17 @@ are catalogues, so the split is not even across languages.
 
 | Chapter | Rule IDs | Lines | Reason |
 |---|---|---|---|
-| `chapter-56-service-boundary-testing.md` | 17 | 797 | Rule catalogue (17 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-28-stored-procedure-data-access.md` | 9 | 489 | Rule catalogue (9 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-26-artifact-persistence-callbacks.md` | 8 | 281 | Rule catalogue (8 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-27-configuration-provider.md` | 8 | 608 | Rule catalogue (8 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-51-test-structure-organization.md` | 8 | 1069 | Rule catalogue (8 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-53-testing-strategy.md` | 8 | 751 | Rule catalogue (8 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-03-need-to-know-principle.md` | 6 | 332 | Rule catalogue (6 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-07-domain-facade.md` | 6 | 290 | Rule catalogue (6 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-08-llm-based-processor-design.md` | 6 | 416 | Rule catalogue (6 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-15-llm-gateway-implementation.md` | 6 | 603 | Rule catalogue (6 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-02-service-locator-configuration.md` | 5 | 273 | Rule catalogue (5 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-12-gateway-design-pattern.md` | 5 | 638 | Rule catalogue (5 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-13-async-resource-lifecycle.md` | 5 | 435 | Rule catalogue (5 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-21-strategy-pattern.md` | 5 | 349 | Rule catalogue (5 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-50-test-naming-conventions.md` | 5 | 494 | Rule catalogue (5 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-54-testing-test_mediators_and_spies.md` | 4 | 837 | Rule catalogue (4 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing. |
-| `chapter-20-boundary-validation.md` | 3 | 470 | Mixed shape (3 rule IDs in otherwise teaching prose). Worth converting once the rule-ID question is settled. |
-| `chapter-22-factory-pattern.md` | 3 | 210 | Mixed shape (3 rule IDs in otherwise teaching prose). Worth converting once the rule-ID question is settled. |
-| `chapter-24-decorator-pattern.md` | 3 | 174 | Mixed shape (3 rule IDs in otherwise teaching prose). Worth converting once the rule-ID question is settled. |
-| `chapter-14-encapsulating-third-party-libraries.md` | 2 | 307 | Mixed shape (2 rule IDs in otherwise teaching prose). Worth converting once the rule-ID question is settled. |
-| `chapter-17-intentional-model-design.md` | 2 | 354 | Mixed shape (2 rule IDs in otherwise teaching prose). Worth converting once the rule-ID question is settled. |
-| `chapter-23-factory-method-pattern.md` | 1 | 123 | Mixed shape (1 rule IDs in otherwise teaching prose). Worth converting once the rule-ID question is settled. |
+| `chapter-20-boundary-validation.md` | 3 | 470 | Its teaching material belongs in the published Validation chapter. The Python chapter now includes a manager-front-door section; the C# chapter already covers the validator sequence. Keep this review-specific source skipped. |
+| `chapter-22-factory-pattern.md` | 3 | 210 | Use the ratified Factory Pattern video chapter at `/writing/factory-pattern/`. Its useful non-review points about unknown identifiers and concrete downcasts were incorporated. Keep this review-specific source skipped. |
+| `chapter-24-decorator-pattern.md` | 3 | 174 | Hold for a video-led Decorator article. Keep this review-specific source skipped. |
+| `chapter-14-encapsulating-third-party-libraries.md` | 2 | 307 | Reader-facing treatment is `/writing/clean-abstractions-around-libraries/`, with links to the relevant PWI chapters. Keep this review-specific source skipped. |
+| `chapter-17-intentional-model-design.md` | 2 | 354 | Reader-facing treatment is `/writing/intentional-model-design/`, linked both ways with Class Design. Keep this review-specific source skipped. |
+| `chapter-23-factory-method-pattern.md` | 1 | 123 | Use the ratified Factory Method video chapter at `/writing/factory-method-pattern/`. The consumer's use of its own creation hook is now explicit in the illustrative code. Keep this review-specific source skipped. |
 
 ## Known follow-ups
 
-- **Domain Facade** needs authoring rather than conversion. The corpus file is a rule
-  catalogue about facade signatures and locator retention. The fuller chapter also
-  covers folder structure, levels of abstraction, and the sibling rule: a class talks
+- **Domain Facade** needs authoring rather than conversion. A reader-facing chapter
+  should cover folder structure, levels of abstraction, and the sibling rule: a class talks
   one level down and no further, and a sibling needing a sibling is an abstraction
   failure calling for extraction. Some of that already lives in Architecture Layers,
   which has both a Levels of Abstraction and Folder Structure section and a Service

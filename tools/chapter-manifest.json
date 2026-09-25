@@ -49,18 +49,6 @@
       ]
     },
     {
-      "file": "chapter-02-service-locator-configuration.md",
-      "lines": 273,
-      "ruleIds": 5,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (5 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
-    },
-    {
       "file": "chapter-03-naming-conventions-csharp.md",
       "lines": 535,
       "ruleIds": 0,
@@ -75,18 +63,6 @@
         "csharp",
         "method-design"
       ]
-    },
-    {
-      "file": "chapter-03-need-to-know-principle.md",
-      "lines": 332,
-      "ruleIds": 6,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (6 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
     },
     {
       "file": "chapter-04-class-design.md",
@@ -161,36 +137,12 @@
       ]
     },
     {
-      "file": "chapter-07-domain-facade.md",
-      "lines": 290,
-      "ruleIds": 6,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (6 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
-    },
-    {
       "file": "chapter-08-linq-query-semantics-csharp.md",
       "lines": 345,
       "ruleIds": 0,
       "language": "csharp",
       "status": "converted",
       "reason": "",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
-    },
-    {
-      "file": "chapter-08-llm-based-processor-design.md",
-      "lines": 416,
-      "ruleIds": 6,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (6 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
       "topic": "",
       "title": "",
       "description": "",
@@ -253,30 +205,6 @@
       "tags": []
     },
     {
-      "file": "chapter-12-gateway-design-pattern.md",
-      "lines": 638,
-      "ruleIds": 5,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (5 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
-    },
-    {
-      "file": "chapter-13-async-resource-lifecycle.md",
-      "lines": 435,
-      "ruleIds": 5,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (5 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
-    },
-    {
       "file": "chapter-14-encapsulating-third-party-libraries.md",
       "lines": 307,
       "ruleIds": 2,
@@ -295,18 +223,6 @@
       "language": "csharp",
       "status": "pending",
       "reason": "",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
-    },
-    {
-      "file": "chapter-15-llm-gateway-implementation.md",
-      "lines": 603,
-      "ruleIds": 6,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (6 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
       "topic": "",
       "title": "",
       "description": "",
@@ -385,18 +301,6 @@
       "tags": []
     },
     {
-      "file": "chapter-21-strategy-pattern.md",
-      "lines": 349,
-      "ruleIds": 5,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (5 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
-    },
-    {
       "file": "chapter-22-factory-pattern.md",
       "lines": 210,
       "ruleIds": 3,
@@ -457,60 +361,12 @@
       "tags": []
     },
     {
-      "file": "chapter-26-artifact-persistence-callbacks.md",
-      "lines": 281,
-      "ruleIds": 8,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (8 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
-    },
-    {
-      "file": "chapter-27-configuration-provider.md",
-      "lines": 608,
-      "ruleIds": 8,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (8 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
-    },
-    {
-      "file": "chapter-28-stored-procedure-data-access.md",
-      "lines": 489,
-      "ruleIds": 9,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (9 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
-    },
-    {
       "file": "chapter-29-data-manager-design-csharp.md",
       "lines": 525,
       "ruleIds": 0,
       "language": "csharp",
       "status": "pending",
       "reason": "",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
-    },
-    {
-      "file": "chapter-50-test-naming-conventions.md",
-      "lines": 494,
-      "ruleIds": 5,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (5 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
       "topic": "",
       "title": "",
       "description": "",
@@ -535,18 +391,6 @@
       "language": "csharp",
       "status": "pending",
       "reason": "",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
-    },
-    {
-      "file": "chapter-51-test-structure-organization.md",
-      "lines": 1069,
-      "ruleIds": 8,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (8 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
       "topic": "",
       "title": "",
       "description": "",
@@ -589,36 +433,12 @@
       "tags": []
     },
     {
-      "file": "chapter-53-testing-strategy.md",
-      "lines": 751,
-      "ruleIds": 8,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (8 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
-    },
-    {
       "file": "chapter-54-test-mediators-and-spies-csharp.md",
       "lines": 307,
       "ruleIds": 0,
       "language": "csharp",
       "status": "pending",
       "reason": "",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
-    },
-    {
-      "file": "chapter-54-testing-test_mediators_and_spies.md",
-      "lines": 837,
-      "ruleIds": 4,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (4 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
       "topic": "",
       "title": "",
       "description": "",
@@ -643,18 +463,6 @@
       "language": "csharp",
       "status": "pending",
       "reason": "",
-      "topic": "",
-      "title": "",
-      "description": "",
-      "tags": []
-    },
-    {
-      "file": "chapter-56-service-boundary-testing.md",
-      "lines": 797,
-      "ruleIds": 17,
-      "language": "python",
-      "status": "skipped",
-      "reason": "Rule catalogue (17 rule IDs). Written for the review runtime rather than a reader. Needs a decision on framing before publishing.",
       "topic": "",
       "title": "",
       "description": "",

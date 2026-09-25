@@ -1,8 +1,8 @@
 ---
 import SectionLayout from '../../layouts/SectionLayout.astro';
-import { MEDIA, hasAudio, hasVideo } from '../../data/media';
+import { mediaEntries, hasAudio, hasVideo } from '../../data/media';
 
-const entries = [...MEDIA].sort((a, b) => (b.published ?? '').localeCompare(a.published ?? ''));
+const entries = await mediaEntries();
 
 const videoCount = entries.filter(hasVideo).length;
 const audioCount = entries.filter(hasAudio).length;
@@ -21,10 +21,6 @@ const audioCount = entries.filter(hasAudio).length;
       companion, it appears here so you can browse the media directly rather than opening
       every chapter to find out which ones have it.
     </p>
-    <p class="muted">
-      Placeholder rows. Once content exists this table is generated at build time from
-      the same frontmatter that renders the players on each article.
-    </p>
   </section>
 
   <div class="media-toolbar" role="group" aria-label="Filter by media type">
@@ -34,9 +30,11 @@ const audioCount = entries.filter(hasAudio).length;
     <button type="button" class="filter" data-filter="video">
       Video <span class="filter__count">{videoCount}</span>
     </button>
-    <button type="button" class="filter" data-filter="audio">
-      Audio <span class="filter__count">{audioCount}</span>
-    </button>
+    {audioCount > 0 && (
+      <button type="button" class="filter" data-filter="audio">
+        Audio <span class="filter__count">{audioCount}</span>
+      </button>
+    )}
   </div>
 
   <table class="media-table">

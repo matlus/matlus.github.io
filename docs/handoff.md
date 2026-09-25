@@ -1,7 +1,8 @@
 # Handoff
 
 Written 2026-09-22, at the end of the session that built this site from nothing.
-Updated 2026-09-23 for the ten ratified video chapters.
+Updated 2026-09-25 for twelve ratified video chapters, four new writing posts,
+and the link, index, media, and search cleanup.
 
 The purpose of this document is to let a fresh session pick up without
 re-litigating settled decisions. Where a choice looks arbitrary, the reason is
@@ -36,35 +37,49 @@ domain set with HTTPS enforced.
 
 | | Count |
 |---|---|
-| Articles | 13 |
+| Articles | 18 |
 | PWI chapters | 12, across 6 topics |
 | Aphorisms | 24, with computed backlinks |
-| Tags | 39, controlled vocabulary |
+| Tags | 49, controlled vocabulary |
 
 **Articles**
 
 - `Skills versus Controlled Workflows` with an interactive workflow diagram
 - `Stampede at the Gates`, the problem statement
 - `The AI-Native Lifecycle`, the answer to it
-- Ten ratified chapters derived from videos, each published as a writing post with
-  an HTML page and a Markdown twin. Their publication dates follow the original
+- Twelve ratified chapters derived from videos, each published
+  by an HTML page and a Markdown twin. Their publication dates follow the original
   YouTube videos; their modification dates record the editorial pass. The Design
   Nugget post retains a visible note that its code and video match is pending.
-  The conversion preserves their prose. Character entities in some source files
-  retain ratified punctuation in the rendered HTML; the Markdown response decodes
-  them back to the original characters. Two deliberate phrases in Design Nugget
-  have narrow copy-audit allowances.
+  The first ten retain their ratified prose; Factory and Factory Method were
+  revised from their chapter drafts against the full transcripts. Character
+  entities in some source files retain ratified punctuation in the rendered HTML;
+  the Markdown response decodes them back to the original characters. Two
+  deliberate phrases in Design Nugget have narrow copy-audit allowances.
+  Factory Method takes its publication date and primary video link from the 2013
+  C# demonstration; the 2019 Let's Talk recording supplies later explanation and
+  tone. Its code examples still await a frame-by-frame provenance check.
+- `Clean Abstractions Around Libraries` and `Intentional Model Design` are new
+  writing posts. They link back to the relevant PWI chapters, which link to them.
+  Boundary validation was expanded within the Python Validation chapter; the C#
+  chapter already explains its manager-front-door validator sequence.
+- The two Factory posts and two original posts were published together so their
+  reciprocal links resolve. The original posts take their first live date of
+  2026-09-25.
 
 **Chapters**: architecture-layers, class-design, method-design and
 naming-conventions and validation-exception-handling all bilingual, plus
 linq-query-semantics in C# and type-annotations in Python.
 
 **Infrastructure in place**: markdown twins on every article and chapter, generated
-`llms.txt` and `llms-full.txt`, `robots.txt` with explicit AI-crawler allows, sitemap,
+`llms.txt` and `llms-full.txt` (including all published PWI chapters), `robots.txt`
+with explicit AI-crawler allows, sitemap,
 `Person` with `sameAs` on the homepage, `BlogPosting` for writing, `TechArticle`
-for PWI chapters, and `BreadcrumbList` per article,
-design tokens with dark mode, a style guide page, hero image generation, and a copy
-audit gating CI.
+for PWI chapters, and `BreadcrumbList` per article, Pagefind search over 98 pages,
+a media index generated from actual video and audio frontmatter, design tokens with
+dark mode, a style guide page, hero image generation, and copy and generated-link
+audits gating CI. Navigation and `llms.txt` link only to published chapter topics;
+the tag cloud uses actual published tag counts.
 
 ---
 
@@ -72,32 +87,22 @@ audit gating CI.
 
 ### Needs a decision from Shiv
 
-1. **Rule-catalogue chapters.** 22 of 51 corpus files are written for the review
-   runtime rather than a reader, carrying rule IDs, evidence scopes and severities.
-   Published raw they read as internal tooling docs. Options: publish as-is, add
-   framing that explains what a rule ID is, or leave unpublished. See
-   [chapter-conversion-ledger.md](chapter-conversion-ledger.md).
-
-2. **CI wording in The AI-Native Lifecycle.** The source deck says the gated check
+1. **CI wording in The AI-Native Lifecycle.** The source deck says the gated check
    "blocks rather than advises". It currently reads "runs again in CI as a gated
    check", because a standing note says pipeline disposition should not be
    overspecified and auto-fix or merge behaviour is customer-configured. If blocking
    is safe to claim publicly, restore the stronger wording.
 
-3. **Three questions in one paragraph** in Stampede, where the writing skill prefers
+2. **Three questions in one paragraph** in Stampede, where the writing skill prefers
    one rhetorical question per piece. Kept deliberately, since that passage is the
    argument's turn, but it is Shiv's voice to judge.
 
-4. **The "note on numbers" section** was cut from Stampede when the real citations
+3. **The "note on numbers" section** was cut from Stampede when the real citations
    arrived. Confirm nothing was lost.
-
-5. **SQL as a first-class example language** on `stored-procedure-data-access`.
-   Assigned on the reasoning that the procedures are T-SQL while the calling side is
-   Python. If the chapter is really about the access layer, it should be Python only.
 
 ### Needs authoring, not conversion
 
-6. **Domain Facade** deserves a chapter covering more than the corpus file does:
+4. **Domain Facade** deserves a chapter covering:
    folder structure, levels of abstraction, and the sibling rule, where a class talks
    one level down and no further and a sibling needing a sibling is an abstraction
    failure calling for extraction. Some of this already lives in Architecture Layers,
@@ -105,33 +110,38 @@ audit gating CI.
    Interface Layer section. The facade pattern is general; the Domain Facade is
    Shiv's, for the domain layer, and that distinction belongs in the opening.
 
-7. **Video transcripts.** Around 145 videos at roughly one a week. Converting these
+5. **Video transcripts.** Around 145 videos at roughly one a week. Converting these
    is the single highest-leverage remaining task for the retrieval goal, since
-   YouTube content is unreachable to most crawlers. These take real YouTube dates,
-   unlike PWI chapters.
+   YouTube content is unreachable to most crawlers. Twelve ratified video chapters are
+   present in the local writing collection. The remaining videos need the same editorial
+   pass and real YouTube dates, unlike PWI chapters.
+
+6. **About page.** It still has placeholder text. Shiv's biography, contact choice,
+   and links need authoring and confirmation.
 
 ### Straightforward work
 
-8. **17 prose chapters pending.** Each needs a one-line description and tags from the
+7. **17 prose chapters pending.** Each needs a one-line description and tags from the
    controlled vocabulary. Both are judgment calls; everything else is mechanical. Fill
-   them into `tools/chapter-manifest.json`, mark `ready`, run the converter.
+   those fields and `section` (`pwi` or `acceptance-testing`) into
+   `tools/chapter-manifest.json`, mark `ready`, then run the converter. Both sections
+   now have topic hubs, chapter pages, and Markdown companions.
 
-9. **Pagefind search** is specified but not installed.
-
-10. **A diagram for The AI-Native Lifecycle**, most usefully gate one's "authored
+8. **A diagram for The AI-Native Lifecycle**, most usefully gate one's "authored
     once, enforced at two points" flow with the integrity receipt.
 
-11. **Design Patterns as a top-level section.** Seven pattern topics already exist.
-    Wants a `design-patterns` tag plus a per-pattern tag.
-
-12. **Media table** runs on placeholder rows in `src/data/media.ts`. Once content
-    carries `youtube` and `audio` frontmatter, generate it at build time instead.
+9. **Design Patterns as a top-level section.** The `design-patterns` tag and
+    per-pattern tags exist. A dedicated section and navigation placement remain.
 
 ---
 
 ## Decisions already settled
 
 Do not reopen these without new information.
+
+**Review-only rule catalogs stay outside this workspace's content pipeline.** They
+belong to the PWI code review system. The chapter manifest tracks only material
+being considered for this website.
 
 **Sections are subjects, never maturity levels.** A Research section was dropped
 because a section defined by maturity forces a URL change when an idea firms up.
@@ -188,10 +198,13 @@ playlist. If the article uses a public code repository, link the repository's
 README to the article and retain the repository link in the article. Verify each
 match against the video description and the repository before editing.
 
-As of 2026-09-25, all 132 channel videos link to the site homepage, all 52
-Programming with Intent playlist videos link to the PWI homepage, and ten videos
-with live matching articles have direct article links. Five matching public
-repositories link back to the live articles.
+As of 2026-09-25, the 132 channel videos have the site homepage link, the 52
+Programming with Intent playlist videos have the PWI homepage link, and the ten
+videos with live matching articles have direct article links. The Factory and
+Factory Method posts add three more matching video descriptions, bringing the
+direct video links to thirteen. Five matching public
+repositories now link back to the live articles. The cross-link changes were
+published from separate clean checkouts under `D:\Source\Repos\matlus-cross-links`.
 
 ### Converting chapters
 
@@ -200,10 +213,11 @@ cannot drift. Status values: `pending` (prose, needs description and tags), `rea
 (metadata filled in), `converted`, `skipped` (with a reason recorded).
 
 ```bash
-# 1. Fill topic, title, description and tags into the manifest, set status "ready"
+# 1. Fill section, topic, title, description and tags into the manifest, set status "ready"
 python tools/convert-chapters.py --dry-run
 python tools/convert-chapters.py
 npm run typecheck && npm run build && python tools/audit-copy.py src docs prompts && python tools/check-tags.py
+python tools/check-links.py dist
 ```
 
 ### Generating a hero image

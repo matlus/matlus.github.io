@@ -65,6 +65,8 @@ Inside the system, avoid redundant validations - fix the root cause at the bound
 
 Type checks inside domain validators (`is string`, defensive casts) are a finding in C#: the compiler already locked that door.
 
+[Intentional Model Design](/writing/intentional-model-design/) explains why the domain types passed through this door must state their required and optional fields honestly. [Clean Abstractions Around Libraries](/writing/clean-abstractions-around-libraries/) develops the Gateway, Data Manager, Configuration Provider, and message-broker seams that contain external values and failures.
+
 **Models are never behavioral, and normalization is the Manager's first visible step.** An incoming request record initially holds exactly what arrived
 - no trimming, no case folding, no canonicalizing in a constructor. A constructor that quietly rewrites its inputs is behavior nobody thinks to look at, and it hides a business rule: "blank counts as missing", "email identity is lowercase", "SKU identity is uppercase" are rules, so they are enacted where rules live - the Manager, as a named normalize step that produces a new pure-data request before anything validates, compares, or records it:
 

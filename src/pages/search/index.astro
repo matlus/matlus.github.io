@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Search | Shiv Kumar"
+  description="Search articles and Programming With Intent chapters."
+>
+  <link slot="head" rel="stylesheet" href="/pagefind/pagefind-component-ui.css" />
+  <script slot="head" src="/pagefind/pagefind-component-ui.js" type="module" is:inline></script>
+
+  <div class="page search-page">
+    <h1>Search</h1>
+    <p>Find articles and Programming With Intent chapters.</p>
+    <div class="search-page__tool">
+      <pagefind-input placeholder="Search the site"></pagefind-input>
+      <pagefind-summary></pagefind-summary>
+      <pagefind-results></pagefind-results>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .search-page {
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-2xl);
+    max-width: var(--width-page);
+  }
+
+  .search-page h1 {
+    margin-bottom: var(--space-2xs);
+  }
+
+  .search-page__tool {
+    margin-top: var(--space-l);
+    max-width: var(--measure);
+    --pf-text: var(--color-text);
+    --pf-text-secondary: var(--color-text-muted);
+    --pf-text-muted: var(--color-text-faint);
+    --pf-background: var(--color-surface);
+    --pf-border: var(--color-border-strong);
+    --pf-border-focus: var(--color-accent);
+    --pf-hover: var(--color-accent-wash);
+    --pf-mark: var(--color-accent);
+    --pf-outline-focus: var(--color-accent);
+    --pf-font: var(--font-sans);
+  }
+</style>

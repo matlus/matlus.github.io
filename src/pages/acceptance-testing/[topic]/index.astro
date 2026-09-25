@@ -1,0 +1,69 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import SectionLayout from '../../../layouts/SectionLayout.astro';
+import { TOPICS } from '../../../data/topics';
+
+const LANGUAGE_LABEL: Record<string, string> = {
+  python: 'Python',
+  csharp: 'C#',
+  sql: 'SQL',
+};
+
+export const getStaticPaths = (async () => {
+  const chapters = await getCollection(
+    'chapters',
+    ({ data }) => !data.draft && data.section === 'acceptance-testing',
+  );
+  return TOPICS.filter(
+    (topic) => topic.section === 'acceptance-testing' &&
+      chapters.some((chapter) => chapter.data.topic === topic.slug),
+  ).map((topic) => ({
+    params: { topic: topic.slug },
+    props: {
+      topic,
+      chapters: chapters.filter((chapter) => chapter.data.topic === topic.slug),
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const { topic, chapters } = Astro.props;
+---
+
+<SectionLayout
+  title={topic.title}
+  heading={topic.title}
+  eyebrow="Acceptance Testing chapter"
+  description={chapters[0]?.data.description ?? topic.title}
+  seed={topic.slug}
+>
+  <p class="muted scope">
+    {topic.scope === 'language-independent'
+      ? 'The guidance is language-independent. Worked examples are available in the languages below.'
+      : `Specific to ${LANGUAGE_LABEL[topic.scope] ?? topic.scope}.`}
+  </p>
+
+  <ul class="langs">
+    {chapters.map((chapter) => (
+      <li class="lang">
+        <a href={`/acceptance-testing/${topic.slug}/${chapter.data.language ?? 'shared'}/`} class="lang__link">
+          <h2 class="lang__title">{LANGUAGE_LABEL[chapter.data.language ?? ''] ?? chapter.data.language ?? 'Shared'}</h2>
+          <p class="lang__blurb">{chapter.data.description}</p>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <p class="back"><a href="/acceptance-testing/">All of Acceptance Testing</a></p>
+</SectionLayout>
+
+<style>
+  .scope { font-size: var(--step--1); max-width: var(--measure); }
+  .langs { list-style: none; padding: 0; margin: var(--space-m) 0 0; display: grid; gap: var(--space-s); grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); }
+  .lang { border: 1px solid var(--color-border); border-left: 3px solid var(--color-accent); border-radius: var(--radius-lg); background: var(--color-surface); }
+  .lang__link { display: block; padding: var(--space-s) var(--space-m); text-decoration: none; color: inherit; height: 100%; }
+  .lang__link:hover .lang__title { color: var(--color-accent); }
+  .lang__title { font-size: var(--step-1); margin-bottom: var(--space-2xs); }
+  .lang__blurb { margin: 0; font-size: var(--step--1); color: var(--color-text-muted); }
+  .back { margin-top: var(--space-l); font-size: var(--step--1); }
+</style>

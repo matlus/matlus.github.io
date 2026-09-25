@@ -8,7 +8,8 @@ import { getCollection } from 'astro:content';
 const topics = topicsInSection('pwi');
 
 const chapterTopics = new Set(
-  (await getCollection('chapters')).map((chapter) => chapter.data.topic),
+  (await getCollection('chapters', ({ data }) => !data.draft && data.section === 'pwi'))
+    .map((chapter) => chapter.data.topic),
 );
 
 ---

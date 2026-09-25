@@ -21,7 +21,7 @@ const LANGUAGE_LABEL: Record<string, string> = {
 };
 
 export const getStaticPaths = (async () => {
-  const chapters = await getCollection('chapters', ({ data }) => data.section === 'pwi');
+  const chapters = await getCollection('chapters', ({ data }) => !data.draft && data.section === 'pwi');
 
   return chapters.map((chapter) => ({
     params: { topic: chapter.data.topic, language: chapter.data.language ?? 'shared' },
@@ -33,7 +33,7 @@ const { chapter } = Astro.props;
 const { Content } = await render(chapter);
 
 const topic = TOPICS.find((t) => t.slug === chapter.data.topic);
-const pillarSlug = chapter.data.pillar;
+const pillarSlug = topic?.pillar;
 const pillar = pillarSlug && pillarSlug in PILLAR_COPY
   ? PILLAR_COPY[pillarSlug as keyof typeof PILLAR_COPY]
   : undefined;
@@ -55,6 +55,8 @@ const crumbs = [
   dateModified={chapter.data.dateModified}
   tags={chapter.data.tags}
   crumbs={crumbs}
+  audio={chapter.data.audio}
+  youtube={chapter.data.youtube}
   evergreen={true}
   markdownHref={`/pwi/${chapter.data.topic}/${chapter.data.language}.md`}
   seed={`${chapter.data.topic}-${chapter.data.language}`}

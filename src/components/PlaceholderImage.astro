@@ -33,7 +33,7 @@ const height = ratio === 'tall' ? 420 : 260;
 const gradientId = `ph-${seed.replace(/[^a-z0-9]/gi, '')}`;
 ---
 
-<div class="placeholder" data-ratio={ratio}>
+<div class="placeholder" data-ratio={ratio} data-pagefind-ignore="all">
   <svg
     viewBox={`0 0 1200 ${height}`}
     preserveAspectRatio="none"

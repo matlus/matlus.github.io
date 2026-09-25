@@ -7,10 +7,12 @@ import { topicsInSection } from '../../data/topics';
 const topics = topicsInSection('acceptance-testing');
 
 const chapterTopics = new Set(
-  (await getCollection('chapters')).map((chapter) => chapter.data.topic),
+  (await getCollection('chapters', ({ data }) => !data.draft)).map((chapter) => chapter.data.topic),
 );
 
-const headline = topics.find((topic) => topic.slug === 'functional-acceptance-testing');
+const headline = topics.find(
+  (topic) => topic.slug === 'functional-acceptance-testing' && chapterTopics.has(topic.slug),
+);
 const rest = topics.filter((topic) => topic.slug !== 'functional-acceptance-testing');
 ---
 
@@ -66,8 +68,11 @@ const rest = topics.filter((topic) => topic.slug !== 'functional-acceptance-test
     <p>
       Python has a dedicated chapter for functional acceptance testing. C# does not yet.
       On the C# side the same ground is covered inside
-      <a href="/acceptance-testing/service-boundary-testing/">Service-Boundary Testing</a
-      >, which includes domain-boundary functional acceptance tests.
+      {chapterTopics.has('service-boundary-testing') ? (
+        <a href="/acceptance-testing/service-boundary-testing/">Service-Boundary Testing</a>
+      ) : (
+        'Service-Boundary Testing'
+      )}, which includes domain-boundary functional acceptance tests.
     </p>
     <p class="muted">
       The guidance itself is language-independent. Only the worked examples differ.

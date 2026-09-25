@@ -72,7 +72,7 @@ const personLd = {
 
     <SiteNav pathname={Astro.url.pathname} />
 
-    <main id="main">
+    <main id="main" data-pagefind-body={Astro.url.pathname === '/search/' ? undefined : ''}>
       <slot />
     </main>
 

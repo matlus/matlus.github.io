@@ -7,7 +7,7 @@ const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
 );
 
 const fmt = (date: Date) =>
-  date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+  date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 ---
 
 <SectionLayout

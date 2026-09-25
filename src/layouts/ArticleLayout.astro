@@ -36,7 +36,7 @@ const {
 } = Astro.props;
 
 const fmt = (date: Date) =>
-  date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long' });
+  date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', timeZone: 'UTC' });
 
 // Widened to string keys: the article's tags are validated by the content
 // schema, so they are known-good, but they arrive typed as plain strings.

@@ -1,22 +1,10 @@
 ---
-import { getCollection } from 'astro:content';
 import SectionLayout from '../../layouts/SectionLayout.astro';
 import TagCloud from '../../components/TagCloud.astro';
 import { TAGS } from '../../data/tags';
+import { tagCounts } from '../../lib/tag-counts';
 
-const posts = await getCollection('writing', ({ data }) => !data.draft);
-const chapters = await getCollection('chapters');
-
-/** Real counts from frontmatter, across both collections. */
-const weights: Record<string, number> = {};
-for (const tags of [
-  ...posts.map((p) => p.data.tags as readonly string[]),
-  ...chapters.map((c) => c.data.tags as readonly string[]),
-]) {
-  for (const slug of tags) {
-    weights[slug] = (weights[slug] ?? 0) + 1;
-  }
-}
+const weights = await tagCounts();
 ---
 
 <SectionLayout
@@ -26,7 +14,7 @@ for (const tags of [
   description="Every subject on the site, with a description of what it covers. Tags come from a controlled vocabulary, so the build fails on one that is not declared."
   seed="tags"
 >
-  <TagCloud weights={weights} heading="The cloud" />
+  <TagCloud heading="The cloud" />
 
   <ul class="glossary">
     {

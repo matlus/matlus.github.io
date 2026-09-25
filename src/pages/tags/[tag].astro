@@ -18,7 +18,7 @@ export const getStaticPaths = (async () => {
   const LANG: Record<string, string> = { python: 'Python', csharp: 'C#', sql: 'SQL' };
 
   const posts = await getCollection('writing', ({ data }) => !data.draft);
-  const chapters = await getCollection('chapters');
+  const chapters = await getCollection('chapters', ({ data }) => !data.draft);
 
   /*
    * A tag page lists everything carrying the tag, articles and chapters alike.
@@ -37,7 +37,7 @@ export const getStaticPaths = (async () => {
     ...chapters.map((chapter) => ({
       title: `${chapter.data.title} in ${LANG[chapter.data.language ?? ''] ?? ''}`.trim(),
       description: chapter.data.description,
-      href: `/pwi/${chapter.data.topic}/${chapter.data.language}/`,
+      href: `/${chapter.data.section}/${chapter.data.topic}/${chapter.data.language ?? 'shared'}/`,
       tags: chapter.data.tags as readonly string[],
       date: chapter.data.datePublished,
       kind: 'Chapter',
@@ -58,7 +58,7 @@ export const getStaticPaths = (async () => {
 const { tag, posts } = Astro.props;
 
 const fmt = (date: Date) =>
-  date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+  date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 ---
 
 <SectionLayout

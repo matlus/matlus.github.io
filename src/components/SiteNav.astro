@@ -1,11 +1,21 @@
 ---
 import { NAV, isCurrent } from '../data/nav';
+import { getCollection } from 'astro:content';
 
 interface Props {
   readonly pathname: string;
 }
 
 const { pathname } = Astro.props;
+const publishedTopics = new Set(
+  (await getCollection('chapters', ({ data }) => !data.draft)).map((chapter) => chapter.data.topic),
+);
+const nav = NAV.map((item) => ({
+  ...item,
+  children: item.href === '/acceptance-testing/'
+    ? item.children?.filter((child) => publishedTopics.has(child.href.split('/')[2] ?? ''))
+    : item.children,
+}));
 ---
 
 <nav class="site-nav" aria-label="Primary">
@@ -13,6 +23,13 @@ const { pathname } = Astro.props;
     <a class="site-nav__brand" href="/">
       <img class="site-nav__mark" src="/matlus-logo.svg?v=readable" alt="" width="56" height="47" />
       <span>matlus</span>
+    </a>
+
+    <a class="site-nav__search" href="/search/" aria-label="Search the site" title="Search">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+        <path d="m15.5 15.5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      </svg>
     </a>
 
     <button
@@ -27,8 +44,8 @@ const { pathname } = Astro.props;
 
     <ul class="site-nav__list" id="site-nav-menu">
       {
-        NAV.map((item) => (
-          <li class:list={['site-nav__item', { 'has-children': item.children }]}>
+        nav.map((item) => (
+          <li class:list={['site-nav__item', { 'has-children': item.children?.length }]}>
             <a
               href={item.href}
               class="site-nav__link"
@@ -37,7 +54,7 @@ const { pathname } = Astro.props;
               {item.label}
             </a>
 
-            {item.children && (
+            {item.children && item.children.length > 0 && (
               <>
                 <button
                   class="site-nav__caret"
@@ -93,6 +110,22 @@ const { pathname } = Astro.props;
     align-items: center;
     gap: var(--space-m);
     min-height: var(--nav-height);
+  }
+
+  .site-nav__search {
+    order: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius);
+    color: var(--color-text-muted);
+  }
+
+  .site-nav__search:hover {
+    color: var(--color-accent);
+    background: var(--color-accent-wash);
   }
 
   .site-nav__brand {
@@ -232,6 +265,7 @@ const { pathname } = Astro.props;
     padding: var(--space-2xs) var(--space-xs);
     cursor: pointer;
     color: var(--color-text);
+    order: 3;
   }
 
   .site-nav__bars,
@@ -267,6 +301,11 @@ const { pathname } = Astro.props;
   @media (max-width: 767px) {
     .site-nav__toggle {
       display: block;
+      margin-left: 0;
+    }
+
+    .site-nav__search {
+      margin-left: auto;
     }
 
     .site-nav__list {

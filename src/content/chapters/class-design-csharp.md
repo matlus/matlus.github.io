@@ -179,6 +179,8 @@ The number of collaborators is not the concern. One stateful collaborator is a v
 
 ## State-only Types
 
+[Intentional Model Design](/writing/intentional-model-design/) develops the question of whether a type's required and optional fields describe one honest data shape. Its examples include C# records and nullable fields alongside Python dataclasses and `None`. The article also connects model design to [clean library boundaries](/writing/clean-abstractions-around-libraries/).
+
 Use `record` types or immutable sealed classes for data contracts. Prefer positional records for compact value objects, and records with `init` accessors when named properties improve clarity.
 
 ```csharp

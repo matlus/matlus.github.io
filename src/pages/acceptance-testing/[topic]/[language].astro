@@ -1,0 +1,49 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../../layouts/ArticleLayout.astro';
+import { topicBySlug } from '../../../data/topics';
+
+const LANGUAGE_LABEL: Record<string, string> = {
+  python: 'Python',
+  csharp: 'C#',
+  sql: 'SQL',
+};
+
+export const getStaticPaths = (async () => {
+  const chapters = await getCollection(
+    'chapters',
+    ({ data }) => !data.draft && data.section === 'acceptance-testing',
+  );
+  return chapters.map((chapter) => ({
+    params: { topic: chapter.data.topic, language: chapter.data.language ?? 'shared' },
+    props: { chapter },
+  }));
+}) satisfies GetStaticPaths;
+
+const { chapter } = Astro.props;
+const { Content } = await render(chapter);
+const topic = topicBySlug(chapter.data.topic);
+const language = chapter.data.language ?? 'shared';
+const languageLabel = LANGUAGE_LABEL[language] ?? 'Shared';
+---
+
+<ArticleLayout
+  title={`${chapter.data.title} in ${languageLabel}`}
+  description={chapter.data.description}
+  datePublished={chapter.data.datePublished}
+  dateModified={chapter.data.dateModified}
+  tags={chapter.data.tags}
+  crumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Acceptance Testing', href: '/acceptance-testing/' },
+    { label: topic?.title ?? chapter.data.topic, href: `/acceptance-testing/${chapter.data.topic}/` },
+  ]}
+  audio={chapter.data.audio}
+  youtube={chapter.data.youtube}
+  evergreen={true}
+  markdownHref={`/acceptance-testing/${chapter.data.topic}/${language}.md`}
+  seed={`${chapter.data.topic}-${language}`}
+>
+  <Content />
+</ArticleLayout>

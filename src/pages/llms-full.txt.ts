@@ -17,10 +17,14 @@ export const GET: APIRoute = async ({ site }) => {
   const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
     (a, b) => b.data.datePublished.getTime() - a.data.datePublished.getTime(),
   );
+  const chapters = (await getCollection('chapters', ({ data }) => !data.draft)).sort(
+    (a, b) => a.data.topic.localeCompare(b.data.topic) ||
+      (a.data.language ?? '').localeCompare(b.data.language ?? ''),
+  );
 
   const iso = (date: Date) => date.toISOString().slice(0, 10);
 
-  const chunks = posts.map((post) =>
+  const articleChunks = posts.map((post) =>
     [
       `# ${post.data.title}`,
       '',
@@ -35,17 +39,33 @@ export const GET: APIRoute = async ({ site }) => {
       readableArticleBody(post.body),
     ].join('\n'),
   );
+  const chapterChunks = chapters.map((chapter) => {
+    const language = chapter.data.language ?? 'shared';
+    return [
+      `# ${chapter.data.title} (${language})`,
+      '',
+      chapter.data.description.trim(),
+      '',
+      `Source: ${origin}/${chapter.data.section}/${chapter.data.topic}/${language}/`,
+      `Published: ${iso(chapter.data.datePublished)}`,
+      `Tags: ${chapter.data.tags.join(', ')}`,
+      '',
+      '---',
+      '',
+      chapter.body,
+    ].join('\n');
+  });
 
   const header = [
     '# matlus.com, full text',
     '',
-    `Generated ${iso(new Date())}. ${posts.length} article(s).`,
+    `Generated ${iso(new Date())}. ${posts.length} article(s) and ${chapters.length} chapter(s).`,
     '',
     '===',
     '',
   ].join('\n');
 
-  return new Response(header + chunks.join('\n\n===\n\n'), {
+  return new Response(header + [...articleChunks, ...chapterChunks].join('\n\n===\n\n'), {
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },
   });
 };

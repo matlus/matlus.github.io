@@ -1,22 +1,16 @@
 ---
 import { TAGS } from '../data/tags';
+import { tagCounts } from '../lib/tag-counts';
 
 interface Props {
-  /**
-   * Placeholder weights until real content exists. Once pages carry tags, the
-   * build computes these by counting frontmatter rather than reading a map.
-   */
-  readonly weights?: Readonly<Record<string, number>>;
   readonly heading?: string;
 }
 
-const { weights = {}, heading = 'Browse by topic' } = Astro.props;
-
-const PLACEHOLDER_WEIGHT = 1;
+const { heading = 'Browse by topic' } = Astro.props;
+const weights = await tagCounts();
 
 const sized = TAGS.map((tag) => {
-  const weight = weights[tag.slug] ?? PLACEHOLDER_WEIGHT;
-  // Four visual steps. Real counts will spread further than placeholders do.
+  const weight = weights[tag.slug] ?? 0;
   const step = weight >= 12 ? 4 : weight >= 7 ? 3 : weight >= 3 ? 2 : 1;
   return { ...tag, weight, step };
 });

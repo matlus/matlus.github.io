@@ -59,6 +59,22 @@ Exceptions should carry detailed diagnostic data:
 
 Inside the system, avoid redundant validations - fix the root cause at the boundary.
 
+### The Manager's Front Door
+
+The public Manager method is a domain entry point. When it accepts inputs from the facade, it normally calls a named, stateless validator before orchestration. If a business rule requires normalization, a named pure step first creates a new request and the validator immediately checks that request. The Manager then proceeds with the validated values; it does not branch on a `valid` result or implement the checks itself.
+
+```python
+def process_post_bind(self, post_bind_request: PostBindRequest) -> None:
+    ValidatorPostBindRequest.validate(post_bind_request)
+
+    task_message = self._task_message_factory.create(post_bind_request)
+    self._task_publisher.publish(task_message)
+```
+
+`ValidatorPostBindRequest.validate` returns `None` on success and raises a specific domain exception on failure. The validator owns the checks, while the Manager owns the sequence. A public method with no inputs requiring validation needs no ceremonial call.
+
+The other doors include configuration providers, gateway responses, parsed LLM or JSON output, files, queues, and host adapters. Each converts incoming values into types the domain can trust. [Intentional Model Design](/writing/intentional-model-design/) explains those types; [Clean Abstractions Around Libraries](/writing/clean-abstractions-around-libraries/) explains how provider details stay inside the class that performs the translation.
+
 When reviewing structured logging and exception context, report only concrete failures in the current code path:
 
 - Do not claim mutation/corruption of exception context unless you verify the code is mutating shared internal state rather than a defensive copy returned from a property/helper.

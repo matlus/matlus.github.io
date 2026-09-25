@@ -50,6 +50,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Check generated links
+        run: python tools/check-links.py dist
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:

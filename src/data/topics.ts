@@ -32,9 +32,7 @@
  * needed to introduce it, because nothing counts languages or assumes there
  * are exactly two.
  *
- * `sql` is a language in its own right, not a dialect of a host language.
- * Stored-procedure guidance spans the procedures themselves and the host code
- * that calls them.
+ * SQL remains available for future chapters with worked SQL examples.
  */
 export type Language = 'python' | 'csharp' | 'sql';
 
@@ -93,7 +91,6 @@ export interface Topic {
 const PY_CS = ['python', 'csharp'] as const;
 const PY = ['python'] as const;
 const CS = ['csharp'] as const;
-const PY_SQL = ['python', 'sql'] as const;
 
 /*
  * Annotated rather than `as const satisfies`, deliberately, and for the same
@@ -102,13 +99,13 @@ const PY_SQL = ['python', 'sql'] as const;
  * would have to narrow before reading an optional property.
  */
 export const TOPICS: readonly Topic[] = [
-  // ------------------- language-independent, examples in Python and C# -----
+  // ------------------- language-independent, with C# examples -------------
   { slug: 'architecture-layers', title: 'Architecture Layers', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY_CS },
   { slug: 'class-design', title: 'Class Design', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY_CS },
   { slug: 'method-design', title: 'Method Design', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY_CS },
   { slug: 'naming-conventions', title: 'Naming Conventions', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY_CS },
-  { slug: 'configuration-provider', title: 'Configuration Provider', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY_CS },
-  { slug: 'gateway-design-pattern', title: 'Gateway Design Pattern', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY_CS },
+  { slug: 'configuration-provider', title: 'Configuration Provider', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: CS },
+  { slug: 'gateway-design-pattern', title: 'Gateway Design Pattern', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: CS },
   { slug: 'messaging-patterns', title: 'Messaging Patterns', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY_CS },
   {
     slug: 'validation-exception-handling',
@@ -121,19 +118,12 @@ export const TOPICS: readonly Topic[] = [
       'so the two families share one heading. Confirm this is the intended scope.',
   },
 
-  { slug: 'testing-strategy', title: 'Testing Strategy', section: 'acceptance-testing', scope: 'language-independent', examples: PY_CS },
-  { slug: 'test-structure-organization', title: 'Test Structure and Organization', section: 'acceptance-testing', scope: 'language-independent', examples: PY_CS },
-  { slug: 'test-naming-conventions', title: 'Test Naming Conventions', section: 'acceptance-testing', scope: 'language-independent', examples: PY_CS },
+  { slug: 'testing-strategy', title: 'Testing Strategy', section: 'acceptance-testing', scope: 'language-independent', examples: CS },
+  { slug: 'test-structure-organization', title: 'Test Structure and Organization', section: 'acceptance-testing', scope: 'language-independent', examples: CS },
+  { slug: 'test-naming-conventions', title: 'Test Naming Conventions', section: 'acceptance-testing', scope: 'language-independent', examples: CS },
   { slug: 'test-assertions', title: 'Test Assertions', section: 'acceptance-testing', scope: 'language-independent', examples: PY_CS },
-  {
-    slug: 'test-mediators-and-spies',
-    title: 'Test Mediators and Spies',
-    section: 'acceptance-testing',
-    scope: 'language-independent',
-    examples: PY_CS,
-    note: "Python source slug is 'testing-test_mediators_and_spies'. Normalized here.",
-  },
-  { slug: 'service-boundary-testing', title: 'Service-Boundary Testing', section: 'acceptance-testing', scope: 'language-independent', examples: PY_CS },
+  { slug: 'test-mediators-and-spies', title: 'Test Mediators and Spies', section: 'acceptance-testing', scope: 'language-independent', examples: CS },
+  { slug: 'service-boundary-testing', title: 'Service-Boundary Testing', section: 'acceptance-testing', scope: 'language-independent', examples: CS },
 
   // ------------------------- language-independent, Python examples only ----
   {
@@ -146,44 +136,12 @@ export const TOPICS: readonly Topic[] = [
       'Headline topic for the Acceptance Testing section. C# coverage is currently ' +
       'folded into Service-Boundary Testing rather than standing alone.',
   },
-  {
-    slug: 'stored-procedure-data-access',
-    title: 'Stored Procedure Data Access',
-    section: 'pwi', pillar: 'architecture-with-intent',
-    scope: 'language-independent',
-    examples: PY_SQL,
-    note:
-      'The procedures are T-SQL, which is a language in its own right. The calling ' +
-      'side is shown in Python today. Confirm whether the chapter should present ' +
-      'SQL as a first-class example language here.',
-  },
-  {
-    slug: 'llm-based-processor-design',
-    title: 'LLM-Based Processor Design',
-    section: 'pwi', pillar: 'architecture-with-intent',
-    scope: 'language-independent',
-    examples: PY,
-    note: 'Processor and engine guidance applies across languages. Examples are Python today.',
-  },
-  {
-    slug: 'llm-gateway-implementation',
-    title: 'LLM Gateway Implementation',
-    section: 'pwi', pillar: 'architecture-with-intent',
-    scope: 'language-independent',
-    examples: PY,
-    note: 'Applies across languages. Examples are Python today.',
-  },
-  { slug: 'domain-facade', title: 'Domain Facade', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY },
-  { slug: 'service-locator-configuration', title: 'Service Locator Configuration', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY },
   { slug: 'anti-patterns', title: 'Anti-Patterns', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
-  { slug: 'async-resource-lifecycle', title: 'Async Resource Lifecycle', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
   { slug: 'encapsulating-third-party-libraries', title: 'Encapsulating Third-Party Libraries', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY },
   { slug: 'boundary-validation', title: 'Boundary Validation', section: 'pwi', pillar: 'programming-to-exceptions', scope: 'language-independent', examples: PY },
   { slug: 'code-correctness-runtime-safety', title: 'Code Correctness and Runtime Safety', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
   { slug: 'intentional-model-design', title: 'Intentional Model Design', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
-  { slug: 'artifact-persistence-callbacks', title: 'Artifact Persistence Callbacks', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY },
   { slug: 'adapter-pattern', title: 'Adapter Pattern', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
-  { slug: 'strategy-pattern', title: 'Strategy Pattern', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
   { slug: 'factory-pattern', title: 'Factory Pattern', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
   { slug: 'factory-method-pattern', title: 'Factory Method Pattern', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
   {
