@@ -5,7 +5,7 @@ import PlaceholderImage from '../components/PlaceholderImage.astro';
 import TagCloud from '../components/TagCloud.astro';
 import { heroFor } from '../lib/heroes';
 
-const hero = heroFor('site-home');
+const hero = heroFor('site-home-software-ai');
 
 const ENTRY_POINTS = [
   {
@@ -25,7 +25,7 @@ const ENTRY_POINTS = [
   {
     label: 'Writing',
     href: '/writing/',
-    blurb: 'Essays on building software, and on building it alongside language models.',
+    blurb: 'Essays on software architecture, applied AI, and building with language models.',
   },
   {
     label: 'Media',
@@ -40,7 +40,7 @@ const ENTRY_POINTS = [
 
 <BaseLayout
   title="Shiv Kumar"
-  description="Programming With Intent, acceptance testing at the boundary, and notes on building software alongside language models."
+  description="Shiv Kumar writes about software engineering, applied AI engineering, Programming With Intent, and acceptance testing."
   isHome={true}
 >
   <header class="hero">
@@ -52,16 +52,15 @@ const ENTRY_POINTS = [
       }
 
       <div class="hero__text prose">
-        <h1>Programming With Intent</h1>
+        <h1>Software Engineering and Applied AI Engineering</h1>
         <p class="hero__lede">
-          I write about how software should be built, and about keeping that judgment
-          intact when a language model is doing the typing. The guidance here is
-          operationalized, meaning each rule is specific enough that a reviewer can apply
-          it the same way twice.
+          I write about software architecture, programming, acceptance testing, and
+          building with language models. The articles and chapters focus on decisions
+          engineers can explain, test, and revisit.
         </p>
         <p class="muted">
-          Shiv Kumar. Most of this began as videos. It lives here now so it can be read,
-          searched, and cited.
+          Shiv Kumar. Senior Software Solutions Architect and Senior Applied AI Engineer
+          &amp; Architect.
         </p>
       </div>
     </div>
