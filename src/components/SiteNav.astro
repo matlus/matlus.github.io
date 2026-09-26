@@ -22,7 +22,10 @@ const nav = NAV.map((item) => ({
   <div class="page site-nav__inner">
     <a class="site-nav__brand" href="/">
       <img class="site-nav__mark" src="/matlus-logo.svg?v=readable" alt="" width="56" height="47" />
-      <span>matlus</span>
+      <span class="site-nav__identity">
+        <span class="site-nav__wordmark">Matlus</span>
+        <span class="site-nav__tagline">Engineering with Intent</span>
+      </span>
     </a>
 
     <a class="site-nav__search" href="/search/" aria-label="Search the site" title="Search">
@@ -96,6 +99,14 @@ const nav = NAV.map((item) => ({
 </nav>
 
 <style>
+  @font-face {
+    font-family: 'SK Porsche';
+    src: url('/fonts/sk-porsche.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
   .site-nav {
     position: sticky;
     top: 0;
@@ -138,6 +149,32 @@ const nav = NAV.map((item) => ({
     color: var(--color-text);
     text-decoration: none;
     letter-spacing: -0.02em;
+  }
+
+  .site-nav__identity {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  .site-nav__wordmark {
+    font-family: 'SK Porsche', var(--font-sans);
+    font-size: var(--step-1);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .site-nav__tagline {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.25;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    text-align-last: justify;
+    white-space: nowrap;
   }
 
   .site-nav__mark {
@@ -298,7 +335,7 @@ const nav = NAV.map((item) => ({
 
   /* ------------------------------------------------------------- mobile */
 
-  @media (max-width: 767px) {
+  @media (max-width: 1023px) {
     .site-nav__toggle {
       display: block;
       margin-left: 0;
@@ -370,6 +407,44 @@ const nav = NAV.map((item) => ({
     .site-nav__item.is-open:hover .site-nav__panel,
     .site-nav__item.is-open:focus-within .site-nav__panel {
       display: block;
+    }
+  }
+
+  @media (max-width: 479px) {
+    .site-nav__inner {
+      gap: var(--space-2xs);
+    }
+
+    .site-nav__mark {
+      width: 2.5rem;
+    }
+
+    .site-nav__brand {
+      gap: var(--space-3xs);
+    }
+
+    .site-nav__wordmark {
+      font-size: var(--step-0);
+    }
+
+    .site-nav__identity {
+      gap: calc(var(--space-3xs) / 2);
+    }
+
+    .site-nav__tagline {
+      font-size: 0.75rem;
+      line-height: 1;
+    }
+
+    .site-nav__search {
+      width: 2rem;
+      flex: none;
+    }
+
+    .site-nav__toggle {
+      flex: none;
+      width: 2rem;
+      padding: var(--space-3xs);
     }
   }
 </style>
