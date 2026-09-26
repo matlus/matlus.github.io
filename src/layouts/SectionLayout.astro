@@ -31,11 +31,13 @@ const hero = heroSlug ? heroFor(heroSlug) : undefined;
 <BaseLayout title={`${title} | Shiv Kumar`} description={description}>
   <header class="section-hero">
     <div class="page">
-      {
-        hero
-          ? <Image src={hero} alt="" class="section-hero__image" widths={[640, 1024, 1600]} sizes="(max-width: 72rem) 100vw, 72rem" loading="eager" />
-          : <PlaceholderImage seed={seed} ratio="wide" label={`${title} banner placeholder`} />
-      }
+      <slot name="hero">
+        {
+          hero
+            ? <Image src={hero} alt="" class="section-hero__image" widths={[640, 1024, 1600]} sizes="(max-width: 72rem) 100vw, 72rem" loading="eager" />
+            : <PlaceholderImage seed={seed} ratio="wide" label={`${title} banner placeholder`} />
+        }
+      </slot>
 
       <div class="section-hero__text prose">
         {eyebrow && <p class="eyebrow">{eyebrow}</p>}

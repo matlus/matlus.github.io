@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+import portrait from '../../assets/about/shiv-kumar.webp';
 import SectionLayout from '../../layouts/SectionLayout.astro';
 ---
 
@@ -6,8 +8,10 @@ import SectionLayout from '../../layouts/SectionLayout.astro';
   title="About"
   description="I work in software engineering and applied AI engineering, with a focus on architecture, document intelligence, and verifiable systems."
   seed="about"
-  heroSlug="section-about"
 >
+  <div slot="hero" class="about-portrait">
+    <Image src={portrait} alt="Shiv Kumar" widths={[420, 840]} sizes="336px" loading="eager" />
+  </div>
   <section class="prose">
     <p>
       I'm Shiv Kumar. I work as a Senior Software Solutions Architect and a Senior
@@ -97,3 +101,21 @@ import SectionLayout from '../../layouts/SectionLayout.astro';
     </p>
   </section>
 </SectionLayout>
+
+<style>
+  .about-portrait {
+    width: clamp(12rem, 40vw, 15rem);
+    aspect-ratio: 1;
+    margin-inline: auto;
+    overflow: hidden;
+    border-radius: 50%;
+  }
+
+  .about-portrait :global(img) {
+    /* Frame the face and hand while preserving the complete source photograph. */
+    display: block;
+    width: 140%;
+    max-width: none;
+    height: auto;
+  }
+</style>
