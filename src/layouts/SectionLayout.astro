@@ -38,6 +38,7 @@ const hero = heroSlug ? heroFor(heroSlug) : undefined;
             : <PlaceholderImage seed={seed} ratio="wide" label={`${title} banner placeholder`} />
         }
       </slot>
+      <slot name="after-hero" />
 
       <div class="section-hero__text prose">
         {eyebrow && <p class="eyebrow">{eyebrow}</p>}
