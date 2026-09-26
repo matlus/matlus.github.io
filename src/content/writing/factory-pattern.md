@@ -2,6 +2,7 @@
 title: "Factory Pattern: The Enabler of Polymorphism"
 description: "A Factory selects and constructs a member of a class family from meaningful input, letting clients use the shared contract while the Factory owns recurring implementation choices."
 datePublished: 2019-09-10
+hero: factory-pattern
 dateModified: 2026-09-25
 tags: ["class-design", "polymorphism", "factory-pattern", "strategy-pattern", "design-patterns", "csharp"]
 youtube: "https://www.youtube.com/watch?v=HQLXUyb0T2w"

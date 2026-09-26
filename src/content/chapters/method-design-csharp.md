@@ -3,6 +3,7 @@ title: Method Design
 description: >-
   Explicit visibility, why public members are never virtual, orchestration over implementation, and return contracts that state their cardinality.
 datePublished: 2017-09-20
+hero: chapter-method-design-csharp
 dateModified: 2026-09-19
 tags:
   - method-design

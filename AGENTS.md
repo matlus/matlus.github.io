@@ -25,6 +25,11 @@ tic; a document can declare one with `<!-- audit-allow: phrase -->`.
 run by a sub-agent before publishing. New tags go into `src/data/tags.ts` without
 asking Shiv, after `tools/check-tags.py` confirms they duplicate nothing. Every design
 pattern a post relies on gets a tag, plus `design-patterns`.
+Each new tag creates a published topic page. Give it a distinct hero based on the
+tag's subject: save `src/assets/heroes/tag-<slug>.prompt.md` and the optimized
+`tag-<slug>.webp` before publishing. Follow the tag workflow in
+[docs/image-and-diagram-guide.md](docs/image-and-diagram-guide.md). The full
+`tools/check-tags.py` check requires both files.
 
 **PWI chapter prose is never rewritten.** Chapters are corpus material and answer to
 terminological exactness and consistency with their siblings, not to this site's

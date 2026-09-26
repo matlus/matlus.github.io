@@ -3,6 +3,7 @@ import type { GetStaticPaths } from 'astro';
 import { getCollection, render } from 'astro:content';
 import ArticleLayout from '../../../layouts/ArticleLayout.astro';
 import { topicBySlug } from '../../../data/topics';
+import { heroFor } from '../../../lib/heroes';
 
 const LANGUAGE_LABEL: Record<string, string> = {
   python: 'Python',
@@ -34,6 +35,7 @@ const languageLabel = LANGUAGE_LABEL[language] ?? 'Shared';
   datePublished={chapter.data.datePublished}
   dateModified={chapter.data.dateModified}
   tags={chapter.data.tags}
+  hero={chapter.data.hero ? heroFor(chapter.data.hero) : undefined}
   crumbs={[
     { label: 'Home', href: '/' },
     { label: 'Acceptance Testing', href: '/acceptance-testing/' },

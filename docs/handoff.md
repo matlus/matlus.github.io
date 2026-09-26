@@ -238,6 +238,11 @@ visual traits in [image-and-diagram-guide.md](image-and-diagram-guide.md), then
 choose a concrete subject from the article's claim. Engineering machinery is
 optional subject matter.
 
+New tags also need heroes. Base each scene on the tag description and the pages
+the tag gathers, save `tag-<slug>.prompt.md` beside `tag-<slug>.webp`, and run
+`python tools/check-tags.py` before publishing. The tag workflow is in
+[image-and-diagram-guide.md](image-and-diagram-guide.md#tag-page-heroes).
+
 ---
 
 ## Gotchas

@@ -3,6 +3,7 @@ title: Validation and Exception Handling
 description: >-
   Where validation belongs and where it does not, exception design that fails fast and visibly, message quality, and logging that preserves the failure.
 datePublished: 2017-09-20
+hero: chapter-validation-exception-handling-csharp
 dateModified: 2026-09-19
 tags:
   - error-handling

@@ -3,6 +3,7 @@ title: Architecture Layers
 description: >-
   Structure communicates intent: strict layers from Domain Facade to Gateway, internal by default with a public surface the compiler enforces, and folder depth that marks each class's level of abstraction.
 datePublished: 2017-09-20
+hero: chapter-architecture-layers-csharp
 dateModified: 2026-09-19
 tags:
   - architecture

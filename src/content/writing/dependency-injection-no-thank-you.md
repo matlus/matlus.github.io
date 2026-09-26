@@ -2,6 +2,7 @@
 title: "Dependency Injection? No Thank You!"
 description: "Dependency injection exposes private collaborators to callers when used for every internal relationship. Keep classes self-contained and let business code choose real variation."
 datePublished: 2019-10-06
+hero: dependency-injection-no-thank-you
 dateModified: 2026-09-25
 tags: ["public-surface", "class-design", "design-patterns", "csharp", "dependency-injection", "strategy-pattern", "factory-pattern", "template-method"]
 youtube: "https://www.youtube.com/watch?v=UfBe_At-TGE"

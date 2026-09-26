@@ -3,6 +3,7 @@ title: Method Design
 description: >-
   Pure and autonomous methods, why public methods orchestrate rather than implement, consistent abstraction levels, and the split between actions and queries.
 datePublished: 2017-09-20
+hero: chapter-method-design-python
 dateModified: 2026-09-19
 tags:
   - method-design

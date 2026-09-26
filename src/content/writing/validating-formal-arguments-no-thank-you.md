@@ -2,6 +2,7 @@
 title: "Validating Formal Arguments? No Thank You!"
 description: "Validate and clean data at the front and back doors; skip checks on internal formal arguments. Immutable DTOs preserve trust, one exception reports all errors, and black box tests exercise the doors."
 datePublished: 2020-12-20
+hero: validating-formal-arguments-no-thank-you
 dateModified: 2026-09-23
 tags: ["error-handling", "testing", "domain-facade", "configuration-provider", "design-patterns", "boundary-validation"]
 youtube: "https://www.youtube.com/watch?v=2BJ11M9rrzY"

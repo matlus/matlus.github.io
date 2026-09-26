@@ -1,14 +1,15 @@
-"""Keep the tag vocabulary free of near-duplicates.
+"""Keep the tag vocabulary distinct and its page heroes complete.
 
 The content schema already rejects a tag that is not declared in
 src/data/tags.ts. What it cannot catch is a declared tag that duplicates
 another: `test` beside `testing`, `llm-system` beside `llm-systems`. This
 script catches the lexical cases. Synonyms with no shared spelling, such as
 `error-handling` and `exceptions`, are a judgment the tagging procedure makes
-before a tag is ever added.
+before a tag is ever added. Each declared tag also creates a published HTML
+page, so it must have a saved generation prompt and an optimized WebP hero.
 
 Usage:
-    python tools/check-tags.py                  # audit the vocabulary, exit 1 on a clash
+    python tools/check-tags.py                  # audit vocabulary and tag heroes
     python tools/check-tags.py domain-facade    # show the closest existing tags to a candidate
 """
 
@@ -21,6 +22,7 @@ from pathlib import Path
 
 TAGS_FILE = Path(__file__).resolve().parent.parent / "src" / "data" / "tags.ts"
 CONTENT_DIR = Path(__file__).resolve().parent.parent / "src" / "content"
+HEROES_DIR: Path = Path(__file__).resolve().parent.parent / "src" / "assets" / "heroes"
 
 SIMILARITY_THRESHOLD = 0.85
 
@@ -69,6 +71,24 @@ def find_clashes(slugs: list[str]) -> list[tuple[str, str, float]]:
     return clashes
 
 
+def tag_hero_issues(slugs: list[str]) -> list[str]:
+    issues: list[str] = []
+    for slug in slugs:
+        stem: str = f"tag-{slug}"
+        prompt: Path = HEROES_DIR / f"{stem}.prompt.md"
+        image: Path = HEROES_DIR / f"{stem}.webp"
+        if not prompt.is_file() or not prompt.read_text(encoding="utf-8").strip():
+            issues.append(f"Tag '{slug}' needs a nonempty hero prompt: {prompt}")
+        if not image.is_file():
+            issues.append(f"Tag '{slug}' needs an optimized hero image: {image}")
+        else:
+            with image.open("rb") as asset:
+                header: bytes = asset.read(12)
+            if header[:4] != b"RIFF" or header[8:12] != b"WEBP":
+                issues.append(f"Tag '{slug}' has an invalid WebP hero image: {image}")
+    return issues
+
+
 def show_neighbours(candidate: str, slugs: list[str]) -> None:
     usage = tag_usage()
     candidate_words = set(stem_slug(candidate).split("-"))
@@ -100,12 +120,18 @@ def main() -> int:
         return 0
 
     clashes = find_clashes(slugs)
+    hero_issues: list[str] = tag_hero_issues(slugs)
     for first, second, score in clashes:
         print(f"Near-duplicate tags: '{first}' and '{second}' (similarity {score:.2f})")
-    if clashes:
-        print(f"\n{len(clashes)} near-duplicate pair(s). Merge them in src/data/tags.ts.")
+    for issue in hero_issues:
+        print(issue)
+    if clashes or hero_issues:
+        if clashes:
+            print(f"\n{len(clashes)} near-duplicate pair(s). Merge them in src/data/tags.ts.")
+        if hero_issues:
+            print(f"\n{len(hero_issues)} missing or invalid tag hero file(s). Create them before publishing.")
         return 1
-    print(f"{len(slugs)} tags, no near-duplicates.")
+    print(f"{len(slugs)} tags, no near-duplicates; hero prompts and images complete.")
     return 0
 
 
