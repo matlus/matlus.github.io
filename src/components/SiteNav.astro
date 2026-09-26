@@ -24,7 +24,7 @@ const nav = NAV.map((item) => ({
       <img class="site-nav__mark" src="/matlus-logo.svg?v=readable" alt="" width="56" height="47" />
       <span class="site-nav__identity">
         <span class="site-nav__wordmark">Matlus</span>
-        <span class="site-nav__tagline">Engineering with Intent</span>
+        <span class="site-nav__tagline"><strong>Engineering</strong> with <strong>Intent</strong></span>
       </span>
     </a>
 
@@ -168,13 +168,18 @@ const nav = NAV.map((item) => ({
 
   .site-nav__tagline {
     font-family: var(--font-sans);
-    font-size: 0.9375rem;
+    font-size: 1rem;
     font-weight: 400;
-    line-height: 1.25;
-    letter-spacing: 0.04em;
+    line-height: 1.125;
+    letter-spacing: 0;
     color: var(--color-text-muted);
     text-align-last: justify;
     white-space: nowrap;
+  }
+
+  .site-nav__tagline strong {
+    font-weight: 700;
+    color: var(--color-text);
   }
 
   .site-nav__mark {
@@ -432,7 +437,7 @@ const nav = NAV.map((item) => ({
     }
 
     .site-nav__tagline {
-      font-size: 0.75rem;
+      font-size: 0.8125rem;
       line-height: 1;
     }
 
