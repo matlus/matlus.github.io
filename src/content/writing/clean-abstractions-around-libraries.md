@@ -1,7 +1,7 @@
 ---
 title: "Clean Abstractions Around Libraries"
 description: "A library boundary owns the application's contract even when its terms match the library's. It contains provider types, validation, failures, and configuration, and keeps replacement possible."
-datePublished: 2026-09-25
+datePublished: 2017-09-20
 dateModified: 2026-09-25
 hero: clean-abstractions-around-libraries-v2
 tags: ["architecture", "public-surface", "library-boundaries", "gateway-pattern", "data-manager", "configuration-provider", "architectural-patterns"]

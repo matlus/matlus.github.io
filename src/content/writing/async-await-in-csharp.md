@@ -1,7 +1,7 @@
 ---
 title: "Async-Await in C#"
 description: "Asynchronous I/O frees server threads during waits and can improve capacity under load. IIS request flow, Task.WhenAll, and load tests show where the benefit ends."
-datePublished: 2012-10-01
+datePublished: 2012-09-30
 dateModified: 2026-09-25
 tags: ["async-await", "asynchronous-io", "task-composition", "load-testing", "iis", "csharp"]
 hero: async-await-in-csharp

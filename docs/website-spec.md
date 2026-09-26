@@ -224,10 +224,20 @@ the axis that matters is evergreen vs time-stamped. Evergreen content is reached
 through persistent navigation and never scrolls away. Time-stamped content flows
 through a feed. A PWI chapter is evergreen and dated.
 
-**PWI chapters carry 2017-09-20 as `datePublished`**, the date the body of work began.
-Git history is not a source for this: those dates record only when the markdown entered
-the repository, which is years later and misleading. `dateModified` does come from git,
-because those revisions are genuine.
+**Historical PWI material carries its original date.** Corpus chapters and
+programming-guideline articles without a direct source video use 2017-09-20, the
+date the body of work began, unless a better documented historical date applies.
+Directly video-derived articles, including PWI videos, use the matching video's
+public YouTube calendar date. Retain the displayed calendar day when the source
+also supplies a timestamp with an offset; UTC conversion can move it to another
+day. Method Design Part 1 was published on 2017-09-20 and includes naming guidance,
+so its date agrees with the corpus origin used by those chapters.
+
+Repository creation and conversion dates do not establish the material's origin.
+`dateModified` records genuine later revisions. Current examples can therefore
+carry an early historical publication date and a recent update date. The complete
+2026-09-25 inventory and verified video dates are in
+[the publication date audit](publication-date-audit.md).
 
 Evergreen pages display **"Published March 2024 · Updated September 2026"** and emit
 both `datePublished` and `dateModified` in JSON-LD. For reference material the update

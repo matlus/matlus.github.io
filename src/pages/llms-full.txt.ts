@@ -32,12 +32,13 @@ export const GET: APIRoute = async ({ site }) => {
       '',
       `Source: ${origin}/writing/${post.id}/`,
       `Published: ${iso(post.data.datePublished)}`,
+      post.data.dateModified ? `Updated: ${iso(post.data.dateModified)}` : undefined,
       `Tags: ${post.data.tags.join(', ')}`,
       '',
       '---',
       '',
       readableArticleBody(post.body),
-    ].join('\n'),
+    ].filter((line) => line !== undefined).join('\n'),
   );
   const chapterChunks = chapters.map((chapter) => {
     const language = chapter.data.language ?? 'shared';
@@ -48,12 +49,13 @@ export const GET: APIRoute = async ({ site }) => {
       '',
       `Source: ${origin}/${chapter.data.section}/${chapter.data.topic}/${language}/`,
       `Published: ${iso(chapter.data.datePublished)}`,
+      chapter.data.dateModified ? `Updated: ${iso(chapter.data.dateModified)}` : undefined,
       `Tags: ${chapter.data.tags.join(', ')}`,
       '',
       '---',
       '',
       chapter.body,
-    ].join('\n');
+    ].filter((line) => line !== undefined).join('\n');
   });
 
   const header = [

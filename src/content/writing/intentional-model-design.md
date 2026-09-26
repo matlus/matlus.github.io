@@ -1,7 +1,7 @@
 ---
 title: "Intentional Model Design"
 description: "A model should express required fields, genuine absence, and distinct variants in its type. Python unions and C# records encode those promises, while boundaries check external values."
-datePublished: 2026-09-25
+datePublished: 2017-09-20
 dateModified: 2026-09-25
 hero: intentional-model-design
 tags: ["class-design", "model-design", "boundary-validation", "gateway-pattern", "python", "csharp"]

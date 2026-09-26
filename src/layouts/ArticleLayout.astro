@@ -113,7 +113,7 @@ const breadcrumbLd = {
 
         <p class="article-head__meta">
           {
-            evergreen && dateModified
+            dateModified && (evergreen || dateModified.getTime() > datePublished.getTime())
               ? <>Published {fmt(datePublished)} · Updated {fmt(dateModified)}</>
               : <>Published {fmt(datePublished)}</>
           }
