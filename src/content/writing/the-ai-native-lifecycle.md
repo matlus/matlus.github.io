@@ -4,7 +4,7 @@ description: >-
   An AI-native SDLC engineers both gates through certified code review, functional
   acceptance tests at the boundary ratified by humans, and verification against
   the specification.
-datePublished: 2026-08-19
+datePublished: 2026-06-08
 dateModified: 2026-09-26
 tags:
   - verification

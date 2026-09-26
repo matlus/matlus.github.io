@@ -3,7 +3,7 @@ title: Skills versus Controlled Workflows
 description: >-
   When a useful answer is enough, and when you also have to demonstrate that a
   prescribed procedure was followed.
-datePublished: 2026-09-12
+datePublished: 2026-06-19
 dateModified: 2026-09-20
 tags:
   - verification
