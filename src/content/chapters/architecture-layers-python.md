@@ -3,6 +3,7 @@ title: Architecture Layers
 description: >-
   Structure communicates intent: strict layers from Domain Facade to Gateway, a public surface declared in the boundary __init__.py, and folder depth that marks each class's level of abstraction.
 datePublished: 2017-09-20
+hero: chapter-architecture-layers-python
 dateModified: 2026-09-19
 tags:
   - architecture

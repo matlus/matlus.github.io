@@ -3,6 +3,7 @@ title: Naming Conventions
 description: >-
   Naming a thing for what it is: variables named after their type, methods that state the domain outcome, and why inventing a fresh name at each site is where wrong names come from.
 datePublished: 2017-09-20
+hero: chapter-naming-conventions-python
 dateModified: 2026-09-19
 tags:
   - naming

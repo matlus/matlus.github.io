@@ -3,6 +3,7 @@ title: Naming Conventions
 description: >-
   Deriving names rather than inventing them, domain suffixes over indices, the Async exception, and why Retrieve and Search choose different failure contracts.
 datePublished: 2017-09-20
+hero: chapter-naming-conventions-csharp
 dateModified: 2026-09-19
 tags:
   - naming

@@ -67,6 +67,7 @@ const fmt = (date: Date) =>
   eyebrow="Topic"
   description={tag.description}
   seed={`tag-${tag.slug}`}
+  heroSlug={`tag-${tag.slug}`}
 >
   <p class="muted count">{posts.length} {posts.length === 1 ? 'page' : 'pages'}</p>
 

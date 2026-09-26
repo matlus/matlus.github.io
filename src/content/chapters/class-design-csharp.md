@@ -3,6 +3,7 @@ title: Class Design
 description: >-
   Internal by default, behavior-only classes against state-only types, the two sanctioned uses of interfaces, and closing concrete descendants.
 datePublished: 2017-09-20
+hero: chapter-class-design-csharp
 dateModified: 2026-09-04
 tags:
   - class-design

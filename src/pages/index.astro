@@ -1,7 +1,11 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PlaceholderImage from '../components/PlaceholderImage.astro';
 import TagCloud from '../components/TagCloud.astro';
+import { heroFor } from '../lib/heroes';
+
+const hero = heroFor('site-home');
 
 const ENTRY_POINTS = [
   {
@@ -41,7 +45,11 @@ const ENTRY_POINTS = [
 >
   <header class="hero">
     <div class="page">
-      <PlaceholderImage seed="matlus-home" ratio="tall" label="Site banner placeholder" />
+      {
+        hero
+          ? <Image src={hero} alt="" class="hero__image" widths={[640, 1024, 1600]} sizes="(max-width: 72rem) 100vw, 72rem" loading="eager" />
+          : <PlaceholderImage seed="matlus-home" ratio="tall" label="Site banner placeholder" />
+      }
 
       <div class="hero__text prose">
         <h1>Programming With Intent</h1>
@@ -87,6 +95,13 @@ const ENTRY_POINTS = [
 <style>
   .hero {
     padding-top: var(--space-l);
+  }
+
+  .hero__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
   }
 
   .hero__text {

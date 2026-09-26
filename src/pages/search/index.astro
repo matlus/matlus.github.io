@@ -1,5 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { heroFor } from '../../lib/heroes';
+
+const hero = heroFor('section-search');
 ---
 
 <BaseLayout
@@ -10,6 +14,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <script slot="head" src="/pagefind/pagefind-component-ui.js" type="module" is:inline></script>
 
   <div class="page search-page">
+    {hero && <Image src={hero} alt="" class="search-page__hero" widths={[640, 1024, 1600]} sizes="(max-width: 72rem) 100vw, 72rem" loading="eager" />}
     <h1>Search</h1>
     <p>Find articles and Programming With Intent chapters.</p>
     <div class="search-page__tool">
@@ -29,6 +34,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
   .search-page h1 {
     margin-bottom: var(--space-2xs);
+  }
+
+  .search-page__hero {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: var(--space-l);
+    border-radius: var(--radius-lg);
   }
 
   .search-page__tool {

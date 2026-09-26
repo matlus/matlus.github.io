@@ -1,7 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from './BaseLayout.astro';
 import PlaceholderImage from '../components/PlaceholderImage.astro';
 import TagCloud from '../components/TagCloud.astro';
+import { heroFor } from '../lib/heroes';
 
 interface Props {
   readonly title: string;
@@ -10,6 +12,7 @@ interface Props {
   readonly description: string;
   readonly eyebrow?: string;
   readonly seed: string;
+  readonly heroSlug?: string;
   readonly showTagCloud?: boolean;
 }
 
@@ -19,14 +22,20 @@ const {
   description,
   eyebrow,
   seed,
+  heroSlug,
   showTagCloud = false,
 } = Astro.props;
+const hero = heroSlug ? heroFor(heroSlug) : undefined;
 ---
 
 <BaseLayout title={`${title} | Shiv Kumar`} description={description}>
   <header class="section-hero">
     <div class="page">
-      <PlaceholderImage seed={seed} ratio="wide" label={`${title} banner placeholder`} />
+      {
+        hero
+          ? <Image src={hero} alt="" class="section-hero__image" widths={[640, 1024, 1600]} sizes="(max-width: 72rem) 100vw, 72rem" loading="eager" />
+          : <PlaceholderImage seed={seed} ratio="wide" label={`${title} banner placeholder`} />
+      }
 
       <div class="section-hero__text prose">
         {eyebrow && <p class="eyebrow">{eyebrow}</p>}
@@ -52,6 +61,13 @@ const {
 <style>
   .section-hero {
     padding-top: var(--space-m);
+  }
+
+  .section-hero__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
   }
 
   .section-hero__text {

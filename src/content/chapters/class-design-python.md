@@ -3,6 +3,7 @@ title: Class Design
 description: >-
   Two kinds of class and why that separation holds, no inheritance for extension, and naming conventions for polymorphic types.
 datePublished: 2017-09-20
+hero: chapter-class-design-python
 dateModified: 2026-09-01
 tags:
   - class-design

@@ -69,6 +69,7 @@ const description = isTopic
   eyebrow={isTopic ? 'PWI chapter' : 'PWI pillar'}
   description={description}
   seed={props.title}
+  heroSlug={`pwi-${Astro.params.slug}`}
   showTagCloud={!isTopic}
 >
   {

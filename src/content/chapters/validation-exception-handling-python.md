@@ -3,6 +3,7 @@ title: Validation and Exception Handling
 description: >-
   Lock the front door and the back doors, fail fast and visibly, exception messages that carry diagnostic context, and a logging policy that does not swallow failure.
 datePublished: 2017-09-20
+hero: chapter-validation-exception-handling-python
 dateModified: 2026-09-19
 tags:
   - error-handling
