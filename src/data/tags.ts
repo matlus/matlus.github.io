@@ -269,6 +269,11 @@ export const TAGS = [
     label: 'Intent Routing',
     description: 'Classifying a request’s intent to choose a handler, such as ordinary code, a specialist model, or a person.',
   },
+  {
+    slug: 'context-compaction',
+    label: 'Context Compaction',
+    description: 'Reducing the material supplied to a language model by selecting relevant source units or summarizing them. Retention decisions must account for current goals, unique evidence, and information that later questions may need.',
+  },
 ] as const satisfies readonly Tag[];
 
 export type TagSlug = (typeof TAGS)[number]['slug'];

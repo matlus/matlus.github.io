@@ -37,13 +37,17 @@ domain set with HTTPS enforced.
 
 | | Count |
 |---|---|
-| Articles | 20 |
+| Articles | 21 |
 | PWI chapters | 12, across 6 topics |
 | Aphorisms | 24, with computed backlinks |
-| Tags | 59, controlled vocabulary |
+| Tags | 60, controlled vocabulary |
 
 **Articles**
 
+- `Using Jev Compact LLM Context` follows a recorded Noul request through
+  retention decisions, with downloadable teaching data and implementation snapshots.
+  It links to the existing Jev reference and preserves the original source under
+  `docs/source-material/`.
 - `Skills versus Controlled Workflows` with an interactive workflow diagram
 - `Stampede at the Gates`, the problem statement
 - `The AI-Native Lifecycle`, the answer to it

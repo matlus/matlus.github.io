@@ -30,3 +30,12 @@ source material and recording the result in the reviewing PR.
   check the car-and-engine explanation against the
   [later discussion](https://www.youtube.com/watch?v=8PwI3yskj0I).
   Record any differences before changing example claims.
+
+## Using Jev Compact LLM Context
+
+- [ ] Recheck the three preserved TypeSafe documentation URLs for Noul,
+  System One, and RAG passage classification. On 2026-09-25, HTTPS requests
+  from this environment reported `CERTIFICATE_VERIFY_FAILED: certificate has expired`
+  for all three. The article retains the supplied URLs. Its local links and
+  downloadable examples resolve, and replaying the recorded response reproduces
+  the published request, retained context, and 19.6% character reduction.
