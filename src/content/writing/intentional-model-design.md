@@ -2,8 +2,9 @@
 title: "Intentional Model Design"
 description: "A model should express required fields, genuine absence, and distinct variants in its type. Python unions and C# records encode those promises, while boundaries check external values."
 datePublished: 2026-09-25
+dateModified: 2026-09-25
 hero: intentional-model-design
-tags: ["class-design", "model-design", "boundary-validation", "gateway-pattern", "design-patterns", "python", "csharp"]
+tags: ["class-design", "model-design", "boundary-validation", "gateway-pattern", "python", "csharp"]
 ---
 
 I want a model's type to tell me what it carries. If a field is required for this kind of object, its declaration should say so. If absence is a real state, the type should show that too. Otherwise every consumer has to reconstruct the model's intent from guards, comments, and usage scattered through the system.

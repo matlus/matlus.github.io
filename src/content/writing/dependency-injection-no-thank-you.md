@@ -4,7 +4,7 @@ description: "Dependency injection exposes private collaborators to callers when
 datePublished: 2019-10-06
 hero: dependency-injection-no-thank-you
 dateModified: 2026-09-25
-tags: ["public-surface", "class-design", "design-patterns", "csharp", "dependency-injection", "strategy-pattern", "factory-pattern", "template-method"]
+tags: ["public-surface", "class-design", "csharp", "dependency-injection"]
 youtube: "https://www.youtube.com/watch?v=UfBe_At-TGE"
 ---
 

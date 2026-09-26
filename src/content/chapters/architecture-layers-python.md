@@ -4,13 +4,13 @@ description: >-
   Structure communicates intent: strict layers from Domain Facade to Gateway, a public surface declared in the boundary __init__.py, and folder depth that marks each class's level of abstraction.
 datePublished: 2017-09-20
 hero: chapter-architecture-layers-python
-dateModified: 2026-09-19
+dateModified: 2026-09-25
 tags:
   - architecture
   - public-surface
   - levels-of-abstraction
   - service-interface-layer
-  - design-patterns
+  - architectural-patterns
   - domain-facade
   - service-locator
   - configuration-provider

@@ -23,8 +23,11 @@ tic; a document can declare one with `<!-- audit-allow: phrase -->`.
 **Every post gets its description and tags from
 [prompts/extract-description-and-tags.md](prompts/extract-description-and-tags.md)**,
 run by a sub-agent before publishing. New tags go into `src/data/tags.ts` without
-asking Shiv, after `tools/check-tags.py` confirms they duplicate nothing. Every design
-pattern a post relies on gets a tag, plus `design-patterns`.
+asking Shiv, after `tools/check-tags.py` confirms they duplicate nothing. Tag patterns
+by family: `design-patterns` for substantial coverage of named software design patterns,
+`architectural-patterns` for system structures and boundaries, and
+`ai-workflow-patterns` for coordination of model judgments with code. Keep specific
+pattern tags when explained or applied; a passing mention earns no tag.
 Each new tag creates a published topic page. Give it a distinct hero based on the
 tag's subject: save `src/assets/heroes/tag-<slug>.prompt.md` and the optimized
 `tag-<slug>.webp` before publishing. Follow the tag workflow in
