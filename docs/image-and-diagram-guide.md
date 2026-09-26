@@ -99,6 +99,22 @@ binary and can ask that task to use its built-in image tool. The standalone CLI 
 lagged the desktop release and failed to run the image task. Keep the full article
 idea, subject, composition, and no-lettering instruction in either route.
 
+### Tag page heroes
+
+A new tag creates a new HTML topic page. Use the same visual style as article
+heroes, but choose its scene from the tag's label and description in
+`src/data/tags.ts`. Review the pages that carry the tag when choosing a scene.
+The image should represent the collection's subject, rather than a detail from
+the post that happened to introduce the tag. Compare nearby tag images so the
+new scene is distinct.
+
+Use an existing `src/assets/heroes/tag-*.prompt.md` as the prompt structure.
+Keep its visual language and wide composition, replace the collection description
+and scene, and save the exact prompt as
+`src/assets/heroes/tag-<slug>.prompt.md`. Generate and inspect the image, then run
+`node tools/prepare-image.mjs <generated.png> tag-<slug>` to create the paired
+WebP. Run `python tools/check-tags.py` after adding the tag; it requires both files.
+
 ### Originals stay out of the repo
 
 The generator returns multi-megabyte PNGs. The first one was 2.76 MB. Committing those
@@ -124,9 +140,8 @@ afterwards.
 
 ### Fallback
 
-Every section has a fallback image. A page without custom art must still render
-correctly, because the moment art becomes mandatory, the page without art is the page
-that never ships.
+Every section has a fallback image for previews. Published topic pages require
+their own art; the tag check prevents a new tag from shipping with the fallback.
 
 ---
 

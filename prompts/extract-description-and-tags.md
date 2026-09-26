@@ -14,10 +14,13 @@ exist yet.
 
 **What the caller does with the result.** The sub-agent only reads and reports. The
 caller adds any new tags to `src/data/tags.ts`, writes the description and tags into
-the post's frontmatter (or its entry in `tools/chapter-manifest.json`), then runs
-`python tools/check-tags.py` and the usual build checks. Process posts one at a time,
-or reconcile new tags across a batch before adding them, so two runs cannot each
-invent the same tag.
+the post's frontmatter (or its entry in `tools/chapter-manifest.json`), and creates
+a prompt and hero image for each new tag. The tag image represents the subject
+defined in `src/data/tags.ts` and the collection it gathers, rather than one post.
+Follow [the tag hero workflow](../docs/image-and-diagram-guide.md#tag-page-heroes),
+then run `python tools/check-tags.py` and the usual build checks. Existing tags
+already have images. Process posts one at a time, or reconcile new tags across a
+batch before adding them, so two runs cannot each invent the same tag.
 
 ---
 
