@@ -64,10 +64,14 @@ link. Check the live URLs and record any unavailable or uncertain match instead 
 inventing one. The source video and repository must already be public before adding
 their links.
 
-**PWI chapters are dated 2017-09-20**, when the body of work began. Git history
-records only when the markdown entered the repository, years later, and is not a
-source for publication dates. Non-PWI video transcripts take their real YouTube
-dates.
+**Historical PWI material keeps its original date.** Corpus chapters and programming
+guideline articles without a direct source video use 2017-09-20, when the body of
+work began, unless a better documented historical date applies. Directly
+video-derived articles use the matching video's public YouTube calendar date,
+including PWI videos. Keep that displayed date without shifting it to another day
+through UTC conversion. Recent conversion and editorial work belongs in
+`dateModified`. Git history records repository revisions and supplies no evidence
+for the original publication date.
 
 ---
 

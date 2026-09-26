@@ -1,7 +1,7 @@
 ---
 title: "C# 8 - Async Streams"
 description: "Async streams let callers process database rows before the full result exists. An async iterator combines await and yield return, keeping its reader open during enumeration."
-datePublished: 2020-01-20
+datePublished: 2020-01-19
 dateModified: 2026-09-25
 tags: ["async-streams", "asynchronous-io", "benchmarking", "iterator-pattern", "design-patterns", "csharp"]
 hero: csharp-8-async-streams

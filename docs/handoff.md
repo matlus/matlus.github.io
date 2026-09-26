@@ -60,13 +60,16 @@ domain set with HTTPS enforced.
   C# demonstration; the 2019 Let's Talk recording supplies later explanation and
   tone. Its code examples still await a frame-by-frame provenance check in the
   article review backlog.
-- `Clean Abstractions Around Libraries` and `Intentional Model Design` are new
-  writing posts. They link back to the relevant PWI chapters, which link to them.
+- `Clean Abstractions Around Libraries` and `Intentional Model Design` develop
+  historical PWI guidance as writing posts. They link back to the relevant PWI
+  chapters, which link to them.
   Boundary validation was expanded within the Python Validation chapter; the C#
   chapter already explains its manager-front-door validator sequence.
 - The two Factory posts and two original posts were published together so their
-  reciprocal links resolve. The original posts take their first live date of
-  2026-09-25.
+  reciprocal links resolve. The two PWI guideline posts carry the historical
+  origin date 2017-09-20 and an update date of 2026-09-25. Direct video adaptations
+  use YouTube's displayed publication day. The full inventory and source evidence
+  are recorded in `docs/publication-date-audit.md`.
 
 **Chapters**: architecture-layers, class-design, method-design and
 naming-conventions and validation-exception-handling all bilingual, plus
