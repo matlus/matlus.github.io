@@ -1,21 +1,21 @@
 ---
 title: Stampede at the Gates
 description: >-
-  AI did not break the software lifecycle. It removed the speed limit that was
-  concealing how fragile the lifecycle already was.
+  AI generation exposed an already flawed SDLC: faster code review moves the queue
+  to verification, which needs functional acceptance testing at the boundary.
 datePublished: 2026-07-17
-dateModified: 2026-09-20
+dateModified: 2026-09-26
 tags:
   - verification
   - acceptance-testing
   - ai-assisted-development
   - code-review
   - testing
-hero: stampede-at-the-gates
-diagrams:
-  - stampede-gates
+hero: stampede-at-the-gates-bulls
 status: established
 ---
+
+<!-- audit-allow: verified, not trusted -->
 
 For decades, software delivery held a balance nobody designed.
 
@@ -38,7 +38,8 @@ stops honouring the calibration, and what was hiding underneath it the entire ti
 
 Because that equilibrium was never evidence the system worked. The defects returning from
 production were evidence it did not. They simply arrived slowly enough to be accepted as
-normal.
+normal, a cost of doing business. The old SDLC was already flawed. Human coding speed kept
+the volume within reach of the people compensating for it.
 
 ## The warning light was already flashing
 
@@ -47,6 +48,16 @@ Before AI enters the picture at all, look at what the industry was living with.
 The unit suites ran green on every build. Isolated, mock-heavy, each component tested on a
 bench. And QA kept finding backend defects those suites had missed. Production found more
 still. Both facts were true for years, and almost nobody treated it as a contradiction.
+
+The testing pyramid never answered that contradiction. If the unit tests are passing and
+QA is still finding backend defects, what exactly did those tests establish about the
+system we were about to ship? The industry kept running its suites and paying for the
+human backstop. We accepted the defects without accepting what they said about our tests.
+
+Unit testing has never given us the confidence that the whole system meets its
+requirements and is ready for production. QA doing that verification afterward is the
+gap made visible. AI generation now feeds that same gap at a speed the human backstop
+cannot absorb.
 
 It is worth being precise about what a green suite proves in that setup. Mocks replace
 evidence with assumptions. An isolated test proves that a simulation agreed with itself,
@@ -80,6 +91,11 @@ staffed by humans whose capacity is bounded by headcount.
 The moment anyone pressed the accelerator, the existing weaknesses amplified. The wheels
 came off. The chassis buckled under machine-speed torque. Testing that was already porous
 became visibly porous once code started arriving at machine speed.
+
+<figure class="article-diagram article-illustration">
+<a href="/images/writing/stampede-jalopy-engine.webp" aria-label="Open the jalopy and performance engine illustration at full size"><img src="/images/writing/stampede-jalopy-engine.webp" width="1942" height="809" loading="lazy" decoding="async" alt="Two workshop scenes show the same worn jalopy. First, its original engine remains installed while a large performance engine waits on a trolley. Then the large engine is forced into the jalopy, bending its panels and straining the old chassis."></a>
+<figcaption>The Porsche engine represents AI code generation. Installing it leaves the old lifecycle carrying power it was never built to handle.</figcaption>
+</figure>
 
 AI did not create the weakness. It made the weakness impossible to ignore. The engine was
 never the problem, and the fix is not another engine.
@@ -154,6 +170,68 @@ But suppose you did relieve gate one. You have not removed the queue. You have r
 it to gate two, the last checkpoint before production, where a miss costs the most and is
 caught the latest.
 
+<!-- diagram:start stampede-gates -->
+<figure class="article-diagram article-gates-comparison">
+<div class="article-gates-comparison__panels">
+<section><h3>Before: the review queue</h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 470" role="img" aria-labelledby="gates-now-title gates-now-desc" style="font-family:var(--font-sans);font-size:17px;fill:var(--diagram-label)">
+<title id="gates-now-title">Changesets queue at code review</title>
+<desc id="gates-now-desc">AI-generated changesets accumulate before code review. Only a small number reach verification.</desc>
+<defs><marker id="gates-now-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 Z" style="fill:var(--diagram-line)"/></marker></defs>
+<g style="fill:none;stroke:var(--diagram-line);stroke-width:2" marker-end="url(#gates-now-arrow)">
+<path d="M180 70 V151"/><path d="M180 208 V289"/><path d="M180 346 V381"/>
+</g>
+<rect x="58" y="25" width="244" height="45" rx="8" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker);stroke-width:2"/><text x="180" y="53.5" text-anchor="middle">AI-generated changesets</text>
+<rect x="58" y="160" width="244" height="48" rx="8" style="fill:var(--diagram-validation-fill);stroke:var(--diagram-validation);stroke-width:2"/><text x="180" y="190" text-anchor="middle">Code review</text>
+<rect x="58" y="298" width="244" height="48" rx="8" style="fill:var(--diagram-fail-fill);stroke:var(--diagram-fail);stroke-width:2"/><text x="180" y="328" text-anchor="middle">Verification</text>
+<rect x="58" y="390" width="244" height="45" rx="8" style="fill:var(--diagram-ok-fill);stroke:var(--diagram-ok);stroke-width:2"/><text x="180" y="418.5" text-anchor="middle">Production</text>
+<rect x="140" y="95" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="160" y="95" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="180" y="95" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="200" y="95" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="140" y="109" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="160" y="109" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="180" y="109" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="200" y="109" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="140" y="123" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="160" y="123" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="180" y="123" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="200" y="123" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/><rect x="140" y="233" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="160" y="233" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<text x="180" y="148" text-anchor="middle" style="fill:var(--diagram-fail);font-weight:600">Queue of changesets</text>
+<text x="180" y="458" text-anchor="middle" style="fill:var(--color-text-muted)">Incoming work exceeds review capacity.</text>
+</svg></section>
+<section><h3>After: the verification queue</h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 470" role="img" aria-labelledby="gates-next-title gates-next-desc" style="font-family:var(--font-sans);font-size:17px;fill:var(--diagram-label)">
+<title id="gates-next-title">The queue moves to verification</title>
+<desc id="gates-next-desc">Accelerating code review sends the same incoming work to the unchanged verification gate, where the queue accumulates.</desc>
+<defs><marker id="gates-next-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 Z" style="fill:var(--diagram-line)"/></marker></defs>
+<g style="fill:none;stroke:var(--diagram-line);stroke-width:2" marker-end="url(#gates-next-arrow)">
+<path d="M180 70 V151"/><path d="M180 208 V289"/><path d="M180 346 V381"/>
+</g>
+<rect x="58" y="25" width="244" height="45" rx="8" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker);stroke-width:2"/><text x="180" y="53.5" text-anchor="middle">AI-generated changesets</text>
+<rect x="58" y="160" width="244" height="48" rx="8" style="fill:var(--diagram-validation-fill);stroke:var(--diagram-validation);stroke-width:2"/><text x="180" y="190" text-anchor="middle">Faster code review</text>
+<rect x="58" y="298" width="244" height="48" rx="8" style="fill:var(--diagram-fail-fill);stroke:var(--diagram-fail);stroke-width:2"/><text x="180" y="328" text-anchor="middle">Verification</text>
+<rect x="58" y="390" width="244" height="45" rx="8" style="fill:var(--diagram-ok-fill);stroke:var(--diagram-ok);stroke-width:2"/><text x="180" y="418.5" text-anchor="middle">Production</text>
+<rect x="140" y="95" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="160" y="95" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/><rect x="140" y="233" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="160" y="233" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="180" y="233" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="200" y="233" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="140" y="247" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="160" y="247" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="180" y="247" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="200" y="247" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="140" y="261" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="160" y="261" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="180" y="261" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<rect x="200" y="261" width="16" height="10" rx="2" style="fill:var(--diagram-worker-fill);stroke:var(--diagram-worker)"/>
+<text x="180" y="286" text-anchor="middle" style="fill:var(--diagram-fail);font-weight:600">Queue of changesets</text>
+<text x="180" y="458" text-anchor="middle" style="fill:var(--color-text-muted)">The bottleneck moves downstream.</text>
+</svg></section>
+</div>
+<figcaption>Accelerating code review relocates the queue to verification. Both gates sit in series. The queued changesets must still pass the second gate before reaching production.</figcaption>
+</figure>
+<!-- diagram:end stampede-gates -->
+
 This is textbook Theory of Constraints. Speed up a non-constraint and system throughput
 does not move. All you have done is accumulate inventory in front of the real constraint,
 and in software that inventory is unverified code sitting in a holding pen.
@@ -170,45 +248,143 @@ testing, we already do that.
 So start with a question instead. If the AI writes the code, and the AI writes the tests,
 who is checking whom?
 
-Conventional tests are coupled to the implementation. They mirror the code's structure,
-they mock its internals, and when the assistant regenerates the code it regenerates the
-tests too. The auditor and the accountant become the same party. The independent research
-says it plainly: AI-generated tests over-mock, use weak assertions, and are supplements to
-rather than substitutes for human-designed verification against real behaviour.
+Tests that mirror the implementation inherit its assumptions. They mock its internals,
+and when the assistant regenerates the code it can regenerate the tests to agree with it.
+Calling that an eval changes nothing about what has been checked. The independent research
+reports AI-generated tests that over-mock and use weak assertions. Generating more of those
+tests does not establish that the feature meets its requirements.
 
-That phrase describes what boundary testing already is. The system is treated as a sealed
-black box, with nothing inside mocked or altered to make it testable. Interception happens
-only at the true edges. The order-confirmation email really sends and really lands, and
-gets asserted line by line: correct recipient, order number in the subject, line items and
-total in the body. The database write is checked column by column. A message to the broker
-is picked up by a real subscriber on the far end and its attributes asserted. Nothing here
-is a shallow check that something ran without error.
+Gate two runs the full regression suite of **functional acceptance tests at the boundary**.
+Each feature adds its scenarios to that suite. Every subsequent change runs against the
+accumulated behaviour the system must continue to satisfy.
 
-Because such tests never look inside the system, they are decoupled from the
-implementation, which is the property the industry has discussed for years without
-producing many working examples. In an AI-native lifecycle that property changes what a
-test is for. These are the only tests that stay valid when the code underneath them is
-rewritten.
+Functional acceptance testing at the boundary exercises the entire running system. Nothing
+inside it is mocked or altered to make it testable. Carefully arranged data and conditions
+establish the scenario, and the action enters through the system's real boundary. Assertions
+then inspect the actual outcomes at its true edges.
 
-The tests become the durable asset. The code becomes regenerable output.
+The order-confirmation email really sends and really lands in a real inbox. We assert the
+recipient, the order number in the subject, and the line items and total in the body. The
+database write is checked column by column. A message to the broker is picked up by a real
+subscriber on the far end and its attributes asserted. Each assertion has an expected value
+derived from the requirement. A check that something ran without error cannot establish
+these outcomes.
+
+<!-- diagram:start functional-acceptance-at-the-boundary -->
+<figure class="article-diagram article-boundary">
+<div class="article-boundary__panels">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 420" role="img" aria-labelledby="fatb-system-title fatb-system-desc" style="font-family:var(--font-sans);font-size:18px;fill:var(--diagram-label)">
+<title id="fatb-system-title">Functional acceptance testing at the boundary exercises the whole running system</title>
+<desc id="fatb-system-desc">Precise scenario arrangements supply real inputs to the entire system. Nothing inside the system is mocked. Actual outcomes leave the system and are asserted at its boundaries.</desc>
+<defs><marker id="fatb-system-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 Z" style="fill:var(--diagram-line)"/></marker></defs>
+<rect x="15" y="15" width="330" height="76" rx="8" style="fill:var(--diagram-artifact-fill);stroke:var(--diagram-artifact);stroke-width:2"/>
+<text x="180" y="43" text-anchor="middle" font-weight="600">Arrange the exact scenario</text>
+<text x="180" y="72" text-anchor="middle">Data, state, inputs and conditions</text>
+<path d="M180 91 V132" marker-end="url(#fatb-system-arrow)" style="fill:none;stroke:var(--diagram-line);stroke-width:2"/>
+<rect x="15" y="144" width="330" height="220" rx="12" style="fill:var(--diagram-controller-fill);stroke:var(--diagram-controller);stroke-width:3"/>
+<text x="180" y="197" text-anchor="middle" font-size="23" font-weight="600">The entire</text>
+<text x="180" y="230" text-anchor="middle" font-size="23" font-weight="600">running system</text>
+<text x="180" y="273" text-anchor="middle">Exercise its real boundary.</text>
+<text x="180" y="305" text-anchor="middle">Nothing inside is mocked.</text>
+<text x="180" y="337" text-anchor="middle">Observe actual outcomes.</text>
+</svg>
+<span class="article-boundary__connector" aria-hidden="true">→</span>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 490" role="img" aria-labelledby="fatb-outcomes-title fatb-outcomes-desc" style="font-family:var(--font-sans);font-size:18px;fill:var(--diagram-label)">
+<title id="fatb-outcomes-title">Assert actual outcomes at the system boundary</title>
+<desc id="fatb-outcomes-desc">Verify a delivered email's recipient, subject, order number, line items and total. Check every required database column value. Receive the broker message with a real subscriber and check its required attributes. Expected values come from the requirements.</desc>
+<text x="180" y="25" text-anchor="middle" font-weight="600">Assert actual boundary outcomes</text>
+<rect x="15" y="45" width="330" height="126" rx="8" style="fill:var(--diagram-validation-fill);stroke:var(--diagram-validation);stroke-width:2"/>
+<text x="180" y="74" text-anchor="middle" font-weight="600">Delivered email</text>
+<text x="180" y="104" text-anchor="middle">Verify recipient and subject.</text>
+<text x="180" y="129" text-anchor="middle">Assert order number, line items</text>
+<text x="180" y="154" text-anchor="middle">and total in the delivered body.</text>
+<rect x="15" y="187" width="330" height="126" rx="8" style="fill:var(--diagram-validation-fill);stroke:var(--diagram-validation);stroke-width:2"/>
+<text x="180" y="216" text-anchor="middle" font-weight="600">Stored database row</text>
+<text x="180" y="246" text-anchor="middle">Query the real database.</text>
+<text x="180" y="271" text-anchor="middle">Assert every required column</text>
+<text x="180" y="296" text-anchor="middle">against its expected value.</text>
+<rect x="15" y="329" width="330" height="126" rx="8" style="fill:var(--diagram-validation-fill);stroke:var(--diagram-validation);stroke-width:2"/>
+<text x="180" y="358" text-anchor="middle" font-weight="600">Received broker message</text>
+<text x="180" y="388" text-anchor="middle">Receive with a real subscriber.</text>
+<text x="180" y="413" text-anchor="middle">Assert the message's required</text>
+<text x="180" y="438" text-anchor="middle">attributes and payload values.</text>
+<text x="180" y="484" text-anchor="middle" style="fill:var(--color-text-muted)">Expected values come from requirements.</text>
+</svg>
+</div>
+<figcaption>Functional acceptance testing at the boundary runs the entire system with precise arrangements and deep assertions against actual outcomes. The depth of verification determines what a passing test establishes.</figcaption>
+<p class="article-boundary__coverage"><strong>Verify the tests against the specification.</strong> Establish that the functional acceptance tests at the boundary demonstrate every required scenario for the feature. Then run the full accumulated regression suite.</p>
+</figure>
+<!-- diagram:end functional-acceptance-at-the-boundary -->
+
+The care in the arrangements and the depth of the assertions determine what a passing
+test means. AI can help author these tests, but it must follow specific guidelines for
+functional acceptance testing at the boundary. A human reviews and ratifies the scenarios,
+arrangements, and assertions before they become the standard the implementation must meet.
+The implementation assistant cannot change that standard to make its code pass.
+
+**Verified, not trusted.** That applies to the tests themselves. Verification compares the
+feature specification with the functional acceptance tests at the boundary and checks
+whether those tests actually demonstrate every required scenario. Every business
+requirement, acceptance criterion, and relevant technical and non-functional obligation
+must have appropriate verification. A requirement mentioned in a test name or comment is
+not enough. The arrangement must exercise it and the assertions must establish its outcome.
+Where an obligation needs another method, such as a load test, that evidence belongs in
+the release decision too.
+
+This verification requires a controlled workflow with explicit stages, evidence, and
+checks for incomplete work. A directed graph defines the permitted progression through
+those stages. Models can examine the evidence within that workflow; maintained executable
+controls enforce its required steps and retain the results. A skill can supply the
+guidance, but a prompt telling a model to verify everything cannot establish that every
+required check occurred. Model judgments still need scrutiny.
+
+Only after the tests have been verified against the specification does a passing suite
+provide the evidence we intended it to provide. A green run of an incomplete suite leaves
+the missing scenarios unverified.
+
+Because functional acceptance tests at the boundary judge observable behaviour, they can
+survive an implementation rewrite while the required behaviour remains the same. The tests
+become the durable asset. The code becomes regenerable output.
+
+QA can then concentrate on UI and UX, where human judgment decides whether an experience
+is correct and how it should improve. During each sprint, QA evaluates the new features
+and uses AI assistance to automate repeatable UI checks. Those checks join the UI
+regression suite, so previous features do not require another complete manual pass every
+sprint. Human experience judgments remain human work. Backend behaviour is already covered
+by the regression suite of functional acceptance tests at the boundary.
+
+[The AI-Native Lifecycle](/writing/the-ai-native-lifecycle/) explains how the review gate,
+test ratification, and verification gate fit together. The
+[Verification with Intent section](/acceptance-testing/) collects the guidance on testing
+strategy, arrangements, and assertions.
 
 ## Engineer the gates, do not widen them
 
-I have held this position since long before AI code generation existed. While humans
-maintain code, review matters for maintainability. If I could keep only one of the two
-practices, I would keep functional acceptance testing at the boundary, because it produces
-evidence rather than opinion.
+I reached this position long before AI code generation. I wrote unit tests, questioned
+what they were establishing, and stopped using them. I moved to functional acceptance
+testing at the boundary around 2008 to 2010. I did not need a QA team
+manually verifying my backend services. QA focused on UI and UX.
 
-In the AI-generated era that stops being a preference and becomes the only available
-answer. Without functional acceptance tests at the boundary, ask plainly what is giving
-you the confidence to put generated code into production. The reviewer who read it
-quickly? The tests the same model wrote to check its own work?
+Writing functional acceptance tests at the boundary took as much time as writing the
+production code, sometimes more. The arrangements had to be exact and the assertions
+had to establish the outcomes. That work gave me the confidence to go to production.
+
+I care deeply about maintainable code. Programming With Intent is built around it. But
+if I had to choose where to spend my time, I would choose functional acceptance testing
+at the boundary. Maintainability matters throughout the life of the code. These tests
+give me the evidence I need to decide whether to ship it.
 
 You do not relieve a stampede by opening the gates wider. Widening a gate means lowering
 its standard, and a gate with no standard is a hole in the fence.
 
 Engineer both gates as one system, so the pipeline moves as fast as the code being written
-without quietly losing what review and verification were there to catch. The alternative
-is on the record, in five separate studies, pointing the same way.
+without quietly losing what review and verification were there to catch.
+
+**Verified, not trusted.** Verify that the functional acceptance tests at the boundary
+demonstrate every required scenario for the feature. Ratify their arrangements and deep
+assertions against the requirements. Run the full accumulated regression suite against
+the actual system. Passing that suite is the evidence I rely on for the backend release
+decision. Unit tests and an assistant approving its own work have never given me that
+confidence.
 
 Anyone selling a fix for gate one alone is selling a stampede relocation service.

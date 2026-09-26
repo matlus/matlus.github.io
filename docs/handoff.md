@@ -118,6 +118,14 @@ and do not appear in published articles or their Markdown twins.
 
 ### Needs authoring, not conversion
 
+**Functional acceptance testing at the boundary** needs a dedicated article covering
+precise arrangements, deep assertions against real outcomes, verification that tests
+demonstrate every required feature scenario, and the accumulated regression suite at
+gate two. Link it from Stampede when it exists. The 2026-09-26 revision of
+Stampede establishes this argument, adds the car illustration and inline SVG figures,
+and carries the recurring phrase "Verified, not trusted". The companion lifecycle
+article now explains how QA builds UI regression automation alongside human UX judgment.
+
 4. **Domain Facade** deserves a chapter covering:
    folder structure, levels of abstraction, and the sibling rule, where a class talks
    one level down and no further and a sibling needing a sibling is an abstraction

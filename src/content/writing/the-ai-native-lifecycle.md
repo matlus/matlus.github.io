@@ -1,10 +1,11 @@
 ---
 title: The AI-Native Lifecycle
 description: >-
-  What it takes to engineer both gates rather than widen them, when generation
-  runs at machine speed and trust is the thing in short supply.
+  An AI-native SDLC engineers both gates through certified code review, functional
+  acceptance tests at the boundary ratified by humans, and verification against
+  the specification.
 datePublished: 2026-08-19
-dateModified: 2026-09-20
+dateModified: 2026-09-26
 tags:
   - verification
   - acceptance-testing
@@ -14,6 +15,8 @@ tags:
 hero: ai-native-lifecycle
 status: established
 ---
+
+<!-- audit-allow: verified, not trusted -->
 
 [Stampede at the Gates](/writing/stampede-at-the-gates/) sets out the problem. Code is
 written at machine speed and still reviewed and verified at human cognition speed, so a
@@ -129,7 +132,7 @@ behaviour.
 
 ### What high fidelity means
 
-High-fidelity boundary tests treat the system as a sealed black box, deliberately. Nothing
+Functional acceptance testing at the boundary treats the system as a sealed black box. Nothing
 inside it is mocked or altered to make it testable. Interception happens only at the true
 edges, in the framework layer, never in the team's own code.
 
@@ -139,6 +142,21 @@ items and total in the body. The database write is checked column by column. A m
 the broker is picked up by an actual subscriber on the far end and its attributes asserted.
 
 None of that is a shallow check that something ran without error.
+
+The arrangements must establish the exact scenario and the assertions must demonstrate
+its required outcomes. AI assistance follows explicit guidelines for functional acceptance
+testing at the boundary, and the human sponsor judges the result before ratification.
+
+Verified, not trusted. Verification compares the feature specification with the functional
+acceptance tests at the boundary to establish whether the tests demonstrate every required
+scenario, business requirement, and acceptance criterion. Relevant technical and
+non-functional obligations need appropriate evidence too. A passing suite cannot establish
+a requirement its scenarios and assertions never exercised.
+
+That examination runs through a controlled workflow, with explicit stages, retained
+evidence, and executable checks for missing work. A directed graph governs progression.
+Models perform bounded examinations within it; their judgments remain fallible. The
+workflow must establish which obligations were examined and which remain unresolved.
 
 ### Ratification
 
@@ -165,10 +183,16 @@ generation is cheap.
 So the relationship inverts. The tests become the durable asset, the executable statement
 of business intent, the thing you own and accumulate. The code becomes regenerable output.
 
-The payoffs land on both sides of the table. The business gets a living, full-fidelity
-regression suite. Engineering gets the confidence to ship on merge and the freedom to
-refactor without fear. QA time moves away from re-verifying business logic release after
-release, toward UI and UX, where a human eye still matters.
+Every feature adds its functional acceptance tests at the boundary to the regression
+suite. Gate two runs that entire accumulated suite against the current implementation.
+The business retains an executable record of its requirements. Engineering has the
+evidence to make a release decision and to check that a refactor preserves required behaviour.
+
+QA concentrates on UI and UX, where human judgment evaluates the experience. During each
+sprint, QA tests the new features and uses AI assistance to automate their repeatable UI
+checks. Those checks become part of the UI regression suite. Previous features run through
+that automation instead of requiring a complete manual retest every sprint. Backend
+verification is already carried by the functional acceptance tests at the boundary.
 
 Gate two stops being the bottleneck.
 
@@ -180,6 +204,9 @@ exist. Let nothing certify its own output.
 Two gates enforce the result. One reviews the code against a standard authored once and
 enforced everywhere. The other verifies behaviour through the system's real boundary,
 against tests a human signed and the machine cannot edit.
+
+Verified, not trusted. The tests themselves are verified against the specification before
+their passing results become evidence for the release decision.
 
 Engineer both, and the pipeline moves as fast as the code being written without quietly
 losing what review and verification were there to catch.
