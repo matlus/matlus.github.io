@@ -4,7 +4,7 @@ description: "A Configuration Provider hides the source, returns typed settings,
 datePublished: 2019-08-11
 hero: configuration-provider-design-pattern
 dateModified: 2026-09-25
-tags: ["class-design", "error-handling", "configuration-provider", "design-patterns", "csharp", "composition-over-inheritance"]
+tags: ["class-design", "error-handling", "configuration-provider", "architectural-patterns", "csharp", "composition-over-inheritance"]
 youtube: "https://www.youtube.com/watch?v=IPS8VSrGq94"
 repositories:
   - label: Configuration Provider sample

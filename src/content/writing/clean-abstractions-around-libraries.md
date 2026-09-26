@@ -2,8 +2,9 @@
 title: "Clean Abstractions Around Libraries"
 description: "A library boundary owns the application's contract even when its terms match the library's. It contains provider types, validation, failures, and configuration, and keeps replacement possible."
 datePublished: 2026-09-25
+dateModified: 2026-09-25
 hero: clean-abstractions-around-libraries-v2
-tags: ["architecture", "public-surface", "library-boundaries", "gateway-pattern", "data-manager", "configuration-provider", "design-patterns"]
+tags: ["architecture", "public-surface", "library-boundaries", "gateway-pattern", "data-manager", "configuration-provider", "architectural-patterns"]
 ---
 
 I put a boundary around a library when the rest of the system should depend on a capability I own instead of the library's contract. Sometimes the library's vocabulary is a poor fit for the domain. Sometimes its words are exactly right. In either case, I still need to decide what inputs are valid, what types callers receive, how failures are represented, and which details remain inside the boundary.

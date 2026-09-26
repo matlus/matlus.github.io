@@ -4,7 +4,7 @@ description: "Composition keeps a configuration provider's capabilities limited 
 datePublished: 2022-02-06
 dateModified: 2026-09-25
 hero: prefer-composition-over-inheritance
-tags: ["class-design", "configuration-provider", "design-patterns", "composition-over-inheritance"]
+tags: ["class-design", "configuration-provider", "architectural-patterns", "composition-over-inheritance"]
 youtube: "https://www.youtube.com/watch?v=bS-EcmMur8Q"
 repositories:
   - label: Composition example project

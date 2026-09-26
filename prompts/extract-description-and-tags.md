@@ -86,17 +86,27 @@ gives the subject a section or more. A passing reference earns nothing.
 - Single-use is fine. A tag that only this post will ever carry still earns its place
   if it names a real, specific subject of the post.
 
-**Design pattern tags: every pattern the post relies on.** A named design pattern
-gets a tag whenever the post explains it or uses it as part of the design it
-describes, even when the pattern is not the post's main subject. Only a bare
-cross-reference, such as "see the Gateway chapter", does not count. Any post with at
-least one pattern tag also carries `design-patterns`. These tags do not count toward
-the subject budget, because they feed the site's Design Patterns section, where
-completeness matters.
+**Pattern tags: classify each family separately.** Add a specific pattern tag when
+an article explains the pattern or applies it in a worked design. A passing mention
+or bare cross-reference earns no tag. Pattern tags do not count toward the subject
+budget.
 
-- Patterns include the classic ones (Adapter, Strategy, Factory, Factory Method,
-  Decorator) and the named patterns of this body of work (Domain Facade, Service
-  Locator, Configuration Provider, Gateway, Data Manager).
+- `design-patterns` covers named software design patterns such as Factory, Factory
+  Method, Strategy, Template Method, Adapter, Decorator, and Iterator. Add the
+  umbrella only when the article substantially teaches or applies one of these
+  patterns. Language features count when the article explains how they implement
+  a named pattern.
+- `architectural-patterns` covers recurring system structures and boundaries,
+  including Domain Facade, Service Locator, Configuration Provider, Gateway, and
+  Data Manager. Keep their specific tags where the article explains or uses the
+  role. Add this umbrella when those structures are a substantial part of the post.
+- `ai-workflow-patterns` covers reusable coordination of model judgments with code,
+  such as speculative fan-out, confidence-gated routing, composite scoring, and
+  intent routing. Keep the corresponding specific tags. Use `agent-orchestration`
+  for coordination of multiple model workers; AI workflows need not involve agents.
+- Mixed articles may carry more than one umbrella when each family receives
+  substantial treatment. Never infer `design-patterns` from an architectural or
+  AI workflow tag.
 - Slug: the pattern's name as the post writes it. Add `-pattern` only when the bare
   name is a generic word: `domain-facade`, `service-locator`,
   `configuration-provider`, but `gateway-pattern`, `adapter-pattern`,

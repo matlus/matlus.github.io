@@ -5,6 +5,7 @@ description: >-
   exact work and policy, while evaluation and confidence gates determine when to
   act or escalate.
 datePublished: 2026-09-25
+dateModified: 2026-09-25
 hero: jev-practical-reference
 tags:
   - jev
@@ -14,7 +15,7 @@ tags:
   - confidence-gated-routing
   - composite-scoring
   - intent-routing
-  - design-patterns
+  - ai-workflow-patterns
 ---
 
 ## Contents

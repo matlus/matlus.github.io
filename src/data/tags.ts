@@ -155,9 +155,23 @@ export const TAGS = [
     slug: 'design-patterns',
     label: 'Design Patterns',
     description:
-      'Named, reusable solutions to recurring design problems, from the classic ' +
-      'catalogue and from this body of work, such as the Domain Facade, the Service ' +
-      'Locator and the Gateway.',
+      'Named software design patterns such as Factory, Factory Method, Strategy, ' +
+      'Template Method, and Iterator. Articles explain a pattern’s structure ' +
+      'or apply it in a worked design.',
+  },
+  {
+    slug: 'architectural-patterns',
+    label: 'Architectural Patterns',
+    description:
+      'Recurring structures for system responsibilities and boundaries, including ' +
+      'Domain Facades, Service Locators, Gateways, Data Managers, and Configuration Providers.',
+  },
+  {
+    slug: 'ai-workflow-patterns',
+    label: 'AI Workflow Patterns',
+    description:
+      'Reusable ways to coordinate model judgments with code, including fan-out, ' +
+      'confidence gates, composite scoring, and intent routing.',
   },
   {
     slug: 'domain-facade',

@@ -37,10 +37,10 @@ domain set with HTTPS enforced.
 
 | | Count |
 |---|---|
-| Articles | 18 |
+| Articles | 20 |
 | PWI chapters | 12, across 6 topics |
 | Aphorisms | 24, with computed backlinks |
-| Tags | 49, controlled vocabulary |
+| Tags | 59, controlled vocabulary |
 
 **Articles**
 
@@ -136,8 +136,10 @@ and do not appear in published articles or their Markdown twins.
 7. **A diagram for The AI-Native Lifecycle**, most usefully gate one's "authored
     once, enforced at two points" flow with the integrity receipt.
 
-8. **Design Patterns as a top-level section.** The `design-patterns` tag and
-    per-pattern tags exist. A dedicated section and navigation placement remain.
+8. **Design Patterns as a top-level section.** The `design-patterns` tag covers
+    named software design patterns. Architectural patterns and AI workflow patterns
+    have separate tags. A dedicated section and navigation placement remain.
+    The classification audit is in `docs/pattern-tag-audit.md`.
 
 ---
 

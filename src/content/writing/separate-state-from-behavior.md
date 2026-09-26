@@ -4,7 +4,7 @@ description: "Separating state from behavior simplifies object-oriented systems:
 datePublished: 2020-12-05
 dateModified: 2026-09-25
 hero: separate-state-from-behavior
-tags: ["class-design", "public-surface", "service-locator", "configuration-provider", "gateway-pattern", "data-manager", "design-patterns", "csharp", "data-transfer-objects"]
+tags: ["class-design", "public-surface", "service-locator", "configuration-provider", "gateway-pattern", "data-manager", "architectural-patterns", "csharp", "data-transfer-objects"]
 youtube: "https://www.youtube.com/watch?v=srCLY1n0HQI"
 repositories:
   - label: MovieServiceYouTube
