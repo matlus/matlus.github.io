@@ -1,10 +1,7 @@
-# Explicit allows for AI crawlers.
-#
-# The default is ambiguous and some setups block these by reflex. Two distinct
-# paths matter here: training ingestion (ClaudeBot, GPTBot, CCBot for Common
-# Crawl, Google-Extended) and live retrieval at inference (Claude-User,
-# Claude-SearchBot, OAI-SearchBot, ChatGPT-User, PerplexityBot). The second is
-# the one that pays off on a short timescale.
+# Allow search indexing, user-requested retrieval, and model-training crawlers.
+# Named rules make this policy explicit; the wildcard allows all other bots.
+# Google-Extended controls Gemini training and grounding using content fetched
+# by Google's existing crawlers. It has no separate HTTP user agent.
 
 User-agent: ClaudeBot
 Allow: /
@@ -24,7 +21,13 @@ Allow: /
 User-agent: ChatGPT-User
 Allow: /
 
+User-agent: OAI-AdsBot
+Allow: /
+
 User-agent: CCBot
+Allow: /
+
+User-agent: Googlebot
 Allow: /
 
 User-agent: Google-Extended
