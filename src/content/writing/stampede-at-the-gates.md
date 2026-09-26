@@ -3,7 +3,7 @@ title: Stampede at the Gates
 description: >-
   AI generation exposed an already flawed SDLC: faster code review moves the queue
   to verification, which needs functional acceptance testing at the boundary.
-datePublished: 2026-07-17
+datePublished: 2026-07-04
 dateModified: 2026-09-26
 tags:
   - verification
