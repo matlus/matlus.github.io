@@ -4,19 +4,96 @@ import SectionLayout from '../../layouts/SectionLayout.astro';
 
 <SectionLayout
   title="About"
-  description="Shiv Kumar is a Senior Software Solutions Architect and Senior Applied AI Engineer & Architect."
+  description="I work in software engineering and applied AI engineering, with a focus on architecture, document intelligence, and verifiable systems."
   seed="about"
   heroSlug="section-about"
 >
   <section class="prose">
     <p>
       I'm Shiv Kumar. I work as a Senior Software Solutions Architect and a Senior
-      Applied AI Engineer &amp; Architect.
+      Applied AI Engineer &amp; Architect. I'm passionate about how systems are designed,
+      how their intent is expressed, and how we establish that they do what we need
+      them to do.
+    </p>
+
+    <h2>Software engineering</h2>
+    <p>
+      I care about clear responsibilities, meaningful abstractions, and code whose
+      structure makes its purpose understandable. I care just as much about
+      verification: defining the expected behavior and writing functional acceptance
+      tests that exercise it at the system boundary.
     </p>
     <p>
-      I write here about software design, programming with intent, acceptance testing,
-      and working with language models. The <a href="/writing/">writing</a> and
-      <a href="/pwi/">Programming With Intent</a> sections are good places to start.
+      <a href="/pwi/">Programming With Intent</a> brings much of that thinking together.
+      I've put years into making design and testing guidelines thorough and specific
+      enough to apply consistently. That work has new relevance as AI takes on more
+      of the implementation and maintenance of code. I want those systems to work
+      against explicit engineering standards, with tests that demonstrate whether
+      the software meets its requirements. Human judgment defines the intent and
+      the standard of correctness.
+    </p>
+
+    <h2>Applied AI engineering</h2>
+    <p>
+      Much of my applied AI work involves document intelligence: extracting structure
+      and metadata, identifying requirements, and turning information spread across
+      documents into strategic intelligence people can use. I build pipelines that
+      combine model interpretation with processing and validation in code. I also
+      explore conversational systems that let people question their documents and
+      investigate relationships across them.
+    </p>
+    <h3>Controlled workflows</h3>
+    <p>
+      One problem I keep returning to is how to get greater determinism and
+      repeatability from systems built around language models. My approach is to
+      build directed graphs whose controllers and orchestrators are imperative code.
+      Code manages dependencies, branching, validation, and failure handling. I use
+      models where interpretation, judgment, or generation is required, and keep
+      exact operations in code. This is how I approach complex document pipelines
+      and software verification workflows.
+    </p>
+    <p>
+      My work with mixtures of experts assigns extraction, independent review,
+      diagnosis, and correction to separate specialists. Each has a defined
+      responsibility and a constrained view of the evidence. Model judgments can
+      still vary; explicit control over execution and acceptance makes the system
+      more predictable and its results easier to inspect.
+    </p>
+    <p>
+      Decision models such as <a href="/writing/jev-practical-reference/">Jev</a>
+      extend that approach. They make fast, bounded judgments about text and return
+      structured decisions and probabilities that code can act on. That gives a
+      controller access to semantic judgments that would be difficult to express
+      as fixed rules, while keeping control of the workflow in code.
+    </p>
+
+    <h3>Agentic systems</h3>
+    <p>
+      I'm equally interested in systems where agents have room to decide how to
+      pursue a goal. Anthea, my personal chief-of-staff project, is an important
+      part of that work. Its thesis-defense system adapts to the position someone
+      submits. It examines the thesis for gaps, assumptions, and leaps between
+      categories of claims, researches the wider subject, and creates specialist
+      agents suited to challenge it.
+    </p>
+    <p>
+      Each agent has its own persona, perspective, directive, and goal. Within its
+      role, it can use tools, seek evidence on the internet, and develop a sustained
+      attack on the argument. The opposition takes shape around the thesis being
+      examined. Building and working with that system has taught me a great deal
+      about my own thinking: the assumptions I leave unstated, how I respond to
+      objections, and what it takes to defend a position under serious scrutiny.
+    </p>
+
+    <h2>What I share here</h2>
+    <p>
+      This site brings those interests together through articles, worked examples,
+      and material from my videos. I explain the reasoning behind design choices,
+      the problems they address, and where they apply. The
+      <a href="/writing/">writing</a> covers software engineering and applied AI;
+      <a href="/pwi/">Programming With Intent</a> and
+      <a href="/acceptance-testing/">Acceptance Testing</a> collect the detailed
+      engineering guidance, with examples in Python and C#.
     </p>
   </section>
 </SectionLayout>
