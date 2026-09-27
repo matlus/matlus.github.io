@@ -3,7 +3,7 @@ title: "Questions About Functional Acceptance Testing at the Boundary"
 description: "Boundary testing questions concern evidence, isolation, failures, and release confidence. Compare the practice with mocks, TDD, generated checks, formal models, and production observation."
 datePublished: 2026-06-15
 dateModified: 2026-09-27
-tags: ["acceptance-testing", "verification", "mocking", "test-driven-development", "test-mediator", "transport-spy", "builder-pattern", "factory-pattern", "design-patterns"]
+tags: ["acceptance-testing", "verification", "mocking", "test-driven-development", "refactoring", "test-mediator", "transport-spy", "builder-pattern", "factory-pattern", "domain-facade", "design-patterns", "architectural-patterns"]
 hero: questions-about-functional-acceptance-testing-at-the-boundary
 ---
 
@@ -21,7 +21,7 @@ requirements are established and the scenarios and expectations verified as corr
 
 ### Why spend as much effort on tests as on the feature?
 
-The arrangements and assertions establish a complete feature outcome through production code and real infrastructure. The business receives a maintained regression suite; the team receives release confidence and runnable documentation. The investment protects earlier behavior while later sprints change the system.
+The arrangements and assertions establish a complete feature outcome through production code and real infrastructure. The business receives a maintained regression suite; the team receives release confidence, runnable documentation, and the freedom to refactor the internals with unchanged acceptance tests. That refactoring benefit depends on preserving the requirements and public contract. The investment protects earlier behavior while later sprints change the system.
 
 [Detailed explanation](/writing/functional-acceptance-testing-at-the-boundary/).
 
@@ -405,7 +405,7 @@ Turn discovered obligations into permanent scenarios, theory rows, or previously
 
 ### How does a behavior-based suite survive internal refactoring?
 
-Assertions concern stable public outcomes and independently observed effects, not arbitrary internal method identities. Internal reorganization can retain those comparisons. Schema, protocol, or provider changes legitimately require updated test support and reviewed contracts. Behavior-based coupling reduces rather than abolishes maintenance.
+With unchanged requirements and a stable public contract, the acceptance tests can remain exactly as written while you refactor one component or the entire implementation behind the Domain Facade. They know its public input and output models and the required outcomes. Test Mediators and spies keep implementation details in test support. That support may need adapting while preserving the same instructions and observations; the scenarios and assertions stay unchanged.
 
 [Detailed explanation](/writing/refactoring-and-adopting-boundary-testing/).
 
