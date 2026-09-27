@@ -1,10 +1,10 @@
 ---
 title: Method Design
 description: >-
-  Pure and autonomous methods, why public methods orchestrate rather than implement, consistent abstraction levels, and the split between actions and queries.
+  Python methods make work and contracts clear: pass operation data explicitly, orchestrate at one abstraction level, and let ordinary actions return `None` while queries return data or raise.
 datePublished: 2017-09-20
 hero: chapter-method-design-python
-dateModified: 2026-09-19
+dateModified: 2026-09-27
 tags:
   - method-design
   - python
@@ -318,31 +318,27 @@ responsibility is justified.
 
 ---
 
-## Method Types: Actions vs Queries
+<span id="method-types-actions-vs-queries"></span>
 
-Methods fall into two distinct categories with specific contracts. This separation eliminates ambiguity and removes unnecessary conditionals from calling code.
+## Action Methods and Query Methods
 
-The mechanism that makes this work is simple: exceptions do not return. If a method cannot fulfill its contract, it does not return a weaker value, a status code, `None`, or a wrapper. It raises. If execution reaches the next line, the previous method fulfilled its contract.
+An **action method** does work, such as sending a notification or creating a customer. A **query method** asks for information, such as the customer with a given ID. The distinction tells the caller what to expect: an action method completes its task, while a query method returns the answer it promises.
 
-### Action Methods (Commands)
+If either method cannot fulfill that contract, it raises an exception. An exception interrupts execution, so the next line runs only when the preceding call did what it promised. That is why the caller does not need to test a success flag after every action method or check for `None` after a query method that promises a `Customer`.
 
-Action methods perform tasks or state changes. They are "doers."
+<span id="action-methods-commands"></span>
+
+### Action Methods: Perform Work
+
+An action method performs a task or changes state. `send_notification` is an action method: it sends a notification and has no information to return. It returns `None` when complete and raises an exception if it cannot send. A success/failure `bool` or status code would make every caller check the result before continuing.
 
 **Rules:**
 
-- **Return `None`** - Actions have no reason to send information back to the caller
+- **Return `None`** - Action methods have no reason to send information back to the caller
 - **No success/failure indicators** - Never return booleans or status codes (1 for success, -1 for failure)
 - **Failure = Exception** - If the action cannot complete, raise an exception; never return a failure status
 
-**Exception - Resource Creation:** When an action creates a new resource (e.g., inserting a record), the method may return the newly created ID. However, it must never return a status code for failure. If creation fails, raise an exception.
-
-**Exception - Process Protocol:** A CLI adapter may return an integer consumed
-as the process exit status, including forwarding a child process's
-`CompletedProcess.returncode` into `sys.exit(run_tests(...))`. A documented
-configuration failure may also select the CLI's failure code. That adapter
-implements the process protocol; ordinary application callers must still
-receive meaningful exceptions rather than interpret action status integers.
-Resource cleanup remains unconditional, including on a nonzero child status.
+**Exception - Resource Creation:** When an action method creates a new resource (e.g., inserting a record), it may return the newly created ID. That ID describes the resource; it is never a status code for failure. If creation fails, raise an exception.
 
 ```python
 # GOOD - Action method
@@ -366,9 +362,19 @@ def create_customer(customer_data: CustomerCreationData) -> int:
     ...
 ```
 
-### Query Methods (Information Providers)
+**Exception - Process Protocol:** A CLI adapter may return an integer consumed
+as the process exit status, including forwarding a child process's
+`CompletedProcess.returncode` into `sys.exit(run_tests(...))`. A documented
+configuration failure may also select the CLI's failure code. That adapter
+implements the process protocol; ordinary application callers must still
+receive meaningful exceptions rather than interpret action status integers.
+Resource cleanup remains unconditional, including on a nonzero child status.
 
-Query methods retrieve and return data. They answer questions.
+<span id="query-methods-information-providers"></span>
+
+### Query Methods: Return Information
+
+A query method answers a question with data. `get_customer(customer_id)` promises a `Customer`; it returns one when found and raises `CustomerNotFoundException` when it cannot provide one. Returning `None` would change the contract to "maybe a customer" and force every caller to add a branch.
 
 **Rules:**
 
@@ -377,13 +383,6 @@ Query methods retrieve and return data. They answer questions.
 - **No `None` for "not found"** - If the caller expects a specific result and it cannot be provided, raise an exception
 
 **Exception - Collection Queries:** Methods returning collections should return an empty collection (not `None`) when no items match. An empty result is a valid answer to "what items match this criteria?"
-
-Chapter 9 owns the retrieve/search/find absence contract and the independent
-requirement to keep the operation's name consistent through its flow. Do not
-also report the same return-or-raise correction under Chapter 5. Chapter 5
-retains other promised single-entity query failures and failure-wrapper
-contracts. A reusable comparison returning None on success or a complete
-failure report is not a missing-entity query and remains permitted.
 
 ```python
 # GOOD - Returns claimed type or raises
@@ -409,6 +408,24 @@ def get_customer(customer_id: CustomerId) -> Result[Customer, str]:
     ...
 ```
 
+<span id="the-shared-principle-execution-implies-success"></span>
+
+### What the Caller Gains
+
+The benefit appears in ordinary calling code. Each query method below returns the named data or raises. Each action method completes or raises. The next line can use the result without checking a status value or unwrapping a possible `None`:
+
+```python
+# Fearless calling code - no conditionals needed
+def process_order(order_id: OrderId) -> None:
+    order: Order = get_order(order_id)                    # Either returns Order or raises
+    customer: Customer = get_customer(order.customer_id)  # Same guarantee
+    validate_order(order)                                 # Succeeds or raises
+    send_confirmation(customer, order)                    # Succeeds or raises
+    # If we reach here, everything worked
+```
+
+If `get_customer` cannot provide the customer, `validate_order` and `send_confirmation` never run. If `send_confirmation` returns, it completed. The caller has no extra success checks after these calls, which is how the contract avoids a sea of defensive conditionals.
+
 ### Cardinality Is Intent
 
 When a query applies criteria, the expected cardinality is part of the contract; encode it, don't dodge it:
@@ -428,26 +445,6 @@ not to an uninspected deployed database.
 When an exactly-one query fails its cardinality, the raised exception must carry the **criteria and their values** ("expected exactly one policy for policy_number=X, effective_date=Y; found 3"); a bare "sequence contains more than one element" gives the analyst nothing to work with (Chapter 6 message rules). A small `single_else_raise(items, error_context)` helper standardizes this.
 
 Do not fabricate existence checks from queries that raise: catching `CustomerNotFoundException` inside `does_customer_exist()` to return a boolean is the one genuine misuse of exceptions as control flow: write a real existence query instead.
-
-Cardinality Is Intent exclusively owns that catch-to-boolean existence correction. Do not duplicate the same replacement under generic catch/swallow or predicate purity. Independently lost unrelated failures, hidden-state preconditions, and business-predicate defects that remain after the replacement retain their own rules.
-
-### The Shared Principle: Execution Implies Success
-
-The goal of this separation is **fearless code after method calls**:
-
-- If execution reaches the line after a method call, the operation succeeded
-- No need to check return values, unwrap optionals, or test for `None`
-- Eliminates the "sea of ifs" where every call is followed by defensive checks
-
-```python
-# Fearless calling code - no conditionals needed
-def process_order(order_id: OrderId) -> None:
-    order: Order = get_order(order_id)                    # Either returns Order or raises
-    customer: Customer = get_customer(order.customer_id)  # Same guarantee
-    validate_order(order)                                 # Succeeds or raises
-    send_confirmation(customer, order)                    # Succeeds or raises
-    # If we reach here, everything worked
-```
 
 ---
 
@@ -479,7 +476,9 @@ When reviewing method design, verify:
 - [ ] Repeated business-rule conditions are extracted to one named predicate, policy, or polymorphic design
 - [ ] No redundant safety checks after internal calls whose contracts already guarantee the state
 
-### Actions vs Queries
+<span id="actions-vs-queries"></span>
+
+### Action Methods and Query Methods
 
 - [ ] Application actions return `None` or a newly created resource ID and raise on failure; a proven CLI adapter may return a process exit code
 - [ ] Query methods return the claimed type or raise an exception

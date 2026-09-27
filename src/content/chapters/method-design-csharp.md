@@ -4,7 +4,7 @@ description: >-
   Explicit visibility, why public members are never virtual, orchestration over implementation, and return contracts that state their cardinality.
 datePublished: 2017-09-20
 hero: chapter-method-design-csharp
-dateModified: 2026-09-19
+dateModified: 2026-09-27
 tags:
   - method-design
   - csharp
@@ -355,11 +355,17 @@ tests must not force translation to remain private or require extra consumers.
 
 ---
 
-## Actions Are Void-Returning
+<span id="actions-are-void-returning"></span>
 
-This action/query convention governs ordinary application operations. A command-line adapter may return an `int` or `Task<int>` exit status to the process entry point, including the exact child `Process.ExitCode` after completion. That is an explicit process protocol, not an undocumented domain success flag. Preserve cleanup on every path and propagate the child status accurately. Do not extend this exception to ordinary application callers interpreting status codes.
+## Action Methods and Query Methods
 
-**A method that does something - an action, a command - returns `void`, or `Task`/`ValueTask` for its asynchronous form.** If action methods have a problem, they do not return - they throw. Success needs no signal: the absence of an exception, on the calling line, already says the action happened. A return value that exists only to report how the operation went is what an exception is for, and an action must never carry that report in its return type - not as a `bool`, not as a status or error code, not as a `Result`/`Try`-style wrapper, and not as a `null` standing in for "it did not work."
+An **action method** does work. `CancelPolicy` changes a policy; `SendConfirmationEmailAsync` sends a message. A **query method** answers a question. `GetCustomer` asks for a customer and promises to return one. These names describe what the caller is asking the method to do. The return contract tells the caller what, if anything, comes back.
+
+The two contracts share a useful guarantee. An action method completes its work or throws an exception. A query method returns the information it promises or throws when it cannot provide that information. An exception interrupts the call, so reaching the next line means the previous method fulfilled its contract. The caller can continue without checking a success flag after every operation.
+
+### Action Methods: Do the Work
+
+An action method ordinarily returns `void`, or `Task`/`ValueTask` when asynchronous. Its purpose is to perform an operation, such as cancelling a policy. A return value that only reports success or failure makes every caller inspect it before continuing. If the action cannot complete, it throws instead. The return type does not carry that report as a `bool`, status code, `Result`/`Try` wrapper, or `null` meaning "it did not work."
 
 ```csharp
 // COMPLIANT - an action; it does something, and has nothing to tell you
@@ -379,7 +385,9 @@ public bool CancelPolicy(string policyNumber, DateTime cancellationDate)
 
 `GatewayEmailService.SendConfirmationEmailAsync` is the realistic version of this: it retries internally, and it either returns having sent the email or throws a specific exception explaining why it could not. There is no in-between return value for the caller to inspect.
 
-**The sanctioned anomaly: a creation action may return data of the resource it just created.** Creation is the one case where an action legitimately returns something, because what it returns is not a report on the action - it is the created resource itself, or a fact about it. `InsertCustomer` returning the new customer's ID is the narrowest form: not a status code, not a `-1` for failure, only the identity, and only on the path where creation actually happened.
+### Creation Action Methods May Return Created Data
+
+An action method that creates a resource may return data about that resource. `InsertCustomer`, for example, can return the new customer's ID. The ID identifies the customer that now exists; it does not report whether insertion succeeded. A failed insertion throws rather than returning `-1`.
 
 ```csharp
 // COMPLIANT - the sanctioned anomaly: identity of a newly created resource
@@ -389,9 +397,9 @@ public int InsertCustomer(string firstName, string lastName, DateTime dateOfBirt
 }
 ```
 
-A creation action is not limited to a bare identifier - it may return a small creation result carrying data of the created resource, provided every field of that result describes the resource rather than the outcome. `ManagerOrdering.PlaceOrderAsync` returning `OrderPlacementResult` (`OrderReference`, `OrderTotal`, `OrderPlacementStatus`) is the ratified example: `OrderPlacementStatus` is domain state of the order that now exists - not an outcome flag standing in for "did this succeed." The method either returns a result describing a real order, or it throws.
+A creation action method may also return a small result with facts about the resource it created. `ManagerOrdering.PlaceOrderAsync` returns an `OrderPlacementResult` with `OrderReference`, `OrderTotal`, and `OrderPlacementStatus`. The status describes the order's domain state; it is not a success flag. The method returns data about an order that exists, or it throws.
 
-**The discriminating test is simple to state and worth applying to every return value on an action: does it exist to report how the operation went, or does it carry data of the thing that was created?** The first is a violation, however it is spelled - a `bool`, a status enum, an error code, a `Result<T, TError>` or `Try`-style wrapper, or a `null` used to mean "failed." The second is fine, no matter how many fields it carries, as long as every one of those fields describes the created resource and none of them encodes success or failure.
+For every value returned by a creation action method, ask what that value describes. A customer ID or an order total describes the created resource. A `bool`, error code, `Result<T, TError>` wrapper, or `null` used to mean "failed" describes the outcome of the operation and makes the caller inspect it before continuing. A creation result is appropriate when every field describes the resource.
 
 ```csharp
 // VIOLATION - a creation "result" that is really an outcome report
@@ -405,7 +413,7 @@ public sealed class InsertCustomerResult
 
 `InsertCustomerResult` above fails the test even though it names itself a creation result: `Succeeded` and `ErrorMessage` exist purely to report how the operation went, which is exactly what throwing on failure already covers. `OrderPlacementResult` passes the same test because none of its three fields could be replaced with "true" or "false" without losing information about the order itself.
 
-**A functional-style outcome envelope is the same violation wearing a more respectable-looking costume, and it deserves calling out by name.** The shape: an action returns an object with a success/error flag alongside a data property that is `null` or empty on failure and populated on success - a `Result<T>`, an `Either`-style effect type, or a hand-rolled envelope with the same two-property skeleton. The pitch for it is always "we're not returning a `bool`, we're returning an object" - but the object exists for exactly one reason: to tell the caller whether the operation worked. That is what throwing is for, and wrapping the flag inside a class instead of returning it bare does not change what it is.
+An outcome wrapper does not change the rule. An action might return a `Result<T>`, an `Either`-style type, or a custom object with a success flag and a data property that is `null` on failure. That object still asks the caller to inspect whether the operation worked. Putting the flag inside an object does not turn it into data about a created resource; failure belongs in the exception path.
 
 ```csharp
 // VIOLATION - a functional-style envelope; still a signal wearing a costume
@@ -422,13 +430,15 @@ public PlaceOrderEffect<OrderPlacementResult> PlaceOrder(OrderPlacementRequest r
 }
 ```
 
-`PlaceOrderEffect<T>` fails the same test `InsertCustomerResult` fails: `IsSuccess` and `Error` exist only to report how the operation went, and `Data` being `null` on the failure path is just `null`-for-failure wearing a generic type parameter. A creation action may return data of the resource it created - it must never return a thing whose job is to indicate whether creating it worked, no matter how many layers of wrapping sit between that flag and the caller.
+`PlaceOrderEffect<T>` fails the same test as `InsertCustomerResult`: `IsSuccess` and `Error` report how the operation went, while `Data` becomes `null` to signal failure. The wrapper makes the caller check for success before using the order data. A creation action method may return facts about the resource it created; failure takes the exception path.
 
----
+A command-line adapter has a different contract with the process entry point: it may return an `int` or `Task<int>` exit status, including the exact child `Process.ExitCode` after completion. That is a process protocol, not a success flag for ordinary application callers. The adapter must still clean up on every path and report the child status accurately.
 
-## Queries Return What They Claim, or They Don't Return At All
+<span id="queries-return-what-they-claim-or-they-dont-return-at-all"></span>
 
-**A method that claims to return something either returns exactly that, or it throws.** "Doesn't return" means an exception - execution never reaches the caller's next line, so the caller never has to wonder whether what it asked for actually came back.
+### Query Methods: Return the Information They Promise
+
+A query method supplies an answer. `GetCustomer(42)` promises a `Customer` for that ID. If the customer exists, it returns that customer. If the customer does not exist, it throws `CustomerNotFoundException`. It does not return `null` through a non-nullable `Customer` contract and leave every caller to discover what that means. A nullable return is a different, explicit contract for cases where absence is a valid answer; that distinction is explained below.
 
 ```csharp
 private Customer GetCustomer(int customerId)
@@ -448,7 +458,9 @@ var customer = GetCustomer(42);
 SendWelcomeLetter(customer);
 ```
 
-**Do not try to beat the system.** A method that claims to return a customer must not instead return some `Result<Customer, Error>`, an `Option<T>`, or a hand-rolled wrapper with a `Customer` property and an `ErrorMessage` property next to it. Wrapping the failure alongside the data is exactly the `None`/`null` problem wearing a different type; it forces the same defensive unwrapping on every caller that raising an exception was meant to eliminate.
+If `GetCustomer(42)` returns, `customer` is available and the next line can send the letter. If it throws, execution never reaches `SendWelcomeLetter`. The caller needs no "did we get a customer?" branch between these lines. The same rule applies to the action method: if `SendWelcomeLetter` returns, it completed; if it cannot send, it throws.
+
+A query method that promises a `Customer` should not return a `Result<Customer, Error>`, an `Option<T>`, or an object containing both `Customer` and `ErrorMessage` instead. Each wrapper changes what the caller receives: it must inspect and unwrap the result before it can use the customer. If absence is a valid answer, declare that possibility in the contract rather than hiding it in a success/error wrapper.
 
 ```csharp
 // VIOLATION - a wrapper is still a "maybe" in disguise
@@ -459,13 +471,15 @@ public sealed class GetCustomerResult
 }
 ```
 
-`DataManagerOrdering.PlaceOrderAsync` and `.GetOriginalOrderForResubmissionAsync` follow the contract exactly: both return the claimed tuple of order data, or they throw one of `CustomerNotFoundException`, `OrderReferenceAlreadyExistsException`, `OrderStoreContractViolationException`, or `OrderStoreUnavailableException` - never a null, never a wrapper. The exception taxonomy behind this - a `OrderingException` root splitting into `OrderingBusinessException` and `OrderingTechnicalException` branches - is Chapter 9's full territory; what matters here is that "the answer, or an exception" is the whole contract, with no third option.
+The ordering implementation shows the shared guarantee in both method types. `DataManagerOrdering.PlaceOrderAsync` is a creation action; `.GetOriginalOrderForResubmissionAsync` is a query. Each returns the data its contract promises or throws a relevant exception, such as `CustomerNotFoundException`, `OrderReferenceAlreadyExistsException`, `OrderStoreContractViolationException`, or `OrderStoreUnavailableException`. Neither returns a success flag or a failure wrapper. Chapter 9 explains the `OrderingBusinessException` and `OrderingTechnicalException` branches of that exception taxonomy.
 
-**Whether a nullable return is acceptable is a judgment call, not a mechanical finding.** C#'s nullable reference types make a return type declared `T?` an honest contract: the signature itself tells every caller that absence is possible, and returning `null` through it can be entirely legitimate - some business rules genuinely allow for absence, and forcing an exception onto every "this did not happen, and that is fine" case would be manufacturing a failure where none occurred. The cost to weigh against that legitimacy is real: a nullable return pushes a `null` branch onto every caller - there's an else somewhere, and that else has to be written, tested, and kept correct. Whether a given nullable return is worth that cost cannot be judged from the method's signature alone - it depends on the business rule behind the absence and on what every caller actually does with the `null`. That makes this teaching guidance for a human to weigh in its actual context, not a mechanical rule applied from the method text in isolation: it is a question a reviewer raises about one specific nullable return, never a finding a reviewer can raise on sight.
+### When Absence Is a Valid Result
 
-`GatewayEmailService.AttemptSendAsync` (a nullable `EmailSendFailure?`) and `ManagerOrdering.TryPublishFulfillmentNotificationAsync` (a nullable `DateTime?`) are both examples where that judgment lands in favor of the nullable return: each method's own name and comment state exactly what `null` means - "no failure occurred" in the first case, "this did not happen, so leave it pending" in the second - and each caller's handling of the `null` is itself a stated business rule, not an afterthought bolted on to cover a gap.
+Sometimes "nothing happened" or "nothing was found" is a valid answer. C# can state that contract with `T?`. A caller then knows it must handle `null`, and that branch becomes part of the work to write and test. Use a nullable return when the business rule gives absence a clear meaning and the callers handle it deliberately. The `?` makes absence visible; the business rule explains why it is a valid answer.
 
-**One piece of this stays mechanical, not a judgment call.** A public query whose declared type claims a value - a non-nullable return type - must return that value or throw. Never `null` through a type that promised not to hand you one, and never a `Result`/`Option`-style wrapper standing in for the honest `T?` the language already gives you for the cases where absence truly is possible. The judgment call above governs whether a method's return type should be declared nullable in the first place; once it is declared non-nullable, there is nothing left to weigh - the contract is `GetCustomer`'s, above, not a discussion.
+`GatewayEmailService.AttemptSendAsync` returns `EmailSendFailure?`: `null` means no failure occurred. `ManagerOrdering.TryPublishFulfillmentNotificationAsync` returns `DateTime?`: `null` means publication did not happen and remains pending. These are operation-specific contracts, not examples of `GetCustomer` silently failing. Each method names and documents the meaning of `null`, and its callers apply the corresponding business rule.
+
+A public query method declared to return a non-nullable `Customer` has made the other choice. It returns a `Customer` or throws; returning `null` breaks its stated contract. If absence is an expected answer, decide that when designing the signature and declare it honestly as nullable. A `Result` or `Option` wrapper should not be used to conceal a failure behind a type that claims to return a customer.
 
 ---
 
@@ -612,7 +626,7 @@ Not every boolean parameter is a mode switch in disguise, though. A boolean that
 
 **This is a warning, and only when the bool is not a business datum.** The warning still applies when the method is small and pure: `true` or `false` does not communicate which meaningful behavior was requested without consulting the method's contract. Flagging a boolean parameter is never a mechanical "a `bool` was found" finding: it is raised only after confirming the flag is not domain data like `marketingOptIn`, and it is raised together with an explanation of why the mode-switch shape is a problem in that specific case - which conditional it will grow, or which two intentions it is quietly merging - not a bare citation of the pattern's name. The correction is either separate intention-revealing methods or, when one operation genuinely has modes, a meaningfully named enum.
 
-**A boolean *return* is a different question, governed separately.** An action never returns a boolean to indicate success or failure - see Actions Are Void-Returning, above. A predicate query, by contrast, may legitimately return `bool` when its name asks a real business question, its inputs are explicit, and it performs no side effects.
+**A boolean *return* is a different question, governed separately.** An action method never returns a boolean to indicate success or failure; see Action Methods and Query Methods above. A predicate query method may legitimately return `bool` when its name asks a real business question, its inputs are explicit, and it performs no side effects.
 
 ```csharp
 // COMPLIANT - a business question, encapsulated
@@ -687,7 +701,7 @@ Design remains the fallback for aspects the Asserter rules do not address.
 - Does a public method read as a short sequence of named steps, at one consistent altitude, with no inline implementation detail?
 - Is a "low-level" class's public method held to the same orchestration standard as a domain class's?
 - Does an action method's return value, if it has one, exist only to carry data of a resource it created - never to report how the operation went, whether as a bare flag or wrapped inside a `Result`/`Either`-style envelope?
-- Does a query method return the type it claims, or throw - never `null`, `Optional`, or a `Result`-style wrapper?
+- Does a query method with a non-nullable return type provide the value it promises or throw, without returning `null` or a failure wrapper?
 - Where a return type is declared nullable, has someone actually weighed the business rule behind the absence and what every caller does with the `null`, rather than assuming the nullability is fine because it compiles?
 - Does a criteria query encode its expected cardinality, and does a cardinality failure carry the criteria that produced it?
 - Does a `catch` block do genuine work - retry or translation - or does it only log and re-raise (or silently swallow)?
@@ -719,11 +733,13 @@ When reviewing method design, verify:
 - [ ] Low-level classes (data managers, adapters) hold their public methods to the same level-zero orchestration standard as domain classes
 - [ ] An altitude cleanup extracts private methods before introducing a new class
 
-### Actions and Queries
+<span id="actions-and-queries"></span>
+
+### Action Methods and Query Methods
 - [ ] Ordinary application actions return `void`/`Task`, never a success/failure indicator; a CLI adapter may propagate an explicit process exit status
 - [ ] A resource-creation action's return value - whether a bare identifier or a small result record - carries only data of the created resource; no field of it encodes success or failure
 - [ ] No functional-style outcome envelope (`Result<T>`, `Either`, or a hand-rolled success-flag-plus-data wrapper) stands in for an action's return value, however the pitch for it is framed
-- [ ] Query methods return the claimed type or throw - never `null`, `Optional<T>`, or a `Result`/wrapper type
+- [ ] Query methods with non-nullable return types provide the claimed value or throw, without returning `null` or a failure wrapper
 - [ ] A public query's non-nullable declared return type is honored mechanically - the value or an exception, never `null`
 - [ ] A nullable return (`T?`) is a considered judgment call, not a default: the business rule behind the absence and every caller's handling of the `null` have actually been weighed, not merely assumed acceptable
 
