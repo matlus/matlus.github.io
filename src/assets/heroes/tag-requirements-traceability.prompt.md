@@ -1,0 +1,7 @@
+# requirements-traceability
+
+Reused from the knowing-which-scenarios-a-feature-requires article hero. The subject depicts this tag's concept.
+
+# Knowing Which Scenarios a Feature Requires
+
+Use case: stylized-concept. Asset: one panoramic website article hero, ideally 2400 by 800, aspect 3:1. Style: vintage technical editorial illustration in fine black pen-and-ink, cross-hatching, warm ivory paper, subtle pencil construction marks, mostly monochrome with sparse muted brass, cyan or rust accents. Tangible materials and convincing physical perspective; drawn rather than photorealistic. Compose close enough that the action reads as a shallow banner, with essential objects and connections within the central 65 percent of the frame height. No words, lettering, numbers, labels, code, logos, watermarks, neon glow, screens or decorative arrows. Article: knowing which scenarios a feature requires. Subject: Overhead close-up of a fitted inspection tray containing one carefully machined metal part with a bore, shoulder, toothed edge and stepped surface. Four distinct physical gauges are fitted to the corresponding four features: pin gauge inserted into bore, caliper jaws touching shoulder, tooth comb fitted to teeth, depth probe touching step. Every gauge visibly touches its own feature. Spread the part and gauges horizontally in a precise but handmade arrangement. No people or desk panorama. Central idea: every required obligation has its own appropriate check.

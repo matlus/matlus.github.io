@@ -1,5 +1,13 @@
 # Article review backlog
 
+## Functional acceptance-testing series
+
+- [ ] When the Meridian C# and Python repositories become public, verify their
+  public URLs, add article-to-repository links, and add the corresponding article
+  links to their READMEs. They remain private training references for now.
+- [ ] Add links to the acceptance-testing chapters when those chapters are
+  published. The current articles name the source chapters without broken links.
+
 This file tracks editorial verification that has not yet been completed. It is
 outside the site's content collections and is not published as an article or a
 Markdown twin. Check off an item only after comparing the article with its

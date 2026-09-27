@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import SectionLayout from '../../layouts/SectionLayout.astro';
 import TopicList from '../../components/TopicList.astro';
 import { topicsInSection } from '../../data/topics';
+import { acceptanceSeries } from '../../data/acceptance-series';
 
 const topics = topicsInSection('acceptance-testing');
 
@@ -20,30 +21,42 @@ const rest = topics.filter((topic) => topic.slug !== 'functional-acceptance-test
   title="Acceptance Testing"
   heading="Functional Acceptance Testing at the Boundary"
   eyebrow="Acceptance Testing"
-  description="Exercising a system through its front door as a black box, with attention to where test data comes from and what keeps a scenario true as seeds evolve."
+  description="A sixteen-part guide to functional acceptance testing: complete scenarios, real infrastructure, deep assertions, maintained regression protection, and confidence to release."
   seed="acceptance-testing"
   heroSlug="section-acceptance-testing"
   showTagCloud={true}
 >
   <section class="prose">
     <p>
-      Acceptance tests go through the front door. That much is uncontroversial. The part
-      that decides whether they keep their value is test-data provenance: where arranged
-      data comes from, how expectations derive from it, and what happens to a scenario
-      when the seed underneath it changes.
+      Functional acceptance tests invoke the assembled system through its public
+      operation and verify everything the scenario requires. Correct arrangements,
+      independent observations, and complete comparisons give a green result its meaning.
     </p>
     <p>
-      A test that copies reference data is correct on the day it is written and reads as
-      helpful documentation. It becomes a lie the day the seed changes, and the failure
-      surfaces far from the constants that caused it.
+      This series follows one order through its caller result, database records,
+      fulfillment message, and confirmation. It then covers scenario completeness,
+      failure states, concurrency, interface testing, maintenance, and release readiness.
     </p>
+  </section>
+
+  <section class="prose coverage" aria-labelledby="series-heading">
+    <h2 id="series-heading">Read the series</h2>
+    <p>Start with the boundary and its purpose, then follow the worked examples in order.</p>
+    <ol class="series-list">
+      {acceptanceSeries.map((article) => (
+        <li>
+          <a href={`/writing/${article.slug}/`}>{article.title}</a>
+          <p class="muted">{article.description}</p>
+        </li>
+      ))}
+    </ol>
   </section>
 
   {
     headline && (
       <section class="headline">
         <a href={`/acceptance-testing/${headline.slug}/`} class="headline__link">
-          <p class="eyebrow">Start here</p>
+          <p class="eyebrow">Foundational chapters</p>
           <h2 class="headline__title">{headline.title}</h2>
           <p class="headline__blurb">
             Store-derived expectations, pinned-scenario guards, bounded selection, and
@@ -82,6 +95,8 @@ const rest = topics.filter((topic) => topic.slug !== 'functional-acceptance-test
 </SectionLayout>
 
 <style>
+  .series-list li { margin-bottom: var(--space-m); }
+  .series-list p { margin-top: var(--space-2xs); font-size: var(--step--1); }
   .headline {
     margin-top: var(--space-xl);
   }

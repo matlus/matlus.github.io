@@ -1,0 +1,7 @@
+# regression-testing
+
+Reused from the the-regression-suite-the-business-is-paying-for article hero. The subject depicts this tag's concept.
+
+# The Regression Suite the Business Is Paying For
+
+Use case: stylized-concept. Asset: one panoramic website article hero, ideally 2400 by 800, aspect 3:1. Style: vintage technical editorial illustration in fine black pen-and-ink, cross-hatching, warm ivory paper, subtle pencil construction marks, mostly monochrome with sparse muted brass, cyan or rust accents. Tangible materials and convincing physical perspective; drawn rather than photorealistic. Compose close enough that the action reads as a shallow banner, with essential objects and connections within the central 65 percent of the frame height. No words, lettering, numbers, labels, code, logos, watermarks, neon glow, screens or decorative arrows. Article: the regression suite the business is paying for. Subject: Close-up horizontal row of five well-used master inspection gauges of distinct shapes held in a fitted rack. In front, a newly manufactured metal component is being checked against the appropriate older gauge. A single natural hand seats the component into the gauge. Earlier gauges remain ready beside it. Worn gauges and fresh part contrast gently in texture. No full figures. Central idea: accumulated checks keep protecting previous functionality as new work arrives.
