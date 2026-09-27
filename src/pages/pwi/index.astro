@@ -24,6 +24,11 @@ const articleLinks = new Map(designPatternArticles.map((article) => [
   `/writing/${article.id}/`,
 ]));
 
+const orderedTopics = [...topics].sort((left, right) =>
+  Number(chapterTopics.has(right.slug) || articleLinks.has(right.slug)) -
+  Number(chapterTopics.has(left.slug) || articleLinks.has(left.slug)),
+);
+
 ---
 
 <SectionLayout
@@ -100,7 +105,7 @@ const articleLinks = new Map(designPatternArticles.map((article) => [
       language families number their chapters independently.
     </p>
 
-    <TopicList topics={topics} basePath="/pwi/" published={chapterTopics} articleLinks={articleLinks} />
+    <TopicList topics={orderedTopics} basePath="/pwi/" published={chapterTopics} articleLinks={articleLinks} />
   </section>
 </SectionLayout>
 
