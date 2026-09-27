@@ -8,13 +8,18 @@ Each article has its own panoramic vintage ink hero and an adjacent generation
 prompt in `src/assets/heroes`. Ten new topic heroes reuse the corresponding
 article image, with provenance recorded in their prompt files.
 
-Informative diagrams are authored inline SVG with readable text, accessible
+The main article's first diagram is the owner-selected illustrated system boundary
+image, saved permanently as
+`public/images/diagrams/functional-acceptance-testing-system-boundary.png`.
+It replaces the earlier inline ownership SVG and preserves the attached image
+at its native resolution. Its alt text and caption describe the relationships.
+The thirteen other diagrams are authored inline SVG with readable text, accessible
 titles and descriptions, and site design tokens. Diagram markers allow Markdown
 exports to retain the explanatory caption while omitting the SVG markup.
 
 | Article | Hero subject | Supporting visual |
 | --- | --- | --- |
-| Functional Acceptance Testing at the Boundary | Instrument case, owned components, external connections | Approved ownership and participation diagram |
+| Functional Acceptance Testing at the Boundary | Instrument case, owned components, external connections | Illustrated application, owned dependencies, and downstream services |
 | Knowing Which Scenarios a Feature Requires | Four gauges checking one machined part | Requirement-to-comparison flow; order and customer obligation maps |
 | One Order, Every Obligation | Parcel, two products, corresponding slips and envelope | Four observation channels and aggregate comparison |
 | Arranging Scenarios That Stay True | Adjustable fixture and varied specimens | Price-constrained sampling and independent identity ownership |
