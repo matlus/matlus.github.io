@@ -26,52 +26,10 @@ owned by other teams or external providers can also participate in testing throu
 suitable sandbox environments or approved test operations.
 
 <!-- diagram:start acceptance-boundary-ownership -->
-<figure class="article-diagram">
-<svg id="acceptance-boundary-map" style="--boundary-app:var(--diagram-validation);--boundary-app-fill:var(--diagram-validation-fill);--boundary-data:var(--diagram-controller);--boundary-data-fill:var(--diagram-controller-fill);--boundary-messaging:var(--diagram-worker);--boundary-messaging-fill:var(--diagram-worker-fill);--boundary-storage:var(--diagram-artifact);--boundary-storage-fill:var(--diagram-artifact-fill);--boundary-internal:var(--diagram-requirements-web);--boundary-internal-fill:var(--diagram-requirements-web-fill);--boundary-external:var(--diagram-requirements-splunk);--boundary-external-fill:var(--diagram-requirements-splunk-fill);display:block;width:100%;max-width:640px;height:auto;margin-inline:auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 1030" role="img" aria-labelledby="site-native-title site-native-desc">
-<title id="site-native-title">The application under test and its participating dependencies</title>
-<desc id="site-native-desc">Test invocation connects directly to the application. A dotted system boundary contains the application and three smaller owned dependency boxes. The application, stable internal services, and stable external services have equal-sized boxes. Other teams' services are within the organization and outside the system; external services are outside the organization. All selected real services participate in testing.</desc>
-<style>svg#acceptance-boundary-map text{fill:var(--diagram-label,var(--color-text));font-family:var(--font-sans,sans-serif);font-size:26px;text-anchor:middle}svg#acceptance-boundary-map .label{font-weight:650}svg#acceptance-boundary-map .small{fill:var(--color-text-muted)}svg#acceptance-boundary-map .title{font-size:29px;font-weight:650}svg#acceptance-boundary-map .app-label{font-size:29px;font-weight:750}svg#acceptance-boundary-map .boundary-label{text-anchor:start;font-size:26px}svg#acceptance-boundary-map .org{fill:none;stroke:var(--color-border-strong);stroke-width:2;stroke-dasharray:8 7}svg#acceptance-boundary-map .system{fill:none;stroke:var(--color-border-strong);stroke-width:2.2;stroke-dasharray:1 8;stroke-linecap:round}svg#acceptance-boundary-map .invocation{fill:var(--color-surface);stroke:var(--color-border-strong);stroke-width:1.7}svg#acceptance-boundary-map .app{fill:var(--boundary-app-fill);stroke:var(--boundary-app);stroke-width:3}svg#acceptance-boundary-map .data{fill:var(--boundary-data-fill);stroke:var(--boundary-data)}svg#acceptance-boundary-map .messaging{fill:var(--boundary-messaging-fill);stroke:var(--boundary-messaging)}svg#acceptance-boundary-map .storage{fill:var(--boundary-storage-fill);stroke:var(--boundary-storage)}svg#acceptance-boundary-map .internal{fill:var(--boundary-internal-fill);stroke:var(--boundary-internal)}svg#acceptance-boundary-map .external{fill:var(--boundary-external-fill);stroke:var(--boundary-external)}svg#acceptance-boundary-map .dependency{stroke-width:1.7}svg#acceptance-boundary-map .downstream{stroke-width:1.6}svg#acceptance-boundary-map .wire{fill:none;stroke:var(--diagram-line);stroke-width:2.4;marker-end:url(#site-native-arrow)}svg#acceptance-boundary-map .entry{stroke:var(--boundary-app);stroke-width:3;marker-end:url(#site-native-entry)}
-</style>
-<defs>
-<marker id="site-native-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="var(--diagram-line)"/></marker>
-<marker id="site-native-entry" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="var(--boundary-app)"/></marker>
-</defs>
-<rect width="640" height="1030" fill="var(--color-bg)"/>
-<text class="title" x="320" y="38">Ownership and participation</text>
-<rect class="invocation" x="170" y="60" width="300" height="64" rx="7"/>
-<text class="label" x="320" y="101">Test invocation</text>
-<rect class="org" x="20" y="150" width="600" height="630" rx="7"/>
-<text class="label boundary-label" x="50" y="184">Your organization</text>
-<rect class="system" x="46" y="205" width="548" height="366" rx="7"/>
-<text class="label boundary-label" x="70" y="241">Your system</text>
-<path class="wire entry" d="M320 124V263"/>
-<rect class="app" x="65" y="266" width="510" height="123" rx="7"/>
-<text class="app-label" x="320" y="306">Application / service</text>
-<text x="320" y="343">Public operation under test</text>
-<text class="small" x="320" y="375">Produces the required outcomes</text>
-<path class="wire" d="M320 389V410H142V438"/>
-<path class="wire" d="M320 410V438"/>
-<path class="wire" d="M320 410H498V438"/>
-<rect class="dependency data" x="65" y="441" width="154" height="74" rx="7"/>
-<rect class="dependency messaging" x="243" y="441" width="154" height="74" rx="7"/>
-<rect class="dependency storage" x="421" y="441" width="154" height="74" rx="7"/>
-<text x="142" y="472">Data</text><text x="142" y="502">store</text>
-<text x="320" y="486">Messaging</text><text x="498" y="486">Storage</text>
-<text class="small" x="320" y="550">Examples of owned dependencies</text>
-<path class="wire" d="M575 327H604V605H320V620"/>
-<rect class="downstream internal" x="65" y="623" width="510" height="123" rx="7"/>
-<text class="label" x="320" y="663">Stable internal services</text>
-<text x="320" y="700">Owned by other teams</text>
-<text class="small" x="320" y="732">Real services participate in tests</text>
-<path class="wire" d="M65 327H34V822H320V837"/>
-<text class="small" x="320" y="808">Outside your organization</text>
-<rect class="downstream external" x="65" y="840" width="510" height="123" rx="7"/>
-<text class="label" x="320" y="880">Stable external services</text>
-<text x="320" y="917">For example, email or payments</text>
-<text class="small" x="320" y="949">Real services participate in tests</text>
-<text class="small" x="320" y="1006">Test sandbox</text>
-</svg>
-<figcaption>The test enters through the application's public operation.</figcaption>
+<figure id="acceptance-boundary-map" class="article-diagram article-diagram--raster">
+<img class="article-diagram__image" src="/images/diagrams/functional-acceptance-testing-system-boundary.png" width="1671" height="941" loading="lazy" decoding="async" alt="Functional acceptance testing boundary: the application and owned dependencies connect to stable internal services, a downstream commercial service, and stable external services." />
+<figcaption>The application and its direct / owned dependencies sit inside the dashed boundary. Stable internal services are owned by other teams, while stable external services and a downstream commercial service sit outside the boundary.</figcaption>
+<p class="article-diagram__full"><a href="/images/diagrams/functional-acceptance-testing-system-boundary.png">Open full-size system boundary diagram</a></p>
 </figure>
 <!-- diagram:end acceptance-boundary-ownership -->
 

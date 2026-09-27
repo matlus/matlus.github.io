@@ -6,10 +6,16 @@ Sixteen articles are prepared under `src/content/writing`, with publication date
 of June 15, 2026 and revision dates of September 27, 2026. The acceptance-testing
 hub lists their reading order from `src/data/acceptance-series.ts`.
 See `docs/acceptance-series-publication.md` for the visual inventory and source
-access decision. Each article has a distinct vintage hero; fourteen inline SVG
-diagrams use the site tokens and preserve explanatory captions in Markdown exports.
+access decision. Each article has a distinct vintage hero; thirteen inline SVG
+diagrams use the site tokens, and the main article has an illustrated PNG figure.
+The figures preserve explanatory captions in Markdown exports.
 Meridian's full C# and Python repositories remain private. Publish the inline
 examples only, and add public repository cross-links when that status changes.
+
+The owner subsequently selected the illustrated system boundary PNG for the
+main article's first content figure. The previous ownership SVG was removed;
+thirteen SVG figures remain elsewhere in the series. The PNG lives permanently
+at `public/images/diagrams/functional-acceptance-testing-system-boundary.png`.
 
 Written 2026-09-22, at the end of the session that built this site from nothing.
 Updated 2026-09-25 for twelve ratified video chapters, four new writing posts,
