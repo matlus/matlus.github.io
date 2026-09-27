@@ -23,7 +23,7 @@ requirements are established and the scenarios and expectations verified as corr
 
 The arrangements and assertions establish a complete feature outcome through production code and real infrastructure. The business receives a maintained regression suite; the team receives release confidence, runnable documentation, and the freedom to refactor the internals with unchanged acceptance tests. That refactoring benefit depends on preserving the requirements and public contract. The investment protects earlier behavior while later sprints change the system.
 
-[Detailed explanation](/writing/functional-acceptance-testing-at-the-boundary/).
+**Detailed Explanation:** [Functional Acceptance Testing at the Boundary](/writing/functional-acceptance-testing-at-the-boundary/).
 
 <a id="question-02"></a>
 
@@ -31,7 +31,7 @@ The arrangements and assertions establish a complete feature outcome through pro
 
 With requirements established and scenarios and expectations verified as correct, a green required suite demonstrates those obligations for the build and arrangements executed. Without those prerequisites, green can mean that incomplete tests passed. Configuration and deployed readiness retain their own responsibilities.
 
-[Detailed explanation](/writing/functional-acceptance-testing-at-the-boundary/).
+**Detailed Explanation:** [Functional Acceptance Testing at the Boundary](/writing/functional-acceptance-testing-at-the-boundary/).
 
 <a id="question-03"></a>
 
@@ -39,7 +39,7 @@ With requirements established and scenarios and expectations verified as correct
 
 The release question is whether the assembled service produces its required outcomes before exposure. Correct components, declared contracts, and post-exposure observations do not answer that whole question. The maintained boundary suite is the authority for that behavioral decision under this discipline.
 
-[Detailed explanation](/writing/functional-acceptance-testing-at-the-boundary/).
+**Detailed Explanation:** [Functional Acceptance Testing at the Boundary](/writing/functional-acceptance-testing-at-the-boundary/).
 
 <a id="question-04"></a>
 
@@ -47,7 +47,7 @@ The release question is whether the assembled service produces its required outc
 
 Review business requirements, acceptance criteria, functional requirements, and non-functional requirements. Break each outcome into observable obligations, include refusal and failure states, and connect each obligation to its arrangement, expectation, actual observation, and comparison. Review counts and required absence alongside content.
 
-[Detailed explanation](/writing/knowing-which-scenarios-a-feature-requires/).
+**Detailed Explanation:** [Knowing Which Scenarios a Feature Requires](/writing/knowing-which-scenarios-a-feature-requires/).
 
 <a id="question-05"></a>
 
@@ -55,7 +55,7 @@ Review business requirements, acceptance criteria, functional requirements, and 
 
 The product team owns business intent and the scenarios expressing it. Developers identify technical obligations introduced by transactions, retries, concurrency, translation, and resource handling. Both need reviewed expectations and maintained verification; technical behavior does not become optional because a business example omitted it.
 
-[Detailed explanation](/writing/knowing-which-scenarios-a-feature-requires/).
+**Detailed Explanation:** [Knowing Which Scenarios a Feature Requires](/writing/knowing-which-scenarios-a-feature-requires/).
 
 <a id="question-06"></a>
 
@@ -63,7 +63,7 @@ The product team owns business intent and the scenarios expressing it. Developer
 
 Establish the missing rule or correct the expectation against the approved requirement. Add or repair its permanent scenario and comparisons. A test cannot expose a condition that nobody arranged or a field nobody compares. A passing run cannot resolve a missing business decision.
 
-[Detailed explanation](/writing/knowing-which-scenarios-a-feature-requires/).
+**Detailed Explanation:** [Knowing Which Scenarios a Feature Requires](/writing/knowing-which-scenarios-a-feature-requires/).
 
 <a id="question-07"></a>
 
@@ -71,7 +71,7 @@ Establish the missing rule or correct the expectation against the approved requi
 
 Executed lines do not identify unknown business obligations or establish that every field was compared. Coverage can direct investigation toward unexercised paths. Completeness review follows the requirements into scenarios and assertions, including forbidden effects and technical conditions.
 
-[Detailed explanation](/writing/knowing-which-scenarios-a-feature-requires/).
+**Detailed Explanation:** [Knowing Which Scenarios a Feature Requires](/writing/knowing-which-scenarios-a-feature-requires/).
 
 <a id="question-08"></a>
 
@@ -79,7 +79,7 @@ Executed lines do not identify unknown business obligations or establish that ev
 
 Present the scenarios in language stakeholders can review, with a maintained connection to their executable source. Record the reviewed version, owner, and conditions requiring renewed approval. A derived presentation helps access; it must not drift into a competing account of behavior.
 
-[Detailed explanation](/writing/knowing-which-scenarios-a-feature-requires/).
+**Detailed Explanation:** [Knowing Which Scenarios a Feature Requires](/writing/knowing-which-scenarios-a-feature-requires/).
 
 <a id="question-09"></a>
 
@@ -87,7 +87,7 @@ Present the scenarios in language stakeholders can review, with a maintained con
 
 Compare the caller result, independently read order and lines, received fulfillment payload, additional-message observation, and captured confirmation. Verify required identity, content, amounts, time relationships, counts, and absence. The complete walkthrough shows each observation and its comparisons.
 
-[Detailed explanation](/writing/one-order-every-obligation/).
+**Detailed Explanation:** [One Order, Every Obligation](/writing/one-order-every-obligation/).
 
 <a id="question-10"></a>
 
@@ -95,7 +95,7 @@ Compare the caller result, independently read order and lines, received fulfillm
 
 Await completion, then independently inspect its required effects. Registration returns no data on success, but must create exactly one customer with every supplied field, normalized email, defaults, status, identity, and time. Successful completion alone is insufficient evidence for those stored values.
 
-[Detailed explanation](/writing/one-order-every-obligation/).
+**Detailed Explanation:** [One Order, Every Obligation](/writing/one-order-every-obligation/).
 
 <a id="question-11"></a>
 
@@ -103,7 +103,7 @@ Await completion, then independently inspect its required effects. Registration 
 
 Fresh identities isolate records across runs. Varied valid values test propagation of the supplied input, and invalid generated values test precise refusal reporting. The defining condition remains deliberate. Random selection gives variation within a scenario, without claiming exhaustive input coverage.
 
-[Detailed explanation](/writing/arranging-scenarios-that-stay-true/).
+**Detailed Explanation:** [Arranging Scenarios That Stay True](/writing/arranging-scenarios-that-stay-true/).
 
 <a id="question-12"></a>
 
@@ -111,7 +111,7 @@ Fresh identities isolate records across runs. Varied valid values test propagati
 
 Constrain generated data before selection. Meridian caps eligible catalog prices to preserve Placed status and samples different products without replacement. Choose rule-defining quantities and statuses explicitly. A scenario guard verifies an exact premise when seed data can change it.
 
-[Detailed explanation](/writing/arranging-scenarios-that-stay-true/).
+**Detailed Explanation:** [Arranging Scenarios That Stay True](/writing/arranging-scenarios-that-stay-true/).
 
 <a id="question-13"></a>
 
@@ -119,7 +119,7 @@ Constrain generated data before selection. Meridian caps eligible catalog prices
 
 Read the current reference data and calculate expectations from the approved rule. For exactly $10,000.00, verify the selected product and quantity produce that amount before Act. A seed change then reports an invalid arrangement rather than silently exercising a different scenario.
 
-[Detailed explanation](/writing/arranging-scenarios-that-stay-true/).
+**Detailed Explanation:** [Arranging Scenarios That Stay True](/writing/arranging-scenarios-that-stay-true/).
 
 <a id="question-14"></a>
 
@@ -127,7 +127,7 @@ Read the current reference data and calculate expectations from the approved rul
 
 Use narrow factories for simple values and builders for wide models whose irrelevant defaults obscure the scenario. Default delegates draw fresh values at Build. Explicit overrides remain private to an immutable builder. Owned identifiers deliberately lack defaults, making forgotten ownership fail visibly.
 
-[Detailed explanation](/writing/arranging-scenarios-that-stay-true/).
+**Detailed Explanation:** [Arranging Scenarios That Stay True](/writing/arranging-scenarios-that-stay-true/).
 
 <a id="question-15"></a>
 
@@ -135,7 +135,7 @@ Use narrow factories for simple values and builders for wide models whose irrele
 
 Meridian exposes no replay seed. Preserve the meaningful actual inputs, selected catalog records, expectations, and observations in failure evidence where possible. Existing reports are not a complete replay log. Preserve a discovered input-sensitive condition as a maintained regression scenario.
 
-[Detailed explanation](/writing/arranging-scenarios-that-stay-true/).
+**Detailed Explanation:** [Arranging Scenarios That Stay True](/writing/arranging-scenarios-that-stay-true/).
 
 <a id="question-16"></a>
 
@@ -143,7 +143,7 @@ Meridian exposes no replay seed. Preserve the meaningful actual inputs, selected
 
 Compare every field, effect, count, and absence required by the scenario. A database row's existence does not establish its quantity or price. An email capture does not establish the correct recipient or body. Review assertion depth against the requirement, not the helper's name.
 
-[Detailed explanation](/writing/assertions-that-verify-the-whole-outcome/).
+**Detailed Explanation:** [Assertions That Verify the Whole Outcome](/writing/assertions-that-verify-the-whole-outcome/).
 
 <a id="question-17"></a>
 
@@ -151,7 +151,7 @@ Compare every field, effect, count, and absence required by the scenario. A data
 
 Visible gathering establishes where actuals originate and lets the scenario own timeouts and correlation. Pure asserters compare supplied data without hidden I/O. That makes them reusable and lets a reviewer distinguish observation failures from value mismatches.
 
-[Detailed explanation](/writing/assertions-that-verify-the-whole-outcome/).
+**Detailed Explanation:** [Assertions That Verify the Whole Outcome](/writing/assertions-that-verify-the-whole-outcome/).
 
 <a id="question-18"></a>
 
@@ -159,7 +159,7 @@ Visible gathering establishes where actuals originate and lets the scenario own 
 
 One defect can affect several independent outputs. Accumulated reports show the available mismatches together, reducing repeated investigation. Missing inputs need guards before dependent comparisons. A gathering failure can still prevent the aggregate from running; accumulation cannot create unavailable evidence.
 
-[Detailed explanation](/writing/assertions-that-verify-the-whole-outcome/).
+**Detailed Explanation:** [Assertions That Verify the Whole Outcome](/writing/assertions-that-verify-the-whole-outcome/).
 
 <a id="question-19"></a>
 
@@ -167,7 +167,7 @@ One defect can affect several independent outputs. Accumulated reports show the 
 
 Use scalar record equality for line fields and explicit collection comparisons preserving count and required ordering or multiplicity. Compare decimal amounts and required wire formatting. Verify recording time within its window, propagated time against stored time, and completion evidence for presence.
 
-[Detailed explanation](/writing/assertions-that-verify-the-whole-outcome/).
+**Detailed Explanation:** [Assertions That Verify the Whole Outcome](/writing/assertions-that-verify-the-whole-outcome/).
 
 <a id="question-20"></a>
 
@@ -175,7 +175,7 @@ Use scalar record equality for line fields and explicit collection comparisons p
 
 An independently verified production composer can build expected representations. Its own tests must establish its required output, or an incorrect composer can agree with itself. Calculate approved business arithmetic independently and distinguish a propagation expectation from verification of a value's origin.
 
-[Detailed explanation](/writing/assertions-that-verify-the-whole-outcome/).
+**Detailed Explanation:** [Assertions That Verify the Whole Outcome](/writing/assertions-that-verify-the-whole-outcome/).
 
 <a id="question-21"></a>
 
@@ -183,7 +183,7 @@ An independently verified production composer can build expected representations
 
 Comparison infrastructure gets equal, unequal, and missing-data probes. Meridian's report tests fabricate wrong observations and check that all obligation reports survive. These tests verify the mechanism relied on by acceptance scenarios; they do not pretend to execute production ordering.
 
-[Detailed explanation](/writing/assertions-that-verify-the-whole-outcome/).
+**Detailed Explanation:** [Assertions That Verify the Whole Outcome](/writing/assertions-that-verify-the-whole-outcome/).
 
 <a id="question-22"></a>
 
@@ -191,7 +191,7 @@ Comparison infrastructure gets equal, unequal, and missing-data probes. Meridian
 
 The Test Mediator carries arranged instructions and exposes observations. The spy follows those instructions at a selected boundary and records what arrived. The pattern can use a separate carrier with spies or combine one service's Test Mediator and private spy, as Meridian does.
 
-[Detailed explanation](/writing/the-test-mediator-and-the-transport-spy/).
+**Detailed Explanation:** [The Test Mediator and the Transport Spy](/writing/the-test-mediator-and-the-transport-spy/).
 
 <a id="question-23"></a>
 
@@ -199,7 +199,7 @@ The Test Mediator carries arranged instructions and exposes observations. The sp
 
 The facade, managers, composers, real gateway, request construction, response classification, retries, and translation remain in the operation. The selected handler controls the outbound transport. Captured requests establish submitted content; real-provider acceptance and inbox arrival require their own observations.
 
-[Detailed explanation](/writing/the-test-mediator-and-the-transport-spy/).
+**Detailed Explanation:** [The Test Mediator and the Transport Spy](/writing/the-test-mediator-and-the-transport-spy/).
 
 <a id="question-24"></a>
 
@@ -207,7 +207,7 @@ The facade, managers, composers, real gateway, request construction, response cl
 
 A response sequence drives refusal, recovery, or exhaustion while production performs its retry handling. Captures record endpoint arrivals, content, and timing. Unreachability throws before capture, so captured count is not a count of every gateway attempt. Verify resulting state and diagnostics too.
 
-[Detailed explanation](/writing/the-test-mediator-and-the-transport-spy/).
+**Detailed Explanation:** [The Test Mediator and the Transport Spy](/writing/the-test-mediator-and-the-transport-spy/).
 
 <a id="question-25"></a>
 
@@ -215,7 +215,7 @@ A response sequence drives refusal, recovery, or exhaustion while production per
 
 Use a lazy body that records bytes actually consumed, then compare those counts per response. Also compare bounded diagnostic excerpts, whole-character handling, and absence of credential fragments. A short final string alone would not prove the gateway avoided reading the whole response.
 
-[Detailed explanation](/writing/the-test-mediator-and-the-transport-spy/).
+**Detailed Explanation:** [The Test Mediator and the Transport Spy](/writing/the-test-mediator-and-the-transport-spy/).
 
 <a id="question-26"></a>
 
@@ -223,7 +223,7 @@ Use a lazy body that records bytes actually consumed, then compare those counts 
 
 Refusal must leave no accepted order or outbound work. Meridian's no-trace helper checks order count, broker observation, and email count. Complete rollback separately reads all affected table counts. Broker absence is bounded by its observation window; the helper name does not strengthen its actual checks.
 
-[Detailed explanation](/writing/refusals-failures-and-work-still-owed/).
+**Detailed Explanation:** [Refusals, Failures, and Work Still Owed](/writing/refusals-failures-and-work-still-owed/).
 
 <a id="question-27"></a>
 
@@ -231,7 +231,7 @@ Refusal must leave no accepted order or outbound work. Meridian's no-trace helpe
 
 Hydrate a private real database, install the selected delay or failure trigger, and route the facade there. Allow the transaction to begin before timeout or fault. Inspect the preserved cause, all affected records, and forbidden outbound effects, then remove the owned fault database.
 
-[Detailed explanation](/writing/refusals-failures-and-work-still-owed/).
+**Detailed Explanation:** [Refusals, Failures, and Work Still Owed](/writing/refusals-failures-and-work-still-owed/).
 
 <a id="question-28"></a>
 
@@ -239,7 +239,7 @@ Hydrate a private real database, install the selected delay or failure trigger, 
 
 When the business requires an accepted order to stand despite a downstream action failure. The catch implements that policy while preserving pending work and diagnostic evidence. Test its complete outcome. Arbitrary swallowing that hides defects is a different behavior and cannot satisfy the required failure contract.
 
-[Detailed explanation](/writing/refusals-failures-and-work-still-owed/).
+**Detailed Explanation:** [Refusals, Failures, and Work Still Owed](/writing/refusals-failures-and-work-still-owed/).
 
 <a id="question-29"></a>
 
@@ -247,7 +247,7 @@ When the business requires an accepted order to stand despite a downstream actio
 
 Verify both facts independently: the external action was accepted, and durable completion recording failed. Meridian leaves Pending state without completion evidence, returns the accepted order, allows independent actions, and logs warnings with the original SQL cause. Recovery must account for possible prior delivery.
 
-[Detailed explanation](/writing/refusals-failures-and-work-still-owed/).
+**Detailed Explanation:** [Refusals, Failures, and Work Still Owed](/writing/refusals-failures-and-work-still-owed/).
 
 <a id="question-30"></a>
 
@@ -255,7 +255,7 @@ Verify both facts independently: the external action was accepted, and durable c
 
 Place the original request, consume its notification, resubmit equivalent content, and compare preserved output and stored facts. Check one order and no additional outgoing work. A conflict must also preserve the original. Request idempotency and a separate recovery operation have different obligations.
 
-[Detailed explanation](/writing/idempotency-and-concurrent-requests/).
+**Detailed Explanation:** [Idempotency and Concurrent Requests](/writing/idempotency-and-concurrent-requests/).
 
 <a id="question-31"></a>
 
@@ -263,7 +263,7 @@ Place the original request, consume its notification, resubmit equivalent conten
 
 Start both asynchronous operations before collecting either outcome. Compare allowed outcome counts without assuming which caller wins, then inspect the store and effects. Meridian permits overlap but does not force every possible interleaving or pause both requests at a specific SQL statement.
 
-[Detailed explanation](/writing/idempotency-and-concurrent-requests/).
+**Detailed Explanation:** [Idempotency and Concurrent Requests](/writing/idempotency-and-concurrent-requests/).
 
 <a id="question-32"></a>
 
@@ -271,7 +271,7 @@ Start both asynchronous operations before collecting either outcome. Compare all
 
 They establish the observed concurrent outcomes and bounded effect counts for the scenario. They do not prove every scheduling possibility or exactly-once delivery through crashes and later recovery. Load, failure recovery, and ambiguous completion need their own specified arrangements and evidence.
 
-[Detailed explanation](/writing/idempotency-and-concurrent-requests/).
+**Detailed Explanation:** [Idempotency and Concurrent Requests](/writing/idempotency-and-concurrent-requests/).
 
 <a id="question-33"></a>
 
@@ -279,7 +279,7 @@ They establish the observed concurrent outcomes and bounded effect counts for th
 
 Controller Hook tests own raw-body conversion and parsing refusal; translator and middleware tests own classification and safe translation. Hosted tests verify routes, wire shape, and middleware registration with the real domain beneath. Facade scenarios retain ownership of full business effects.
 
-[Detailed explanation](/writing/testing-the-service-interface/).
+**Detailed Explanation:** [Testing the Service Interface](/writing/testing-the-service-interface/).
 
 <a id="question-34"></a>
 
@@ -287,7 +287,7 @@ Controller Hook tests own raw-body conversion and parsing refusal; translator an
 
 Each category checks the behavior its boundary owns. Repeating every domain scenario over HTTP would obscure ownership and duplicate assertions. The hosted smoke connects the categories; it does not replace detailed domain outcomes or exhaustive translator comparisons.
 
-[Detailed explanation](/writing/testing-the-service-interface/).
+**Detailed Explanation:** [Testing the Service Interface](/writing/testing-the-service-interface/).
 
 <a id="question-35"></a>
 
@@ -295,7 +295,7 @@ Each category checks the behavior its boundary owns. Repeating every domain scen
 
 Name the operation, condition, and expected outcome. Group by feature and path family. Use theory rows for the same rule and retain requirement references. Names help navigation; the body still must establish the condition and compare every required outcome.
 
-[Detailed explanation](/writing/a-suite-the-team-can-keep-trusting/).
+**Detailed Explanation:** [A Suite the Team Can Keep Trusting](/writing/a-suite-the-team-can-keep-trusting/).
 
 <a id="question-36"></a>
 
@@ -303,7 +303,7 @@ Name the operation, condition, and expected outcome. Group by feature and path f
 
 Reserve identities before record creation, retain them for scoped teardown, own subscribers and captures per scenario, and distinguish per-test records from the runner's database. Handle failed arrangement and cancellation deliberately. Process-local ownership does not automatically isolate independent processes.
 
-[Detailed explanation](/writing/a-suite-the-team-can-keep-trusting/).
+**Detailed Explanation:** [A Suite the Team Can Keep Trusting](/writing/a-suite-the-team-can-keep-trusting/).
 
 <a id="question-37"></a>
 
@@ -311,7 +311,7 @@ Reserve identities before record creation, retain them for scoped teardown, own 
 
 Report obligation names and expected and actual values. Preserve precise domain classification, relevant context, and original causes while bounding and sanitizing diagnostic data. The named scenario and explicit Act give a teammate a reproducible starting point; a report cannot always identify the faulty line automatically.
 
-[Detailed explanation](/writing/a-suite-the-team-can-keep-trusting/).
+**Detailed Explanation:** [A Suite the Team Can Keep Trusting](/writing/a-suite-the-team-can-keep-trusting/).
 
 <a id="question-38"></a>
 
@@ -319,7 +319,7 @@ Report obligation names and expected and actual values. Preserve precise domain 
 
 Their actual transactions, constraints, queries, publication, and acknowledgments participate in the required behavior. A substitute returning the expected object cannot establish those effects in the selected engine. Test observations must independently read what was stored or received.
 
-[Detailed explanation](/writing/testing-against-real-infrastructure/).
+**Detailed Explanation:** [Testing Against Real Infrastructure](/writing/testing-against-real-infrastructure/).
 
 <a id="question-39"></a>
 
@@ -327,7 +327,7 @@ Their actual transactions, constraints, queries, publication, and acknowledgment
 
 Trust means predictable availability and contract change, including useful advance notice, so the dependency is reliable enough for testing. Stable sandboxes can be suitable. An unreliable service needs a practical arrangement decision without changing the purpose of assembled behavioral verification.
 
-[Detailed explanation](/writing/testing-against-real-infrastructure/).
+**Detailed Explanation:** [Testing Against Real Infrastructure](/writing/testing-against-real-infrastructure/).
 
 <a id="question-40"></a>
 
@@ -335,7 +335,7 @@ Trust means predictable availability and contract change, including useful advan
 
 Give each observation its own queue, disjoint subscription, or explicit ownership mechanism, then correlate messages by run identity. A unique order reference does not prevent another consumer removing the message first. Process-local subscription leasing needs additional isolation across unrelated processes.
 
-[Detailed explanation](/writing/testing-against-real-infrastructure/).
+**Detailed Explanation:** [Testing Against Real Infrastructure](/writing/testing-against-real-infrastructure/).
 
 <a id="question-41"></a>
 
@@ -343,7 +343,7 @@ Give each observation its own queue, disjoint subscription, or explicit ownershi
 
 Select the intended provider through configuration and provision its topology. Meridian's inspected CI snapshot uses SQL Server and RabbitMQ. Another provider needs its own execution receipt. The final gate should use real required infrastructure subject to downstream stability and isolation constraints.
 
-[Detailed explanation](/writing/testing-against-real-infrastructure/).
+**Detailed Explanation:** [Testing Against Real Infrastructure](/writing/testing-against-real-infrastructure/).
 
 <a id="question-42"></a>
 
@@ -351,7 +351,7 @@ Select the intended provider through configuration and provision its topology. M
 
 Choose stable environments, controlled recipients and operations, owned data, and bounded observations. Account for cost and irreversible effects. A selected transport seam can arrange precise failure handling while retaining production code, with real-delivery or provider observations added where their obligations require them.
 
-[Detailed explanation](/writing/testing-against-real-infrastructure/).
+**Detailed Explanation:** [Testing Against Real Infrastructure](/writing/testing-against-real-infrastructure/).
 
 <a id="question-43"></a>
 
@@ -359,7 +359,7 @@ Choose stable environments, controlled recipients and operations, owned data, an
 
 They establish what arrived or did not arrive within the specified interval for the correlated operation. They do not establish indefinite absence. Use separate scenarios for recovery or later replay rather than silently extending a short quiet-window claim.
 
-[Detailed explanation](/writing/testing-against-real-infrastructure/).
+**Detailed Explanation:** [Testing Against Real Infrastructure](/writing/testing-against-real-infrastructure/).
 
 <a id="question-44"></a>
 
@@ -367,7 +367,7 @@ They establish what arrived or did not arrive within the specified interval for 
 
 Find a feature requirement and named scenario, inspect Arrange, put a breakpoint on Act, and follow production through validation, persistence, and outbound work. Return to gathering and assertions. Repeat with refusal and failure to learn changed obligations as well as the happy path.
 
-[Detailed explanation](/writing/learning-a-system-through-its-tests/).
+**Detailed Explanation:** [Learning a System Through Its Tests](/writing/learning-a-system-through-its-tests/).
 
 <a id="question-45"></a>
 
@@ -375,7 +375,7 @@ Find a feature requirement and named scenario, inspect Arrange, put a breakpoint
 
 Its scenarios invoke the current production path and verify required outcomes when run. Debugging reveals implementation detail tied to those requirements. Accuracy still depends on maintained references and deep assertions; executable code alone does not make misleading documentation correct.
 
-[Detailed explanation](/writing/learning-a-system-through-its-tests/).
+**Detailed Explanation:** [Learning a System Through Its Tests](/writing/learning-a-system-through-its-tests/).
 
 <a id="question-46"></a>
 
@@ -383,7 +383,7 @@ Its scenarios invoke the current production path and verify required outcomes wh
 
 Continuing protection of previous functionality as new sprints change the system. The extra arrangements and assertions become a maintained regression suite, with onboarding and diagnostic benefits too. This is an interpretation from my experience, not an invented universal savings figure.
 
-[Detailed explanation](/writing/the-regression-suite-the-business-is-paying-for/).
+**Detailed Explanation:** [The Regression Suite the Business Is Paying For](/writing/the-regression-suite-the-business-is-paying-for/).
 
 <a id="question-47"></a>
 
@@ -391,7 +391,7 @@ Continuing protection of previous functionality as new sprints change the system
 
 Use a focused subset during implementation for feedback. Run the required full suite before claiming release readiness and at the final CI gate. A subset cannot expose an unrelated earlier behavior the change affected. Preserve real-infrastructure and stable-service arrangements in the required run.
 
-[Detailed explanation](/writing/the-regression-suite-the-business-is-paying-for/).
+**Detailed Explanation:** [The Regression Suite the Business Is Paying For](/writing/the-regression-suite-the-business-is-paying-for/).
 
 <a id="question-48"></a>
 
@@ -399,7 +399,7 @@ Use a focused subset during implementation for feedback. Run the required full s
 
 Turn discovered obligations into permanent scenarios, theory rows, or previously missing comparisons. Correct expectations against approved intent. Preserve the condition that caused the defect while keeping unrelated identity data isolated. Future runs then check that lesson alongside the existing behavior.
 
-[Detailed explanation](/writing/the-regression-suite-the-business-is-paying-for/).
+**Detailed Explanation:** [The Regression Suite the Business Is Paying For](/writing/the-regression-suite-the-business-is-paying-for/).
 
 <a id="question-49"></a>
 
@@ -407,7 +407,7 @@ Turn discovered obligations into permanent scenarios, theory rows, or previously
 
 With unchanged requirements and a stable public contract, the acceptance tests can remain exactly as written while you refactor one component or the entire implementation behind the Domain Facade. They know its public input and output models and the required outcomes. Test Mediators and spies keep implementation details in test support. That support may need adapting while preserving the same instructions and observations; the scenarios and assertions stay unchanged.
 
-[Detailed explanation](/writing/refactoring-and-adopting-boundary-testing/).
+**Detailed Explanation:** [Refactoring and Adopting Boundary Testing](/writing/refactoring-and-adopting-boundary-testing/).
 
 <a id="question-50"></a>
 
@@ -415,7 +415,7 @@ With unchanged requirements and a stable public contract, the acceptance tests c
 
 Bring one feature under reviewed requirements and complete boundary scenarios, make failure contracts meaningful, isolate data, retain real infrastructure, and add necessary transport seams. Protect the required suite in CI. Track which features remain outside the discipline while adoption proceeds.
 
-[Detailed explanation](/writing/refactoring-and-adopting-boundary-testing/).
+**Detailed Explanation:** [Refactoring and Adopting Boundary Testing](/writing/refactoring-and-adopting-boundary-testing/).
 
 <a id="question-51"></a>
 
@@ -423,7 +423,7 @@ Bring one feature under reviewed requirements and complete boundary scenarios, m
 
 For explicitly owned duties: independently verified oracles, comparison infrastructure, interface translation, or a dense inherited rule cluster with a stable production abstraction. The system-level scenarios still verify assembled participation. Temporary construction checks are not the maintained release authority.
 
-[Detailed explanation](/writing/refactoring-and-adopting-boundary-testing/).
+**Detailed Explanation:** [Refactoring and Adopting Boundary Testing](/writing/refactoring-and-adopting-boundary-testing/).
 
 <a id="question-52"></a>
 
@@ -431,7 +431,7 @@ For explicitly owned duties: independently verified oracles, comparison infrastr
 
 Architecture supplies meaningful boundaries and understandable dependency flow; coding and failure discipline supply reliable contracts; review verifies requirements, scenarios, and comparisons. Tests execute the resulting behavior. None of those responsibilities can be delegated to a green result that never reviewed its own scope.
 
-[Detailed explanation](/writing/refactoring-and-adopting-boundary-testing/).
+**Detailed Explanation:** [Refactoring and Adopting Boundary Testing](/writing/refactoring-and-adopting-boundary-testing/).
 
 <a id="question-53"></a>
 
@@ -439,7 +439,7 @@ Architecture supplies meaningful boundaries and understandable dependency flow; 
 
 Advance the verified build through its release process while preserving configuration and execution evidence. Check deployed readiness, required security, capacity, resilience, and user experience at their owning stages. Those responsibilities do not invalidate the behavioral confidence the correctly covered suite supplies.
 
-[Detailed explanation](/writing/from-a-green-suite-to-a-release/).
+**Detailed Explanation:** [From a Green Suite to a Release](/writing/from-a-green-suite-to-a-release/).
 
 <a id="question-54"></a>
 
@@ -447,7 +447,7 @@ Advance the verified build through its release process while preserving configur
 
 Encoded knowledge of required dependency capabilities after deployment, available to infrastructure, QA, and operations. A missing-artifact incident from my work illustrates that environment readiness can fail after pre-release verification. Meridian's listings do not claim that separate diagnostics implementation.
 
-[Detailed explanation](/writing/from-a-green-suite-to-a-release/).
+**Detailed Explanation:** [From a Green Suite to a Release](/writing/from-a-green-suite-to-a-release/).
 
 <a id="question-55"></a>
 
@@ -455,7 +455,7 @@ Encoded knowledge of required dependency capabilities after deployment, availabl
 
 They reveal production-only conditions and aid recovery after exposure. They cannot provide the missing before-exposure behavioral evidence. Rolling back application code cannot unsend an email or fulfillment instruction. Feed discovered behavioral lessons into the suite and environment lessons into operational checks.
 
-[Detailed explanation](/writing/from-a-green-suite-to-a-release/).
+**Detailed Explanation:** [From a Green Suite to a Release](/writing/from-a-green-suite-to-a-release/).
 
 <a id="question-56"></a>
 
