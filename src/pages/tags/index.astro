@@ -1,7 +1,7 @@
 ---
 import SectionLayout from '../../layouts/SectionLayout.astro';
 import TagCloud from '../../components/TagCloud.astro';
-import { TAGS } from '../../data/tags';
+import { TAGS, tagHref } from '../../data/tags';
 import { tagCounts } from '../../lib/tag-counts';
 
 const weights = await tagCounts();
@@ -22,7 +22,7 @@ const weights = await tagCounts();
       TAGS.map((tag) => (
         <li>
           <h2 class="glossary__term">
-            <a href={`/tags/${tag.slug}/`}>{tag.label}</a>
+            <a href={tagHref(tag.slug)}>{tag.label}</a>
             <span class="glossary__count">{weights[tag.slug] ?? 0}</span>
           </h2>
           <p class="glossary__desc">{tag.description}</p>

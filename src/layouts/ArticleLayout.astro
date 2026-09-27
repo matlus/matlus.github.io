@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import BaseLayout from './BaseLayout.astro';
 import PlaceholderImage from '../components/PlaceholderImage.astro';
 import ArticleResources from '../components/ArticleResources.astro';
-import { TAGS } from '../data/tags';
+import { TAGS, tagHref } from '../data/tags';
 
 interface Crumb {
   readonly label: string;
@@ -135,7 +135,7 @@ const breadcrumbLd = {
             {
               tags.map((slug) => {
                 const tag = tagsBySlug.get(slug);
-                return <li><a href={`/tags/${slug}/`}>{tag?.label ?? slug}</a></li>;
+                return <li><a href={tagHref(slug)}>{tag?.label ?? slug}</a></li>;
               })
             }
           </ul>

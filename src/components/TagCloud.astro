@@ -1,5 +1,5 @@
 ---
-import { TAGS } from '../data/tags';
+import { TAGS, tagHref } from '../data/tags';
 import { tagCounts } from '../lib/tag-counts';
 
 interface Props {
@@ -24,7 +24,7 @@ const sized = TAGS.map((tag) => {
       sized.map((tag) => (
         <li>
           <a
-            href={`/tags/${tag.slug}/`}
+            href={tagHref(tag.slug)}
             class="tag-cloud__tag"
             data-step={tag.step}
             title={tag.description}

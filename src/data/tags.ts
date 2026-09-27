@@ -339,3 +339,10 @@ for (const tag of TAGS) {
 export function tagBySlug(slug: string): Tag | undefined {
   return TAGS.find((tag) => tag.slug === slug);
 }
+
+/** These pattern topics lead directly to their standalone teaching articles. */
+export function tagHref(slug: string): string {
+  if (slug === 'factory-pattern') return '/writing/factory-pattern/';
+  if (slug === 'factory-method') return '/writing/factory-method-pattern/';
+  return `/tags/${slug}/`;
+}

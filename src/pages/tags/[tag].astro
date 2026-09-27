@@ -53,7 +53,7 @@ export const getStaticPaths = (async () => {
     })),
   ];
 
-  return TAGS.map((tag) => ({
+  return TAGS.filter((tag) => tag.slug !== 'factory-method').map((tag) => ({
     params: { tag: tag.slug },
     props: {
       tag,
