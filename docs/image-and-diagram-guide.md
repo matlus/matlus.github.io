@@ -2,25 +2,23 @@
 
 Status: draft, 2026-09-20
 
-The site has **two separate visual pipelines**. They serve different purposes, are
-produced by different means, and should never be confused.
+The site uses technical editorial ink for hero art and pastel architectural
+infographics for diagrams within articles.
 
-| | Hero and editorial images | Diagrams |
-|---|---|---|
-| Purpose | Evocative, sets tone | Precise, carries information |
-| Format | Raster (AVIF/WebP) | Inline SVG |
-| Produced by | Image generator, from the prompt template below | Authored by hand |
-| Themeable | No | Yes, reads design tokens |
-| Text readable by crawlers | No | Yes |
+| | Hero and editorial images | Simple boxology | Illustrated diagrams |
+|---|---|---|---|
+| Purpose | Evocative, sets tone | Explain relationships | Explain relationships through illustration |
+| Format | Raster (AVIF/WebP) | Inline SVG | PNG, JPEG, or WebP |
+| Produced by | Image generator, from the hero template below | Authored by hand | Image generator, from the boxology prompt |
+| Themeable | No | Yes, reads design tokens | No |
+| Text readable by crawlers | Supplied as alt text and prose | Yes | Supplied as alt text, caption, and prose |
 
-That last row decides the boundary. A generated picture of a directed graph adds
-nothing to LLM retrieval, because its labels are pixels. An authored SVG's labels are
-real text that a crawler and a retrieval agent can read. Anything carrying information
-is a diagram and belongs in SVG.
+The owner approved the raster infographic style on 2026-09-27. Generated diagrams
+can carry the richer illustrated treatment. Their important relationships also
+belong in readable page text. Simple boxes and connections can use SVG.
 
-Image generators also garble technical text. The OCR of an existing generated
-architecture diagram returned strings like "Separate le catalogs and record the act
-evidence univer". That is not a tuning problem.
+Inspect generated labels, arrow routes, and enclosure membership before using an
+image. Save the specific generation prompt beside the selected workspace asset.
 
 ---
 
@@ -58,8 +56,8 @@ that makes that subject legible.
 Keep the shared visual traits in the style clause. Before writing the subject, read
 the article and identify its central claim and a concrete consequence or scene that
 could make that claim visible. Avoid defaulting to gears or machinery for software
-topics. A hero should evoke the article; technical explanation belongs in an SVG
-diagram with readable text.
+topics. A hero should evoke the article. Use the diagram workflow below for a
+technical explanation with labelled components and relationships.
 
 ```
 Hand-drawn technical editorial illustration, fine pen-and-ink linework and
@@ -147,9 +145,25 @@ their own art; the tag check prevents a new tag from shipping with the fallback.
 
 ## 2. Diagrams
 
-### Rules
+### Approved style and prompt
 
-Diagrams are inline SVG, authored rather than generated.
+Use [generate-pastel-boxology.md](../prompts/generate-pastel-boxology.md) for new
+diagrams. The assistant reads the article and writes the complete drawing brief;
+the owner need not supply a prompt. A written description or source image can also
+supply the subject.
+It specifies the approved pastel palette, dimensional rounded platforms, soft
+outlined pictograms, luminous curved ribbon arrows, faint drafting details, and
+balanced subject heading. Its reference image is retained in
+`public/images/diagrams/functional-acceptance-testing-at-the-boundary.jpg`.
+
+Generate PNG or JPEG for richly illustrated diagrams. Keep the original at native
+resolution and export smaller versions as needed. Record the actual delivered
+dimensions. Provide descriptive alt text and explain the important relationships
+in a caption or nearby prose.
+
+### SVG rules
+
+Simple boxology can use authored inline SVG in the same visual style.
 
 - **Colours come from design tokens.** Never a literal hex value. A diagram then
   follows the site into dark mode and survives a re-skin.

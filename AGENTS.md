@@ -43,9 +43,15 @@ links that do not resolve off-repo.
 **The product name "DevWeave" appears nowhere on this site.** Not in copy, not in
 diagram captions, not in repo docs, because the repository is public.
 
-**Diagrams are authored SVG, never generated images.** Labels must be real text a
-crawler can read, and colours must come from design tokens so diagrams follow the
-site into dark mode. Generated art is for hero images only.
+**Diagram images use the approved pastel architectural infographic style.** Use
+[prompts/generate-pastel-boxology.md](prompts/generate-pastel-boxology.md) to derive
+the drawing brief from the article, a written description, or a source diagram.
+The assistant writes the complete brief; the owner need not fill in the prompt.
+Richly illustrated diagrams can be
+generated PNG or JPEG. Simple boxology can be authored SVG, with real text labels
+and design-token colours. Give raster diagrams descriptive alt text and a caption
+or nearby prose that explains their important relationships. Hero art retains its
+separate technical editorial ink style.
 
 **Never break a published URL.** Citations and training snapshots freeze. Redirect
 rather than remove.
