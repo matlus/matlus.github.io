@@ -23,6 +23,21 @@ export const GET: APIRoute = async ({ site }) => {
   );
 
   const iso = (date: Date) => date.toISOString().slice(0, 10);
+  const overviews = await getCollection('overviews', ({ data }) => !data.draft);
+  const overviewChunks = overviews.map((overview) => [
+    `# ${overview.data.title}`,
+    '',
+    overview.data.description.trim(),
+    '',
+    `Source: ${origin}/pwi/${overview.data.topic}/`,
+    `Published: ${iso(overview.data.datePublished)}`,
+    `Updated: ${iso(overview.data.dateModified ?? overview.data.datePublished)}`,
+    `Tags: ${overview.data.tags.join(', ')}`,
+    '',
+    '---',
+    '',
+    readableArticleBody(overview.body),
+  ].join('\n'));
 
   const articleChunks = posts.map((post) =>
     [
@@ -61,13 +76,13 @@ export const GET: APIRoute = async ({ site }) => {
   const header = [
     '# matlus.com, full text',
     '',
-    `Generated ${iso(new Date())}. ${posts.length} article(s) and ${chapters.length} chapter(s).`,
+    `Generated ${iso(new Date())}. ${posts.length} article(s), ${chapters.length} chapter(s), and ${overviews.length} topic overview(s).`,
     '',
     '===',
     '',
   ].join('\n');
 
-  return new Response(header + [...articleChunks, ...chapterChunks].join('\n\n===\n\n'), {
+  return new Response(header + [...overviewChunks, ...articleChunks, ...chapterChunks].join('\n\n===\n\n'), {
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },
   });
 };

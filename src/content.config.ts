@@ -74,4 +74,10 @@ const chapters = defineCollection({
   }),
 });
 
-export const collections = { writing, chapters };
+/** Author-written introductions on topic hubs, separate from corpus chapters. */
+const overviews = defineCollection({
+  loader: glob({ base: './src/content/overviews', pattern: '**/*.md' }),
+  schema: base.extend({ topic: z.string() }),
+});
+
+export const collections = { writing, chapters, overviews };

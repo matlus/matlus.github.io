@@ -25,6 +25,7 @@ export const GET: APIRoute = async ({ site }) => {
       (a.data.language ?? '').localeCompare(b.data.language ?? ''),
   );
   const publishedTopics = new Set(chapters.map((chapter) => chapter.data.topic));
+  const overviews = await getCollection('overviews', ({ data }) => !data.draft);
 
   const lines: string[] = [
     '# matlus.com',
@@ -59,7 +60,10 @@ export const GET: APIRoute = async ({ site }) => {
     lines.push(`- [${pillar.label}](${origin}${pillar.href}): ${pillar.blurb}`);
   }
   for (const topic of TOPICS.filter((item) => item.section === 'pwi' && publishedTopics.has(item.slug))) {
-    lines.push(`- [${topic.title}](${origin}/pwi/${topic.slug}/): published examples.`);
+    const overview = overviews.find((entry) => entry.data.topic === topic.slug);
+    lines.push(overview
+      ? `- [${overview.data.title}](${origin}/pwi/${topic.slug}/): ${overview.data.description.trim()} Markdown: ${origin}/pwi/${topic.slug}.md`
+      : `- [${topic.title}](${origin}/pwi/${topic.slug}/): published examples.`);
     for (const chapter of chapters.filter((item) => item.data.topic === topic.slug)) {
       const language = chapter.data.language ?? 'shared';
       lines.push(
