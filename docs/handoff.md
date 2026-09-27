@@ -1,5 +1,16 @@
 # Handoff
 
+## Functional acceptance-testing series, September 27, 2026
+
+Sixteen articles are prepared under `src/content/writing`, with publication dates
+of June 15, 2026 and revision dates of September 27, 2026. The acceptance-testing
+hub lists their reading order from `src/data/acceptance-series.ts`.
+See `docs/acceptance-series-publication.md` for the visual inventory and source
+access decision. Each article has a distinct vintage hero; fourteen inline SVG
+diagrams use the site tokens and preserve explanatory captions in Markdown exports.
+Meridian's full C# and Python repositories remain private. Publish the inline
+examples only, and add public repository cross-links when that status changes.
+
 Written 2026-09-22, at the end of the session that built this site from nothing.
 Updated 2026-09-25 for twelve ratified video chapters, four new writing posts,
 and the link, index, media, and search cleanup.

@@ -274,6 +274,56 @@ export const TAGS = [
     label: 'Context Compaction',
     description: 'Reducing the material supplied to a language model by selecting relevant source units or summarizing them. Retention decisions must account for current goals, unique evidence, and information that later questions may need.',
   },
+  {
+    slug: "test-mediator",
+    label: "Test Mediator",
+    description: "A testing pattern that carries scenario instructions to observation points and exposes captured results to assertions. It can remain separate from its spies or contain one service's private spy; it is distinct from the GoF Mediator pattern.",
+  },
+  {
+    slug: "transport-spy",
+    label: "Transport Spy",
+    description: "A test observation point at a transport boundary that records outgoing requests or incoming responses while retaining production behavior above that boundary. It can follow scenario instructions to forward, redirect, or supply a controlled response.",
+  },
+  {
+    slug: "builder-pattern",
+    label: "Builder Pattern",
+    description: "Constructing a model through explicit configuration steps before producing the completed value. Test builders can supply reusable defaults while keeping each scenario's defining values visible and independently owned.",
+  },
+  {
+    slug: "idempotency",
+    label: "Idempotency",
+    description: "Defining and verifying the outcome of repeated requests without repeating work that has already been accepted. Request identity, conflicting content, preserved state, and outstanding recovery obligations determine the contract.",
+  },
+  {
+    slug: "concurrency",
+    label: "Concurrency",
+    description: "Behavior when operations overlap and contend for shared state or resources. Verification considers allowed outcomes, arbitration, duplicate effects, and the schedules a particular arrangement actually exercises.",
+  },
+  {
+    slug: "refactoring",
+    label: "Refactoring",
+    description: "Changing internal organization while preserving established observable behavior. Stable public boundaries and maintained comparisons provide evidence that the reorganization preserves required outcomes.",
+  },
+  {
+    slug: "regression-testing",
+    label: "Regression Testing",
+    description: "Continuing to verify previously established behavior as later changes enter a system. Maintained scenarios preserve approved requirements and incorporate discovered defects so future runs check those lessons again.",
+  },
+  {
+    slug: "executable-documentation",
+    label: "Executable Documentation",
+    description: "Documentation whose scenarios execute production behavior and check the outcomes they describe. Readers can connect requirements to the current implementation by running and debugging maintained tests.",
+  },
+  {
+    slug: "requirements-traceability",
+    label: "Requirements Traceability",
+    description: "Maintaining explicit connections from established requirements to scenarios, expected outcomes, observations, and comparisons. Those connections let reviewers identify missing coverage and distinguish behavioral evidence from structural review.",
+  },
+  {
+    slug: "test-isolation",
+    label: "Test Isolation",
+    description: "Keeping records, observations, configuration, and cleanup owned by the test or run that creates them. Isolation lets concurrent developers and CI jobs use infrastructure without consuming, altering, or deleting one another's state.",
+  },
 ] as const satisfies readonly Tag[];
 
 export type TagSlug = (typeof TAGS)[number]['slug'];

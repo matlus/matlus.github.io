@@ -1,0 +1,7 @@
+# test-mediator
+
+Reused from the the-test-mediator-and-the-transport-spy article hero. The subject depicts this tag's concept.
+
+# The Test Mediator and the Transport Spy
+
+Use case: stylized-concept. Asset: one panoramic website article hero, ideally 2400 by 800, aspect 3:1. Style: vintage technical editorial illustration in fine black pen-and-ink, cross-hatching, warm ivory paper, subtle pencil construction marks, mostly monochrome with sparse muted brass, cyan or rust accents. Tangible materials and convincing physical perspective; drawn rather than photorealistic. Compose close enough that the action reads as a shallow banner, with essential objects and connections within the central 65 percent of the frame height. No words, lettering, numbers, labels, code, logos, watermarks, neon glow, screens or decorative arrows. Article: the test mediator and the transport spy. Subject: Extreme close-up of a cloth-covered cable passing through an open inline breakout connector. The thick main cable enters on the left, plugs into a rectangular connector, and exits on the right through a second fully seated plug. Inside, parallel metal contacts are visible. Three fine probe leads clip onto distinct contacts and curve toward the cropped edge of a small mechanical recorder. One natural bare hand gently adjusts a probe without disconnecting either main plug. Make the main signal path and the thinner observation branches physically clear. Central idea: observe and control a selected transport seam while real production machinery continues working.
