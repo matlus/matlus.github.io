@@ -1,10 +1,12 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
 import SectionLayout from '../../layouts/SectionLayout.astro';
 import TopicList from '../../components/TopicList.astro';
 import { TOPICS } from '../../data/topics';
 import { PILLAR_COPY } from '../../data/pillars';
+import { heroFor } from '../../lib/heroes';
 
 /**
  * One route for both pillar hubs and topic hubs, because both sit one segment
@@ -57,12 +59,47 @@ export const getStaticPaths = (async () => {
 
 const props = Astro.props;
 const isTopic = props.kind === 'topic';
+const overview = isTopic
+  ? (await getCollection('overviews', ({ data }) => !data.draft))
+      .find((entry) => entry.data.topic === props.topic.slug)
+  : undefined;
+const overviewContent = overview ? await render(overview) : undefined;
+const Content = overviewContent?.Content;
 
 const description = isTopic
   ? (props.chapters[0]?.data.description ?? props.title)
   : props.blurb;
 ---
 
+{overview && Content && isTopic ? (
+  <ArticleLayout
+    title={overview.data.title}
+    description={overview.data.description}
+    datePublished={overview.data.datePublished}
+    dateModified={overview.data.dateModified}
+    tags={overview.data.tags}
+    crumbs={[{ label: 'Home', href: '/' }, { label: 'PWI', href: '/pwi/' }]}
+    hero={heroFor(`pwi-${props.topic.slug}`)}
+    markdownHref={`/pwi/${props.topic.slug}.md`}
+    seed={props.topic.slug}
+    evergreen
+  >
+    <Content />
+    <section aria-labelledby="language-chapters-heading">
+      <h2 id="language-chapters-heading">Language chapters</h2>
+      <ul class="langs">
+        {props.chapters.map((chapter) => (
+          <li class="lang">
+            <a href={`/pwi/${props.topic.slug}/${chapter.data.language}/`} class="lang__link">
+              <h3 class="lang__title">{LANGUAGE_LABEL[chapter.data.language ?? ''] ?? chapter.data.language}</h3>
+              <p class="lang__blurb">{chapter.data.description}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </ArticleLayout>
+) : (
 <SectionLayout
   title={props.title}
   heading={props.title}
@@ -108,6 +145,7 @@ const description = isTopic
     )
   }
 </SectionLayout>
+)}
 
 <style>
   .scope { font-size: var(--step--1); max-width: var(--measure); }

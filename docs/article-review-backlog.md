@@ -1,5 +1,26 @@
 # Article review backlog
 
+## Architecture with Intent topic overview
+
+- [ ] Read the [October 29, 2012 transcript](https://docs.google.com/document/d/15XMR_su9_W864wGCH5LvgxGhu5IelHYf_Dk_wsYbcP0/edit).
+  Its text export returned HTTP 401 on September 27, 2026. The owner supplied
+  the original publication date and the current architectural explanation;
+  the new overview uses that date with a September 27, 2026 revision date.
+- [ ] Compare the [implementation recording](https://www.youtube.com/watch?v=t6i0XJQoKnY)
+  with the overview when a transcript or recording review is available.
+  YouTube oEmbed verified the public title, Layered Architecture Implementation
+  Guidelines, and author, Shiv Kumar. No transcript was available for this pass.
+  The owner's September 27 account takes precedence over either older recording.
+- [ ] After the topic overview is published, verify its canonical URL and add
+  the topic link to the matching public recording description. Keep the PWI
+  homepage link. Do not infer an original recording ID from the private transcript.
+
+The overview is authored separately at
+`src/content/overviews/architecture-layers.md`. Its approved diagram is retained
+as PNG, an optimized WebP, and the generation brief under `public/images/diagrams`.
+The named drawing prompt is `prompts/generate-pastel-domain-architecture.md`.
+The existing C# and Python corpus chapters are unchanged.
+
 ## Functional acceptance-testing series
 
 - [ ] When the Meridian C# and Python repositories become public, verify their
