@@ -30,8 +30,8 @@ SUFFIXES = ("ings", "ing", "ies", "es", "s", "ed")
 
 
 def read_slugs() -> list[str]:
-    text = TAGS_FILE.read_text(encoding="utf-8")
-    return re.findall(r"slug:\s*'([a-z0-9-]+)'", text)
+    text: str = TAGS_FILE.read_text(encoding="utf-8")
+    return re.findall(r"""slug:\s*['"]([a-z0-9-]+)['"]""", text)
 
 
 def stem_word(word: str) -> str:
