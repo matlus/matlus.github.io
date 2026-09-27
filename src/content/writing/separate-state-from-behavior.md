@@ -1,145 +1,96 @@
 ---
 title: "Separate State from Behavior? Yes Please!"
-description: "Separating state from behavior simplifies object-oriented systems: immutable DTOs carry data, while managers compose collaborators and make operations explicit at call sites."
+description: "Business operations are easier to trace when immutable DTOs carry facts and stateless managers validate inputs and coordinate work through named methods at the call site."
 datePublished: 2020-12-05
-dateModified: 2026-09-25
+dateModified: 2026-09-27
 hero: separate-state-from-behavior
-tags: ["class-design", "public-surface", "service-locator", "configuration-provider", "gateway-pattern", "data-manager", "architectural-patterns", "csharp", "data-transfer-objects"]
+tags: ["class-design", "data-transfer-objects", "csharp"]
 youtube: "https://www.youtube.com/watch?v=srCLY1n0HQI"
 repositories:
   - label: MovieServiceYouTube
     url: "https://github.com/matlus/MovieServiceYouTube"
-    context: Code examples
+    context: Related implementation
 ---
 
-I want data to carry state without mutable behavior and behavior classes to operate on that data. The video uses general examples; the code excerpts here come from the Movie Service project linked below.
+I separate the classes that carry information from the classes that do work. An order carries the facts about an order. A manager validates and processes it. That distinction makes it easier to see what can change, which class performs an operation, and where to look when the operation fails.
 
-## The Real World Object Story Is the Trap
+The system still needs both data and behavior. The design choice is which objects carry them and which objects move through the system.
 
-Sometimes I catch myself wondering why people do not separate state from behavior in their classes. Then I remember the story we were all sold: **objects are supposed to model real things.** A vehicle has make, model, wheels and cylinders, so naturally it also starts, accelerates, brakes and turns. Put the nouns and the verbs together and you have object oriented design. What could be more natural?
+## Why I Changed My Mind
 
-I bought into that, and I want to be clear that I am not criticizing from the outside. **When I argue against something, it is almost always because I have been there myself.** I did not read a blog post and get clever for ten minutes. I built those systems. Three or four years into my career, once I felt I understood object oriented programming, I designed what I thought were pure object oriented systems. Beautiful classes. Proper names. State and behavior sitting together. An object programmer could look at the chunks and not find fault.
+I used to build the kind of object model that looks natural in a book. A vehicle has a make, a model, and wheels; it can start, accelerate, and brake. So an `Order` holds its details and also saves itself, creates an invoice, and perhaps asks a `Customer` to do more work. I designed systems like that and was proud of them.
 
-And then the code grew. A team had to live in it. People complained, sometimes silently and sometimes out loud, about the clutter of classes and about how hard it was to understand who was doing what. I resisted it, because I had designed the thing. It made sense to me. *That is not the same as making sense to the team.*
+As those systems grew, my teammates struggled to find out who did what. I knew the classes and call chains because I had designed them. A new developer debugging a failing order had to discover which objects called which other objects. The design felt easy to me because it was familiar. Familiarity had hidden its complexity.
 
-There is a broader version of this that I recognized from my previous life in electronics. What you are taught in school and what the real world turns out to be are two different planets. Software has the same gap. A model that is elegant on a whiteboard, or in a book chapter about modeling, does not automatically survive contact with a growing system and a team of people who did not design it.
+That experience made me ask a different question: what does the business operation require, and where should a reader find it? An order is information about a transaction. Processing it is work done *with* that information. Those responsibilities need different homes.
 
-Our job is to simplify, not to complify. That sounds cute, but it is serious. Taking a simple problem and wrapping it in a beautiful object model is still making it complex.
+The difference between *easy* and *simple* matters here. A skilled developer can follow a complicated call chain quickly because they know every turn. That makes the work easy for them; it does not make the design simple for the team. I learned the distinction by building these systems, hearing the feedback, and trying a different way. Reading a rule gives you information. Trying it on a real requirement is how you find out whether you understand it.
 
-## Information Is Not Knowledge
+## Two Roles in the Design
 
-The part that made this hard for me was not lack of information. Information is cheap. You can get it from a book, from a video, from Google, from me. **Information only becomes knowledge when you do something with it.** Then knowledge exercised over time becomes experience. Do that long enough and it becomes skill.
+**A state-only class carries facts.** Its instance has values such as an order number, customer identifier, and amount. Set those values when the instance is created, then leave them unchanged. It has no business methods that save, delete, validate, or process itself. These immutable objects are often called data transfer objects, or DTOs.
 
-That matters because skill lies to you. Ask an Olympic skater how hard it is to glide, twist, land, and keep moving. At that level, it feels easy. That does not mean it is simple. It means the complexity has become automatic for that person.
+**A behavior-only class performs operations.** Its methods accept the facts they need as arguments and may return new DTOs. It does not retain the current order or customer as mutable instance state between calls. A manager may hold private references to a validator or data store; those are collaborators it uses to do the work, not business facts that accumulate inside it.
 
-I have seen the same thing in machining. A guy who had been doing it for decades could shave off a thousandth of an inch by feel. I did not believe it. I measured it. He was right. Was the operation simple? No. It had become easy for him.
-
-That is exactly what happens when you design a system for yourself. The complexity feels easy because you know every turn. You named the classes, you chose the methods, you know the call chain. Now put a new person on the team and ask them to debug it. If they cannot tell what is going on without living in your head, the system is not simple. It is only familiar to you.
-
-## Smart Objects Make Dumb Call Sites
-
-Here is the version I do not want:
+Here is a small, illustrative C# example. It shows the roles without depending on any particular framework or repository:
 
 ```csharp
-public sealed class Order
-{
-    public string Number { get; set; }
-    public Customer Customer { get; set; }
+public sealed record Customer(int Id, string Name);
+public sealed record Order(int CustomerId, string Number, decimal Amount);
 
-    public void Save()
+internal sealed class OrderManager
+{
+    private readonly OrderValidator _validator;
+    private readonly OrderStore _store;
+
+    public OrderManager(OrderValidator validator, OrderStore store)
     {
-        // write itself to storage
+        _validator = validator;
+        _store = store;
     }
 
-    public void CreateInvoice()
+    public void PlaceOrder(Customer customer, Order order)
     {
-        // reach into Customer and coordinate more work
+        _validator.EnsureCanPlace(customer, order);
+        _store.Save(order);
     }
 }
 ```
 
-It looks like good object oriented programming if you have bought the real world object story. The order knows how to save itself. The customer knows how to do customer things. The order calls the customer, the customer calls something else, and everyone applauds the model.
+`Customer` and `Order` describe the inputs. The records have values fixed at construction and no business methods. `OrderManager.PlaceOrder` names the operation. It gives the same inputs to the validator, then asks the store to save the order. The example leaves the validation rules and storage implementation out because the class boundary is the point here.
 
-But what does the call site know? Almost nothing. You pass the order somewhere and now you have to wonder who is calling what on it. You give a customer to an order, or an order to a customer, and they coax data out of each other.
+There is a useful distinction in the manager's fields. `_validator` and `_store` are references to behavior collaborators. They do not make the manager a mutable *order*. The manager does not remember a particular customer or order after `PlaceOrder` returns. Its next call can work with different DTOs without depending on the previous call's business data. This is what I mean by stateless behavior, even though the class has private fields.
 
-**When state and behavior travel together, the public surface becomes a set of possible surprises.** The object is no longer a piece of information. It is something that might act, and every method that receives it might make it act.
+The constructor supplies those collaborators once so the manager can use them internally. `PlaceOrder` receives the DTOs for the current operation. Passing a validator into a constructor is different from threading a behavior object through several business methods as if it were transaction data.
 
-## State Should Be Harmless
+## What Changes at the Call Site
 
-When I say state, I mean information an instance carries around: properties, fields, values that remain with that instance until it disappears. When I say behavior, I mean methods that do things. My position is plain: **the things you pass around your system should be harmless.**
+Imagine giving `Order` methods such as `Save()` and `CreateInvoice()`, then passing it to `Customer` or another object that can call those methods. The resulting call might read `customer.Place(order)`. That line does not show whether `Customer` checks the order, asks the order to save itself, or asks another object to create an invoice. A reader has to follow those calls to learn where the operation happens.
 
-That is why I like DTOs that only carry state. Get only properties, values set through the constructor, and nothing else. Such an object cannot save itself, delete itself, copy itself into the database, call out to a service, or surprise you from a call site several frames away. It carries information and that is all it does.
+With the separation, the operation starts at a named behavior method: `orderManager.PlaceOrder(customer, order)`. The manager has the whole operation in view. It can validate the two inputs and coordinate the classes that do the next pieces of work. The DTOs can pass from one operation to another without acquiring new values or triggering work of their own.
 
-There is a corollary that matters just as much and gets missed. **Behavior classes are not the things you pass around.** DTOs travel through the system; behavior classes are used from inside the class that needs them. If you find yourself threading a behavior class through three layers as an argument, ask what it is doing there.
+A validator and a store still have their own jobs. The question is whether responsibility for the *business operation* stays visible. If `Order` calls `Customer`, which calls another object, which eventually saves something, you have to follow the chain to discover who owns the operation. When the manager coordinates those steps, the entry point tells you where to begin.
 
-The correction is not to remove behavior from the system. That would be silly. The correction is to put behavior in the classes whose job is behavior, and to keep those classes from carrying mutable business state around. In the MovieService code, `MovieManager` is the behavior class. It receives a `Movie`, validates it, and coordinates the work.
+Think of a team lead coordinating a sprint. Each person does a defined part and reports back. If everyone quietly hands their work to someone else, the lead cannot tell who is responsible for the result. A manager class serves the same coordinating role when an operation involves a customer, an order, validation, and storage. The customer and order supply information; neither has to become the order processor.
+
+## Why Immutability Matters
+
+Separating methods from data is only half the choice. If any caller can change an `Order` after construction, a later operation may receive different facts from the ones an earlier operation saw. A get-only DTO removes that possibility for its own values. To change an order, create a new value and make the transition explicit in a behavior method.
+
+For the simple record above, `with` creates a new `Order`; it does not change the old one:
 
 ```csharp
-public sealed record Movie(string Title, string ImageUrl, Genre Genre, int Year);
-
-internal sealed class MovieManager : IDisposable
-{
-    private readonly ServiceLocatorBase _serviceLocator;
-
-    private ConfigurationProviderBase ConfigurationProvider { get; }
-
-    private ImdbServiceGateway? _imdbServiceGateway;
-
-    private ImdbServiceGateway ImdbServiceGateway =>
-        _imdbServiceGateway ??= _serviceLocator.CreateImdbServiceGateway();
-
-    private DataFacade DataFacade { get; }
-
-    public MovieManager(ServiceLocatorBase serviceLocator)
-    {
-        _serviceLocator = serviceLocator;
-        ConfigurationProvider = serviceLocator.CreateConfigurationProvider();
-        DataFacade = new DataFacade(ConfigurationProvider.GetDbConnectionString());
-    }
-
-    public Task<int> CreateMovie(Movie movie)
-    {
-        ValidatorMovie.EnsureMovieIsValid(movie);
-        return DataFacade.CreateMovie(movie);
-    }
-}
+Order revised = order with { Amount = 125m };
 ```
 
-Notice what this says at the call site. A movie is data. The manager creates a movie. `DataFacade` and `MovieDataManager` continue the same shape: methods receive `Movie`, `Genre`, or identifiers, and return DTOs or collections. The behavior is visible in the method you called, not hidden in the object you happened to hand over.
+The guarantee applies to the data the DTO actually contains. If a field points to a mutable object or collection, a get-only property alone does not freeze that object's contents. Choose immutable members too when you need the whole DTO to stay unchanged.
 
-That is the key to the wall analogy. I can hand you a key, but if the key is a blanket, it is not going to open anything. You still have the information, but it cannot do damage. An immutable DTO moving through the system is available on a need to know basis. It carries data. It does not carry behavior.
+The practical benefit is reasoning. A method receiving an immutable `Order` can read its facts without expecting the order to save itself or silently change its amount. The method may still call a gateway or write to a database; that behavior belongs to an explicitly named collaborator.
 
-## Behavior Belongs in Behavior Classes
+## Model the Work, Then Refine It
 
-There is a small but important qualification here. `MovieManager` has fields. It has references to collaborators, some lazy creation, and disposable infrastructure. So I am not playing word games and pretending there are no properties anywhere. The important point is narrower and more useful: **a behavior class should not carry mutable business state as an object identity that roams through the system.**
+I model the business requirement. A department may work with customers and orders to complete one operation. In software, a manager can accept their data and coordinate that work. The model stays close to the operation someone actually needs to understand.
 
-Private references to other stateless behavior classes are not the same as a customer or order object that can mutate itself while moving from method to method. Those collaborators are implementation details. They are used internally by the manager to perform behavior. They are not passed around as the business facts of the system.
+This does not require a manager for every noun or a pile of tiny classes on day one. Start with the operation and its data. Extract another behavior class when there is a real responsibility to give it. Single responsibility is useful when a design needs refactoring; it is not a reason to split a simple requirement before you know what the work is.
 
-This is also where composition matters. `MovieManager` composes `DataFacade`, the service gateway and configuration provider. It does not inherit from them to become some grand business creature. It uses what it needs, on a need to know basis, and exposes methods that say what the operation is. That is programming with intent at the class boundary.
-
-## The Team Lead Does Not Ask You to Become Each Other
-
-The best analogy from the transcript is the team. In a sprint, each person has work to do. The team lead or scrum master coordinates. You do your part, I do my part, someone else does their part, and the work comes back together.
-
-Now imagine I do your part, you do somebody else's part, somebody else does mine, and each of us is doing ten other people's parts as well. Who is doing what? The team lead cannot know. That is chaos, and it is exactly what smart objects create in code.
-
-A department works with customers and orders. It does not tell the customer to become an order processor. It gets information from the customer, creates or processes an order, and coordinates across multiple entities. The department is the behavior. The customer and order are information.
-
-**Managers should orchestrate across DTOs the way a team lead orchestrates across people.** A call chain where A calls B, B calls C, and C calls D is not automatically clever. Sometimes A should coordinate B, C and D because A is the one with the business operation in view.
-
-## Simple Is Not Easy
-
-Once I started separating state from behavior, it took time to tune. But the result was immediate enough that people who had worked with me before noticed it. The systems had fewer classes. More importantly, they became easier to reason about. You could look at a DTO and know it was data. You could look at a manager and know it did behavior.
-
-At this point, people reach for single responsibility and SOLID as if those words answer the question. They do not, and I want to be fair to the principle rather than dismissive of it. Single responsibility is a real thing, and Uncle Bob was not wrong to name it. **It becomes useful when you have a problem, which is usually at refactoring time**, not something you apply from the get go to a requirement you have barely understood. Do not begin by exploding a simple business requirement into a ceremony of tiny real world actors because you think the principle demands it.
-
-I am not modeling the real world. I am modeling the business requirement. An order is a piece of paper with information on it. In software, that is a DTO. If something needs to process it, create another thing whose job is processing. Do not make the paper smart.
-
-And I would genuinely like somebody to test this properly. Get in touch, pick a small system, and let us build it twice: you build it the pure object oriented way, I build it the separated way. Put both on GitHub and let people read them side by side and judge which is easier to understand, easier to debug, and easier to work in. I am not asking anyone to believe me because I said it.
-
-## Summary
-
-- Separating state from behavior can simplify an object-oriented system. A familiar model may feel easy to its author while remaining complex for everyone else.
-- Immutable DTOs carry information without mutable business behavior. Behavior classes operate on them, and managers orchestrate work across boundaries.
-- Single responsibility has value when an actual problem calls for refactoring. It is not a reason to turn a simple requirement into a cluttered object model at the outset.
-- Simple is not easy. If you want to compare approaches, build the same small system both ways and see which is easier to understand, debug, and change. Simplicate, don't Complify.
+The point is to make the system simpler for the next person. I call that “Simplicate, don't Complify.” Keeping immutable DTOs and stateless behavior classes distinct reduces the number of surprising places an operation can hide. If the approach sounds too strict, try the same small requirement both ways. Ask another developer to trace the operation and change it. The comparison is more useful than taking my word for it.
