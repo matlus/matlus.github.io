@@ -1,240 +1,314 @@
 ---
-title: "The Configuration Provider: An Abstraction With Roles and Responsibilities"
-description: "A Configuration Provider hides the source, returns typed settings, validates required values, and reports useful errors. Composed providers let each system select its settings."
+title: "The Configuration Provider: Roles and Responsibilities"
+description: "A Configuration Provider hides the source and returns validated, typed settings. Useful exceptions and composed settings providers keep configuration rules in one place."
 datePublished: 2019-08-11
-hero: configuration-provider-design-pattern
-dateModified: 2026-09-25
-tags: ["class-design", "error-handling", "configuration-provider", "architectural-patterns", "csharp", "composition-over-inheritance"]
+dateModified: 2026-09-27
+hero: configuration-provider-design-pattern-v2
+tags: ["error-handling", "boundary-validation", "composition-over-inheritance", "testing", "configuration-provider", "template-method", "architectural-patterns", "design-patterns", "csharp"]
 youtube: "https://www.youtube.com/watch?v=IPS8VSrGq94"
 repositories:
   - label: Configuration Provider sample
     url: "https://github.com/matlus/ConfigurationProviderNetFramework"
-    context: Code from the original video
+    context: Original .NET Framework implementation
   - label: Process Manager sample
     url: "https://github.com/matlus/Process-Manager-Using-Pub-Sub"
-    context: Current C# examples
+    context: Composed settings providers in C#
 ---
 
-The point throughout is the **roles and responsibilities of a configuration provider**. It owns the source, strong typing, validation, and useful failure messages. The comparison of inheritance and composition follows from those responsibilities.
+A Configuration Provider turns configuration from an external source into values the application can trust. It knows where those values come from, their types, which are required, and what makes them valid. The rest of the application receives those answers through a small, explicit API.
 
-The original .NET Framework implementation is shown in the video linked below. The later discussion of composition and testing reflects my current practice. The current C# examples come from `PostBindOrchestrator.Core/SettingsProviders` and `PostBindOrchestrator.DomainLayer/Managers/ConfigurationProviders` in the linked Process Manager project.
+I have used this abstraction for years. Its implementation has changed, but its responsibilities have remained consistent. Reading a setting is only the beginning of the job.
 
-## Not a Pattern, and I Do Not Much Care
+## Four responsibilities
 
-I have never seen anyone call this a pattern, and I am not going to fight about the word. What I do know is that almost every large system I have worked on reaches into its configuration system directly, from anywhere, and pays for it forever.
+**Hide the source.** Configuration might come from an XML or JSON file, environment variables, a database, or another service. The provider owns that knowledge. A caller asking for the payment service address should not have to know which file or section contains it.
 
-The fix is an abstraction over configuration access. But an abstraction with nothing behind it is just another layer, so the useful part of this chapter is not the class, it is the **roles and responsibilities** the class takes on. Those have not changed in all the years since I first built one. The implementation has changed a great deal, and I will show you both.
+**Return strongly typed values.** A setting stored as a string may represent a Boolean, a date, an integer, or an enum. The provider converts it once. Callers receive the type they need, with no repeated parsing or interpretation.
 
-## The Four Responsibilities
+**Validate incoming data.** Configuration is another way for outside data to enter the application. I call this locking the back door: validate the value before other classes use it. A value that parses successfully may still violate a requirement, such as a timeout outside the permitted range.
 
-This is the part people miss, and missing it is why the whole idea gets dismissed. A configuration provider is not a thing that goes and gets a setting. **A thing that goes and gets a setting has done about a quarter of the job.** There are four responsibilities, and all four belong to this class.
+**Apply requirements and report failures clearly.** The provider knows which settings must exist and which have defaults. When a value is unusable, it throws an exception that identifies the setting, explains the problem, and tells the person reading the log how to fix it.
 
-**Abstract the source.** Is the configuration coming from a config file, a JSON file, a database, a service? Nobody in your system should know. The provider is the only class that does.
+These responsibilities belong together. If callers read raw strings and decide for themselves whether to parse, default, or reject them, configuration rules spread through the system.
 
-**Present a strongly typed surface.** Configuration is strings, all the way down. But you know perfectly well that this setting is an `int`, that one is a `bool`, and the other is a `DateTime`. The provider is where that conversion happens, once, so that everything downstream receives the type it actually wanted, already parsed and already checked.
+<!-- diagram:start configuration-provider-settings-flow -->
+<figure id="configuration-provider-settings-flow" class="article-diagram article-diagram--raster">
+  <img class="article-diagram__image" src="/images/diagrams/configuration-provider-settings-flow.webp" alt="Raw configuration values flow through the Configuration Provider, which reads, converts, validates and applies requirements. The Manager receives typed settings and gives downstream classes only their needed values." width="2009" height="783" loading="lazy" decoding="async" />
+  <figcaption>These arrows show data flow. The Configuration Provider supplies validated settings to the Manager. The Manager passes the needed values downstream; the provider itself stays with the Manager.</figcaption>
+  <p class="article-diagram__full"><a href="/images/diagrams/configuration-provider-settings-flow.webp">Open full-size settings flow diagram</a></p>
+</figure>
+<!-- diagram:end configuration-provider-settings-flow -->
 
-**Lock the back door.** I talk about locking the front door and the back door so you are safe in the house, and I go into that idea properly in Programming with Intent. The front door is the arguments arriving from your callers. **The back door is data arriving from outside: the file system, the database, a service.** Configuration comes through the back door, so the provider is the thing standing at it. Its job is to make sure that data is clean before it gets into the system, and to throw if it is not.
+In the architecture I use, the Manager is the class that talks to the Configuration Provider. A Gateway receives its service address and other settings from the Manager. A Processor receives the settings it needs for its work. Neither receives the Configuration Provider or the Service Locator.
 
-**Know what is required and what is optional, and say so clearly when something is wrong.** Which settings a system cannot start without is a business rule, and it belongs in exactly one place. So does the quality of the message you get when one of them is absent, which is a large enough topic that it gets its own section below.
+## Catch the cause where it enters
 
-Take any one of those away and you have a different, much weaker thing. Take away the typing and every caller parses. Take away the validation and nothing is guarding the back door. Take away the required and optional knowledge and it is scattered across the system in null checks.
+A missing setting is easy to diagnose when the provider catches it. It becomes harder when a null or an empty string travels through several classes before something fails.
 
-## Why All This Effort For a Configuration Provider?
+The resulting exception may refer to an operation far removed from configuration. The person investigating has to work backward from that symptom to the setting that caused it. Validation at the provider makes the cause visible at the point where the value enters the application.
 
-I get asked this, in almost exactly these words. It is just configuration. Why the ceremony? Why the exception messages, why all these tests, why this and that?
+That is why I put effort into this class and its exceptions. In production, the log may be the only information available to the person doing triage. A message should give them enough information to act without opening the solution and reproducing the problem in a debugger.
 
-Because **every system depends on it, and it runs before anything else does.** It is the one class whose output the entire system takes on trust. Everything downstream assumes the connection string is a connection string, the timeout is a number, and the path starts where it is supposed to start.
+For example:
 
-Now consider what happens when it does not do its job. The provider does not notice that a setting is missing, and hands back a null, or an empty string, or a silently defaulted value. **The system does not stop. That is the problem.** It hums happily along, doing work, appearing entirely healthy, until at some point far away it falls over with a null reference exception six degrees of separation from where the bad data actually entered.
+```text
+The NotifyOnUpload configuration setting value of 'T' is not a valid Boolean.
+Possible values are 'true' and 'false'.
+```
 
-Now somebody is debugging that null reference. It is nowhere near a config file. Nothing in the stack trace mentions configuration. So they spend a day, or several days, working backwards until eventually somebody says: hold on, is that setting even in the file? And the answer comes back, we did not know that setting existed.
+The message names the setting, shows the invalid value, and supplies the valid choices. For settings containing credentials, identify the setting and the defect without copying the secret into the log.
 
-That is the failure mode this class exists to prevent, and it is the worst kind there is: **the distance between the cause and the symptom is maximised.** A missing setting is one of the cheapest problems in software to diagnose if you catch it at the boundary, and one of the most expensive if you do not.
+## Missing, empty and blank are different
 
-So the effort is not ceremony. Failing loudly, at the back door, with a message that names the setting and tells you what a valid value looks like, converts a multi-day archaeology exercise into a thirty second fix. That is the return on the two days. And it is the same principle I argue in the code review chapter, fail fast and fail visibly, and fix the cause rather than the symptom, applied to the one place in the system where outside data first gets in.
+A required string setting can fail in several ways:
 
-## The Exception Is the Product
+| State | What happened | What needs correcting |
+|---|---|---|
+| Missing | No value was found for the key. | Add the required setting to the source the application reads. |
+| Empty | The value is an empty string. | Supply a value. |
+| Blank | The value contains only whitespace. | Supply a meaningful value. |
+| Invalid | A value exists but violates its type or requirements. | Correct it to the stated format or permitted value. |
 
-Since the provider throws, the exceptions it throws are a large part of what it delivers. I have rules for this, and they apply to every exception in my systems, not just this one.
+Decide what those words mean and use them consistently in exceptions and tests. The distinction helps someone reading a log locate the problem quickly.
 
-An exception message must explain the problem clearly and in as much detail as possible. It must **include the offending value**, because "I did not like the value" without telling me the value is close to useless. And it must tell me how to fix it: the valid values, the expected range, the format you wanted.
+For optional settings, absence has a defined meaning. In my original example, `NotifyOnUpload` defaults to `true` when its value is missing, empty, or blank. A supplied value such as `T` is still an error. Optional does not mean that any value is acceptable.
 
-Here is the reasoning, and it is not academic. **In production you usually cannot get to the machine. You get the log file.** So picture yourself reading that log, and ask what you would want to see there in order to know exactly what is wrong. You should not have to open the solution, reproduce it locally, and debug your way to an answer that the message could have given you.
+## Share requirements while varying the source
 
-Now make it worse. Another team in your organization is consuming your system as a service. Every time they see an exception whose message does not explain itself, they contact you, because the message gave them nothing to act on.
+The original .NET Framework implementation has an abstract `ConfigurationProviderBase` and a sealed descendant named `ConfigurationProvider`. The base holds the requirements; the descendant knows how to retrieve values from the framework's configuration system.
 
-So a good one reads something like this: the `NotifyOnUpload` configuration setting value of `T` is not a valid boolean. Possible values are `true` and `false`. Somebody doing triage, even an analyst who does not know that part of the system, can repeat that message down the phone to a developer, and the developer knows exactly what the problem is instantly.
+Here are the requirements from that example:
 
-That is the standard. **If you are throwing exceptions, you cannot be mean, you cannot be cute, and you cannot be short.** Take the extra time over the wording. It goes a long way for the people who use your library, your service, or your system.
+| Setting | Requirement |
+|---|---|
+| `EmailTemplatesPath` | Required. Return the configured path fragment with a leading backslash. |
+| `PaymentGatewayServiceUrl` | Required. Return the base address with a trailing forward slash. |
+| `FiscalYearStart` | Optional. Default to October 1. Preserve the month and day, with the year normalized to 1. |
+| `NotifyOnUpload` | Optional. Default to `true`; reject a supplied value that cannot be parsed as a Boolean. |
 
-I once took a call about this while driving on vacation. Somebody asked what "missing" meant in one of these messages. It meant the key is not in the config file at all, so the fix was to go and add the setting. That conversation was short because the vocabulary had been decided in advance, and that is the entire point.
+The path and address conventions let callers combine those values with the application's root path or a service endpoint consistently. These are requirements of that example, so another application must choose conventions appropriate to its own paths and addresses.
 
-## Missing, Blank, Empty
-
-That vocabulary has to be precise. People often wave away the differences.
-
-A setting can be in several different states, and they are not the same problem with different spellings. The key can be absent entirely. The key can be present with an empty value. The key can be present with a value of nothing but whitespace. In the original implementation I made that explicit with a state enum, and then threw a distinct message for each case.
+The source-specific retrieval method is small. This excerpt comes from the original repository:
 
 ```csharp
-internal enum ConfigurationSettingState
+protected override string GetConfigurationSettingValue(
+    string configurationSettingKey)
 {
-    IsPresent,
-    IsMissing,
-    IsEmpty,
-    IsWhiteSpaces
+    return ConfigurationManager.AppSettings[configurationSettingKey];
 }
 ```
 
-Missing means the key is not there. Blank means the value is whitespace. Empty means the value is an empty string. Pick your words once, use the same ones in every message, and make sure the team and the tests use them too. When somebody says "the setting is blank," everyone should already know which of the three things happened.
+The base can call that method while remaining independent of `ConfigurationManager`. A descendant reading from a database would implement retrieval differently and inherit the same setting rules.
 
-The routine that enforces presence took the retrieval as a delegate rather than doing the retrieval itself, which kept the requirement in one place and the source specific work in another. If higher order functions are unfamiliar, my chapter on delegates and higher order functions covers the mechanics; this is a good small example of why they are worth having.
-
-## Requirements in the Base, Extraction in the Descendant
-
-The original design was two classes. `ConfigurationProviderBase`, abstract, and `ConfigurationProvider`, the production implementation.
-
-A note on the naming, because it is deliberate. The varying part goes at the **tail** of the name, not the front. `ConfigurationProviderBase`, `ConfigurationProviderDatabase`, `ConfigurationProviderLocal`. That way they sort together in the solution explorer and you can see the whole family at a glance. And when there is only one production implementation, it is called `ConfigurationProvider`. Not `ProductionConfigurationProvider`. The plain name is the real one.
-
-The split of work mattered more than the class count. **The base class baked in the requirements. The descendants only knew how to fetch a value for a key.**
-
-So the base class is where it is written down that the email templates path is required, and that it always comes back starting with a backslash, whatever the config file happens to contain. That URLs always come back ending with a forward slash, because you are storing a base address and tacking endpoints onto it. That the fiscal year start is optional, defaults to the first of October, and has its year normalized because only the month and day matter. That `NotifyOnUpload` is optional and defaults to true.
-
-Every one of those is a business rule. None of them has anything to do with where the data came from. So a .NET Framework descendant, a .NET Core descendant, a database backed descendant and a service backed descendant all inherit the same rules and implement one thing each: how to get a string for a key. That is real reuse, and at the time it was the right call.
-
-## Keep the Config File Small
-
-While we are here, some opinions about configuration files themselves, because a good provider cannot save you from a bad one.
-
-**Only things that change from environment to environment belong in the config file.** Connection strings change as you move through environments, because environments are siloed. Service endpoint URLs change. That is what the file is for.
-
-**I stay very far away from feature switches.** I have watched a team discover, months later, that no data had been saved in production, because a switch was set one way and nobody remembered what it meant. If you genuinely need one, then arrange the defaults so that **production does not need the setting at all.** `NotifyOnUpload` defaults to true, so the production config file does not mention it. Fewer settings, fewer things to get wrong, smaller files. That is the direction to push.
-
-And I do not treat a config change as a small thing you can slip into production. Any change goes through the same environments and the same testing as code, because the thing you switch on in production is precisely the thing nobody tested.
-
-## The Name Has to Survive the Whole Journey
-
-The property is called `NotifyOnUpload`. The key in the config file is called `NotifyOnUpload`. If it were a method it would be `GetNotifyOnUpload`. The exception message says `NotifyOnUpload`.
-
-People think this is a small thing. It is not. Somebody looking at a production config file needs to be able to map what they see to something real in the system, and if the key is called `NOU` or `notify_flag` they cannot. **Name the key so that a person who is not on your team, reading only the config file, can form a decent idea of what it does.** Descriptive, not wordy.
-
-There is a nice corollary. If you find yourself wanting to change the name in one place, you have probably got the wrong name in the other places too. Do not shy away from renaming, especially when the new name is better. Names should flow unchanged through method names, property names, config keys, and database columns.
-
-## Where the Hierarchy Runs Out
-
-The design above uses inheritance, and it earned it. Descendants varied by source, which is genuine polymorphism, and the base class held rules that every source shared. I would not call it a mistake.
-
-But it only works while the thing that varies is *where the data comes from*. That is not the variation that actually shows up in a working team.
-
-A team does not build one system, it builds several. One system needs blob storage. Another needs blob storage and table storage. A third needs table storage and SQL Server. A fourth needs SQL Server, Cosmos DB and blob storage. The source is not what differs between them. **What differs is which settings each one has at all.**
-
-Now look at what a hierarchy does to that. The base class has to hold the requirements for every settings area any system might want, so every system inherits knowledge of storage it does not use, validation it will never run, and required settings it must somehow opt out of. You cannot inherit a subset. Inheritance gives you all of it or none of it, and here you want a different some of it every time.
-
-That is the whole case for composition in one sentence, and it is the same argument I make in Prefer Composition Over Inheritance, arriving from a different direction: **inheritance binds you to the whole of what you descend from, and composition lets you take the parts you need.**
-
-## Take Only What You Need, and Get It For Free
-
-So make each settings area a **self-contained, stateless provider**, put them in a shared library, and test them there.
-
-Each one knows one area: how to read it, how to validate it, what is required, what is optional, and what to say when it is wrong. It knows nothing about any other area, nothing about any particular system, and it holds no state.
+This reduced example shows the Boolean requirement and its complete implementation. It adapts the original code to nullable annotations and keeps the retrieval method abstract:
 
 ```csharp
+using System;
+
+internal abstract class ConfigurationProviderBase
+{
+    public bool NotifyOnUpload => GetNotifyOnUpload();
+
+    protected abstract string? GetConfigurationSettingValue(string key);
+
+    private bool GetNotifyOnUpload()
+    {
+        string? value = GetConfigurationSettingValue(nameof(NotifyOnUpload));
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return true;
+        }
+
+        if (bool.TryParse(value, out bool notifyOnUpload))
+        {
+            return notifyOnUpload;
+        }
+
+        throw new ConfigurationSettingInvalidException(
+            $"The {nameof(NotifyOnUpload)} configuration setting value " +
+            $"of '{value}' is not a valid Boolean. " +
+            "Possible values are 'true' and 'false'.");
+    }
+}
+
+public sealed class ConfigurationSettingInvalidException : Exception
+{
+    public ConfigurationSettingInvalidException(string message) : base(message) { }
+}
+```
+
+The public property states what the caller needs. The private method performs the parsing and applies the default. A different source can supply the raw value without reimplementing either rule.
+
+I put the varying part at the end of a class name: `ConfigurationProviderBase`, `ConfigurationProviderDatabase`, `ConfigurationProviderLocal`. The family then sorts together in the solution explorer. When there is one production implementation, its name is simply `ConfigurationProvider`.
+
+## Compose the settings areas each system needs
+
+Source variation is one reason to use inheritance. A different problem arises when applications need different combinations of settings.
+
+One application may need blob storage and SQL Server. Another may need a message broker and an identity service. A base class containing every setting area gives each application requirements and dependencies it does not use. Inheritance cannot select an arbitrary subset of its base.
+
+My later approach uses composition. Each settings area has a stateless provider that reads and validates that area. A small application-specific Configuration Provider selects the areas the application needs.
+
+The Process Manager sample uses this arrangement for message broker, identity, telemetry, and key vault settings. Its providers read configuration into an unvalidated shape, validate that shape, and return typed settings. The following self-contained teaching version keeps that sequence while making the validation and conversion explicit. It uses `Microsoft.Extensions.Configuration`, selects the sample's two active broker choices, and retains its `ServiceBus` default. The sample's additional `None` enum member is omitted here.
+
+```csharp
+using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+
+public enum MessageBrokerType { ServiceBus, RabbitMq }
+
+public sealed record MessageBrokerSettings(
+    string ConnectionString,
+    MessageBrokerType MessageBrokerType);
+
 public static class MessageBrokerSettingsProvider
 {
-    private const string messageBrokerSettingsKey = "MessageBroker";
+    public const string SettingsKey = "MessageBroker";
 
-    public static MessageBrokerSettings GetMessageBrokerSettings(IConfiguration configuration)
+    public static MessageBrokerSettings GetMessageBrokerSettings(
+        IConfiguration configuration)
     {
-        var messageBrokerSettingsConfig = GetMessageBrokerSettingsUnValidated(configuration);
-        Validate(messageBrokerSettingsConfig);
-        return messageBrokerSettingsConfig;
+        string connectionKey = $"{SettingsKey}:{nameof(MessageBrokerSettings.ConnectionString)}";
+        string typeKey = $"{SettingsKey}:{nameof(MessageBrokerSettings.MessageBrokerType)}";
+        string? connectionString = configuration[connectionKey];
+        string? typeValue = configuration[typeKey];
+
+        List<string> errors = new();
+        ValidateConnectionString(connectionKey, connectionString, errors);
+        MessageBrokerType brokerType = GetMessageBrokerType(typeKey, typeValue, errors);
+
+        if (errors.Count > 0)
+        {
+            throw new ConfigurationSettingInvalidException(
+                string.Join(Environment.NewLine, errors));
+        }
+
+        return new MessageBrokerSettings(connectionString!, brokerType);
+    }
+
+    private static void ValidateConnectionString(
+        string key, string? value, List<string> errors)
+    {
+        string? problem = value switch
+        {
+            null => "missing",
+            "" => "empty",
+            _ when string.IsNullOrWhiteSpace(value) => "blank (only whitespace)",
+            _ => null
+        };
+
+        if (problem is not null)
+        {
+            errors.Add($"The {key} setting is {problem}. Supply the required connection string.");
+        }
+    }
+
+    private static MessageBrokerType GetMessageBrokerType(
+        string key, string? value, List<string> errors)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return MessageBrokerType.ServiceBus;
+        }
+
+        foreach (string name in Enum.GetNames<MessageBrokerType>())
+        {
+            if (string.Equals(value, name, StringComparison.OrdinalIgnoreCase))
+            {
+                return Enum.Parse<MessageBrokerType>(name);
+            }
+        }
+
+        errors.Add($"The {key} value '{value}' is invalid. Valid values are ServiceBus and RabbitMq.");
+        return MessageBrokerType.ServiceBus;
     }
 }
 ```
 
-Two details there are worth pausing on.
+`connectionString!` is justified only after validation has proved that the required string is present. The returned record is the typed result. No partially validated result is returned when the error list contains a problem.
 
-The first is the split between an **unvalidated config shape** and a **validated settings result**. Binding and validating are different jobs, and separating them means the validation rules are visible rather than tangled into the binding.
+The enum check deliberately accepts names rather than numeric strings. A successful `Enum.TryParse` alone would not establish that a supplied number is a supported broker type.
 
-The second is how validation reports. Each area accumulates its problems and throws once:
+This version collects presence and broker-type problems before throwing. The repository's implementation collects its string-validation errors, but parses the enum separately and may throw earlier. The teaching example extends aggregation to both checks so their relationship is visible.
 
-```csharp
-private static void Validate(MessageBrokerSettingsConfig messageBrokerSettingsConfig)
-{
-    var errorMessages = new StringBuilder();
-
-    errorMessages.AppendLineIfNotNull(ValidatorString.Validate(
-        $"{messageBrokerSettingsKey}.{nameof(MessageBrokerSettings.ConnectionString)}",
-        messageBrokerSettingsConfig.ConnectionString));
-
-    if (errorMessages.Length is not 0)
-    {
-        throw new ConfigurationSettingMissingException(errorMessages.ToString());
-    }
-}
-```
-
-**A misconfigured deployment should tell you everything that is wrong, not the first thing that is wrong.** Otherwise you fix one setting, redeploy, and discover the next one. In a system with a large number of settings that is a genuinely miserable loop, and it is why people start to distrust the whole configuration layer.
-
-Now the composition itself. Each system writes one small class that pulls in the areas it needs, and nothing else:
+The composed application provider delegates to that settings provider:
 
 ```csharp
-public sealed class ConfigurationProvider
+using Microsoft.Extensions.Configuration;
+
+internal sealed class ConfigurationProvider
 {
     private readonly IConfiguration configuration;
     private MessageBrokerSettings? messageBrokerSettings;
 
-    public ConfigurationProvider(IConfiguration configuration) => this.configuration = configuration;
+    public ConfigurationProvider(IConfiguration configuration)
+    {
+        this.configuration = configuration;
+    }
 
     public MessageBrokerSettings GetMessageBrokerSettings() =>
-        messageBrokerSettings ??= MessageBrokerSettingsProvider.GetMessageBrokerSettings(configuration);
+        messageBrokerSettings ??=
+            MessageBrokerSettingsProvider.GetMessageBrokerSettings(configuration);
 }
 ```
 
-A system that needs table storage and blob storage composes those two. A system that needs SQL Server, Cosmos DB and blob storage composes those three. Neither one writes any validation, and neither one writes any tests for it.
+The application chooses the settings areas. The area providers own reading, validation, defaults, and messages. Other applications can reuse those providers and their library tests. Each application still needs to verify that its chosen settings reach the right collaborators.
 
-That is what I mean by getting it for free, and it is worth being literal about it. **No code to write, because the reading and validating already exist. No tests to write, because those providers were tested when they went into the library.** Adding blob storage to a system is a line in a constructor and a section in a config file. Adding it to a fifth system next month is the same line again.
+The instance above memoizes the successful result on first use. It is a settings snapshot; it does not implement live configuration reload or synchronized initialization across concurrent callers. For a shared provider, establish its settings before concurrent work starts or choose an initialization strategy suitable for that lifetime.
 
-Compare that to the hierarchy. There, adding an area means touching a base class that four systems already depend on, and every one of them inherits the change whether it wanted it or not.
+Eager resolution exposes required configuration problems during construction or startup. Lazy resolution validates a settings area when it is first requested. Choose deliberately for the system, keeping invalid values from reaching consumers in either case.
 
-Note the caching, and note where it lives. **The provider owns its own memoization**, so a consumer never thinks about it and never invents its own cache elsewhere. Whether to resolve everything eagerly in the constructor or lazily on first use is a genuine choice rather than a rule. Eager gives you a single loud failure at startup. Lazy avoids a constructor that throws for reasons far from the call site, which in a system with a great many settings is its own kind of confusion. Decide per system, and write down which you chose and why.
+## Test with a real configuration source
 
-## You Do Not Need to Inherit It to Test It
+Modern .NET supplies an in-memory configuration source. That lets you exercise the real provider with controlled input without deriving from it or replacing its behavior.
 
-Here is the part that makes the composition version pay off twice.
-
-In the old design, testing meant deriving from the provider and overriding the fetch, because the fetch was the seam. That is why the base class was abstract and why some members were protected.
-
-You do not need any of that now, because **.NET already gives you a substitutable configuration source.** Build one in memory and hand it to the real provider:
+This complete usage example runs with the teaching types above and the `Microsoft.Extensions.Configuration` package:
 
 ```csharp
-private static IConfiguration InitializeInMemoryConfiguration()
-{
-    var inMemoryConfigurationSettings = new Dictionary<string, string?>
-    {
-        [$"{MessageBrokerSettingsKey}:{nameof(MessageBrokerSettings.ConnectionString)}"] = "some-connection-string",
-        [$"{MessageBrokerSettingsKey}:{nameof(MessageBrokerSettings.MessageBrokerType)}"] = "ServiceBus"
-    };
+using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 
-    return new ConfigurationBuilder()
-        .AddInMemoryCollection(inMemoryConfigurationSettings)
-        .Build();
+internal static class ConfigurationExample
+{
+    public static MessageBrokerSettings ReadSettings()
+    {
+        Dictionary<string, string?> values = new()
+        {
+            ["MessageBroker:ConnectionString"] = "example-connection-string",
+            ["MessageBroker:MessageBrokerType"] = "RabbitMq"
+        };
+
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(values)
+            .Build();
+
+        ConfigurationProvider provider = new(configuration);
+        return provider.GetMessageBrokerSettings();
+    }
 }
 ```
 
-`ConfigurationBuilder` produces an `IConfigurationRoot`, which is an `IConfiguration`, which is exactly what the provider's constructor takes. So the test constructs the **real** provider over configuration it completely controls, and passes it into the domain facade. You are then testing at the facade boundary, with real production code all the way down, and no inheritance anywhere.
+Use scenarios that distinguish missing, empty, blank, valid, defaulted, and invalid values. In particular, verify that an absent broker type selects `ServiceBus`, while a supplied unsupported type produces a useful failure.
 
-Two things follow from that, and both are improvements.
+The literal keys in the example also verify the external spelling of the configuration contract. `nameof` is useful when referring to a model member in code: a reference to a removed member becomes a compile error. A coordinated rename of that member and all its `nameof` expressions can still compile while leaving a deployed configuration file unchanged. Test the names the external source actually supplies.
 
-There is no longer any reason for the provider to expose protected members or to be inheritable at all, so seal it. If you find protected members on your provider today, check whether anything actually derives from it. In the code above, nothing does; they are a leftover from the era when deriving was the only way to test.
+At the application level, run functional acceptance tests through the Domain Facade. The test setup supplies controlled configuration through the Manager's construction seam while retaining the real Configuration Provider. Reusing area-provider tests does not replace that system-level verification.
 
-And notice the keys are built with `nameof` rather than string literals, so the test breaks at compile time if a property is renamed. That is the naming rule from earlier, enforced by the compiler.
+## Keep the file and its names understandable
 
-The wider point is one I have made elsewhere and will keep making. People skip testing a configuration provider because it touches the file system and that feels hard. It is not hard, it is just unfamiliar, and a class that stands at the back door validating everything entering your system is a strange thing to decide is not worth testing.
+I keep configuration focused on values that change between environments, such as a service address or database connection string. Each additional switch is another deployment choice someone has to understand and verify.
 
-## Summary
+Where a setting has a production default, make that default explicit in the provider. `NotifyOnUpload` can default to `true`, allowing the production configuration to omit the setting. A configured override still needs testing.
 
-- A configuration provider hides the source, gives callers strongly typed settings, validates incoming values, and knows which settings are required. Its exception messages name the setting, show the offending value, and explain what is valid.
-- Missing, empty, and blank mean different things. Catch each at the boundary, and report all configuration problems together so a deployment does not fail one setting at a time.
-- The original base class shared requirements while descendants fetched values from different sources. When systems differ by which settings they need, tested, self-contained providers let each system compose only those areas.
-- Keep configuration files limited to values that change by environment. Use consistent names across keys, properties, methods, and messages. Test configuration changes as you would code changes.
-- Test the real provider with an in-memory `IConfiguration` at the domain facade boundary. Build keys with `nameof`, let the provider own caching, and choose eager or lazy resolution deliberately. Inheritance is not required to create a test seam.
+Configuration changes go through the same environments and verification as code changes. A switch can change application behavior as substantially as a method change.
+
+Names should survive the journey. `NotifyOnUpload` is the configuration key, the provider property, and the name in its exception message. Someone looking only at the file should have a reasonable idea of what the setting controls. Avoid abbreviations that require private knowledge of the application.
+
+The practical result is a provider whose callers can trust its answers. It owns the uncertainty at the source and gives the rest of the application a small set of named, validated values.
+
+## Further reading
+
+- [Programming With Intent](/pwi/) collects the architecture and implementation guidance.
+- [Functional acceptance testing](/acceptance-testing/) explains verification through the application's public boundary.

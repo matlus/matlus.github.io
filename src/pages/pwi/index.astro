@@ -12,6 +12,12 @@ const chapterTopics = new Set(
     .map((chapter) => chapter.data.topic),
 );
 
+const architectureArticles = await getCollection('writing', ({ id, data }) =>
+  !data.draft && (
+    id === 'configuration-provider-design-pattern' || id === 'gateway-design-pattern'
+  ),
+);
+
 ---
 
 <SectionLayout
@@ -60,6 +66,24 @@ const chapterTopics = new Set(
           </li>
         ))
       }
+    </ul>
+  </section>
+
+  <section class="topics-section" aria-labelledby="architecture-articles-heading">
+    <h2 id="architecture-articles-heading">Architecture in practice</h2>
+    <p class="muted topics-section__note">
+      Worked explanations of the classes that supply validated settings and connect
+      an application to external services.
+    </p>
+    <ul class="pillars__grid">
+      {architectureArticles.map((article) => (
+        <li class="pillar">
+          <a href={`/writing/${article.id}/`} class="pillar__link">
+            <h3 class="pillar__title">{article.data.title}</h3>
+            <p class="pillar__blurb">{article.data.description}</p>
+          </a>
+        </li>
+      ))}
     </ul>
   </section>
 
