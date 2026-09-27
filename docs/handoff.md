@@ -205,11 +205,17 @@ language is a one-line union edit, and the build fails until it has a label.
 **Need-to-know is an aphorism, not a topic.** It belongs to method design: pass a
 method exactly what it needs, nothing more.
 
-**Two visual pipelines, kept separate.** Hero art is generated raster in a technical
-editorial ink style, with subjects drawn from each article. Diagrams are authored SVG.
-The split is decided by retrieval: a generated picture of a directed graph
-contributes nothing because its labels are pixels. Generators also garble technical
-text, as an existing generated diagram's OCR demonstrates.
+**Hero and diagram styles.** Hero art uses the technical editorial ink style, with
+subjects drawn from each article. On 2026-09-27, Shiv approved pastel architectural
+infographics for illustrated diagrams, including generated PNG or JPEG. Simple
+boxology can use SVG in the same visual style. Use
+`prompts/generate-pastel-boxology.md`. The assistant derives and writes the complete
+drawing brief from the article or supplied source; Shiv need not fill in a prompt.
+The preferred reference uses the first, moderately sized heading revision.
+The approved diagrams and their drawing briefs are retained in
+`public/images/diagrams/`, listed in `docs/diagrams.md`. Check generated text, arrow origins,
+and enclosure membership. Explain a raster diagram's important relationships in
+alt text, a caption, or nearby prose.
 
 **Concurrency in diagrams is structural.** A stage running N instances is drawn as N
 boxes. Collapsing one into a single box hides the fan-out the diagram exists to show.
