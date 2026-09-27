@@ -1,9 +1,9 @@
 ---
 title: "Refactoring and Adopting Boundary Testing"
-description: "Boundary scenarios protect public outcomes while internals change. Adopt the discipline one feature at a time, preserve useful failure contracts, and justify smaller production boundaries."
+description: "A stable Domain Facade lets acceptance scenarios and assertions survive internal refactoring. Adapt test support behind unchanged observations and adopt complete boundary tests feature by feature."
 datePublished: 2026-06-15
 dateModified: 2026-09-27
-tags: ["acceptance-testing", "refactoring", "architecture", "error-handling", "boundary-validation", "gateway-pattern", "architectural-patterns", "csharp"]
+tags: ["acceptance-testing", "refactoring", "architecture", "error-handling", "test-driven-development", "domain-facade", "test-mediator", "transport-spy", "gateway-pattern", "architectural-patterns", "design-patterns", "csharp"]
 hero: refactoring-and-adopting-boundary-testing
 ---
 
@@ -19,6 +19,51 @@ database and broker, and compares its email capture. That stability comes from
 asserting behavior through the boundary and retaining the real production path.
 Architecture, coding, failure handling, and review make the path understandable
 and its failures meaningful.
+
+## What refactoring preserves
+
+Martin Fowler defines [refactoring](https://refactoring.com/) as improving
+internal structure while preserving observable behavior, using small
+behavior-preserving transformations. In this discussion, the business
+requirements have not changed. We may clean up code, redistribute
+responsibilities, or work toward a different internal architecture, but the
+system still owes its callers and downstream consumers the same behavior.
+
+The public contract matters here. Renaming a public operation or changing its
+input or output models changes what callers, including tests, must use. The
+benefit described here assumes that the Domain Facade's public contract and the
+required observable effects remain stable.
+
+## The refactoring promise and how to achieve it
+
+One promise I took from Kent Beck's *Test-Driven Development: By Example* was
+the ability to refactor with existing tests protecting the behavior. Refactoring
+is part of the [TDD cycle Fowler describes](https://martinfowler.com/bliki/TestDrivenDevelopment.html).
+I read their work and followed Beck's and Fowler's talks looking for a practical
+demonstration of how to reorganize an entire system without rewriting its tests.
+I did not find the whole-system demonstration I was looking for.
+
+Fowler does explain the coupling problem. In
+[Mocks Aren't Stubs](https://martinfowler.com/articles/mocksArentStubs.html#CouplingTestsToImplementations),
+he describes how expectations about calls to collaborators can break when the
+implementation changes and interfere with refactoring. What I wanted to see was
+the complete arrangement that lets the same tests survive a substantial internal
+redesign.
+
+Functional acceptance testing at the boundary provides that arrangement.
+The tests know the Domain Facade and the public classes going into and coming
+out of it. Test support supplies the arrangements and observations needed to
+verify the complete outcome. The tests have no knowledge of the internal
+implementation, including how a spy captures an observation or how the Test
+Mediator connects it to the scenario. That separation is a deliberate design
+decision.
+
+With unchanged requirements and a stable public contract, we can refactor bits
+of the system or the entire implementation behind the Domain Facade. The same
+scenarios, invocations, and assertions continue to verify the required behavior.
+An internal redesign alone does not require new acceptance tests.
+I have used this approach many times to refactor systems while keeping those
+tests unchanged.
 
 ## Keep the contract stable while changing the internals
 
@@ -41,10 +86,10 @@ The public invocation stays visible:
 OrderPlacementResult actualOrderPlacementResult = await domainFacade.PlaceOrderAsync(orderPlacementRequest);
 ```
 
-The complete test
-does not assert the number of manager methods or the identity of an internal
-helper. It verifies the returned outcome and the required effects. Moving
-composition or splitting orchestration can leave those assertions intact.
+The complete test verifies the returned outcome and the required effects.
+It has no dependency on the number of manager methods or the identity of an
+internal helper. Moving composition or splitting orchestration leaves the
+scenario and its assertions intact when those required outcomes remain the same.
 
 This is a refactoring example, not a claim that a particular refactor was applied
 for this article. The executable suite supplies the verification a real refactor
@@ -53,15 +98,21 @@ affected scenarios deliberately.
 
 ## Recognize legitimate test-support changes
 
-Behavior-based tests still depend on observation contracts. A schema change can
-require a readback query update. A wire-field change requires new capture mapping
-and consumer expectations. A different broker requires appropriate topology and
-isolation. New configuration can require setup changes.
+The tests remain unchanged because test support absorbs implementation details.
+A refactor may require moving or rewriting a transport spy, updating a readback
+query for a reorganized internal schema, or changing assembly and configuration.
+The spy remains in testing code and still performs its required capture or
+delivery control. Production gateways continue to execute.
 
-Treat those as changes to what the system uses or exposes. Keep requirements,
-support code, and assertions consistent without silently weakening comparisons.
-A test that fails because its spy reads an obsolete field needs investigation,
-just as a production consumer using that field would.
+Keep the Test Mediator's instructions and observation models stable while
+adapting that support. The scenario still requests the same business arrangement
+and compares the same required outcome. Rewriting a spy's implementation does
+not require rewriting the test that consumes its observation.
+
+An externally meaningful wire-field change is different: downstream consumers
+now receive a changed contract. Review that change and its affected scenarios
+against the requirements. For an internal refactor, retain complete comparisons
+and keep support capable of observing the same obligations.
 
 ## Begin adoption with one complete feature
 

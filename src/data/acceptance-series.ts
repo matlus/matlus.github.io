@@ -68,7 +68,7 @@ export const acceptanceSeries = [
   {
     "slug": "refactoring-and-adopting-boundary-testing",
     "title": "Refactoring and Adopting Boundary Testing",
-    "description": "Boundary scenarios protect public outcomes while internals change. Adopt the discipline one feature at a time, preserve useful failure contracts, and justify smaller production boundaries."
+    "description": "A stable Domain Facade lets acceptance scenarios and assertions survive internal refactoring. Adapt test support behind unchanged observations and adopt complete boundary tests feature by feature."
   },
   {
     "slug": "from-a-green-suite-to-a-release",

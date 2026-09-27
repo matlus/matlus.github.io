@@ -3,7 +3,7 @@ title: "Functional Acceptance Testing at the Boundary"
 description: "Functional acceptance tests verify complete outcomes through the assembled system. Correct arrangements, deep assertions, and controlled observations support release confidence."
 datePublished: 2026-06-15
 dateModified: 2026-09-27
-tags: ["acceptance-testing", "verification", "regression-testing", "test-isolation", "test-mediator", "transport-spy", "design-patterns", "csharp"]
+tags: ["acceptance-testing", "verification", "regression-testing", "test-isolation", "refactoring", "test-mediator", "transport-spy", "domain-facade", "design-patterns", "architectural-patterns", "csharp"]
 hero: functional-acceptance-testing-at-the-boundary
 ---
 
@@ -574,6 +574,33 @@ and expectations accordingly.
 The suite also accumulates what we learn. A missed scenario found during review,
 QA, a later release gate, or production becomes a permanent regression scenario.
 The next release carries that knowledge forward.
+
+## Refactor the internals without rewriting the tests
+
+Functional acceptance tests at the boundary give us the freedom to refactor.
+The business requirements remain the same; we change the implementation while
+preserving the public contract and required behavior. We can reorganize one
+component or work through the entire implementation behind the Domain Facade
+without rewriting the acceptance tests or adding tests merely because the
+internal design changed.
+
+That freedom is intentional. The tests invoke the Domain Facade using its public
+input and output models. They arrange business conditions and assert complete
+outcomes. They do not know which internal classes, methods, or collaborations
+produce those outcomes. The Test Mediator exposes instructions and observations
+without making each scenario depend on the implementation of its transport spies.
+
+A refactor can move a transport seam or change an internal storage arrangement.
+The spy, readback adapter, or other test support may then need to be rewritten.
+That support remains in testing code and preserves the instructions and
+observations the tests use. The scenarios and their assertions can stay exactly
+as written while the real production path changes behind them.
+
+I have done this many times. It is a practical benefit of choosing this boundary
+and keeping implementation knowledge out of the tests. The
+[refactoring article](/writing/refactoring-and-adopting-boundary-testing/)
+explains how this fulfills the refactoring promise I took from TDD and where
+test-support maintenance still belongs.
 
 ## The tests teach the system
 
