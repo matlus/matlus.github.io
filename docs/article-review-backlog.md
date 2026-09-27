@@ -45,14 +45,29 @@ source material and recording the result in the reviewing PR.
 
 ## Factory Pattern
 
-- [ ] Compare the thumbnailer excerpt in
-  [the article](../src/content/writing/factory-pattern.md) with the
-  [recording](https://www.youtube.com/watch?v=HQLXUyb0T2w). Confirm which
-  details are adapted from the chapter draft and update the excerpt or its
-  attribution if needed.
+- [x] Read the complete owner-supplied raw transcript and book chapter on
+  September 27, 2026. Restore the central explanation of programming to an
+  interface at the call site: the base-typed variable, its public contract,
+  uniform use of descendants, and Factory-owned selection and construction.
+  The transcript also covers designing from the call site, the public method
+  and protected abstract core, business identifiers, stateless construction,
+  repeated runtime decisions, Strategy and Factory Method distinctions, and
+  naming. Each is represented in the revised article.
+- The thumbnailer code is a complete, reduced teaching implementation. Its
+  console output makes dispatch observable, replacing the earlier incomplete
+  `Image`-returning excerpt. The inline blocks compiled together under .NET 10
+  with warnings treated as errors. Executed checks covered the exact article
+  call site, all three media selections and unsupported identifiers. No claim
+  of exact historical source-code reproduction is made.
 
 ## Factory Method Pattern
 
+- On September 27, 2026, recording narration was recast as direct explanations.
+  The existing member-manager, Windows Forms and car/engine relationships were
+  preserved. The reduced car example now defines both engine descendants and
+  its base-typed consumer inline; compiled checks covered overridden and default
+  creation hooks. These checks exercise the reduced teaching implementation;
+  historical code comparisons remain pending below.
 - [ ] Compare the member-manager and Windows Forms examples in
   [the article](../src/content/writing/factory-method-pattern.md) with the
   [C# demonstration](https://www.youtube.com/watch?v=7q3T0gGISyk), then

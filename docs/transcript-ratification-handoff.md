@@ -1,6 +1,6 @@
 # Transcript to book chapter: editorial handoff
 
-This guide defines the editorial step that turns a Programming with Intent video transcript into a reader-facing book chapter. It also covers ratifying a chapter that has already been drafted. The finished chapter is the source for the website conversion step. The website converter should preserve its prose and perform only the mechanical changes described in this repository's `AGENTS.md` and `docs/handoff.md`.
+This guide defines the editorial step that turns a Programming with Intent video transcript into a reader-facing book chapter. It also covers ratifying a chapter that has already been drafted. For a standalone website article, apply `prompts/transcript-to-standalone-teaching-article.md` to the complete source. PWI corpus chapters retain their separate mechanical conversion contract in `AGENTS.md`; they are never rewritten as part of article adaptation.
 
 The author is Shiv. Write in his first person. Preserve his argument, examples, qualifications, technical meaning, and chosen language. Edit the way a careful book editor would: make spoken material readable on the page without silently becoming a coauthor.
 
@@ -31,6 +31,13 @@ Use Shiv's installed `write-naturally` professional-writing skill when drafting 
 Run the skill's audit against the exact final text where an export is available, then review every finding. Fix hard violations in the newly edited prose unless doing so would change required wording or meaning. Preserve a genuine conflict, record it, and never report an audit pass that did not occur. For a native Google Doc, preserve its structure during editing and audit a faithful export of its text. The first ten editorial passes used this writing guidance, but their ratification markers do not certify a clean whole-chapter audit under every mechanical rule. Keep that distinction in the next status record.
 
 ## Turning speech and screen references into page prose
+
+Website articles teach the subject independently. The body must not refer to a
+video, recording, transcript or chapter draft. Source videos belong in optional
+resource links. Explain each substantive concept directly, include the needed
+code and diagrams, and check coverage against the complete transcript. Remove
+recording logistics while retaining the ideas they introduce. Keep source
+comparisons and provenance tasks in editorial records.
 
 Remove transcription artifacts such as repeated words, false starts, filler, greetings that serve only the recording, redundant signposts, and summaries that repeat the same point. Repair punctuation and sentence boundaries. Split a long spoken sentence or join choppy fragments when doing so makes the existing thought clearer. Remove repeated explanations only after checking that each repetition adds no distinct claim, exception, or emphasis.
 

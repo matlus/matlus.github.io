@@ -20,6 +20,14 @@ the responsibilities or distinctions that support it, and the examples needed to
 make it understandable. Apply the professional-writing skill to all new prose.
 Preserve the author's position and technical vocabulary.
 
+Make a coverage checklist from the complete transcript before drafting. Carry
+each substantive concept, rationale, distinction, qualification and example into
+the article. Repeated emphasis can identify the central teaching claim; retain
+the explanation even when the repeated wording is removed. For example, a
+Factory article must explain programming to an interface at the call site,
+including the base-typed variable, the base class's public methods and the
+Factory's responsibility for selecting the concrete descendant.
+
 Explain concepts when first introduced. Replace greetings, screen references,
 requests to pause a video, and recording chatter with explanations that work on
 the page. Use the author's first-person voice where it expresses an actual
@@ -37,10 +45,21 @@ style. Preserve the actual components, arrow directions and boundaries. Inspect
 the generated labels and connections, and supply descriptive alt text and a
 caption that carries the important relationships into Markdown exports.
 
-Keep the video as an optional source resource. The body must supply everything
-needed to follow its argument. Store private transcript links outside the public
+Keep the video as an optional source resource in frontmatter and resource cards.
+Do not refer to the video, recording, transcript or chapter draft in the article
+body. Avoid narration such as "the video shows," "in the recording" or "the
+later discussion explains." Explain the concept and example directly. The
+article must teach everything needed without the reader watching or opening
+another source. State the limits of a reduced teaching example in terms of its
+behavior, and keep provenance comparisons in editorial records.
+
+Store private transcript links outside the public
 repository. Record editorial tasks in `docs/article-review-backlog.md`; retain
 reader-facing qualifications when they affect interpretation of a sample.
+
+Before publication, compare the finished article against the coverage checklist
+and scan its body for recording references, missing code dependencies and absent
+screen references. Remove recording logistics, not the teaching they surround.
 
 ## Assets and publication
 

@@ -142,8 +142,8 @@ export const TOPICS: readonly Topic[] = [
   { slug: 'code-correctness-runtime-safety', title: 'Code Correctness and Runtime Safety', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
   { slug: 'intentional-model-design', title: 'Intentional Model Design', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
   { slug: 'adapter-pattern', title: 'Adapter Pattern', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
-  { slug: 'factory-pattern', title: 'Factory Pattern', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
-  { slug: 'factory-method-pattern', title: 'Factory Method Pattern', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: PY },
+  { slug: 'factory-pattern', title: 'Factory Pattern', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: CS },
+  { slug: 'factory-method-pattern', title: 'Factory Method Pattern', section: 'pwi', pillar: 'programming-with-intent', scope: 'language-independent', examples: CS },
   {
     slug: 'decorator-pattern',
     title: 'Decorator Pattern',

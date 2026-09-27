@@ -12,13 +12,14 @@ const chapterTopics = new Set(
     .map((chapter) => chapter.data.topic),
 );
 
-const architectureArticles = await getCollection('writing', ({ id, data }) =>
+const designPatternArticles = await getCollection('writing', ({ id, data }) =>
   !data.draft && (
-    id === 'configuration-provider-design-pattern' || id === 'gateway-design-pattern'
+    id === 'configuration-provider-design-pattern' || id === 'gateway-design-pattern' ||
+    id === 'factory-pattern' || id === 'factory-method-pattern'
   ),
 );
 
-const articleLinks = new Map(architectureArticles.map((article) => [
+const articleLinks = new Map(designPatternArticles.map((article) => [
   article.id === 'configuration-provider-design-pattern' ? 'configuration-provider' : article.id,
   `/writing/${article.id}/`,
 ]));
@@ -77,11 +78,11 @@ const articleLinks = new Map(architectureArticles.map((article) => [
   <section class="topics-section" aria-labelledby="design-patterns-heading">
     <h2 id="design-patterns-heading">Design patterns</h2>
     <p class="muted topics-section__note">
-      Roles and responsibilities of the Configuration Provider and Gateway, with
-      worked examples. <a href="/tags/design-patterns/">Browse all design pattern articles</a>.
+      Factories, configuration and service boundaries explained through their
+      responsibilities and worked examples. <a href="/tags/design-patterns/">Browse all design pattern articles</a>.
     </p>
     <ul class="pillars__grid">
-      {architectureArticles.map((article) => (
+      {designPatternArticles.map((article) => (
         <li class="pillar">
           <a href={`/writing/${article.id}/`} class="pillar__link">
             <h3 class="pillar__title">{article.data.title}</h3>
