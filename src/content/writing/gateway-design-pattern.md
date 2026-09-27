@@ -1,5 +1,5 @@
 ---
-title: "The Gateway: An API in Your Domain's Language"
+title: "The Gateway Design Pattern: Roles and Responsibilities"
 description: "A Gateway presents business operations, translates service models and transforms failures into domain exceptions, keeping external service details behind one boundary."
 datePublished: 2019-07-28
 dateModified: 2026-09-27

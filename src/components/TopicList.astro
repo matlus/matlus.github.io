@@ -5,14 +5,16 @@ interface Props {
   readonly topics: readonly Topic[];
   readonly basePath: string;
   /**
-   * Topic slugs that have at least one published chapter. Anything else is
-   * rendered as plain text rather than a link, because the corpus is being
-   * converted in batches and a link to an unconverted topic is a 404.
+   * Topic slugs that have at least one published chapter. Topics without a
+   * chapter or a published teaching article are rendered as plain text to
+   * avoid linking to an unconverted topic's missing route.
    */
   readonly published: ReadonlySet<string>;
+  /** Published teaching articles that cover a topic before its chapter exists. */
+  readonly articleLinks?: ReadonlyMap<string, string>;
 }
 
-const { topics, basePath, published } = Astro.props;
+const { topics, basePath, published, articleLinks = new Map<string, string>() } = Astro.props;
 
 /**
  * Typed as a full Record, so adding a language to the union fails the build
@@ -29,8 +31,8 @@ const LANGUAGE_LABEL: Record<Language, string> = {
   {
     topics.map((topic) => (
       <li class="topics__item">
-        {published.has(topic.slug) ? (
-          <a href={`${basePath}${topic.slug}/`} class="topics__link">
+        {published.has(topic.slug) || articleLinks.has(topic.slug) ? (
+          <a href={articleLinks.get(topic.slug) ?? `${basePath}${topic.slug}/`} class="topics__link">
             {topic.title}
           </a>
         ) : (
@@ -48,7 +50,7 @@ const LANGUAGE_LABEL: Record<Language, string> = {
             <span class="chip chip--note">Language-independent</span>
           )}
 
-          {!published.has(topic.slug) && <span class="chip chip--pending">Not yet published</span>}
+          {!published.has(topic.slug) && !articleLinks.has(topic.slug) && <span class="chip chip--pending">Not yet published</span>}
         </span>
 
         {topic.note && <p class="topics__note">{topic.note}</p>}

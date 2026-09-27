@@ -18,6 +18,11 @@ const architectureArticles = await getCollection('writing', ({ id, data }) =>
   ),
 );
 
+const articleLinks = new Map(architectureArticles.map((article) => [
+  article.id === 'configuration-provider-design-pattern' ? 'configuration-provider' : article.id,
+  `/writing/${article.id}/`,
+]));
+
 ---
 
 <SectionLayout
@@ -69,11 +74,11 @@ const architectureArticles = await getCollection('writing', ({ id, data }) =>
     </ul>
   </section>
 
-  <section class="topics-section" aria-labelledby="architecture-articles-heading">
-    <h2 id="architecture-articles-heading">Architecture in practice</h2>
+  <section class="topics-section" aria-labelledby="design-patterns-heading">
+    <h2 id="design-patterns-heading">Design patterns</h2>
     <p class="muted topics-section__note">
-      Worked explanations of the classes that supply validated settings and connect
-      an application to external services.
+      Roles and responsibilities of the Configuration Provider and Gateway, with
+      worked examples. <a href="/tags/design-patterns/">Browse all design pattern articles</a>.
     </p>
     <ul class="pillars__grid">
       {architectureArticles.map((article) => (
@@ -94,7 +99,7 @@ const architectureArticles = await getCollection('writing', ({ id, data }) =>
       language families number their chapters independently.
     </p>
 
-    <TopicList topics={topics} basePath="/pwi/" published={chapterTopics} />
+    <TopicList topics={topics} basePath="/pwi/" published={chapterTopics} articleLinks={articleLinks} />
   </section>
 </SectionLayout>
 
