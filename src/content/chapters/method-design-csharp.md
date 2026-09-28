@@ -719,15 +719,15 @@ private void PublishApprovedInvoice(object message)
 The method has no useful action for another type. If callers already know the type, its signature should say so:
 
 ```csharp
-private void PublishApprovedInvoice(ApprovedInvoice invoice)
+private void PublishApprovedInvoice(ApprovedInvoice approvedInvoice)
 {
-    _publisher.Publish(invoice);
+    _publisher.Publish(approvedInvoice);
 }
 ```
 
 If an external contract requires `object`, cast to `ApprovedInvoice` before publishing so a wrong type fails at the assumption. With `as`, a missing null check would defer the failure until code tries to use the value; the check in the first version hides the failure entirely. Neither path gives this method a useful response to the wrong type.
 
-The deck's `CodeMappingAttribute` example raises a related review question. It asks reflection for one attribute type, uses `as`, then checks for both a null array and an empty one:
+Consider this attribute-mapping code. It asks reflection for one attribute type, uses `as`, then checks for both a null array and an empty one:
 
 ```csharp
 var attrs = fieldInfo.GetCustomAttributes(typeof(CodeMappingAttribute), false)
@@ -745,7 +745,7 @@ foreach (var attr in attrs)
 
 `GetCustomAttributes` returns an array, including an empty array when it finds no matching attributes. Its no-match result is never `null`. The `as` conversion is the only operation here that could turn a non-null array into `null`, and that would mean the array was not a `CodeMappingAttribute[]`. The null check cannot detect the no-attributes case. If the only intention is to do nothing when there are no attributes, the length check adds nothing either: `foreach` already runs zero times for an empty array. The combined check obscures which condition the author actually expects and what the method should do about a type mismatch.
 
-The slide assumes the returned array itself has the requested attribute type. Under that assumption, a direct cast states the expectation and raises an `InvalidCastException` at the conversion if it is false. The loop needs no preliminary check:
+A direct cast states the expectation that the returned array itself has the requested attribute type. It raises an `InvalidCastException` at the conversion if that assumption is false. The loop needs no preliminary check:
 
 ```csharp
 var attrs = (CodeMappingAttribute[])fieldInfo
@@ -758,7 +758,7 @@ foreach (var attr in attrs)
 }
 ```
 
-There is a qualification to the slide's cast: the [documented signature of `MemberInfo.GetCustomAttributes(Type, bool)`](https://learn.microsoft.com/en-us/dotnet/api/system.reflection.memberinfo.getcustomattributes) promises `object[]` or an empty array, but does not promise that the array object is a `CodeMappingAttribute[]`. The direct cast worked in a local runtime check. For code that must rely on the documented API contract, [the generic overload](https://learn.microsoft.com/en-us/dotnet/api/system.reflection.customattributeextensions.getcustomattributes) requests typed attributes directly and also lets an empty result pass through the loop:
+That direct cast depends on the concrete array type. The [documented signature of `MemberInfo.GetCustomAttributes(Type, bool)`](https://learn.microsoft.com/en-us/dotnet/api/system.reflection.memberinfo.getcustomattributes) promises `object[]` or an empty array, but does not promise that the array object is a `CodeMappingAttribute[]`. For code that must rely on the documented API contract, [the generic overload](https://learn.microsoft.com/en-us/dotnet/api/system.reflection.customattributeextensions.getcustomattributes) requests typed attributes directly and also lets an empty result pass through the loop:
 
 ```csharp
 foreach (CodeMappingAttribute attr in
@@ -769,7 +769,7 @@ foreach (CodeMappingAttribute attr in
 }
 ```
 
-The deck also gives a case where `as` has a job. `DeterminePolicyConversionMessageStatus` accepts the .NET `Exception` base type because it must classify both application business exceptions and other exceptions. The method cannot assume which kind arrived, and it has a result for either one:
+There are cases where `as` has a job. `DeterminePolicyConversionMessageStatus` accepts the .NET `Exception` base type because it must classify both application business exceptions and other exceptions. The method cannot assume which kind arrived, and it has a result for either one:
 
 ```csharp
 private static PolicyConversionStatusCode DeterminePolicyConversionMessageStatus(
