@@ -7,6 +7,7 @@ import TopicList from '../../components/TopicList.astro';
 import { TOPICS } from '../../data/topics';
 import { PILLAR_COPY } from '../../data/pillars';
 import { heroFor } from '../../lib/heroes';
+import { loadPwiArticleTopics, publishedTopicsFirst } from '../../lib/pwi-topic-links';
 
 /**
  * One route for both pillar hubs and topic hubs, because both sit one segment
@@ -24,6 +25,8 @@ const LANGUAGE_LABEL: Record<string, string> = {
 
 export const getStaticPaths = (async () => {
   const chapters = await getCollection('chapters', ({ data }) => !data.draft && data.section === 'pwi');
+  const published = new Set(chapters.map((chapter) => chapter.data.topic));
+  const { links: articleLinks } = await loadPwiArticleTopics();
 
   const pillarPaths = Object.entries(PILLAR_COPY).map(([slug, copy]) => ({
     params: { slug },
@@ -31,9 +34,10 @@ export const getStaticPaths = (async () => {
       kind: 'pillar' as const,
       title: copy.title,
       blurb: copy.blurb,
-      topics: TOPICS.filter((topic) => topic.pillar === slug),
+      topics: publishedTopicsFirst(TOPICS.filter((topic) => topic.pillar === slug), published, articleLinks),
       chapters: [],
-      published: new Set(chapters.map((c) => c.data.topic)),
+      published,
+      articleLinks,
     },
   }));
 
@@ -47,7 +51,8 @@ export const getStaticPaths = (async () => {
       blurb: topic.note ?? '',
       topic,
       topics: [],
-      published: new Set(chapters.map((c) => c.data.topic)),
+      published,
+      articleLinks,
       chapters: chapters
         .filter((chapter) => chapter.data.topic === topic.slug)
         .sort((a, b) => (a.data.language ?? '').localeCompare(b.data.language ?? '')),
@@ -139,7 +144,7 @@ const description = isTopic
           {props.topics.length} topics. Chapter numbers are deliberately absent, because
           the two language families number their chapters independently.
         </p>
-        <TopicList topics={props.topics} basePath="/pwi/" published={props.published} />
+        <TopicList topics={props.topics} basePath="/pwi/" published={props.published} articleLinks={props.articleLinks} />
         <p class="back"><a href="/pwi/">All of PWI</a></p>
       </>
     )

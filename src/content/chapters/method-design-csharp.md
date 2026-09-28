@@ -1,12 +1,18 @@
 ---
 title: Method Design
 description: >-
-  Explicit visibility, why public members are never virtual, orchestration over implementation, and return contracts that state their cardinality.
+  C# methods tell callers what they do through explicit visibility, truthful signatures, and returns that express action, query, and cardinality; their bodies orchestrate at one level.
 datePublished: 2017-09-20
 hero: chapter-method-design-csharp
-dateModified: 2026-09-27
+dateModified: 2026-09-28
 tags:
   - method-design
+  - levels-of-abstraction
+  - error-handling
+  - boundary-validation
+  - type-casting
+  - template-method
+  - design-patterns
   - csharp
 section: pwi
 topic: method-design
@@ -31,6 +37,8 @@ Canonical definitions live in the [Aphorism Glossary](/pwi/aphorisms/).
 ## Intent
 
 Methods are the foundational unit of work. Good method design leads to good class design, and from there to good system design and good API design - everything in this corpus starts here. A method's job is to tell a story: it should say clearly *what* it does, and delegate *how* to whatever it calls. The reader should never have to stop and think, "wait, what is this doing?"
+
+These guidelines are my current best judgments, open to revision when experience gives me a better one. Each abstraction, check, and branch should earn its place against the complexity it adds. Simplicity matters because a method whose assumptions and steps a reader can follow is easier to reason about and to keep reliable.
 
 Most of the ambiguity that creeps into code comes from one of two places: reuse pursued before it is earned (see Rule of Thirds, below), and analysis skipped because it is easier not to do it. A conditional like `string.IsNullOrEmpty(middleName)` or a cast written as `as` when the type is never actually in doubt are both symptoms of the second kind: they say "I didn't work out whether this can really happen, so I wrote code for both possibilities just in case." Programming with intent means doing that analysis and then writing code that says exactly what you found - not leaving a conditional in "to be safe."
 
@@ -202,6 +210,89 @@ Neither of these methods could be wrong about what state it is inspecting - ever
 
 ---
 
+## Method Signatures Tell the Truth
+
+A signature is a promise to its caller. The method name identifies the operation, the parameters state what the caller must supply, and the return type states what the caller receives. A reader should not have to inspect the body to discover a stronger, hidden requirement. [Naming Conventions](/pwi/naming-conventions/csharp/) develops the choice of words in those names.
+
+### Ask for Exactly What the Method Needs
+
+The need-to-know basis applies to the signature itself: **give a method exactly the information it needs, nothing more and nothing less.** A missing input creates a hidden dependency on earlier calls or ambient state. An oversized input gives the method access to data it has no reason to use and makes the caller wonder which parts matter.
+
+Suppose a price calculation uses an order's lines, tax rate, and shipping cost. Passing the whole `Order` also exposes its customer contact, payment details, and delivery address. The call site can select the three required values:
+
+```csharp
+decimal total = CalculateTotal(order.Lines, order.TaxRate, order.ShippingCost);
+
+private static decimal CalculateTotal(
+    IReadOnlyList<OrderLine> lines, decimal taxRate, decimal shippingCost)
+{
+    decimal subtotal = lines.Sum(line => line.Price * line.Quantity);
+    return subtotal * (1 + taxRate) + shippingCost;
+}
+```
+
+Now the signature tells the reader what the calculation knows. When a larger set of related values describes one operation, give that set a purpose-specific input type, such as `OrderPriceCalculationData`, and construct it at the call site. Do not pass the broad `Order` and make `CalculateTotal` extract its own smaller input: the excess access is still there. Choose individual parameters when they remain readable; use a focused type when the values form a substantial, cohesive request. A method whose actual job is to map or format the whole order can legitimately receive the whole order.
+
+### Ask for the Capabilities the Method Uses
+
+Accept the least specific type that still provides every operation the method actually needs. A method that only enumerates order lines can accept `IEnumerable<OrderLine>`. A method that needs indexed access can ask for `IReadOnlyList<OrderLine>`. A method that removes items from the caller's collection needs a contract that guarantees mutation. `IList<OrderLine>` exposes `RemoveAt`, but an implementation can still be read-only; `List<OrderLine>` or a domain-specific mutable collection may state the requirement more honestly. The point is the capability promised by the parameter, not a preference for an interface in every signature.
+
+This reduced example illustrates the problem in a method that claims to accept any enumerable:
+
+```csharp
+private static IEnumerable<OrderLine> AdjustOrderLines(
+    IEnumerable<OrderLine> orderLines, DateTime asOf)
+{
+    var mutableLines = (IList<OrderLine>)orderLines;
+    for (var index = 0; index < mutableLines.Count; index++)
+    {
+        if (mutableLines[index].ExpirationDate < asOf)
+            mutableLines.RemoveAt(index);
+    }
+    return mutableLines;
+}
+```
+
+The cast reveals the lie: a caller can validly pass an enumerable that is not a list. The method will fail even though the caller satisfied the declared contract. Removing an element while moving forward can also skip the element that shifts into its place. Another defensive check would not correct either design choice.
+
+If the method is meant to change the caller's collection, say so with a mutable parameter and an action name. If it is meant to produce a filtered result, leave the input alone and return the result. For example:
+
+```csharp
+private static List<OrderLine> GetUnexpiredOrderLines(
+    IEnumerable<OrderLine> orderLines, DateTime asOf)
+{
+    return orderLines
+        .Where(orderLine => orderLine.ExpirationDate >= asOf)
+        .ToList();
+}
+```
+
+This query only enumerates its input and deliberately returns a materialized `List<OrderLine>`. The caller can see both facts without reading the body. If callers should receive a read-only list contract instead, declare `IReadOnlyList<OrderLine>` and make that promise deliberately. Return the most informative type the contract can honestly guarantee, without exposing a concrete implementation that the public contract does not intend to promise. [LINQ Query Semantics](/pwi/linq-query-semantics/csharp/) explains when materialization itself is appropriate.
+
+### Turn Loose Inputs Into Domain Values at the Boundary
+
+A route may have to receive a genre as a string. The domain operation does not have to keep that loose signature. Parse and validate the route value at the service boundary, then call a method that asks for a `Genre`. In this illustrative call:
+
+```csharp
+Genre genre = GenreParser.Parse(genreAsString);
+IReadOnlyList<Movie> movies = await _domainFacade.GetMoviesByGenreAsync(genre);
+```
+
+Now the domain method has one meaning for its argument. It does not have to guess which strings represent valid genres or repeat the parsing on every call. A value object earns its place when it captures a real domain distinction or invariant, rather than merely wrapping a string to make a signature look typed. [Validation and Exception Handling](/pwi/validation-exception-handling/csharp/) explains who owns the boundary check.
+
+### Put Arguments in an Order the Caller Can Read
+
+The method's name should guide the order of its arguments. `Transfer(sourceAccount, destinationAccount, amount)` reads in the direction of the operation. Related methods should keep shared arguments in the same order when their meaning stays the same:
+
+```csharp
+AddVehicle(policyNumber, vehicleUnitNumber);
+RemoveVehicle(policyNumber, vehicleUnitNumber);
+```
+
+The same consistency makes constructor chaining readable. A shorter constructor adds a default at the end and forwards its shared arguments in the same order as the longer constructor. A caller should not have to remember that one operation puts the policy number first and the next puts it last. Argument order is part of the call site's readability, even when the types happen to make an accidental swap compile.
+
+---
+
 ## Pure Methods
 
 Functional programming's notion of purity is stricter than C# can honestly promise, but the underlying discipline still pays off: **confine state changes to the perimeter of the system.** Picture the call graph as a tree. The classes at the leaves - the ones that make the database call, publish the message, send the HTTP request - are autonomous but not pure; they are the ones actually changing state. Every class above them, coordinating that work, can and should be both autonomous and pure: it receives explicit inputs, and it changes nothing itself.
@@ -353,6 +444,14 @@ Translator does not justify it. The collaborator's implementation, dependency
 direction, and exception contracts remain separately reviewable. Structural
 tests must not force translation to remain private or require extra consumers.
 
+### Let Repetition Reveal the Design
+
+The Rule of Thirds keeps a method or class from becoming a shared abstraction before its variations are known. Write the first use for its actual caller. When the idea appears a second time, copy and adapt it consciously. At the third use, stop and compare the three scenarios: which parts truly stay the same, and which differ? Then extract a common method, use polymorphism, or keep the implementations separate, whichever makes those real cases clearer. The third occurrence is a prompt to reconsider the design, not a requirement to extract.
+
+For example, two notification methods may both assemble an address and a message, yet one may send email and the other may publish to a broker. A shared `SendNotification` method built from the first case could accumulate channel flags and optional parameters as the second arrives. Keeping each method honest until the common responsibility is clear avoids giving either method information or modes it does not need.
+
+This rule addresses speculative reuse. Extract a real responsibility at its boundary when that responsibility exists, even if it has one caller. The store exception translator above has a separate job from the Data Manager; it does not need two more consumers to justify itself.
+
 ---
 
 <span id="actions-are-void-returning"></span>
@@ -438,7 +537,7 @@ A command-line adapter has a different contract with the process entry point: it
 
 ### Query Methods: Return the Information They Promise
 
-A query method supplies an answer. `GetCustomer(42)` promises a `Customer` for that ID. If the customer exists, it returns that customer. If the customer does not exist, it throws `CustomerNotFoundException`. It does not return `null` through a non-nullable `Customer` contract and leave every caller to discover what that means. A nullable return is a different, explicit contract for cases where absence is a valid answer; that distinction is explained below.
+A query method supplies an answer. `GetCustomer(42)` promises a `Customer` for that ID. If the customer exists, it returns that customer. If the customer does not exist, it throws `CustomerNotFoundException`. It does not return `null` and leave every caller to discover what that means. A `Find` or `Search` query makes a different request: the caller is looking for a possible match, as explained below.
 
 ```csharp
 private Customer GetCustomer(int customerId)
@@ -460,7 +559,7 @@ SendWelcomeLetter(customer);
 
 If `GetCustomer(42)` returns, `customer` is available and the next line can send the letter. If it throws, execution never reaches `SendWelcomeLetter`. The caller needs no "did we get a customer?" branch between these lines. The same rule applies to the action method: if `SendWelcomeLetter` returns, it completed; if it cannot send, it throws.
 
-A query method that promises a `Customer` should not return a `Result<Customer, Error>`, an `Option<T>`, or an object containing both `Customer` and `ErrorMessage` instead. Each wrapper changes what the caller receives: it must inspect and unwrap the result before it can use the customer. If absence is a valid answer, declare that possibility in the contract rather than hiding it in a success/error wrapper.
+A query method that promises a `Customer` should not return a `Result<Customer, Error>`, an `Option<T>`, or an object containing both `Customer` and `ErrorMessage` instead. Each wrapper changes what the caller receives: it must inspect and unwrap the result before it can use the customer. A caller looking for a possible match should call a `Find` or `Search` method whose name and return type express that intent.
 
 ```csharp
 // VIOLATION - a wrapper is still a "maybe" in disguise
@@ -473,13 +572,16 @@ public sealed class GetCustomerResult
 
 The ordering implementation shows the shared guarantee in both method types. `DataManagerOrdering.PlaceOrderAsync` is a creation action; `.GetOriginalOrderForResubmissionAsync` is a query. Each returns the data its contract promises or throws a relevant exception, such as `CustomerNotFoundException`, `OrderReferenceAlreadyExistsException`, `OrderStoreContractViolationException`, or `OrderStoreUnavailableException`. Neither returns a success flag or a failure wrapper. Chapter 9 explains the `OrderingBusinessException` and `OrderingTechnicalException` branches of that exception taxonomy.
 
-### When Absence Is a Valid Result
+### When a Find or Search Has No Match
 
-Sometimes "nothing happened" or "nothing was found" is a valid answer. C# can state that contract with `T?`. A caller then knows it must handle `null`, and that branch becomes part of the work to write and test. Use a nullable return when the business rule gives absence a clear meaning and the callers handle it deliberately. The `?` makes absence visible; the business rule explains why it is a valid answer.
+`GetCustomer(42)` asks for a specific customer that should exist. `FindCustomer(42)` asks whether that customer exists. A single-result `Find` query may return `Customer?`, with `null` meaning there was no match. A `SearchCustomers` query that can find several customers returns an empty collection when there are none. The caller chose an operation whose name makes a missing match ordinary, and the return type states what it must handle.
 
-`GatewayEmailService.AttemptSendAsync` returns `EmailSendFailure?`: `null` means no failure occurred. `ManagerOrdering.TryPublishFulfillmentNotificationAsync` returns `DateTime?`: `null` means publication did not happen and remains pending. These are operation-specific contracts, not examples of `GetCustomer` silently failing. Each method names and documents the meaning of `null`, and its callers apply the corresponding business rule.
+```csharp
+Customer? customer = FindCustomer(42); // null means no matching customer
+IReadOnlyList<Customer> customers = SearchCustomers(criteria); // empty means no matches
+```
 
-A public query method declared to return a non-nullable `Customer` has made the other choice. It returns a `Customer` or throws; returning `null` breaks its stated contract. If absence is an expected answer, decide that when designing the signature and declare it honestly as nullable. A `Result` or `Option` wrapper should not be used to conceal a failure behind a type that claims to return a customer.
+These are query results. A database outage or a failure to run the search is still an exception, not a missing match. An action such as sending an email or publishing a notification does not become a query by returning `null` to mean that the work did or did not happen. It completes according to its action contract or follows the designed failure path.
 
 ---
 
@@ -591,6 +693,78 @@ A `public` argument-validation analyzer recommending `ArgumentNullException.Thro
 
 ---
 
+## Make String and Type Assumptions Explicit
+
+### String and Configuration Contracts
+
+Whether to represent a value with `string.Empty`, test it with `IsNullOrEmpty` or `IsNullOrWhiteSpace`, or trim it starts with the contract for that value. If a boundary has already established that a string is non-null and trimmed, an internal method should not call `IsNullOrWhiteSpace` to defend against states that contract excludes. If an empty string remains a valid, distinct state, `value.Length == 0` states the narrow check. If the incoming value can genuinely be null or whitespace, check that at the boundary and decide whether to reject or normalize it there. `Trim`, `TrimStart`, and `TrimEnd` change data; use the one that matches the input rule rather than applying trimming everywhere as a precaution.
+
+The routing-configuration example makes these decisions concrete. Its `GetRoutingActiveStatus` query returns `false` when the cloud role environment is unavailable because that behavior is a stated requirement. When the environment is available, it reads the `RoutingActive` setting: an empty value means `false`, a valid Boolean string is parsed, and an absent or invalid setting raises a `ConfigurationProviderException`. The caller can then translate that exception into an HTTP error response. The example's rule for an empty value is specific to that configuration contract; another setting might require an exception instead. The query returns a Boolean because it answers a Boolean question, while the boundary owns parsing and failure translation.
+
+### Cast Versus `as`: State Whether a Mismatch Is Expected
+
+Some teams advise using `as` for every reference-type conversion because it does not throw when the type is wrong. That only moves the decision. The method still has to know what to do with the resulting `null`. If it cannot do its work with any other type, a direct cast states its expectation and lets a mismatch fail where that expectation is made. The caller or the boundary that supplied the value must correct the wrong type; this method cannot invent a useful fallback.
+
+The deck's `CodeMappingAttribute` example shows the cost of treating an unexpected mismatch as a normal branch. The original code asks reflection for one attribute type, then uses `as` and checks for both a null array and an empty one:
+
+```csharp
+var attrs = fieldInfo.GetCustomAttributes(typeof(CodeMappingAttribute), false)
+    as CodeMappingAttribute[];
+
+if (attrs == null || attrs.Length == 0)
+    continue;
+
+foreach (var attr in attrs)
+{
+    this.enumToCodeMapping[enumVal] = attr.Code;
+    this.codeToEnumMapping[attr.Code.ToUpperInvariant()] = enumVal;
+}
+```
+
+What should happen if `attrs` is `null`? This method has no mapping to produce and no alternative result to return. Without a check, using `attrs` would eventually cause a `NullReferenceException`, farther from the mistaken type assumption. With the check shown here, the code quietly skips the mapping. Neither outcome explains or repairs the mismatch. An empty collection has a different meaning: no matching attributes were found, and `foreach` already handles that case.
+
+The slide's intended contract is that the array has the requested attribute type. Under its assumed typed-array behavior, a direct cast states that expectation and raises an `InvalidCastException` at the conversion if it is false:
+
+```csharp
+var attrs = (CodeMappingAttribute[])fieldInfo
+    .GetCustomAttributes(typeof(CodeMappingAttribute), false);
+
+foreach (var attr in attrs)
+{
+    this.enumToCodeMapping[enumVal] = attr.Code;
+    this.codeToEnumMapping[attr.Code.ToUpperInvariant()] = enumVal;
+}
+```
+
+The deck also gives a case where `as` has a job. `DeterminePolicyConversionMessageStatus` accepts the .NET `Exception` base type because it must classify both application business exceptions and other exceptions. The method cannot assume which kind arrived, and it has a result for either one:
+
+```csharp
+private static PolicyConversionStatusCode DeterminePolicyConversionMessageStatus(
+    Exception exception)
+{
+    var businessException = exception as AutoConversionBusinessException;
+    if (businessException != null)
+        return PolicyConversionStatusCode.BusinessError;
+
+    return PolicyConversionStatusCode.TechnicalError;
+}
+```
+
+Here `null` means the exception is not an `AutoConversionBusinessException`. The method then returns `TechnicalError`; it does not silently skip work or leave a missing branch. The distinction is the method's knowledge and responsibility: use a cast when this value **must** have the expected type and the method has no valid response to a mismatch; use `as` when a different type is genuinely possible and the method handles that outcome. If the method can accept only one type, express that in its parameter type where possible. [Always Use `as` Operator? No Thank You](/writing/always-use-as-operator-no-thank-you/) develops the same argument with another example.
+
+The reflection code has an API-specific qualification. The [documented signature of `MemberInfo.GetCustomAttributes(Type, bool)`](https://learn.microsoft.com/en-us/dotnet/api/system.reflection.memberinfo.getcustomattributes) returns `object[]`, including an empty array when there are no matches; it does not guarantee that the array object itself is a `CodeMappingAttribute[]`. The slide's direct cast worked in a local runtime check, but the published signature makes a stronger promise unavailable. When writing code against that documented contract, use [the generic overload](https://learn.microsoft.com/en-us/dotnet/api/system.reflection.customattributeextensions.getcustomattributes) to request typed attributes directly:
+
+```csharp
+foreach (CodeMappingAttribute attr in
+    fieldInfo.GetCustomAttributes<CodeMappingAttribute>(false))
+{
+    this.enumToCodeMapping[enumVal] = attr.Code;
+    this.codeToEnumMapping[attr.Code.ToUpperInvariant()] = enumVal;
+}
+```
+
+---
+
 ## Boolean Parameters and Repeated Conditions
 
 Trace what a Boolean actually controls. A private diagnostic qualifier may select wording while the same native-type acceptance check runs on every path and separately named nullable/non-nullable APIs already expose the contract. That flag does not create two hidden validation modes. A public flag selecting strict validation versus lossy coercion, or otherwise selecting separately meaningful operations, remains a mode-switch concern.
@@ -668,27 +842,25 @@ Now the caller reads a business statement, not an implementation detail, and thi
 
 **The same condition tested more than once is a design defect, not a style preference.** If the same business rule appears in several methods, it has drifted out of its one home; extract it to a single named predicate (as above), a policy object, or a polymorphic design, and call that one thing everywhere the rule applies. Two copies of "is this a good student driver" are two chances for the rule to quietly diverge.
 
-A worked example combining an encapsulated conditional with other cleanup (removing a useless initialization, closing off an empty-string possibility) appears in the source material as a single before/after pair. This chapter operationalizes only the conditional-encapsulation half. Native C# review owns compiler/runtime mechanics; broader style and null-or-valid-string preferences remain non-emitting in the current partial chapter set.
+When a conditional chooses among interchangeable behaviors, consider whether the behavior belongs in polymorphic implementations. That removes repeated type or mode selection from the methods that use the behavior. A `switch` can still be the clearest choice for a small, finite set of cases known at that point in the design. The choice depends on the variations the system must support, not on a ban on `switch`. [Design Nugget: Evolution to Strategy](/writing/design-nugget-evolution-to-strategy/) works through a switch and a strategy design rather than assuming one always wins.
+
+A worked example combining an encapsulated conditional with other cleanup (removing a useless initialization, closing off an empty-string possibility) appears in the source material as a single before/after pair. The condition is the method-design lesson. The string-contract reasoning above explains why an empty check may be unnecessary, while native C# review owns mechanically provable initialization and allocation issues. Neither point makes every string or style preference into a blanket method rule.
 
 ---
 
 ## Boundaries With Other Chapters
 
-Several ideas in the author's original method-design material are real and important, and are owned by name elsewhere in this corpus rather than repeated here:
+The method-design decisions above stand on their own. These articles develop adjacent topics in more detail:
 
-- **Names of methods, parameters, and locals** - the vocabulary-of-the- business rule, the "don't invent names" rule for technical objects, and the `Async` suffix convention - belong to Naming Conventions (`cs03`).
-- **How much a signature is allowed to ask for** - the need-to-know basis, and narrowing an oversized DTO to a purpose-built type - belongs to the Need-to-Know Principle (`cs02`).
-- **What a parameter or return type honestly promises** - least-derived-in, most-derived-out, and `IEnumerable<T>` versus `IList<T>` - remains non-emitting until a C# Type Contracts chapter is admitted. The narrow materialized-LINQ snapshot case belongs to `cs08`.
-- **Cleaning up and mapping transport data at the controller** belongs to `cs55`; **domain validation at the Manager front door** belongs to `cs09`. Broader boundary-model and null-or-valid-never-empty string doctrine remains non-emitting.
-- **Choosing and calling LINQ operators** - `ToList`/`ToArray` materialization, `Single` versus `First`, preferring the non-`OrDefault` forms, and a criteria-carrying cardinality exception - belongs to LINQ Query Semantics (`cs08`). This chapter owns the *contract* (Cardinality Is Intent, above); `cs08` owns the *operator*.
-- **Casts versus `as`, `var`, useless initialization, and unnecessary allocation** are handled by native C# review where mechanically provable; uncalibrated PWI style preferences remain non-emitting.
+- [Naming Conventions](/pwi/naming-conventions/csharp/) covers the words used for methods, parameters, and locals, including domain vocabulary and the `Async` suffix. This chapter explains what an action or query name promises its caller.
+- [Validation and Exception Handling](/pwi/validation-exception-handling/csharp/) covers validation at the boundary where data enters the domain. This chapter explains why an internal method can trust inputs that boundary has already checked.
+- [LINQ Query Semantics](/pwi/linq-query-semantics/csharp/) covers operator choices such as `Single` versus `First` and when to materialize a sequence. This chapter explains what result cardinality and collection type the method promises.
 
 These Method Design rules apply to production methods and reusable test-support
 methods. Actual test-method structure belongs to the testing chapters. An
 Asserter is a specialized reusable test-support method: when an Asserter rule
 owns the exact occurrence, that specialized rule takes precedence; Method
 Design remains the fallback for aspects the Asserter rules do not address.
-- **The Rule of Thirds** - wait for the third real occurrence of a pattern, and rewrite it each time rather than copy-pasting, so the variations surface before anything is generalized - is a shared, language-neutral aphorism referenced here and in Class Design (`cs05`) rather than owned by either.
 
 ---
 
@@ -698,11 +870,16 @@ Design remains the fallback for aspects the Asserter rules do not address.
 - Is any `public` or `internal` member also `virtual` or `abstract`? Should it forward to a `protected virtual`/`abstract` member instead?
 - Is an `override` in a non-sealed class left unsealed without the source establishing that the class is an intentional extension point?
 - Does every method receive everything it needs through its parameters, with nothing depended on from a prior call?
+- Does a parameter promise every capability the body requires, without a cast to a more capable collection type?
+- Does each method receive exactly the data it uses, with a purpose-specific input when a broad object would expose unrelated data?
+- When `as` returns `null`, does this method have a defined response, or does it dereference the value or silently skip the work?
+- Does the return type state the useful result honestly, and does argument order make related calls readable?
 - Does a public method read as a short sequence of named steps, at one consistent altitude, with no inline implementation detail?
 - Is a "low-level" class's public method held to the same orchestration standard as a domain class's?
 - Does an action method's return value, if it has one, exist only to carry data of a resource it created - never to report how the operation went, whether as a bare flag or wrapped inside a `Result`/`Either`-style envelope?
 - Does a query method with a non-nullable return type provide the value it promises or throw, without returning `null` or a failure wrapper?
-- Where a return type is declared nullable, has someone actually weighed the business rule behind the absence and what every caller does with the `null`, rather than assuming the nullability is fine because it compiles?
+- Does a single-result `Find` query use `null` only for no match, while a multi-result `Search` query returns an empty collection?
+- Does any action use a nullable result to report whether the work happened, contrary to the action contract?
 - Does a criteria query encode its expected cardinality, and does a cardinality failure carry the criteria that produced it?
 - Does a `catch` block do genuine work - retry or translation - or does it only log and re-raise (or silently swallow)?
 - Does an internal method validate its own trusted inputs defensively, when Caveat Emptor says it should not?
@@ -725,6 +902,14 @@ When reviewing method design, verify:
 - [ ] Immutable constructor state, constants, and constructor-injected stateless collaborators remain valid transitive inputs
 - [ ] State changes are confined to the classes actually performing them; coordinating classes above them stay pure
 
+### Method Signatures
+- [ ] A parameter provides every capability the method uses without a hidden cast to a narrower collection type
+- [ ] Each method receives exactly the data it needs; a broad model is narrowed at the call site when the method uses only a subset
+- [ ] A result type honestly states whether a collection is materialized and which capabilities callers may rely on
+- [ ] Related methods and chained constructors keep shared arguments in a readable, consistent order
+- [ ] Loose transport values are parsed into domain values before the domain operation receives them
+- [ ] A direct cast states an expected type that should fail visibly on mismatch; `as` has a meaningful response when it returns `null`
+
 ### Orchestration
 - [ ] Public methods on non-trivial classes orchestrate - they describe WHAT happens, not HOW
 - [ ] No partial extraction: if some steps are delegated, all equivalent steps are delegated
@@ -732,6 +917,7 @@ When reviewing method design, verify:
 - [ ] Bound orchestration depth after excluding supporting calls and distinct scheduling/resource/mapping responsibilities; do not count total stack frames
 - [ ] Low-level classes (data managers, adapters) hold their public methods to the same level-zero orchestration standard as domain classes
 - [ ] An altitude cleanup extracts private methods before introducing a new class
+- [ ] Shared methods or components follow demonstrated repetition unless a distinct responsibility already justifies extraction
 
 <span id="actions-and-queries"></span>
 
@@ -741,7 +927,8 @@ When reviewing method design, verify:
 - [ ] No functional-style outcome envelope (`Result<T>`, `Either`, or a hand-rolled success-flag-plus-data wrapper) stands in for an action's return value, however the pitch for it is framed
 - [ ] Query methods with non-nullable return types provide the claimed value or throw, without returning `null` or a failure wrapper
 - [ ] A public query's non-nullable declared return type is honored mechanically - the value or an exception, never `null`
-- [ ] A nullable return (`T?`) is a considered judgment call, not a default: the business rule behind the absence and every caller's handling of the `null` have actually been weighed, not merely assumed acceptable
+- [ ] A single-result `Find*` query may return `T?` for no match; a multi-result `Search*` query returns an empty collection
+- [ ] An action never uses a nullable return to report whether the work happened
 
 ### Cardinality
 - [ ] A criteria query's expected cardinality (exactly one vs. first-of-many) is stated and enforced, including in non-LINQ forms

@@ -4,7 +4,7 @@ description: >-
   Deriving names rather than inventing them, domain suffixes over indices, the Async exception, and why Retrieve and Search choose different failure contracts.
 datePublished: 2017-09-20
 hero: chapter-naming-conventions-csharp
-dateModified: 2026-09-19
+dateModified: 2026-09-28
 tags:
   - naming
   - csharp
@@ -309,9 +309,9 @@ Every method above ends in `Async`, and that suffix is not this chapter contradi
 Two different query intents get two different verbs, and the verb tells the caller whether an exception is possible before they read a single line of the implementation:
 
 - **Identity retrieval** - the caller asked for one specific thing that should exist. If it does not, the method **throws**. It never returns `null` or an empty result as a quiet apology.
-- **Criteria search** - an empty result is a legitimate answer, returned as an empty collection. No matches is not an error.
+- **Find or search** - no match is a legitimate answer. A single-result `Find*` can return `null`; a multi-result `Search*` returns an empty collection. No matches is not an error.
 
-**C# realization.** The author's own worked example of this rule uses `GetCustomer`, not `RetrieveCustomer`, as the identity-retrieval verb - `Get*` throwing on absence is the idiomatic .NET shape (mirrored by the BCL pairing of `Get*` with `TryGet*` for the criteria-style alternative), and The reference implementation's own `DataManagerOrdering.GetOriginalOrderForResubmissionAsync` follows exactly this convention:
+**C# realization.** The author's own worked example of this rule uses `GetCustomer`, not `RetrieveCustomer`, as the identity-retrieval verb. The reference implementation's `DataManagerOrdering.GetOriginalOrderForResubmissionAsync` follows that convention:
 
 ```csharp
 public async Task<(PlacedOrder PlacedOrder, CustomerContact CustomerContact, OrderMessagingState OrderMessagingState)>
@@ -324,7 +324,7 @@ public async Task<(PlacedOrder PlacedOrder, CustomerContact CustomerContact, Ord
 }
 ```
 
-Pick one verb pair for identity retrieval (`Get*`, throwing) and one for criteria search (`Find*` or `Search*`, returning an empty collection) and apply the pair consistently across the codebase. `Get*` for a method that can quietly hand back `null` breaks the promise its own name makes - exactly the ambiguity this rule exists to remove.
+Use `Get*` when the caller expects the identified object and absence is an error. Use `Find*` when one possible match may be missing, or `Search*` when a query may return several matches. `Get*` for a method that quietly hands back `null` breaks the promise its name makes.
 
 ```csharp
 // VIOLATION - Get* implies "exists," but the method apologizes with null instead
@@ -341,8 +341,11 @@ public Customer GetCustomer(string customerId)
     return customer;
 }
 
-// COMPLIANT - an empty result is a legitimate answer for a criteria search
-public IReadOnlyList<Customer> FindCustomers(CustomerSearchCriteria customerSearchCriteria) { /* ... */ }
+// COMPLIANT - the caller is looking for a possible single match
+public Customer? FindCustomer(string customerId) { /* returns null if not found */ }
+
+// COMPLIANT - a multi-result search can find no matches
+public IReadOnlyList<Customer> SearchCustomers(CustomerSearchCriteria customerSearchCriteria) { /* ... */ }
 ```
 
 ### Names Don't Change Through the Flow
@@ -497,7 +500,7 @@ The comments that survive this test cite an external reason the code itself cann
 - Does a property's name accurately describe the value it holds, not a more specific concept the value does not actually represent?
 - Do the members of one enum (or similar family) share one consistent pair of opposite terms, never a mix?
 - Does a method name state a domain outcome, and is `Async` the only suffix present that does not?
-- Does an identity-lookup method throw on absence, and does a criteria search return an empty collection rather than throwing?
+- Does a `Get*` identity lookup throw on absence, while `Find*` returns no single match or `Search*` returns an empty collection?
 - Does a business operation keep the same name at every layer this codebase owns, with a rename reserved for a genuine vocabulary boundary (a gateway)?
 - Is every tuple-deconstruction target pre-declared with an explicit type, and do the chosen names agree with any element names the tuple's own type already publishes?
 - Is a domain-significant string literal used more than once in a class pulled into a named constant?
@@ -533,7 +536,7 @@ When reviewing naming, verify:
 - [ ] Public method names state a domain outcome, not a mechanical verb (`Process`, `Handle`, `Do`, `Execute`, `Perform`) without a domain noun attached
 - [ ] Every method returning `Task`/`Task<T>`/`ValueTask` carries the `Async` suffix, and no non-async method carries it
 - [ ] An identity-lookup method (`Get*`) throws when its target is absent, never returning `null` or an empty result
-- [ ] A criteria-search method (`Find*`/`Search*`) returns an empty collection for no matches, never throwing
+- [ ] A single-result `Find*` returns `null` for no match; a multi-result `Search*` returns an empty collection
 - [ ] A business operation's name is unchanged across every layer this codebase owns; a rename occurs only at a genuine vocabulary boundary
 
 ### Typed Deconstruction
