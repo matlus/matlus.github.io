@@ -3,16 +3,5 @@
 ## Generation prompt
 
 ```text
-Use case: stylized-concept
-Asset type: very wide panoramic hero illustration for the PWI chapter Method Design in C#
-
-Visual language: A vintage technical textbook plate in the same hand-drawn ink-on-warm-paper family as the site's article heroes. Slightly denser engraved linework and cross-hatching than the editorial collection images, visible drafting marks, disciplined white space, predominantly black ink with tiny orange and cyan accents. Sophisticated, realistic objects but illustrative rather than photorealistic.
-
-Chapter idea to make visible: Public methods orchestrate lower operations and return contracts reveal how many results are possible.
-
-Scene: A master control handle at the top of a compact instrument activates several hidden lower mechanisms; the output side has three physical receiving slots sized for none, one, or many objects. A precise brass housing encloses implementation details.
-
-Composition: One wide archival instructional plate, centered subject with generous quiet margins. Depict a concrete metaphor for this exact chapter, visually distinct from the related language variant and topic hub. This is evocative art, not a formal software diagram.
-
-No text, code, letters, numbers, labels, arrows, logos, watermark, random pets, or unrelated decorative objects.
+Create a very wide panoramic 4.6:1 website chapter hero illustration that accurately teaches one Method Design relationship. Vintage technical editorial ink drawing on warm ivory paper, fine hand-drawn black linework and cross-hatching, restrained rust-orange and muted cyan, sophisticated and clean. A real human-scale early-20th-century design workshop. Two designers are constructing ONE raised horizontal public method assembly on a long workbench. ONE large sign fixed above and spanning the ENTIRE raised assembly reads exactly 'PUBLIC METHOD'. Beneath that sign, three large simple step plates run left to right as a short readable orchestration sequence. A smaller engraved strip directly along the full three-step sequence reads exactly 'ORCHESTRATION'. The public method and orchestration are the SAME assembly, not separate stages. Under the raised assembly are exactly three smaller detailed workstations, each directly beneath its corresponding simple step. ONE sign spanning the detailed lower workstations reads exactly 'PRIVATE METHODS'. Each upper step makes one clear down-and-back connection to the lower private workstation beneath it; the upper row coordinates the work, the lower row implements details. One designer positions a simple step plate in the upper sequence; the other works on fine detail at a lower private workstation. Add one small physical input artifact at the far left and one finished artifact at the far right, without any branching or separate action/query stations. Keep the sign text large and fully legible after cropping to a shallow website banner. The ONLY text in the image must be exactly PUBLIC METHOD, ORCHESTRATION, PRIVATE METHODS. No other words, letters, numerals, code, logos or watermark. No giant machine, brass lever, library, large gears, arrows in the room, or generic flowchart. Make the whole top assembly clearly public and the subordinate detailed work clearly private, with human hands showing deliberate design.
 ```
