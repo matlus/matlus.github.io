@@ -4,6 +4,7 @@ import TopicList from '../../components/TopicList.astro';
 import { PILLARS } from '../../data/nav';
 import { topicsInSection } from '../../data/topics';
 import { getCollection } from 'astro:content';
+import { loadPwiArticleTopics, publishedTopicsFirst } from '../../lib/pwi-topic-links';
 
 const topics = topicsInSection('pwi');
 
@@ -12,22 +13,8 @@ const chapterTopics = new Set(
     .map((chapter) => chapter.data.topic),
 );
 
-const designPatternArticles = await getCollection('writing', ({ id, data }) =>
-  !data.draft && (
-    id === 'configuration-provider-design-pattern' || id === 'gateway-design-pattern' ||
-    id === 'factory-pattern' || id === 'factory-method-pattern'
-  ),
-);
-
-const articleLinks = new Map(designPatternArticles.map((article) => [
-  article.id === 'configuration-provider-design-pattern' ? 'configuration-provider' : article.id,
-  `/writing/${article.id}/`,
-]));
-
-const orderedTopics = [...topics].sort((left, right) =>
-  Number(chapterTopics.has(right.slug) || articleLinks.has(right.slug)) -
-  Number(chapterTopics.has(left.slug) || articleLinks.has(left.slug)),
-);
+const { articles: designPatternArticles, links: articleLinks } = await loadPwiArticleTopics();
+const orderedTopics = publishedTopicsFirst(topics, chapterTopics, articleLinks);
 
 ---
 
