@@ -703,9 +703,31 @@ The routing-configuration example makes these decisions concrete. Its `GetRoutin
 
 ### Cast Versus `as`: State Whether a Mismatch Is Expected
 
-Some teams advise using `as` for every reference-type conversion because it does not throw when the type is wrong. That only moves the decision. The method still has to know what to do with the resulting `null`. If it cannot do its work with any other type, a direct cast states its expectation and lets a mismatch fail where that expectation is made. The caller or the boundary that supplied the value must correct the wrong type; this method cannot invent a useful fallback.
+Some teams advise using `as` for every reference-type conversion because it does not throw when the type is wrong. That only moves the decision. The method still has to know what to do with the resulting `null`. If it cannot do its work with any other type, give it a parameter of that type where possible. If a broader signature is required, a direct cast states the expectation and lets a mismatch fail where it occurs. The caller or the boundary that supplied the value must correct the wrong type.
 
-The deck's `CodeMappingAttribute` example shows the cost of treating an unexpected mismatch as a normal branch. The original code asks reflection for one attribute type, then uses `as` and checks for both a null array and an empty one:
+Consider this illustrative action method. Its name promises to publish an approved invoice, but a wrong type makes it return normally without publishing anything:
+
+```csharp
+private void PublishApprovedInvoice(object message)
+{
+    var invoice = message as ApprovedInvoice;
+    if (invoice != null)
+        _publisher.Publish(invoice);
+}
+```
+
+The method has no useful action for another type. If callers already know the type, its signature should say so:
+
+```csharp
+private void PublishApprovedInvoice(ApprovedInvoice invoice)
+{
+    _publisher.Publish(invoice);
+}
+```
+
+If an external contract requires `object`, cast to `ApprovedInvoice` before publishing so a wrong type fails at the assumption. With `as`, a missing null check would defer the failure until code tries to use the value; the check in the first version hides the failure entirely. Neither path gives this method a useful response to the wrong type.
+
+The deck's `CodeMappingAttribute` example raises a related review question. It asks reflection for one attribute type, uses `as`, then checks for both a null array and an empty one:
 
 ```csharp
 var attrs = fieldInfo.GetCustomAttributes(typeof(CodeMappingAttribute), false)
@@ -721,15 +743,26 @@ foreach (var attr in attrs)
 }
 ```
 
-What should happen if `attrs` is `null`? This method has no mapping to produce and no alternative result to return. Without a check, using `attrs` would eventually cause a `NullReferenceException`, farther from the mistaken type assumption. With the check shown here, the code quietly skips the mapping. Neither outcome explains or repairs the mismatch. An empty collection has a different meaning: no matching attributes were found, and `foreach` already handles that case.
+`GetCustomAttributes` returns an array, including an empty array when it finds no matching attributes. Its no-match result is never `null`. The `as` conversion is the only operation here that could turn a non-null array into `null`, and that would mean the array was not a `CodeMappingAttribute[]`. The null check cannot detect the no-attributes case. If the only intention is to do nothing when there are no attributes, the length check adds nothing either: `foreach` already runs zero times for an empty array. The combined check obscures which condition the author actually expects and what the method should do about a type mismatch.
 
-The slide's intended contract is that the array has the requested attribute type. Under its assumed typed-array behavior, a direct cast states that expectation and raises an `InvalidCastException` at the conversion if it is false:
+The slide assumes the returned array itself has the requested attribute type. Under that assumption, a direct cast states the expectation and raises an `InvalidCastException` at the conversion if it is false. The loop needs no preliminary check:
 
 ```csharp
 var attrs = (CodeMappingAttribute[])fieldInfo
     .GetCustomAttributes(typeof(CodeMappingAttribute), false);
 
 foreach (var attr in attrs)
+{
+    this.enumToCodeMapping[enumVal] = attr.Code;
+    this.codeToEnumMapping[attr.Code.ToUpperInvariant()] = enumVal;
+}
+```
+
+There is a qualification to the slide's cast: the [documented signature of `MemberInfo.GetCustomAttributes(Type, bool)`](https://learn.microsoft.com/en-us/dotnet/api/system.reflection.memberinfo.getcustomattributes) promises `object[]` or an empty array, but does not promise that the array object is a `CodeMappingAttribute[]`. The direct cast worked in a local runtime check. For code that must rely on the documented API contract, [the generic overload](https://learn.microsoft.com/en-us/dotnet/api/system.reflection.customattributeextensions.getcustomattributes) requests typed attributes directly and also lets an empty result pass through the loop:
+
+```csharp
+foreach (CodeMappingAttribute attr in
+    fieldInfo.GetCustomAttributes<CodeMappingAttribute>(false))
 {
     this.enumToCodeMapping[enumVal] = attr.Code;
     this.codeToEnumMapping[attr.Code.ToUpperInvariant()] = enumVal;
@@ -750,18 +783,7 @@ private static PolicyConversionStatusCode DeterminePolicyConversionMessageStatus
 }
 ```
 
-Here `null` means the exception is not an `AutoConversionBusinessException`. The method then returns `TechnicalError`; it does not silently skip work or leave a missing branch. The distinction is the method's knowledge and responsibility: use a cast when this value **must** have the expected type and the method has no valid response to a mismatch; use `as` when a different type is genuinely possible and the method handles that outcome. If the method can accept only one type, express that in its parameter type where possible. [Always Use `as` Operator? No Thank You](/writing/always-use-as-operator-no-thank-you/) develops the same argument with another example.
-
-The reflection code has an API-specific qualification. The [documented signature of `MemberInfo.GetCustomAttributes(Type, bool)`](https://learn.microsoft.com/en-us/dotnet/api/system.reflection.memberinfo.getcustomattributes) returns `object[]`, including an empty array when there are no matches; it does not guarantee that the array object itself is a `CodeMappingAttribute[]`. The slide's direct cast worked in a local runtime check, but the published signature makes a stronger promise unavailable. When writing code against that documented contract, use [the generic overload](https://learn.microsoft.com/en-us/dotnet/api/system.reflection.customattributeextensions.getcustomattributes) to request typed attributes directly:
-
-```csharp
-foreach (CodeMappingAttribute attr in
-    fieldInfo.GetCustomAttributes<CodeMappingAttribute>(false))
-{
-    this.enumToCodeMapping[enumVal] = attr.Code;
-    this.codeToEnumMapping[attr.Code.ToUpperInvariant()] = enumVal;
-}
-```
+Here `null` means the exception is not an `AutoConversionBusinessException`. The method then returns `TechnicalError`; it handles both possible types. Use a cast when this value **must** have the expected type and the method has no valid response to a mismatch; use `as` when a different type is genuinely possible and the method handles that outcome. [Always Use `as` Operator? No Thank You](/writing/always-use-as-operator-no-thank-you/) develops the same argument with another example.
 
 ---
 
