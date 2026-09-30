@@ -270,13 +270,9 @@ const breadcrumbLd = {
 
   /* The two quoted prompts read as text, so their fenced blocks wrap on phones. */
   .article-page[data-article="verified-not-trusted-expense-analysis-part-one"] :global(#the-standard-prompt + pre),
-  .article-page[data-article="verified-not-trusted-expense-analysis-part-one"] :global(#the-more-precise-prompt + pre) {
+  .article-page[data-article="verified-not-trusted-expense-analysis-part-one"] :global(#the-more-precise-prompt + p + pre) {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
-    /* Override Shiki's fixed inline palette for these plain-text prompts. */
-    background-color: var(--color-surface-sunken) !important;
-    color: var(--color-text) !important;
-    border: 1px solid var(--color-border);
   }
 
   .article-page[data-article="verified-not-trusted-expense-analysis-part-one"] :global(.expense-example-output) {
