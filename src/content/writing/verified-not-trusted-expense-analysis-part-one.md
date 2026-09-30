@@ -32,9 +32,11 @@ The task is to organize the transactions, compute monthly category totals, compa
 
 ## The standard prompt
 
-> I’ve attached a personal expense log covering June through August and some notes about my monthly budgets.
-> Please organize the expenses by month and category, then calculate how much I spent in each category. Compare my dining and shopping expenses with the budgets in my notes and identify any important month-to-month changes or spending trends.
-> Present the results in clear tables and summarize the three most important things I should know about my spending this quarter.
+```text
+I’ve attached a personal expense log covering June through August and some notes about my monthly budgets.
+Please organize the expenses by month and category, then calculate how much I spent in each category. Compare my dining and shopping expenses with the budgets in my notes and identify any important month-to-month changes or spending trends.
+Present the results in clear tables and summarize the three most important things I should know about my spending this quarter.
+```
 
 This is a reasonable request. It names the input, the time period, the comparisons, and the form of the answer. Someone reading it can understand the desired result.
 
@@ -42,19 +44,34 @@ It leaves several decisions unstated, including how to handle repeated entries, 
 
 A model might handle these issues correctly on its own. We should apply the same verification standard to either prompt's response: inspect the source coverage, decisions, and calculations. The prompt's length gives us no evidence that those checks have passed.
 
+The next step is to make those hidden decisions explicit. Start with what determines a total: how each source line is read and counted, what remains uncertain, and how duplicates and refunds are treated. Then ask for code and computed results that let us check the calculation. This gives the second prompt a clear purpose: specify the work we need to inspect before accepting its conclusions.
+
 ## The more precise prompt
 
-> Attached is a running personal expense log (personal\_expenses.txt) and a short note on the two things I'm budgeting against (budget\_notes.txt). The log isn't structured — dates and formatting are inconsistent, there's no category field, and it's roughly but not strictly chronological.
->
-> Before interpreting anything:
->
-> 1. Parse every line into date, merchant/description, and amount. Flag any line you can't confidently parse.  
-> 2. Assign each transaction a spending category based on the merchant. Where a transaction is genuinely ambiguous (a bank transfer or cash withdrawal with no description), don't force a category — flag it as uncategorized and tell me what it is.  
-> 3. Check for likely duplicate entries and handle refunds/negative amounts correctly rather than treating them as ordinary purchases.  
-> 4. Once the data is clean, use code to compute monthly totals by category, compare against the two budget targets, and find the largest month-over-month changes.  
-> 5. Show me the computed tables before your interpretation.
->
-> Don't estimate totals or do the arithmetic in your head — show the code. After the tables, tell me the three things you'd most want me to know about my spending this quarter.
+```text
+Attached is a running personal expense log (personal_expenses.txt) and a short note on the two things I'm budgeting against (budget_notes.txt). The log isn't structured — dates and formatting are inconsistent, there's no category field, and it's roughly but not strictly chronological.
+
+Before interpreting anything:
+
+1. Parse every line into date, merchant/description, and amount. Flag any line you can't confidently parse.
+2. Assign each transaction a spending category based on the merchant. Where a transaction is genuinely ambiguous (a bank transfer or cash withdrawal with no description), don't force a category — flag it as uncategorized and tell me what it is.
+3. Check for likely duplicate entries and handle refunds/negative amounts correctly rather than treating them as ordinary purchases.
+4. Once the data is clean, use code to compute monthly totals by category, compare against the two budget targets, and find the largest month-over-month changes.
+5. Show me the computed tables before your interpretation.
+
+Don't estimate totals or do the arithmetic in your head — show the code. After the tables, tell me the three things you'd most want me to know about my spending this quarter.
+```
+
+<details class="expense-example-output">
+<summary>Example output (illustrative placeholder)</summary>
+
+This is an illustrative placeholder, not output from a model run. It will be replaced with a recorded response to the precise prompt.
+
+- Parsing and coverage: [Transaction count and source-line issues will appear here]
+- Issues and decisions: [Duplicate, refund, and category decisions will appear here]
+- Computed totals: [Monthly category tables and budget comparisons will appear here]
+
+</details>
 
 ## What the added instructions do
 

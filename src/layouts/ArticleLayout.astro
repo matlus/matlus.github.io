@@ -96,7 +96,7 @@ const breadcrumbLd = {
     <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
   </Fragment>
 
-  <div class="page article-page">
+  <div class="page article-page" data-article={seed}>
     <nav class="crumbs" aria-label="Breadcrumb">
       <ol>
         {crumbs.map((crumb) => <li><a href={crumb.href}>{crumb.label}</a></li>)}
@@ -266,6 +266,31 @@ const breadcrumbLd = {
   .article-body > .prose {
     max-width: none;
     min-width: 0;
+  }
+
+  /* The two quoted prompts read as text, so their fenced blocks wrap on phones. */
+  .article-page[data-article="verified-not-trusted-expense-analysis-part-one"] :global(#the-standard-prompt + pre),
+  .article-page[data-article="verified-not-trusted-expense-analysis-part-one"] :global(#the-more-precise-prompt + pre) {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .article-page[data-article="verified-not-trusted-expense-analysis-part-one"] :global(.expense-example-output) {
+    margin: var(--space-m) 0;
+    padding: var(--space-s);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface-sunken);
+  }
+
+  .article-page[data-article="verified-not-trusted-expense-analysis-part-one"] :global(.expense-example-output > summary) {
+    cursor: pointer;
+    font-weight: 600;
+    overflow-wrap: break-word;
+  }
+
+  .article-page[data-article="verified-not-trusted-expense-analysis-part-one"] :global(.expense-example-output[open] > summary) {
+    margin-bottom: var(--space-s);
   }
 
   .article-side {
