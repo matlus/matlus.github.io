@@ -1,5 +1,19 @@
 # Handoff
 
+## Sculpted 3D article illustrations, September 30, 2026
+
+The owner approved two additional illustration prompts after trials across
+acceptance testing, source-grounded answers, and order fulfilment:
+`prompts/generate-sculpted-3d-infographic.md` for mostly frontal dimensional icons,
+and `prompts/generate-3d-technical-diorama.md` for miniature environments with
+deeper perspective. Both include the tested satin treatment, an optional matte
+refinement, and optional people with explicit physical-scale guidance.
+
+The image guide links both workflows and records the trials' limits. The
+assistant writes the complete scene brief and checks the generated relationships,
+readability, and human scale. Pastel diagrams remain the default, and hero and
+tag art retain the ink style. The exploratory images remain outside the repository.
+
 ## Site chrome refresh, September 30, 2026
 
 Shiv liked the theme, header, and article layout of an AI-blog reference site and asked
@@ -266,7 +280,7 @@ method exactly what it needs, nothing more.
 
 **Hero and diagram styles.** Hero art uses the technical editorial ink style, with
 subjects drawn from each article. On 2026-09-27, Shiv approved pastel architectural
-infographics for illustrated diagrams, including generated PNG or JPEG. Simple
+infographics as the default for illustrated diagrams, including generated PNG or JPEG. Simple
 boxology can use SVG in the same visual style. Use
 `prompts/generate-pastel-boxology.md`. The assistant derives and writes the complete
 drawing brief from the article or supplied source; Shiv need not fill in a prompt.
@@ -275,6 +289,10 @@ The approved diagrams and their drawing briefs are retained in
 `public/images/diagrams/`, listed in `docs/diagrams.md`. Check generated text, arrow origins,
 and enclosure membership. Explain a raster diagram's important relationships in
 alt text, a caption, or nearby prose.
+
+The two sculpted 3D article illustration prompts approved on 2026-09-30 are
+documented at the top of this handoff and in the image guide. Select them when
+their dimensional icons or miniature environments suit the article.
 
 **Concurrency in diagrams is structural.** A stage running N instances is drawn as N
 boxes. Collapsing one into a single box hides the fan-out the diagram exists to show.
