@@ -7,7 +7,7 @@ Keep the surrounding section heading and place the callout beside the passage it
 helps explain.
 
 - **Idea:** a principle, useful connection, or approach the reader can apply. Its
-  icon is a four-point spark.
+  icon is a lightbulb.
 - **Note:** context, a qualification, or a practical detail needed to interpret the
   nearby text. Its icon is a folded page.
 
