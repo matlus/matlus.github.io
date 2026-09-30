@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="idea" viewBox="0 0 24 24">
+    <path d="m12 2.5 2.6 6.9 6.9 2.6-6.9 2.6-2.6 6.9-2.6-6.9L2.5 12l6.9-2.6L12 2.5Z" />
+  </symbol>
+  <symbol id="note" viewBox="0 0 24 24">
+    <path d="M6 3h8l4 4v14H6V3Z M14 3v4h4 M9 12h6 M9 16h6" />
+  </symbol>
+</svg>

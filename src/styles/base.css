@@ -138,6 +138,35 @@ pre code {
   padding: 0;
 }
 
+/* Reusable idea and note callouts; see docs/writing-guide.md. */
+.article-callout {
+  display: flex;
+  gap: var(--space-xs);
+  margin: var(--space-m) 0;
+  padding: var(--space-s);
+  border: 1px solid var(--color-border);
+  border-inline-start: 3px solid var(--color-accent);
+  border-radius: var(--radius);
+  background: var(--color-accent-wash);
+  color: var(--color-text);
+}
+
+.article-callout__icon {
+  flex: none;
+  width: var(--space-m);
+  height: var(--space-m);
+  margin-top: var(--space-3xs);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--color-accent);
+}
+
+.article-callout__content { min-width: 0; }
+.article-callout__content > :last-child { margin-bottom: 0; }
+
 img {
   max-width: 100%;
   height: auto;
