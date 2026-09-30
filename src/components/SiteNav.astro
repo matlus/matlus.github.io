@@ -1,39 +1,126 @@
 ---
-import { NAV, isCurrent } from '../data/nav';
+import { NAV, isCurrent, type NavChild } from '../data/nav';
 import { getCollection } from 'astro:content';
+import { mediaEntries } from '../data/media';
+import { acceptanceSeries } from '../data/acceptance-series';
+import { TAGS } from '../data/tags';
+import { formatShortDate } from '../lib/site-stats';
+import NavIcon from './NavIcon.astro';
+import SiteSearch from './SiteSearch.astro';
 
 interface Props {
   readonly pathname: string;
 }
 
 const { pathname } = Astro.props;
-const publishedTopics = new Set(
-  (await getCollection('chapters', ({ data }) => !data.draft)).map((chapter) => chapter.data.topic),
-);
-const nav = NAV.map((item) => ({
-  ...item,
-  children: item.href === '/acceptance-testing/'
-    ? item.children?.filter((child) => publishedTopics.has(child.href.split('/')[2] ?? ''))
-    : item.children,
+
+const [posts, chapters, media] = await Promise.all([
+  getCollection('writing', ({ data }) => !data.draft),
+  getCollection('chapters', ({ data }) => !data.draft),
+  mediaEntries(),
+]);
+
+const publishedSlugs = new Set(posts.map((post) => post.id));
+const tagLabel = new Map<string, string>(TAGS.map((tag) => [tag.slug, tag.label]));
+
+/** Dropdowns for Writing and Media list the newest real entries, never hand-kept links. */
+const latestPosts: NavChild[] = [...posts]
+  .sort((a, b) => b.data.datePublished.getTime() - a.data.datePublished.getTime())
+  .slice(0, 4)
+  .map((post) => ({
+    label: post.data.title,
+    href: `/writing/${post.id}/`,
+    icon: 'file',
+    meta: post.data.tags
+      .slice(0, 2)
+      .map((slug) => tagLabel.get(slug) ?? slug)
+      .join(' · '),
+    chip: formatShortDate(post.data.datePublished),
+  }));
+
+const latestMedia: NavChild[] = media.slice(0, 4).map((entry) => ({
+  label: entry.title,
+  href: entry.href,
+  icon: 'play',
+  meta: entry.section,
+  chip: entry.video && entry.audio ? 'Video + audio' : entry.video ? 'Video' : 'Audio',
 }));
+
+const publishedSeries = acceptanceSeries.filter((article) => publishedSlugs.has(article.slug));
+
+const seriesMenu: NavChild[] = publishedSeries.slice(0, 4).map((article, index) => ({
+  label: article.title,
+  href: `/writing/${article.slug}/`,
+  icon: 'shield',
+  chip: `Part ${index + 1}`,
+}));
+
+const counts: Record<string, number> = {
+  '/pwi/': chapters.filter((chapter) => chapter.data.section === 'pwi').length,
+  '/acceptance-testing/': publishedSeries.length,
+  '/writing/': posts.length,
+  '/media/': media.length,
+};
+
+const nav = NAV.map((item) => {
+  const children =
+    item.href === '/acceptance-testing/'
+      ? seriesMenu
+      : item.href === '/writing/'
+        ? latestPosts
+        : item.href === '/media/'
+          ? latestMedia
+          : item.children;
+  return { ...item, children, count: counts[item.href] };
+});
 ---
 
 <nav class="site-nav" aria-label="Primary">
   <div class="page site-nav__inner">
     <a class="site-nav__brand" href="/">
-      <img class="site-nav__mark" src="/matlus-logo.svg?v=readable" alt="" width="56" height="47" />
+      <img
+        class="site-nav__mark"
+        src="/logo/matlus-mark-112.png"
+        srcset="/logo/matlus-mark-40.png 40w, /logo/matlus-mark-56.png 56w, /logo/matlus-mark-64.png 64w, /logo/matlus-mark-80.png 80w, /logo/matlus-mark-112.png 112w, /logo/matlus-mark-168.png 168w, /logo/matlus-mark-224.png 224w"
+        sizes="(max-width: 479px) 40px, 56px"
+        alt=""
+        width="56"
+        height="48"
+      />
       <span class="site-nav__identity">
         <span class="site-nav__wordmark">Matlus</span>
         <span class="site-nav__tagline"><strong>Engineering</strong> with <strong>Intent</strong></span>
       </span>
     </a>
 
-    <a class="site-nav__search" href="/search/" aria-label="Search the site" title="Search">
+    <a class="site-nav__search" href="/search/" aria-label="Search the site" title="Search (press /)" aria-expanded="false" aria-controls="site-search" data-search-trigger>
       <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
         <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8" />
         <path d="m15.5 15.5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
       </svg>
     </a>
+
+    <button class="site-nav__theme" type="button" aria-label="Switch to dark mode" title="Switch theme">
+      <svg class="site-nav__moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path
+          d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <svg class="site-nav__sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8" />
+        <path
+          d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        />
+      </svg>
+    </button>
 
     <button
       class="site-nav__toggle"
@@ -47,55 +134,86 @@ const nav = NAV.map((item) => ({
 
     <ul class="site-nav__list" id="site-nav-menu">
       {
-        nav.map((item) => (
-          <li class:list={['site-nav__item', { 'has-children': item.children?.length }]}>
-            <a
-              href={item.href}
-              class="site-nav__link"
-              aria-current={isCurrent(item.href, pathname) ? 'page' : undefined}
+        nav.map((item, index) => {
+          const hasChildren = Boolean(item.children && item.children.length > 0);
+          return (
+            <li
+              class:list={[
+                'site-nav__item',
+                { 'has-children': hasChildren, 'align-end': index >= nav.length - 3 },
+              ]}
             >
-              {item.label}
-            </a>
+              <a
+                href={item.href}
+                class="site-nav__link"
+                aria-current={isCurrent(item.href, pathname) ? 'page' : undefined}
+              >
+                <span class="site-nav__label">
+                  {item.label}
+                  {item.count ? <span class="site-nav__count">{item.count}</span> : null}
+                </span>
+                <span class="site-nav__sub">{item.sub}</span>
+              </a>
 
-            {item.children && item.children.length > 0 && (
-              <>
-                <button
-                  class="site-nav__caret"
-                  type="button"
-                  aria-expanded="false"
-                  aria-label={`Open ${item.label} menu`}
-                >
-                  <svg viewBox="0 0 12 8" width="10" height="7" aria-hidden="true">
-                    <path
-                      d="M1 1.5 6 6.5 11 1.5"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.75"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </button>
+              {hasChildren && item.children && (
+                <>
+                  <button
+                    class="site-nav__caret"
+                    type="button"
+                    aria-expanded="false"
+                    aria-label={`Open ${item.label} menu`}
+                  >
+                    <svg viewBox="0 0 12 8" width="10" height="7" aria-hidden="true">
+                      <path
+                        d="M1 1.5 6 6.5 11 1.5"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </button>
 
-                <ul class="site-nav__panel">
-                  {item.children.map((child) => (
-                    <li>
-                      <a href={child.href}>
-                        <span class="site-nav__panel-label">{child.label}</span>
-                        {child.blurb && (
-                          <span class="site-nav__panel-blurb">{child.blurb}</span>
-                        )}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </li>
-        ))
+                  <div class="site-nav__panel">
+                    <div class="site-nav__card">
+                      {item.eyebrow && <p class="site-nav__eyebrow">{item.eyebrow}</p>}
+                      <ul class="site-nav__menu">
+                        {item.children.map((child) => (
+                          <li>
+                            <a href={child.href} class="site-nav__entry">
+                              {child.icon && (
+                                <span class="site-nav__tile">
+                                  <NavIcon name={child.icon} />
+                                </span>
+                              )}
+                              <span class="site-nav__entry-text">
+                                <span class="site-nav__panel-label">{child.label}</span>
+                                {child.blurb && <span class="site-nav__panel-blurb">{child.blurb}</span>}
+                                {child.meta && <span class="site-nav__panel-meta">{child.meta}</span>}
+                              </span>
+                              {child.chip && <span class="site-nav__chip">{child.chip}</span>}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                      {item.footer && (
+                        <a class="site-nav__foot" href={item.href}>
+                          {item.footer} <span aria-hidden="true">→</span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </li>
+          );
+        })
       }
     </ul>
   </div>
+
+  <SiteSearch />
 </nav>
 
 <style>
@@ -111,8 +229,8 @@ const nav = NAV.map((item) => ({
     position: sticky;
     top: 0;
     z-index: 50;
-    background: color-mix(in srgb, var(--color-bg) 92%, transparent);
-    backdrop-filter: blur(8px);
+    background: color-mix(in srgb, var(--color-bg) 82%, transparent);
+    backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--color-border);
   }
 
@@ -123,20 +241,39 @@ const nav = NAV.map((item) => ({
     min-height: var(--nav-height);
   }
 
-  .site-nav__search {
+  .site-nav__search,
+  .site-nav__theme {
     order: 2;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 2.5rem;
     height: 2.5rem;
+    padding: 0;
+    border: 0;
     border-radius: var(--radius);
+    background: none;
     color: var(--color-text-muted);
+    cursor: pointer;
   }
 
-  .site-nav__search:hover {
+  .site-nav__search:hover,
+  .site-nav__theme:hover {
     color: var(--color-accent);
     background: var(--color-accent-wash);
+  }
+
+  /* Moon in light mode, sun in dark mode. */
+  .site-nav__sun {
+    display: none;
+  }
+
+  :global(:root[data-theme='dark']) .site-nav__moon {
+    display: none;
+  }
+
+  :global(:root[data-theme='dark']) .site-nav__sun {
+    display: block;
   }
 
   .site-nav__brand {
@@ -198,64 +335,120 @@ const nav = NAV.map((item) => ({
     padding: 0;
   }
 
+  /* Each top-level entry is one bordered box, whether or not it opens a dropdown. */
   .site-nav__item {
     position: relative;
     display: flex;
     align-items: center;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--color-surface) 78%, transparent);
+    transition:
+      border-color 0.14s ease,
+      background 0.14s ease,
+      box-shadow 0.14s ease;
+  }
+
+  .site-nav__item:hover,
+  .site-nav__item:focus-within,
+  .site-nav__item.is-open {
+    border-color: color-mix(in srgb, var(--color-accent) 50%, var(--color-border));
+    box-shadow: var(--shadow-sm);
+  }
+
+  .site-nav__item:has(> .site-nav__link[aria-current='page']) {
+    border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+    background: var(--color-accent-wash);
   }
 
   .site-nav__link {
-    display: block;
-    padding: var(--space-2xs) var(--space-xs);
-    color: var(--color-text-muted);
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 1px;
+    padding: 0.3rem 0.25rem 0.3rem 0.7rem;
+    color: var(--color-text);
     text-decoration: none;
-    font-size: var(--step--1);
-    border-radius: var(--radius);
     white-space: nowrap;
   }
 
-  .site-nav__link:hover {
-    color: var(--color-text);
-    background: var(--color-surface-sunken);
+  .site-nav__item:not(.has-children) .site-nav__link {
+    padding-right: 0.7rem;
   }
 
-  .site-nav__link[aria-current='page'] {
-    color: var(--color-text);
-    font-weight: 600;
+  .site-nav__label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: var(--step--1);
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .site-nav__link[aria-current='page'] .site-nav__label {
+    color: var(--color-accent);
+  }
+
+  .site-nav__count {
+    padding: 0 0.35rem;
+    border-radius: 999px;
+    background: var(--color-accent-wash);
+    color: var(--color-accent);
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1.45;
+  }
+
+  .site-nav__link[aria-current='page'] .site-nav__count {
+    background: var(--color-surface);
+  }
+
+  .site-nav__sub {
+    font-size: 0.7rem;
+    line-height: 1.25;
+    color: var(--color-text-muted);
   }
 
   .site-nav__caret {
     background: none;
     border: 0;
-    padding: var(--space-3xs);
-    margin-left: calc(var(--space-3xs) * -1);
+    padding: 0.35rem 0.5rem 0.35rem 0.1rem;
     color: var(--color-text-faint);
     cursor: pointer;
     display: flex;
     align-items: center;
-    border-radius: var(--radius);
+    align-self: stretch;
   }
 
-  .site-nav__caret:hover {
-    color: var(--color-text);
+  .site-nav__caret svg {
+    transition: transform 0.14s ease;
+  }
+
+  .site-nav__item:hover .site-nav__caret,
+  .site-nav__item.is-open .site-nav__caret {
+    color: var(--color-accent);
+  }
+
+  .site-nav__item:hover .site-nav__caret svg,
+  .site-nav__item.is-open .site-nav__caret svg {
+    transform: rotate(180deg);
   }
 
   /*
    * The panel is in the DOM at page load and hidden with CSS. Crawlers and
-   * assistive tech see the links; only visibility is conditional.
+   * assistive tech see the links; only visibility is conditional. Its top
+   * padding bridges the gap to the box so the pointer never leaves the item
+   * on the way down and closes the menu.
    */
   .site-nav__panel {
     position: absolute;
     top: 100%;
     left: 0;
-    min-width: 17rem;
-    list-style: none;
-    margin: 0;
-    padding: var(--space-2xs);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+    z-index: 10;
+    width: max-content;
+    min-width: 21rem;
+    max-width: min(27rem, 92vw);
+    padding-top: var(--space-2xs);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-4px);
@@ -263,6 +456,11 @@ const nav = NAV.map((item) => ({
       opacity 0.14s ease,
       transform 0.14s ease,
       visibility 0.14s;
+  }
+
+  .site-nav__item.align-end .site-nav__panel {
+    left: auto;
+    right: 0;
   }
 
   .site-nav__item:hover .site-nav__panel,
@@ -273,29 +471,112 @@ const nav = NAV.map((item) => ({
     transform: translateY(0);
   }
 
-  .site-nav__panel a {
-    display: block;
+  .site-nav__card {
+    padding: var(--space-2xs);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow:
+      var(--shadow-md),
+      0 14px 32px rgb(28 26 23 / 10%);
+  }
+
+  .site-nav__eyebrow {
+    margin: 0;
+    padding: var(--space-2xs) var(--space-xs) var(--space-3xs);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+  }
+
+  .site-nav__menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2px;
+  }
+
+  .site-nav__entry {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-xs);
     padding: var(--space-2xs) var(--space-xs);
+    border: 1px solid transparent;
     border-radius: var(--radius);
     text-decoration: none;
     color: var(--color-text);
   }
 
-  .site-nav__panel a:hover {
+  .site-nav__entry:hover,
+  .site-nav__entry:focus-visible {
     background: var(--color-accent-wash);
+    border-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  }
+
+  .site-nav__tile {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent);
+    background: var(--color-accent-wash);
+    color: var(--color-accent);
+  }
+
+  .site-nav__entry-text {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
   }
 
   .site-nav__panel-label {
-    display: block;
-    font-size: var(--step--1);
-    font-weight: 600;
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.3;
   }
 
   .site-nav__panel-blurb {
-    display: block;
-    font-size: var(--step--1);
+    font-size: 0.75rem;
+    line-height: 1.35;
     color: var(--color-text-muted);
-    line-height: 1.4;
+  }
+
+  .site-nav__panel-meta {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--color-text-faint);
+  }
+
+  .site-nav__chip {
+    align-self: start;
+    padding: 0.1rem 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+    border-radius: 999px;
+    background: var(--color-accent-wash);
+    color: var(--color-accent);
+    font-size: 0.65rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .site-nav__foot {
+    display: block;
+    margin-top: var(--space-3xs);
+    padding: var(--space-2xs) var(--space-xs) var(--space-3xs);
+    border-top: 1px solid var(--color-border);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--color-accent);
+  }
+
+  .site-nav__foot:hover {
+    color: var(--color-accent-hover);
   }
 
   .site-nav__toggle {
@@ -340,7 +621,7 @@ const nav = NAV.map((item) => ({
 
   /* ------------------------------------------------------------- mobile */
 
-  @media (max-width: 1023px) {
+  @media (max-width: 1199px) {
     .site-nav__toggle {
       display: block;
       margin-left: 0;
@@ -371,15 +652,31 @@ const nav = NAV.map((item) => ({
       display: flex;
     }
 
-    .site-nav__item {
+    /* The bordered-box treatment is for the desktop bar; the drawer uses plain rows. */
+    .site-nav__item,
+    .site-nav__item:hover,
+    .site-nav__item:focus-within,
+    .site-nav__item.is-open,
+    .site-nav__item:has(> .site-nav__link[aria-current='page']) {
       flex-wrap: wrap;
+      border: 0;
       border-bottom: 1px solid var(--color-border);
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
     }
 
-    .site-nav__link {
-      flex: 1;
-      font-size: var(--step-0);
+    .site-nav__link,
+    .site-nav__item:not(.has-children) .site-nav__link {
       padding: var(--space-xs) 0;
+    }
+
+    .site-nav__label {
+      font-size: var(--step-0);
+    }
+
+    .site-nav__sub {
+      font-size: 0.8rem;
     }
 
     .site-nav__caret {
@@ -389,14 +686,20 @@ const nav = NAV.map((item) => ({
     .site-nav__panel {
       position: static;
       width: 100%;
-      border: 0;
-      box-shadow: none;
-      background: none;
-      padding: 0 0 var(--space-2xs) var(--space-s);
+      min-width: 0;
+      max-width: none;
+      padding: 0 0 var(--space-2xs) var(--space-xs);
       display: none;
       opacity: 1;
       visibility: visible;
       transform: none;
+    }
+
+    .site-nav__card {
+      padding: 0;
+      border: 0;
+      box-shadow: none;
+      background: none;
     }
 
     .site-nav__item.is-open .site-nav__panel {
@@ -441,7 +744,8 @@ const nav = NAV.map((item) => ({
       line-height: 1;
     }
 
-    .site-nav__search {
+    .site-nav__search,
+    .site-nav__theme {
       width: 2rem;
       flex: none;
     }
@@ -476,6 +780,39 @@ const nav = NAV.map((item) => ({
         caret.setAttribute('aria-expanded', String(open));
       });
     }
+
+    const themeButton = nav.querySelector<HTMLButtonElement>('.site-nav__theme');
+    const root = document.documentElement;
+
+    const syncThemeLabel = () => {
+      const dark = root.dataset['theme'] === 'dark';
+      themeButton?.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    };
+    syncThemeLabel();
+
+    themeButton?.addEventListener('click', () => {
+      const next = root.dataset['theme'] === 'dark' ? 'light' : 'dark';
+      root.dataset['theme'] = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {
+        // Private mode or blocked storage: the choice simply lasts for this page.
+      }
+      syncThemeLabel();
+    });
+
+    // Follow the system setting until the reader makes an explicit choice.
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+      let saved: string | null = null;
+      try {
+        saved = localStorage.getItem('theme');
+      } catch {
+        // Nothing saved.
+      }
+      if (saved === 'light' || saved === 'dark') return;
+      root.dataset['theme'] = event.matches ? 'dark' : 'light';
+      syncThemeLabel();
+    });
 
     // Escape closes whatever is open.
     document.addEventListener('keydown', (event) => {

@@ -1,0 +1,347 @@
+---
+/**
+ * Search popover, opened from the magnifier in the header.
+ *
+ * Results come from the Pagefind index the build writes to /pagefind/. The
+ * magnifier stays a real link to /search/, so search still works without
+ * JavaScript; this script takes over the click when it runs.
+ */
+---
+
+<div class="site-search" id="site-search" hidden>
+  <div class="page site-search__inner">
+    <div class="site-search__panel" role="dialog" aria-label="Search the site">
+      <form class="site-search__form" role="search" action="/search/" method="get">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" class="site-search__icon">
+          <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+          <path d="m15.5 15.5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+        <input
+          class="site-search__input"
+          type="search"
+          name="q"
+          placeholder="Search articles and chapters"
+          aria-label="Search the site"
+          aria-controls="site-search-results"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <kbd class="site-search__key" aria-hidden="true">Esc</kbd>
+      </form>
+
+      <p class="site-search__status" id="site-search-status" role="status" aria-live="polite"></p>
+      <ul class="site-search__results" id="site-search-results"></ul>
+
+      <a class="site-search__all" href="/search/">Open the full search page →</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .site-search {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 60;
+    pointer-events: none;
+  }
+
+  .site-search[hidden] {
+    display: none;
+  }
+
+  .site-search__inner {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: var(--space-2xs);
+  }
+
+  .site-search__panel {
+    pointer-events: auto;
+    width: min(36rem, 100%);
+    padding: var(--space-xs);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow:
+      var(--shadow-md),
+      0 14px 32px rgb(28 26 23 / 10%);
+  }
+
+  .site-search__form {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 0 var(--space-xs);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius);
+    background: var(--color-bg);
+  }
+
+  .site-search__form:focus-within {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-wash);
+  }
+
+  .site-search__icon {
+    flex: none;
+    color: var(--color-text-faint);
+  }
+
+  .site-search__input {
+    flex: 1;
+    min-width: 0;
+    padding: var(--space-xs) 0;
+    border: 0;
+    outline: 0;
+    background: none;
+    color: var(--color-text);
+    font: inherit;
+    font-size: var(--step-0);
+  }
+
+  .site-search__input::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  .site-search__key {
+    flex: none;
+    padding: 0 0.4rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 4px;
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    color: var(--color-text-faint);
+  }
+
+  .site-search__status {
+    margin: var(--space-xs) var(--space-2xs) 0;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .site-search__status:empty {
+    display: none;
+  }
+
+  .site-search__results {
+    list-style: none;
+    margin: var(--space-2xs) 0 0;
+    padding: 0;
+    max-height: min(26rem, 60vh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .site-search__results:empty {
+    display: none;
+  }
+
+  .site-search__results :global(a) {
+    display: block;
+    padding: var(--space-2xs) var(--space-xs);
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .site-search__results :global(a:hover),
+  .site-search__results :global(a.is-active) {
+    background: var(--color-accent-wash);
+    border-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  }
+
+  .site-search__results :global(.site-search__title) {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .site-search__results :global(.site-search__excerpt) {
+    display: -webkit-box;
+    margin-top: 2px;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: var(--color-text-muted);
+  }
+
+  .site-search__results :global(mark) {
+    background: var(--color-accent-wash);
+    color: var(--color-accent);
+    font-weight: 600;
+    border-radius: 2px;
+  }
+
+  .site-search__all {
+    display: block;
+    margin-top: var(--space-2xs);
+    padding: var(--space-2xs) var(--space-xs) 0;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+</style>
+
+<script>
+  interface PagefindResult {
+    data(): Promise<{ url: string; excerpt: string; meta: { title?: string } }>;
+  }
+
+  interface Pagefind {
+    debouncedSearch(query: string, options?: object, wait?: number): Promise<{ results: PagefindResult[] } | null>;
+  }
+
+  const trigger = document.querySelector<HTMLAnchorElement>('[data-search-trigger]');
+  const box = document.getElementById('site-search');
+  const input = box?.querySelector<HTMLInputElement>('.site-search__input');
+  const status = document.getElementById('site-search-status');
+  const list = document.getElementById('site-search-results');
+  const form = box?.querySelector<HTMLFormElement>('.site-search__form');
+
+  if (trigger && box && input && status && list && form) {
+    const MAX_RESULTS = 8;
+    let pagefind: Pagefind | undefined;
+    let loading: Promise<Pagefind | undefined> | undefined;
+    let active = -1;
+
+    // The index is fetched on first use, so pages pay nothing for search until it is wanted.
+    const load = () => {
+      loading ??= (async () => {
+        try {
+          const path = '/pagefind/pagefind.js';
+          pagefind = (await import(/* @vite-ignore */ path)) as Pagefind;
+        } catch {
+          pagefind = undefined;
+        }
+        return pagefind;
+      })();
+      return loading;
+    };
+
+    const setActive = (index: number) => {
+      const links = [...list.querySelectorAll<HTMLAnchorElement>('a')];
+      active = links.length === 0 ? -1 : (index + links.length) % links.length;
+      links.forEach((link, i) => link.classList.toggle('is-active', i === active));
+      links[active]?.scrollIntoView({ block: 'nearest' });
+    };
+
+    const open = () => {
+      box.hidden = false;
+      trigger.setAttribute('aria-expanded', 'true');
+      input.focus();
+      input.select();
+      void load();
+    };
+
+    const close = (returnFocus = false) => {
+      if (box.hidden) return;
+      box.hidden = true;
+      trigger.setAttribute('aria-expanded', 'false');
+      if (returnFocus) trigger.focus();
+    };
+
+    const render = async (query: string) => {
+      const found = await (await load())?.debouncedSearch(query, {}, 180);
+      // A newer keystroke replaced this search, or the field changed while it ran.
+      if (found === null || input.value.trim() !== query) return;
+
+      if (!pagefind) {
+        status.textContent = 'Search is not available here. Run a build to create the index, or use the search page.';
+        list.replaceChildren();
+        return;
+      }
+
+      const results = await Promise.all((found?.results ?? []).slice(0, MAX_RESULTS).map((result) => result.data()));
+      if (input.value.trim() !== query) return;
+
+      status.textContent = results.length === 0 ? `No results for “${query}”.` : '';
+      list.replaceChildren(
+        ...results.map((result) => {
+          const item = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = result.url;
+
+          const title = document.createElement('span');
+          title.className = 'site-search__title';
+          title.textContent = (result.meta.title ?? result.url).replace(/\s*\|\s*Shiv Kumar$/, '');
+
+          const excerpt = document.createElement('span');
+          excerpt.className = 'site-search__excerpt';
+          // Pagefind escapes the page text and adds only <mark> around matches.
+          excerpt.innerHTML = result.excerpt;
+
+          link.append(title, excerpt);
+          item.append(link);
+          return item;
+        }),
+      );
+      setActive(results.length > 0 ? 0 : -1);
+    };
+
+    trigger.addEventListener('click', (event) => {
+      // Keep the link for readers without JavaScript; otherwise open the popover.
+      event.preventDefault();
+      if (box.hidden) open();
+      else close();
+    });
+
+    input.addEventListener('input', () => {
+      const query = input.value.trim();
+      if (query.length === 0) {
+        status.textContent = '';
+        list.replaceChildren();
+        active = -1;
+        return;
+      }
+      status.textContent = 'Searching…';
+      void render(query);
+    });
+
+    form.addEventListener('submit', (event) => {
+      // Enter opens the highlighted result; with none, the search page takes the query.
+      const link = list.querySelectorAll<HTMLAnchorElement>('a')[active];
+      if (link) {
+        event.preventDefault();
+        location.href = link.href;
+      }
+    });
+
+    box.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        setActive(active + 1);
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        setActive(active - 1);
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        close(true);
+        return;
+      }
+
+      const typing = (event.target as HTMLElement | null)?.closest('input, textarea, select, [contenteditable]');
+      const shortcut = (event.key === 'k' && (event.ctrlKey || event.metaKey)) || (event.key === '/' && !typing);
+      if (shortcut) {
+        event.preventDefault();
+        open();
+      }
+    });
+
+    // Clicking anywhere outside the box and its button dismisses it.
+    document.addEventListener('pointerdown', (event) => {
+      const target = event.target as Node;
+      if (!box.hidden && !box.contains(target) && !trigger.contains(target)) close();
+    });
+  }
+</script>

@@ -4,10 +4,11 @@ import { getCollection, render } from 'astro:content';
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 import SectionLayout from '../../layouts/SectionLayout.astro';
 import TopicList from '../../components/TopicList.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
 import { TOPICS } from '../../data/topics';
 import { PILLAR_COPY } from '../../data/pillars';
 import { heroFor } from '../../lib/heroes';
-import { loadPwiArticleTopics, publishedTopicsFirst } from '../../lib/pwi-topic-links';
+import { loadPwiArticleTopics, loadTopicCards, publishedTopicsFirst } from '../../lib/pwi-topic-links';
 
 /**
  * One route for both pillar hubs and topic hubs, because both sit one segment
@@ -70,6 +71,10 @@ const overview = isTopic
   : undefined;
 const overviewContent = overview ? await render(overview) : undefined;
 const Content = overviewContent?.Content;
+const headings = overviewContent?.headings;
+
+// A pillar page shows each published topic as a card; topics still pending stay as a short list.
+const topicCards = isTopic ? undefined : await loadTopicCards(props.topics);
 
 const description = isTopic
   ? (props.chapters[0]?.data.description ?? props.title)
@@ -78,6 +83,7 @@ const description = isTopic
 
 {overview && Content && isTopic ? (
   <ArticleLayout
+    headings={headings}
     title={overview.data.title}
     description={overview.data.description}
     datePublished={overview.data.datePublished}
@@ -144,7 +150,31 @@ const description = isTopic
           {props.topics.length} topics. Chapter numbers are deliberately absent, because
           the two language families number their chapters independently.
         </p>
-        <TopicList topics={props.topics} basePath="/pwi/" published={props.published} articleLinks={props.articleLinks} />
+        {topicCards && topicCards.cards.length > 0 && (
+          <ul class="card-grid cards">
+            {topicCards.cards.map((card) => (
+              <li>
+                <ArticleCard
+                  href={card.href}
+                  title={card.topic.title}
+                  description={card.description}
+                  date={card.date}
+                  tags={card.tags}
+                  hero={card.hero}
+                  kicker={card.kicker}
+                  markdownHref={card.markdown}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {topicCards && topicCards.pending.length > 0 && (
+          <>
+            <h2 class="pending-heading">Not yet published</h2>
+            <TopicList topics={topicCards.pending} basePath="/pwi/" published={props.published} articleLinks={props.articleLinks} />
+          </>
+        )}
         <p class="back"><a href="/pwi/">All of PWI</a></p>
       </>
     )
@@ -177,4 +207,6 @@ const description = isTopic
   .lang__blurb { margin: 0; font-size: var(--step--1); color: var(--color-text-muted); }
 
   .back { margin-top: var(--space-l); font-size: var(--step--1); }
+  .cards { margin-top: var(--space-m); }
+  .pending-heading { margin-top: var(--space-xl); font-size: var(--step-1); }
 </style>

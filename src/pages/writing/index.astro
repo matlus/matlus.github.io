@@ -1,13 +1,12 @@
 ---
 import { getCollection } from 'astro:content';
 import SectionLayout from '../../layouts/SectionLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { heroFor } from '../../lib/heroes';
 
 const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.datePublished.getTime() - a.data.datePublished.getTime(),
 );
-
-const fmt = (date: Date) =>
-  date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 ---
 
 <SectionLayout
@@ -18,21 +17,20 @@ const fmt = (date: Date) =>
   heroSlug="section-writing"
   showTagCloud={true}
 >
-  <ul class="posts">
+  <ul class="card-grid">
     {
       posts.map((post) => (
-        <li class="post">
-          <p class="post__date">
-            {fmt(post.data.datePublished)}
-            {post.data.status === 'exploratory' && <span class="badge">Exploratory</span>}
-          </p>
-          <h2 class="post__title">
-            <a href={`/writing/${post.id}/`}>{post.data.title}</a>
-          </h2>
-          <p class="post__blurb">{post.data.description}</p>
-          <p class="post__md">
-            <a href={`/writing/${post.id}.md`}>Read as markdown</a>
-          </p>
+        <li>
+          <ArticleCard
+            href={`/writing/${post.id}/`}
+            title={post.data.title}
+            description={post.data.description}
+            date={post.data.datePublished}
+            tags={post.data.tags}
+            hero={post.data.hero ? heroFor(post.data.hero) : undefined}
+            status={post.data.status}
+            markdownHref={`/writing/${post.id}.md`}
+          />
         </li>
       ))
     }
@@ -40,38 +38,3 @@ const fmt = (date: Date) =>
 
   {posts.length === 0 && <p class="muted">Nothing published yet.</p>}
 </SectionLayout>
-
-<style>
-  .posts { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-l); }
-
-  .post {
-    padding-bottom: var(--space-l);
-    border-bottom: 1px solid var(--color-border);
-    max-width: var(--measure);
-  }
-
-  .post__date {
-    font-size: var(--step--1);
-    color: var(--color-text-faint);
-    margin: 0 0 var(--space-3xs);
-    display: flex;
-    gap: var(--space-2xs);
-    align-items: center;
-  }
-
-  .badge {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    padding: 0.1rem 0.4rem;
-    border: 1px dashed var(--color-border-strong);
-    border-radius: 999px;
-  }
-
-  .post__title { font-size: var(--step-2); margin-bottom: var(--space-2xs); }
-  .post__title a { color: var(--color-text); text-decoration: none; }
-  .post__title a:hover { color: var(--color-accent); }
-
-  .post__blurb { color: var(--color-text-muted); margin-bottom: var(--space-2xs); }
-  .post__md { font-size: var(--step--1); margin: 0; }
-</style>

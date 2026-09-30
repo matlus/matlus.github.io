@@ -12,7 +12,7 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
 /**
  * Hero images live under src/assets so Astro optimizes them per breakpoint.
@@ -59,6 +59,7 @@ const diagrams = (post.data.diagrams ?? []).filter(
   tags={post.data.tags}
   crumbs={[{ label: 'Home', href: '/' }, { label: 'Writing', href: '/writing/' }]}
   hero={hero}
+  headings={headings}
   audio={post.data.audio}
   youtube={post.data.youtube}
   youtubeLabel={post.data.youtubeLabel}

@@ -2,7 +2,9 @@
 import { getCollection } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
 import SectionLayout from '../../layouts/SectionLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
 import { TAGS } from '../../data/tags';
+import { heroFor } from '../../lib/heroes';
 
 /**
  * One pre-built page per tag.
@@ -33,6 +35,8 @@ export const getStaticPaths = (async () => {
       href: `/pwi/${overview.data.topic}/`,
       tags: overview.data.tags as readonly string[],
       date: overview.data.datePublished,
+      hero: overview.data.hero,
+      markdown: `/pwi/${overview.data.topic}.md`,
       kind: 'PWI',
     })),
     ...posts.map((post) => ({
@@ -41,6 +45,8 @@ export const getStaticPaths = (async () => {
       href: `/writing/${post.id}/`,
       tags: post.data.tags as readonly string[],
       date: post.data.datePublished,
+      hero: post.data.hero,
+      markdown: `/writing/${post.id}.md`,
       kind: 'Writing',
     })),
     ...chapters.map((chapter) => ({
@@ -49,6 +55,8 @@ export const getStaticPaths = (async () => {
       href: `/${chapter.data.section}/${chapter.data.topic}/${chapter.data.language ?? 'shared'}/`,
       tags: chapter.data.tags as readonly string[],
       date: chapter.data.datePublished,
+      hero: chapter.data.hero,
+      markdown: `/${chapter.data.section}/${chapter.data.topic}/${chapter.data.language ?? 'shared'}.md`,
       kind: 'Chapter',
     })),
   ];
@@ -66,8 +74,6 @@ export const getStaticPaths = (async () => {
 
 const { tag, posts } = Astro.props;
 
-const fmt = (date: Date) =>
-  date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 ---
 
 <SectionLayout
@@ -80,16 +86,19 @@ const fmt = (date: Date) =>
 >
   <p class="muted count">{posts.length} {posts.length === 1 ? 'page' : 'pages'}</p>
 
-  <ul class="list">
+  <ul class="card-grid">
     {
       posts.map((post) => (
         <li>
-          <p class="list__date">
-            <span class="kind">{post.kind}</span>
-            {fmt(post.date)}
-          </p>
-          <h2 class="list__title"><a href={post.href}>{post.title}</a></h2>
-          <p class="list__blurb">{post.description}</p>
+          <ArticleCard
+            href={post.href}
+            title={post.title}
+            description={post.description}
+            date={post.date}
+            hero={post.hero ? heroFor(post.hero) : undefined}
+            kicker={post.kind}
+            markdownHref={post.markdown}
+          />
         </li>
       ))
     }
@@ -102,28 +111,6 @@ const fmt = (date: Date) =>
 
 <style>
   .count { font-size: var(--step--1); }
-  .list { list-style: none; padding: 0; margin: var(--space-m) 0 0; display: grid; gap: var(--space-m); }
-  .list li { max-width: var(--measure); padding-bottom: var(--space-m); border-bottom: 1px solid var(--color-border); }
-  .list__date {
-    font-size: var(--step--1);
-    color: var(--color-text-faint);
-    margin: 0 0 var(--space-3xs);
-    display: flex;
-    gap: var(--space-2xs);
-    align-items: baseline;
-  }
-
-  .kind {
-    font-size: 0.68rem;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    border: 1px solid var(--color-border);
-    border-radius: 999px;
-    padding: 0.05rem 0.4rem;
-  }
-  .list__title { font-size: var(--step-1); margin-bottom: var(--space-3xs); }
-  .list__title a { color: var(--color-text); text-decoration: none; }
-  .list__title a:hover { color: var(--color-accent); }
-  .list__blurb { color: var(--color-text-muted); margin: 0; }
+  .card-grid { margin-top: var(--space-m); }
   .back { margin-top: var(--space-l); font-size: var(--step--1); }
 </style>

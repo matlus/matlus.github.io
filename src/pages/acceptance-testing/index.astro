@@ -1,7 +1,19 @@
 ---
 import SectionLayout from '../../layouts/SectionLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
 import { acceptanceSeries } from '../../data/acceptance-series';
+import { getCollection } from 'astro:content';
+import { heroFor } from '../../lib/heroes';
 
+const posts = new Map(
+  (await getCollection('writing', ({ data }) => !data.draft)).map((post) => [post.id, post]),
+);
+
+// Reading order comes from the series file; dates, tags, and art from each article.
+const series = acceptanceSeries.flatMap((article, index) => {
+  const post = posts.get(article.slug);
+  return post ? [{ article, post, part: index + 1 }] : [];
+});
 ---
 
 <SectionLayout
@@ -29,21 +41,32 @@ import { acceptanceSeries } from '../../data/acceptance-series';
   <section class="prose coverage" aria-labelledby="series-heading">
     <h2 id="series-heading">Read the series</h2>
     <p>Start with the boundary and its purpose, then follow the worked examples in order.</p>
-    <ol class="series-list">
-      {acceptanceSeries.map((article) => (
-        <li>
-          <a href={`/writing/${article.slug}/`}>{article.title}</a>
-          <p class="muted">{article.description}</p>
-        </li>
-      ))}
-    </ol>
   </section>
+
+  <ul class="card-grid series">
+    {
+      series.map(({ article, post, part }) => (
+        <li>
+          <ArticleCard
+            href={`/writing/${article.slug}/`}
+            title={article.title}
+            description={article.description}
+            date={post.data.datePublished}
+            tags={post.data.tags}
+            hero={post.data.hero ? heroFor(post.data.hero) : undefined}
+            kicker={`Part ${part}`}
+            markdownHref={`/writing/${article.slug}.md`}
+            level={3}
+          />
+        </li>
+      ))
+    }
+  </ul>
 
 </SectionLayout>
 
 <style>
-  .series-list li { margin-bottom: var(--space-m); }
-  .series-list p { margin-top: var(--space-2xs); font-size: var(--step--1); }
+  .series { margin-top: var(--space-m); }
   .coverage {
     margin-top: var(--space-2xl);
     padding-top: var(--space-m);
