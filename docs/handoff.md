@@ -1,5 +1,20 @@
 # Handoff
 
+## Header search repair, September 30, 2026
+
+Issue #51 reproduced on the live homepage: the header accepted input but showed
+no results, while `/search/` worked. The Pagefind index was already published with
+141 pages. Astro had inlined the header script before Vite replaced its
+`__VITE_PRELOAD__` marker, so the dynamic import failed before requesting Pagefind.
+
+`astro.config.mjs` now keeps JavaScript as external assets through the final build
+processing. Header search logs load failures, retries failed module downloads on
+the next interaction, and handles search failures with reader-facing guidance.
+`npm run build` also runs `tools/check-search.mjs`, which rejects unresolved preload
+markers and missing or empty search assets. Browser checks cover both search entry
+points, no matches, keyboard navigation, and recovery from a simulated HTTP 503
+on the initial module request.
+
 ## Sculpted 3D article illustrations, September 30, 2026
 
 The owner approved two additional illustration prompts after trials across

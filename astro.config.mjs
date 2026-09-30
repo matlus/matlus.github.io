@@ -52,6 +52,14 @@ const pagefindDev = () => ({
 //
 export default defineConfig({
   site: 'https://matlus.com',
+  vite: {
+    build: {
+      // Keep scripts in the bundle until Vite finishes dynamic-import processing.
+      // Astro can inline them too early, leaving __VITE_PRELOAD__ in the HTML.
+      // https://github.com/withastro/astro/issues/17265
+      assetsInlineLimit: (file) => file.endsWith('.js') ? false : undefined,
+    },
+  },
   redirects: {
     '/tags/factory-method/': '/writing/factory-method-pattern/',
   },
