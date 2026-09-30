@@ -1,15 +1,16 @@
 # Images and Diagrams
 
-Status: draft, 2026-09-20
+Updated: 2026-09-30
 
-The site uses technical editorial ink for hero art and pastel architectural
-infographics for diagrams within articles.
+The site uses technical editorial ink for hero art. Diagrams within articles
+default to pastel architectural infographics, with two sculpted 3D styles
+available when their treatment suits the article.
 
 | | Hero and editorial images | Simple boxology | Illustrated diagrams |
 |---|---|---|---|
 | Purpose | Evocative, sets tone | Explain relationships | Explain relationships through illustration |
 | Format | Raster (AVIF/WebP) | Inline SVG | PNG, JPEG, or WebP |
-| Produced by | Image generator, from the hero template below | Authored by hand | Image generator, from the boxology prompt |
+| Produced by | Image generator, from the hero template below | Authored by hand | Image generator, from the selected diagram prompt |
 | Themeable | No | Yes, reads design tokens | No |
 | Text readable by crawlers | Supplied as alt text and prose | Yes | Supplied as alt text, caption, and prose |
 
@@ -147,7 +148,7 @@ their own art; the tag check prevents a new tag from shipping with the fallback.
 
 ### Approved style and prompt
 
-Use [generate-pastel-boxology.md](../prompts/generate-pastel-boxology.md) for new
+Use [generate-pastel-boxology.md](../prompts/generate-pastel-boxology.md) by default for new
 diagrams. The assistant reads the article and writes the complete drawing brief;
 the owner need not supply a prompt. A written description or source image can also
 supply the subject.
@@ -160,6 +161,42 @@ Generate PNG or JPEG for richly illustrated diagrams. Keep the original at nativ
 resolution and export smaller versions as needed. Record the actual delivered
 dimensions. Provide descriptive alt text and explain the important relationships
 in a caption or nearby prose.
+
+### Sculpted 3D options
+
+The owner approved these additional styles on 2026-09-30 for illustrations
+within articles. Choose a prompt by the kind of image needed:
+
+| Prompt | Result | Options |
+|---|---|---|
+| [Generate a sculpted 3D infographic](../prompts/generate-sculpted-3d-infographic.md) | Mostly frontal dimensional icons, shallow depth, and clear diagrammatic connections | Off-white or midnight-navy background; satin or matte finish |
+| [Generate a 3D technical diorama](../prompts/generate-3d-technical-diorama.md) | A miniature world with platforms, equipment, physical paths, and an elevated three-quarter camera | Clean explanatory or cinematic presentation; satin or matte finish |
+
+Both share charcoal and blue-grey structures, cyan or teal, amber or gold, and
+green accents, bevelled forms, and tactile surfaces. The assistant derives the
+complete scene from the article or description. Reference images are optional.
+Keep colour meanings consistent and verify that each symbol communicates the
+intended idea.
+
+People are optional and appear only when requested. Use a recognisable physical
+object, such as a van, doorway, or desk, to establish their scale. People and
+equipment share that scale; explicitly identified oversized diagram symbols can
+remain symbolic. Inspect seated and standing figures together, including their
+furniture, perspective, and contact with the ground.
+
+The prompt trials covered acceptance testing, answers grounded in source
+documents, and order fulfilment in both styles. Each style also received a matte
+refinement and an order-fulfilment edit with one seated and one standing adult.
+The text-only trials produced a consistent visual family; satin prompts could
+produce stronger reflections and glow than the initial references. The matte
+option softened that finish. Human scale still required inspection: the seated
+figure in the light infographic appeared larger relative to the standing figure.
+These trials establish useful starting points, not guaranteed diagram accuracy
+or exact physical dimensions. The exploratory images remain outside the repository.
+
+Use the inspection and asset workflow in each prompt. Save the exact scene brief
+beside the selected optimized image and explain its relationships in accessible
+article prose. Hero and tag art continue to use the ink style above.
 
 ### SVG rules
 

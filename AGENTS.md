@@ -43,9 +43,15 @@ links that do not resolve off-repo.
 **The product name "DevWeave" appears nowhere on this site.** Not in copy, not in
 diagram captions, not in repo docs, because the repository is public.
 
-**Diagram images use the approved pastel architectural infographic style.** Use
+**Diagram images default to the approved pastel architectural infographic style.** Use
 [prompts/generate-pastel-boxology.md](prompts/generate-pastel-boxology.md) to derive
 the drawing brief from the article, a written description, or a source diagram.
+For articles using sculpted 3D illustrations, choose
+[the sculpted infographic prompt](prompts/generate-sculpted-3d-infographic.md)
+for dimensional icons and shallow diagrammatic layouts, or
+[the technical diorama prompt](prompts/generate-3d-technical-diorama.md)
+for miniature environments with deeper perspective. Include people only when
+requested and use each prompt's physical-scale guidance.
 The assistant writes the complete brief; the owner need not fill in the prompt.
 Richly illustrated diagrams can be
 generated PNG or JPEG. Simple boxology can be authored SVG, with real text labels
