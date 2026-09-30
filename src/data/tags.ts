@@ -106,6 +106,21 @@ export const TAGS = [
       'where the failure modes cluster.',
   },
   {
+    slug: 'prompting',
+    label: 'Prompting',
+    description:
+      "Writing instructions that define a language model's task, constraints, " +
+      'evidence requirements, and expected output. Prompt comparisons examine ' +
+      'which decisions are specified and which remain open.',
+  },
+  {
+    slug: 'verified-not-trusted',
+    label: 'Verified, Not Trusted',
+    description:
+      'Evidence and reproducible checks for AI-generated claims, with explicit ' +
+      'limits on what has been established and what remains uncertain.',
+  },
+  {
     slug: 'verification',
     label: 'Verification',
     description:
