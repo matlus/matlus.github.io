@@ -44,6 +44,8 @@ It leaves several decisions unstated, including how to handle repeated entries, 
 
 A model might handle these issues correctly on its own. We should apply the same verification standard to either prompt's response: inspect the source coverage, decisions, and calculations. The prompt's length gives us no evidence that those checks have passed.
 
+The next step is to make those hidden decisions explicit. Start with what determines a total: how each source line is read and counted, what remains uncertain, and how duplicates and refunds are treated. Then ask for code and computed results that let us check the calculation. This gives the second prompt a clear purpose: specify the work we need to inspect before accepting its conclusions.
+
 ## The more precise prompt
 
 ```text
@@ -59,6 +61,17 @@ Before interpreting anything:
 
 Don't estimate totals or do the arithmetic in your head — show the code. After the tables, tell me the three things you'd most want me to know about my spending this quarter.
 ```
+
+<details class="expense-example-output">
+<summary>Example output (illustrative placeholder)</summary>
+
+This is an illustrative placeholder, not output from a model run. It will be replaced with a recorded response to the precise prompt.
+
+- Parsing and coverage: [Transaction count and source-line issues will appear here]
+- Issues and decisions: [Duplicate, refund, and category decisions will appear here]
+- Computed totals: [Monthly category tables and budget comparisons will appear here]
+
+</details>
 
 ## What the added instructions do
 

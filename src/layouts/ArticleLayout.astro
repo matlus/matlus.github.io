@@ -275,6 +275,24 @@ const breadcrumbLd = {
     overflow-wrap: anywhere;
   }
 
+  .article-page[data-article="verified-not-trusted-expense-analysis-part-one"] :global(.expense-example-output) {
+    margin: var(--space-m) 0;
+    padding: var(--space-s);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface-sunken);
+  }
+
+  .article-page[data-article="verified-not-trusted-expense-analysis-part-one"] :global(.expense-example-output > summary) {
+    cursor: pointer;
+    font-weight: 600;
+    overflow-wrap: break-word;
+  }
+
+  .article-page[data-article="verified-not-trusted-expense-analysis-part-one"] :global(.expense-example-output[open] > summary) {
+    margin-bottom: var(--space-s);
+  }
+
   .article-side {
     position: sticky;
     top: calc(var(--nav-height) + var(--space-s));
