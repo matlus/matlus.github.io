@@ -96,7 +96,7 @@ const breadcrumbLd = {
     <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
   </Fragment>
 
-  <div class="page article-page">
+  <div class="page article-page" data-article={seed}>
     <nav class="crumbs" aria-label="Breadcrumb">
       <ol>
         {crumbs.map((crumb) => <li><a href={crumb.href}>{crumb.label}</a></li>)}
@@ -266,6 +266,13 @@ const breadcrumbLd = {
   .article-body > .prose {
     max-width: none;
     min-width: 0;
+  }
+
+  /* The two quoted prompts read as text, so their fenced blocks wrap on phones. */
+  .article-page[data-article="verified-not-trusted-expense-analysis-part-one"] :global(#the-standard-prompt + pre),
+  .article-page[data-article="verified-not-trusted-expense-analysis-part-one"] :global(#the-more-precise-prompt + pre) {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
 
   .article-side {
