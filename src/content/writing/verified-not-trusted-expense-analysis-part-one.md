@@ -48,6 +48,8 @@ The next step is to make those hidden decisions explicit. Start with what determ
 
 ## The more precise prompt
 
+*Make the hidden decisions explicit.*
+
 ```text
 Attached is a running personal expense log (personal_expenses.txt) and a short note on the two things I'm budgeting against (budget_notes.txt). The log isn't structured — dates and formatting are inconsistent, there's no category field, and it's roughly but not strictly chronological.
 

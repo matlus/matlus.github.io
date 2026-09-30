@@ -57,7 +57,11 @@ export default defineConfig({
   },
   markdown: {
     shikiConfig: {
-      theme: 'ayu-dark',
+      themes: {
+        light: 'github-light-high-contrast',
+        dark: 'github-dark-high-contrast',
+      },
+      defaultColor: 'light-dark()',
     },
   },
   integrations: [
