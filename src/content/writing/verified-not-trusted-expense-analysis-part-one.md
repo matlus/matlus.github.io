@@ -48,7 +48,12 @@ The next step is to make those hidden decisions explicit. Start with what determ
 
 ## The more precise prompt
 
-*Make the hidden decisions explicit.*
+<div class="article-callout" role="note" aria-label="Idea">
+  <svg class="article-callout__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/icons/callouts.svg#idea"></use></svg>
+  <div class="article-callout__content">
+    <p>Make the hidden decisions explicit.</p>
+  </div>
+</div>
 
 ```text
 Attached is a running personal expense log (personal_expenses.txt) and a short note on the two things I'm budgeting against (budget_notes.txt). The log isn't structured — dates and formatting are inconsistent, there's no category field, and it's roughly but not strictly chronological.
