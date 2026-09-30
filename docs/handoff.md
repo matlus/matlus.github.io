@@ -291,7 +291,7 @@ typical saving is around 90%.
 ### Writing callouts
 
 Use [writing-guide.md](writing-guide.md) for reusable idea and note boxes in new
-or existing articles. The shared style uses a spark for an idea and a folded page
+or existing articles. The shared style uses a lightbulb for an idea and a folded page
 for a note, with accessible type labels and theme-aware colours. Both variants
 appear on the style reference page. The expense-analysis article contains the
 first editorial use.
