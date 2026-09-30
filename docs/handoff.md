@@ -1,5 +1,58 @@
 # Handoff
 
+## Site chrome refresh, September 30, 2026
+
+Shiv liked the theme, header, and article layout of an AI-blog reference site and asked
+for the same ideas here. All of it is token-driven and needs no new dependencies.
+
+- **Theme toggle.** A moon and sun button in the header. An inline script in
+  `BaseLayout.astro` sets `data-theme` before first paint from the saved choice
+  (`localStorage` key `theme`), else the system preference. The token blocks in
+  `tokens.css` already carried both palettes.
+- **Header menus.** Every top-level item is a bordered box with a bold label, a tiny
+  second line, and a count chip, and opens a dropdown on hover or focus. Writing and
+  Media list their newest real entries, and Acceptance Testing lists the first four
+  articles of `src/data/acceptance-series.ts`, so none of them needs hand-kept links.
+  About has no dropdown because it has nothing to preview. Below 1200px the bar collapses
+  to the hamburger drawer, because the boxes need about 1150px.
+- **Homepage.** A stats strip (articles, chapters, topics, last updated) computed from
+  published content by `src/lib/site-stats.ts`, section cards with an icon tile and a
+  count, and a gradient wash under the header from `--gradient-wash`.
+- **Articles.** "On this page" in the sidebar, built at build time from the rendered
+  headings and highlighted while scrolling by `TableOfContents.astro`. One measured
+  value, `--anchor-offset` (bar height plus 12px), sets both where a clicked heading
+  stops and where it counts as current. A click pins the chosen entry until the reader
+  scrolls on their own, so short final sections still select correctly. Topic chips moved
+  from the sidebar to the header.
+- **Cards.** `ArticleCard.astro` (thumbnail, tags, title, summary, date, Markdown link,
+  and rounded video and audio boxes) and `SectionCard.astro` (icon tile, count, title,
+  text) are the two shared listing components. They serve the Writing, Acceptance
+  Testing, PWI, Media, and tag pages. Media is a card grid with the All, Video, and Audio
+  filter. PWI pillar cards show each pillar's hero, and pillar pages list published
+  topics as article cards from `loadTopicCards` in `src/lib/pwi-topic-links.ts`, with
+  unpublished topics in a short list below. The video box shows the article title under "Video on YouTube" and links to
+  the recording. No audio exists yet; the audio box renders when an entry has `audio`.
+- **Search.** The magnifier opens a popover (`SiteSearch.astro`) with live results from the
+  Pagefind index, loaded on first use. It also opens with `/` or Ctrl+K, moves with the arrow
+  keys, and closes with Escape. The magnifier stays a link to `/search/` for readers without
+  JavaScript. The index exists only after `npm run build`, so `astro.config.mjs` serves
+  `dist/pagefind` to the dev server; it is as old as the last build.
+- **Tags.** A tag is a link to its topic page, which lists everything carrying it. Tags in
+  cards are real links above the card's own link. A PWI topic such as Class Design and the
+  tag of the same name are different pages on purpose: the topic page is the chapter hub,
+  and the tag page gathers every article and chapter about the subject.
+- **Logo.** The mark is a raster now. `docs/source-material/matlus-logo-master.png` is the
+  1254px master with thickened stems. `node tools/prepare-logo.mjs` trims it and writes
+  `public/logo/matlus-mark-<width>.png` for every display size, plus the square favicon,
+  `favicon.ico`, and `apple-touch-icon.png`. The header and footer use `srcset`, so each
+  screen density gets a file made for it. The old `matlus-logo.svg` and favicon SVGs stay in
+  `public/` so published URLs keep working. To change the logo, replace the master and
+  rerun the script.
+- **Footer.** Brand, Topics (the ten most used), Explore, Connect (GitHub, YouTube,
+  llms.txt), a copyright line whose year refreshes in the browser, and a faded
+  "Engineering with Intent" mark matching the header tagline. No email address appears
+  anywhere, by decision.
+
 ## Functional acceptance-testing series, September 27, 2026
 
 Sixteen articles are prepared under `src/content/writing`, with publication dates

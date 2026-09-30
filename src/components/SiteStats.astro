@@ -1,0 +1,38 @@
+---
+import { siteStats, formatShortDate } from '../lib/site-stats';
+
+const stats = await siteStats();
+---
+
+<ul class="site-stats" aria-label="Site at a glance">
+  <li><strong>{stats.articles}</strong> articles</li>
+  <li><strong>{stats.chapters}</strong> chapters</li>
+  <li><strong>{stats.topics}</strong> topics</li>
+  <li>Updated <strong><time datetime={stats.updated.toISOString().slice(0, 10)}>{formatShortDate(stats.updated)}</time></strong></li>
+</ul>
+
+<style>
+  .site-stats {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin: var(--space-m) 0 0;
+    padding: 0;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .site-stats li {
+    padding: var(--space-3xs) var(--space-xs);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+    white-space: nowrap;
+  }
+
+  .site-stats strong {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+</style>

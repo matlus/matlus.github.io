@@ -1,96 +1,245 @@
-<footer class="site-footer">
-  <div class="page site-footer__inner">
-    <p class="muted site-footer__credit">Shiv Kumar</p>
+---
+import { NAV } from '../data/nav';
+import { TAGS, tagHref } from '../data/tags';
+import { tagCounts } from '../lib/tag-counts';
 
-    <nav class="site-footer__social" aria-label="Find me online">
-      <a class="site-footer__social-link" href="https://github.com/matlus">
-        {/* GitHub mark from Simple Icons (CC0). */}
-        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor" aria-hidden="true" focusable="false">
-          <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-        </svg>
-        <span>GitHub</span>
+const counts = await tagCounts();
+const topTopics = TAGS.filter((tag) => (counts[tag.slug] ?? 0) > 0)
+  .sort((a, b) => (counts[b.slug] ?? 0) - (counts[a.slug] ?? 0) || a.label.localeCompare(b.label))
+  .slice(0, 10);
+
+const explore = [
+  ...NAV.map((item) => ({ label: item.label, href: item.href })),
+  { label: 'Search', href: '/search/' },
+  { label: 'All topics', href: '/tags/' },
+];
+
+// Rendered at build time, then refreshed in the browser so a long-lived
+// deploy never shows a stale year.
+const buildYear = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="site-footer__glow" aria-hidden="true"></div>
+
+  <div class="page site-footer__inner">
+    <div class="site-footer__brand">
+      <a class="site-footer__logo" href="/">
+        <img
+          src="/logo/matlus-mark-80.png"
+          srcset="/logo/matlus-mark-40.png 40w, /logo/matlus-mark-56.png 56w, /logo/matlus-mark-64.png 64w, /logo/matlus-mark-80.png 80w, /logo/matlus-mark-112.png 112w, /logo/matlus-mark-168.png 168w, /logo/matlus-mark-224.png 224w"
+          sizes="40px"
+          alt=""
+          width="40"
+          height="34"
+        />
+        <span>Matlus</span>
       </a>
-      <a class="site-footer__social-link" href="https://youtube.com/matlus">
-        {/* YouTube mark from Simple Icons (CC0). */}
-        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor" aria-hidden="true" focusable="false">
-          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-        </svg>
-        <span>YouTube</span>
-      </a>
+      <p class="site-footer__blurb">Decisions engineers can explain, test, and revisit.</p>
+    </div>
+
+    <nav class="site-footer__col site-footer__col--topics" aria-label="Topics">
+      <h2 class="site-footer__heading">Topics</h2>
+      <ul class="site-footer__list site-footer__list--two">
+        {
+          topTopics.map((tag) => (
+            <li>
+              <a href={tagHref(tag.slug)}>{tag.label}</a>
+            </li>
+          ))
+        }
+      </ul>
     </nav>
 
-    <a class="site-footer__machine" href="/llms.txt">llms.txt</a>
+    <nav class="site-footer__col" aria-label="Explore">
+      <h2 class="site-footer__heading">Explore</h2>
+      <ul class="site-footer__list">
+        {
+          explore.map((link) => (
+            <li>
+              <a href={link.href}>{link.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <nav class="site-footer__col" aria-label="Find me online">
+      <h2 class="site-footer__heading">Connect</h2>
+      <ul class="site-footer__list">
+        <li>
+          <a class="site-footer__social" href="https://github.com/matlus">
+            {/* GitHub mark from Simple Icons (CC0). */}
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true" focusable="false">
+              <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+            </svg>
+            GitHub
+          </a>
+        </li>
+        <li>
+          <a class="site-footer__social" href="https://youtube.com/matlus">
+            {/* YouTube mark from Simple Icons (CC0). */}
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true" focusable="false">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+            </svg>
+            YouTube
+          </a>
+        </li>
+        <li>
+          <a class="site-footer__social" href="/llms.txt">llms.txt</a>
+        </li>
+      </ul>
+    </nav>
   </div>
+
+  <div class="page site-footer__bar">
+    <p class="site-footer__copy">
+      &copy; <span data-year>{buildYear}</span> Shiv Kumar. All rights reserved.
+    </p>
+  </div>
+
+  <div class="site-footer__mark" aria-hidden="true">Engineering with Intent</div>
 </footer>
 
 <style>
   .site-footer {
-    border-top: 1px solid var(--color-border);
+    position: relative;
+    overflow: hidden;
     margin-top: var(--space-2xl);
-    padding: var(--space-l) 0;
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--color-border);
+    background: linear-gradient(to bottom, transparent, var(--color-surface-sunken));
     font-size: var(--step--1);
   }
 
+  /* Soft light spilling down from the top edge. */
+  .site-footer__glow {
+    position: absolute;
+    top: -10rem;
+    left: 50%;
+    width: 48rem;
+    max-width: 100%;
+    height: 18rem;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: var(--color-accent);
+    opacity: 0.07;
+    filter: blur(64px);
+    pointer-events: none;
+  }
+
   .site-footer__inner {
+    position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    grid-template-areas: 'credit social machine';
-    align-items: center;
-    gap: var(--space-m);
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-l);
   }
 
-  .site-footer__credit {
-    grid-area: credit;
-    margin: 0;
-  }
-
-  .site-footer__social {
-    grid-area: social;
-    display: flex;
-    justify-content: center;
-    gap: var(--space-m);
-  }
-
-  .site-footer__social-link {
-    display: flex;
-    flex-direction: column;
+  .site-footer__logo {
+    display: inline-flex;
     align-items: center;
     gap: var(--space-2xs);
-    min-width: var(--space-2xl);
-    padding: var(--space-xs);
-    border-radius: var(--radius);
     color: var(--color-text);
     text-decoration: none;
-    font-weight: 600;
+    font-family: 'SK Porsche', var(--font-sans);
+    font-size: var(--step-1);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
   }
 
-  .site-footer__social-link svg {
-    width: var(--space-l);
-    height: var(--space-l);
+  .site-footer__logo img {
+    width: 2.5rem;
+    height: auto;
   }
 
-  .site-footer__social-link:hover,
-  .site-footer__social-link:focus-visible {
-    color: var(--color-accent);
-    background: var(--color-accent-wash);
-  }
-
-  .site-footer__machine {
-    grid-area: machine;
-    justify-self: end;
+  .site-footer__blurb {
+    max-width: 18rem;
+    margin: var(--space-s) 0 0;
     color: var(--color-text-muted);
+    line-height: 1.55;
   }
 
-  .site-footer__machine:hover {
+  .site-footer__heading {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--color-text);
+  }
+
+  .site-footer__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .site-footer__list--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-s);
+  }
+
+  .site-footer__list a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-height: 1.75rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color 0.12s ease;
+  }
+
+  .site-footer__list a:hover,
+  .site-footer__list a:focus-visible {
     color: var(--color-accent);
   }
 
-  @media (max-width: 40rem) {
+  .site-footer__bar {
+    position: relative;
+    margin-top: var(--space-xl);
+    padding: var(--space-s) 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .site-footer__copy {
+    margin: 0;
+    color: var(--color-text-faint);
+  }
+
+  /* Oversized wordmark that fades out towards the bottom edge. */
+  .site-footer__mark {
+    padding: 0 var(--gutter) var(--space-s);
+    text-align: center;
+    white-space: nowrap;
+    user-select: none;
+    pointer-events: none;
+    font-size: clamp(2rem, 8.2vw, 6.5rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    background: var(--gradient-watermark);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  @media (max-width: 56rem) {
     .site-footer__inner {
-      grid-template-columns: minmax(0, 1fr) auto;
-      grid-template-areas:
-        'social social'
-        'credit machine';
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .site-footer__brand,
+    .site-footer__col--topics {
+      grid-column: 1 / -1;
     }
   }
 </style>
+
+<script>
+  // Keep the copyright year current in a page loaded long after it was built.
+  const year = String(new Date().getFullYear());
+  for (const element of document.querySelectorAll<HTMLElement>('[data-year]')) {
+    element.textContent = year;
+  }
+</script>

@@ -1,12 +1,20 @@
 ---
 import SectionLayout from '../../layouts/SectionLayout.astro';
 import TopicList from '../../components/TopicList.astro';
+import SectionCard from '../../components/SectionCard.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { heroFor } from '../../lib/heroes';
 import { PILLARS } from '../../data/nav';
 import { topicsInSection } from '../../data/topics';
 import { getCollection } from 'astro:content';
 import { loadPwiArticleTopics, publishedTopicsFirst } from '../../lib/pwi-topic-links';
 
 const topics = topicsInSection('pwi');
+
+// Each pillar's art: its own hero, or the Acceptance Testing banner for Verification with Intent,
+// which is that section.
+const pillarHero = (href: string) =>
+  heroFor(href.startsWith('/pwi/') ? `pwi-${href.split('/')[2] ?? ''}` : 'section-acceptance-testing');
 
 const chapterTopics = new Set(
   (await getCollection('chapters', ({ data }) => !data.draft && data.section === 'pwi'))
@@ -53,14 +61,11 @@ const orderedTopics = publishedTopicsFirst(topics, chapterTopics, articleLinks);
   <section class="pillars" aria-labelledby="pillars-heading">
     <h2 id="pillars-heading">The four pillars</h2>
 
-    <ul class="pillars__grid">
+    <ul class="card-grid card-grid--compact">
       {
         PILLARS.map((pillar) => (
-          <li class="pillar">
-            <a href={pillar.href} class="pillar__link">
-              <h3 class="pillar__title">{pillar.label}</h3>
-              <p class="pillar__blurb">{pillar.blurb}</p>
-            </a>
+          <li>
+            <SectionCard href={pillar.href} title={pillar.label} blurb={pillar.blurb} hero={pillarHero(pillar.href)} icon={pillar.icon} />
           </li>
         ))
       }
@@ -73,13 +78,19 @@ const orderedTopics = publishedTopicsFirst(topics, chapterTopics, articleLinks);
       Factories, configuration and service boundaries explained through their
       responsibilities and worked examples. <a href="/tags/design-patterns/">Browse all design pattern articles</a>.
     </p>
-    <ul class="pillars__grid">
+    <ul class="card-grid">
       {designPatternArticles.map((article) => (
-        <li class="pillar">
-          <a href={`/writing/${article.id}/`} class="pillar__link">
-            <h3 class="pillar__title">{article.data.title}</h3>
-            <p class="pillar__blurb">{article.data.description}</p>
-          </a>
+        <li>
+          <ArticleCard
+            href={`/writing/${article.id}/`}
+            title={article.data.title}
+            description={article.data.description}
+            date={article.data.datePublished}
+            tags={article.data.tags}
+            hero={article.data.hero ? heroFor(article.data.hero) : undefined}
+            markdownHref={`/writing/${article.id}.md`}
+            level={3}
+          />
         </li>
       ))}
     </ul>
@@ -101,43 +112,8 @@ const orderedTopics = publishedTopicsFirst(topics, chapterTopics, articleLinks);
     margin-top: var(--space-xl);
   }
 
-  .pillars__grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--space-s);
+  .card-grid--compact {
     grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  }
-
-  .pillar {
-    border: 1px solid var(--color-border);
-    border-left: 3px solid var(--color-accent);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
-  }
-
-  .pillar__link {
-    display: block;
-    padding: var(--space-s) var(--space-m);
-    text-decoration: none;
-    color: inherit;
-    height: 100%;
-  }
-
-  .pillar__link:hover .pillar__title {
-    color: var(--color-accent);
-  }
-
-  .pillar__title {
-    font-size: var(--step-1);
-    margin-bottom: var(--space-3xs);
-  }
-
-  .pillar__blurb {
-    margin: 0;
-    font-size: var(--step--1);
-    color: var(--color-text-muted);
   }
 
   .topics-section {

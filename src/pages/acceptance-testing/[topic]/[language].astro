@@ -23,13 +23,14 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { chapter } = Astro.props;
-const { Content } = await render(chapter);
+const { Content, headings } = await render(chapter);
 const topic = topicBySlug(chapter.data.topic);
 const language = chapter.data.language ?? 'shared';
 const languageLabel = LANGUAGE_LABEL[language] ?? 'Shared';
 ---
 
 <ArticleLayout
+  headings={headings}
   title={`${chapter.data.title} in ${languageLabel}`}
   description={chapter.data.description}
   datePublished={chapter.data.datePublished}

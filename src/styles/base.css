@@ -19,7 +19,7 @@ html {
 
 body {
   margin: 0;
-  background: var(--color-bg);
+  background: var(--gradient-wash) top / 100% 36rem no-repeat, var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
   font-size: var(--step-0);
@@ -273,6 +273,15 @@ hr {
   max-width: var(--measure);
 }
 
+/*
+ * Where a heading stops when reached from "On this page". The table of contents
+ * script measures the real bar height and sets --anchor-offset, so a heading
+ * sits just under the bar; the fallback covers pages without the script.
+ */
+.prose :is(h2, h3, h4) {
+  scroll-margin-top: var(--anchor-offset, calc(var(--nav-height) + 0.75rem));
+}
+
 .stack > * + * {
   margin-top: var(--space-s);
 }
@@ -308,6 +317,24 @@ hr {
   letter-spacing: 0.08em;
   color: var(--color-text-faint);
   margin-bottom: var(--space-2xs);
+}
+
+/* Responsive grid for card listings. */
+.card-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-m);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+}
+
+/* Gradient-filled text, for a single emphasised phrase in a heading. */
+.gradient-text {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .visually-hidden {

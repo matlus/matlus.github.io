@@ -9,16 +9,38 @@
  * crawlers see links to every section from every page.
  */
 
+export type NavIconName =
+  | 'layers'
+  | 'code'
+  | 'shield'
+  | 'alert'
+  | 'grid'
+  | 'flask'
+  | 'file'
+  | 'play'
+  | 'user';
+
 export interface NavChild {
   readonly label: string;
   readonly href: string;
   readonly blurb?: string;
+  readonly icon?: NavIconName;
+  /** Small monospaced detail line under the blurb. */
+  readonly meta?: string;
+  /** Short tinted tag at the right edge, such as a date or media type. */
+  readonly chip?: string;
 }
 
 export interface NavItem {
   readonly label: string;
   /** Top-level items are always links, not dead dropdown triggers. */
   readonly href: string;
+  /** Tiny second line under the label. */
+  readonly sub: string;
+  /** Small caps heading inside the dropdown. */
+  readonly eyebrow?: string;
+  /** Closing link at the foot of the dropdown. */
+  readonly footer?: string;
   readonly children?: readonly NavChild[];
 }
 
@@ -28,11 +50,13 @@ export const PILLARS = [
     label: 'Architecture with Intent',
     href: '/pwi/architecture-with-intent/',
     blurb: 'Layers, boundaries, and where responsibility belongs.',
+    icon: 'layers',
   },
   {
     label: 'Programming with Intent',
     href: '/pwi/programming-with-intent/',
     blurb: 'Classes, methods, naming, and the shape of everyday code.',
+    icon: 'code',
   },
   {
     // Not a page under /pwi/. This pillar IS the Acceptance Testing section,
@@ -42,11 +66,13 @@ export const PILLARS = [
     label: 'Verification with Intent',
     href: '/acceptance-testing/',
     blurb: 'Functional acceptance testing at the boundary. Proving the thing does what it claims.',
+    icon: 'shield',
   },
   {
     label: 'Programming to Exceptions',
     href: '/pwi/programming-to-exceptions/',
     blurb: 'Failure as a designed path rather than an afterthought.',
+    icon: 'alert',
   },
 ] as const satisfies readonly NavChild[];
 
@@ -56,36 +82,24 @@ export const PILLARS = [
  * every consumer would have to narrow before reading an optional property.
  */
 export const NAV: readonly NavItem[] = [
-  { label: 'PWI', href: '/pwi/', children: PILLARS },
+  {
+    label: 'PWI',
+    href: '/pwi/',
+    sub: 'Programming With Intent',
+    eyebrow: 'Four pillars',
+    footer: 'Browse all of PWI',
+    children: PILLARS,
+  },
   {
     label: 'Acceptance Testing',
     href: '/acceptance-testing/',
-    children: [
-      {
-        label: 'Functional Acceptance Testing',
-        href: '/acceptance-testing/functional-acceptance-testing/',
-        blurb: 'Test-data provenance at the boundary.',
-      },
-      {
-        label: 'Testing Strategy',
-        href: '/acceptance-testing/testing-strategy/',
-        blurb: 'Which layer proves what.',
-      },
-      {
-        label: 'Test Structure',
-        href: '/acceptance-testing/test-structure-organization/',
-        blurb: 'Arrangement, isolation, and fixture topology.',
-      },
-      {
-        label: 'Test Mediators and Spies',
-        href: '/acceptance-testing/test-mediators-and-spies/',
-        blurb: 'Per-test composition that stays production-faithful.',
-      },
-    ],
+    sub: 'Verify at the boundary',
+    eyebrow: 'The series, in reading order',
+    footer: 'Browse acceptance testing',
   },
-  { label: 'Writing', href: '/writing/' },
-  { label: 'Media', href: '/media/' },
-  { label: 'About', href: '/about/' },
+  { label: 'Writing', href: '/writing/', sub: 'Essays and articles', eyebrow: 'Latest', footer: 'All writing' },
+  { label: 'Media', href: '/media/', sub: 'Video and audio', eyebrow: 'Latest recordings', footer: 'All media' },
+  { label: 'About', href: '/about/', sub: 'Shiv Kumar' },
 ];
 
 /** True when `href` is the current page or an ancestor of it. */

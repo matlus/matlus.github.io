@@ -1,0 +1,158 @@
+---
+import { Image } from 'astro:assets';
+import type { NavIconName } from '../data/nav';
+import NavIcon from './NavIcon.astro';
+
+interface Props {
+  readonly href: string;
+  readonly title: string;
+  readonly blurb: string;
+  /** Used when there is no thumbnail. */
+  readonly icon?: NavIconName | undefined;
+  /** Thumbnail shown in place of the icon tile. */
+  readonly hero?: ImageMetadata | undefined;
+  /** Optional count chip, such as 12 with the unit "chapters". */
+  readonly count?: number | undefined;
+  readonly unit?: string | undefined;
+  readonly level?: 2 | 3;
+}
+
+const { href, title, blurb, icon, hero, count, unit, level = 3 } = Astro.props;
+const Heading = `h${level}` as 'h2' | 'h3';
+---
+
+<a {href} class="section-card">
+  {
+    hero && (
+      <Image
+        src={hero}
+        alt=""
+        class="section-card__thumb"
+        widths={[480, 800]}
+        sizes="(max-width: 48rem) 100vw, 22rem"
+        loading="lazy"
+      />
+    )
+  }
+  <div class="section-card__body">
+    {
+      !hero && icon && (
+        <span class="section-card__top">
+          <span class="section-card__tile">
+            <NavIcon name={icon} />
+          </span>
+          {count !== undefined && count > 0 && (
+            <span class="section-card__chip">
+              <strong>{count}</strong> {unit}
+            </span>
+          )}
+        </span>
+      )
+    }
+    <Heading class="section-card__title">{title}</Heading>
+    <p class="section-card__blurb">{blurb}</p>
+    <span class="section-card__more" aria-hidden="true">Read on →</span>
+  </div>
+</a>
+
+<style>
+  .section-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .section-card:hover,
+  .section-card:focus-visible {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .section-card__thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .section-card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: var(--space-m);
+  }
+
+  .section-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-s);
+  }
+
+  .section-card__tile {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent);
+    border-radius: 10px;
+    background: var(--color-accent-wash);
+    color: var(--color-accent);
+  }
+
+  .section-card__chip {
+    padding: 0.1rem 0.6rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .section-card__chip strong {
+    color: var(--color-text);
+  }
+
+  .section-card__title {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .section-card:hover .section-card__title {
+    color: var(--color-accent);
+  }
+
+  .section-card__blurb {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    margin-bottom: var(--space-s);
+  }
+
+  .section-card__more {
+    margin-top: auto;
+    font-size: var(--step--1);
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .section-card {
+      transition: none;
+    }
+    .section-card:hover,
+    .section-card:focus-visible {
+      transform: none;
+    }
+  }
+</style>

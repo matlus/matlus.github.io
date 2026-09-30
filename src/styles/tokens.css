@@ -65,6 +65,19 @@
 
   --nav-height: 3.5rem;
 
+  /* Soft colour wash behind the header, gradient text, and the footer mark. */
+  --gradient-wash:
+    radial-gradient(56rem 22rem at 12% -6rem, rgb(15 111 107 / 12%), transparent 70%),
+    radial-gradient(48rem 20rem at 88% -4rem, rgb(43 92 138 / 11%), transparent 70%);
+  --gradient-text: linear-gradient(90deg, #0f6f6b, #2b5c8a);
+  --gradient-watermark: linear-gradient(to bottom, rgb(28 26 23 / 11%), rgb(28 26 23 / 0%));
+
+  /* Video links carry a YouTube-style red, apart from the teal accent. */
+  --color-video: #c4302b;
+  --color-video-wash: #fbeceb;
+
+  color-scheme: light;
+
   /*
    * Diagram palette. Diagrams reference these and never a literal hex, so a
    * re-skin carries them along and dark mode needs no separate artwork.
@@ -126,6 +139,16 @@
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
     --shadow-md: 0 2px 8px rgb(0 0 0 / 40%);
 
+    --gradient-wash:
+      radial-gradient(56rem 22rem at 12% -6rem, rgb(88 199 192 / 13%), transparent 70%),
+      radial-gradient(48rem 20rem at 88% -4rem, rgb(125 180 224 / 10%), transparent 70%);
+    --gradient-text: linear-gradient(90deg, #58c7c0, #7db4e0);
+    --gradient-watermark: linear-gradient(to bottom, rgb(242 239 232 / 12%), rgb(242 239 232 / 0%));
+    --color-video: #ff7d76;
+    --color-video-wash: #3a1f1d;
+
+    color-scheme: dark;
+
     --diagram-line: #857f73;
     --diagram-label: #f2efe8;
     --diagram-surface: #1e1c17;
@@ -180,6 +203,16 @@
 
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
   --shadow-md: 0 2px 8px rgb(0 0 0 / 40%);
+
+  --gradient-wash:
+    radial-gradient(56rem 22rem at 12% -6rem, rgb(88 199 192 / 13%), transparent 70%),
+    radial-gradient(48rem 20rem at 88% -4rem, rgb(125 180 224 / 10%), transparent 70%);
+  --gradient-text: linear-gradient(90deg, #58c7c0, #7db4e0);
+  --gradient-watermark: linear-gradient(to bottom, rgb(242 239 232 / 12%), rgb(242 239 232 / 0%));
+  --color-video: #ff7d76;
+  --color-video-wash: #3a1f1d;
+
+  color-scheme: dark;
 
   --diagram-line: #857f73;
   --diagram-label: #f2efe8;

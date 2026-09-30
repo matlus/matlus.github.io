@@ -1,0 +1,199 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  readonly headings: readonly MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+
+// Second and third level only: deeper headings make the list longer than the
+// article is worth navigating by.
+const items = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+
+{
+  items.length >= 2 && (
+    <nav class="toc" aria-labelledby="toc-heading" data-pagefind-ignore>
+      <h2 id="toc-heading" class="toc__heading">On this page</h2>
+      <ol class="toc__list">
+        {items.map((heading) => (
+          <li class:list={['toc__item', `toc__item--${heading.depth}`]}>
+            <a href={`#${heading.slug}`} data-toc-link>
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
+<style>
+  .toc {
+    padding: var(--space-xs);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--color-surface) 85%, transparent);
+  }
+
+  .toc__heading {
+    margin: 0;
+    padding: var(--space-2xs) var(--space-xs) var(--space-xs);
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--color-text);
+  }
+
+  .toc__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2px;
+  }
+
+  /* The whole row is the target, so the hover box wraps the text with padding on every side. */
+  .toc__item a {
+    display: block;
+    padding: 0.45rem var(--space-xs);
+    border-radius: var(--radius);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    line-height: 1.35;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+
+  .toc__item--3 a {
+    padding-left: var(--space-m);
+    font-size: 0.92em;
+  }
+
+  .toc__item a:hover,
+  .toc__item a:focus-visible {
+    background: var(--color-surface-sunken);
+    color: var(--color-text);
+  }
+
+  .toc__item a.is-active {
+    background: var(--color-accent-wash);
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  /* The list is redundant once the article stacks into one narrow column. */
+  @media (max-width: 60rem) {
+    .toc {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]')];
+  const targets = links
+    .map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
+    .filter((element): element is HTMLElement => element !== null);
+
+  if (links.length > 0 && targets.length === links.length) {
+    const root = document.documentElement;
+    const nav = document.querySelector<HTMLElement>('.site-nav');
+
+    // Breathing room between the sticky bar and a heading that was jumped to.
+    const GAP = 12;
+    // A heading counts as current slightly before it reaches its landing spot. The
+    // tolerance must exceed zero, or a heading that lands exactly on the line can
+    // fall a pixel short and leave the previous entry highlighted.
+    const TOLERANCE = 28;
+
+    let anchorOffset = 0;
+    const measure = () => {
+      anchorOffset = (nav?.offsetHeight ?? 0) + GAP;
+      // One number drives both where a clicked heading stops (CSS scroll-margin)
+      // and which heading counts as current, so the two cannot disagree.
+      root.style.setProperty('--anchor-offset', `${anchorOffset}px`);
+    };
+
+    // After a click the clicked entry stays selected until the reader scrolls on
+    // their own. Short final sections cannot always reach the landing spot, so
+    // position alone would pick the wrong entry.
+    let pinned = false;
+
+    const select = (index: number) => {
+      links.forEach((link, i) => {
+        const active = i === index;
+        link.classList.toggle('is-active', active);
+        if (active) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
+
+      // Keep the highlighted entry visible when the list itself scrolls.
+      const active = links[index];
+      const side = active?.closest<HTMLElement>('.article-side');
+      if (active && side) {
+        const row = active.getBoundingClientRect();
+        const box = side.getBoundingClientRect();
+        if (row.top < box.top + 8) side.scrollTop -= box.top + 8 - row.top;
+        else if (row.bottom > box.bottom - 8) side.scrollTop += row.bottom - (box.bottom - 8);
+      }
+    };
+
+    const update = () => {
+      if (pinned) return;
+
+      const line = anchorOffset + TOLERANCE;
+      let current = 0;
+      targets.forEach((target, index) => {
+        if (target.getBoundingClientRect().top <= line) current = index;
+      });
+
+      // At the very bottom the last entry is current, even if its heading never climbed to the line.
+      if (innerHeight + scrollY >= root.scrollHeight - 2) current = targets.length - 1;
+
+      select(current);
+    };
+
+    let frame = 0;
+    const schedule = () => {
+      if (frame === 0) {
+        frame = requestAnimationFrame(() => {
+          frame = 0;
+          update();
+        });
+      }
+    };
+
+    links.forEach((link, index) => {
+      link.addEventListener('click', () => {
+        pinned = true;
+        select(index);
+      });
+    });
+
+    // Anything the reader does to scroll releases the pin.
+    const release = () => {
+      pinned = false;
+    };
+    addEventListener('wheel', release, { passive: true });
+    addEventListener('touchmove', release, { passive: true });
+    addEventListener('keydown', (event) => {
+      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) release();
+    });
+    // A press on the page's own scrollbar arrives as a pointer event on the document.
+    addEventListener('pointerdown', (event) => {
+      if (!(event.target as HTMLElement).closest('[data-toc-link]')) release();
+    });
+
+    addEventListener('scroll', schedule, { passive: true });
+    addEventListener('resize', () => {
+      measure();
+      schedule();
+    });
+
+    measure();
+    update();
+  }
+</script>

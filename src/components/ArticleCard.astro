@@ -1,0 +1,365 @@
+---
+import { Image } from 'astro:assets';
+import { TAGS, tagHref } from '../data/tags';
+
+interface Recording {
+  readonly url: string;
+  /** Bold line, usually the title of the recording. */
+  readonly label: string;
+  /** Small line above it, such as "Video on YouTube". */
+  readonly kind: string;
+}
+
+interface Props {
+  readonly href: string;
+  readonly title: string;
+  readonly description: string;
+  readonly date: Date;
+  readonly tags?: readonly string[] | undefined;
+  readonly hero?: ImageMetadata | undefined;
+  /** Small label above the title, such as "Part 3" or "Chapter". */
+  readonly kicker?: string | undefined;
+  readonly status?: string | undefined;
+  readonly markdownHref?: string | undefined;
+  readonly videos?: readonly Recording[] | undefined;
+  readonly audio?: Recording | undefined;
+  readonly level?: 2 | 3;
+}
+
+const {
+  href,
+  title,
+  description,
+  date,
+  tags = [],
+  hero,
+  kicker,
+  status,
+  markdownHref,
+  videos = [],
+  audio,
+  level = 2,
+} = Astro.props;
+
+const Heading = `h${level}` as 'h2' | 'h3';
+
+const tagLabel = new Map<string, string>(TAGS.map((tag) => [tag.slug, tag.label]));
+
+const fmt = (value: Date) =>
+  value.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+
+const hasRecordings = videos.length > 0 || audio !== undefined;
+---
+
+<article class="card">
+  {
+    hero && (
+      <Image
+        src={hero}
+        alt=""
+        class="card__thumb"
+        widths={[480, 800]}
+        sizes="(max-width: 48rem) 100vw, 36rem"
+        loading="lazy"
+      />
+    )
+  }
+
+  <div class="card__body">
+    {kicker && <p class="card__kicker">{kicker}</p>}
+
+    {
+      tags.length > 0 && (
+        <ul class="card__tags" aria-label="Topics">
+          {tags.slice(0, 3).map((slug) => (
+            <li>
+              <a href={tagHref(slug)}>{tagLabel.get(slug) ?? slug}</a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <Heading class="card__title">
+      <a href={href}>{title}</a>
+    </Heading>
+    <p class="card__blurb">{description}</p>
+
+    {
+      hasRecordings && (
+        <ul class="card__media" aria-label="Recordings">
+          {videos.map((video) => (
+            <li>
+              <a class="media-box media-box--video" href={video.url} rel="noopener noreferrer">
+                <span class="media-box__icon">
+                  {/* YouTube mark from Simple Icons (CC0). */}
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                  </svg>
+                </span>
+                <span class="media-box__text">
+                  <span class="media-box__kind">{video.kind}</span>
+                  <span class="media-box__label">{video.label}</span>
+                </span>
+                <span class="media-box__arrow" aria-hidden="true">↗</span>
+              </a>
+            </li>
+          ))}
+
+          {audio && (
+            <li>
+              <a class="media-box media-box--audio" href={audio.url}>
+                <span class="media-box__icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="M4 15v-3a8 8 0 0 1 16 0v3" />
+                    <path d="M4 15h3v5H5.5A1.5 1.5 0 0 1 4 18.5V15Z" />
+                    <path d="M20 15h-3v5h1.5a1.5 1.5 0 0 0 1.5-1.5V15Z" />
+                  </svg>
+                </span>
+                <span class="media-box__text">
+                  <span class="media-box__kind">{audio.kind}</span>
+                  <span class="media-box__label">{audio.label}</span>
+                </span>
+                <span class="media-box__arrow" aria-hidden="true">↗</span>
+              </a>
+            </li>
+          )}
+        </ul>
+      )
+    }
+
+    <p class="card__foot">
+      <time datetime={date.toISOString().slice(0, 10)}>{fmt(date)}</time>
+      {status === 'exploratory' && <span class="card__badge">Exploratory</span>}
+      {markdownHref && <a class="card__md" href={markdownHref}>Markdown</a>}
+    </p>
+  </div>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .card:hover,
+  .card:focus-within {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .card__thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: var(--space-m);
+  }
+
+  /* A plain label, not a pill: it describes the card and leads nowhere on its own. */
+  .card__kicker {
+    margin: 0 0 var(--space-2xs);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+  }
+
+  .card__tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+    margin: 0 0 var(--space-xs);
+    padding: 0;
+  }
+
+  /* Tags are links to their own topic page. They sit above the stretched title link. */
+  .card__tags a {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    padding: 0.1rem 0.55rem;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+    border-radius: 999px;
+    background: var(--color-accent-wash);
+    color: var(--color-accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      border-color 0.12s ease,
+      background-color 0.12s ease;
+  }
+
+  .card__tags a:hover,
+  .card__tags a:focus-visible {
+    border-color: var(--color-accent);
+    background: var(--color-surface);
+  }
+
+  .card__title {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-2xs);
+  }
+
+  /* The title link covers the whole card, so the card is one target. */
+  .card__title a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .card__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .card:hover .card__title a {
+    color: var(--color-accent);
+  }
+
+  .card__blurb {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    margin-bottom: var(--space-s);
+  }
+
+  .card__media {
+    list-style: none;
+    display: grid;
+    gap: var(--space-2xs);
+    margin: 0 0 var(--space-s);
+    padding: 0;
+  }
+
+  /* A smaller rounded box inside the card. It sits above the stretched title link. */
+  .media-box {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-2xs) var(--space-xs);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface-sunken);
+    color: var(--color-text);
+    text-decoration: none;
+    transition:
+      border-color 0.12s ease,
+      background-color 0.12s ease,
+      transform 0.12s ease;
+  }
+
+  .media-box:hover,
+  .media-box:focus-visible {
+    border-color: var(--media-tone);
+    background: var(--media-wash);
+    transform: translateY(-1px);
+  }
+
+  .media-box--video {
+    --media-tone: var(--color-video);
+    --media-wash: var(--color-video-wash);
+  }
+
+  .media-box--audio {
+    --media-tone: var(--color-accent);
+    --media-wash: var(--color-accent-wash);
+  }
+
+  .media-box__icon {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    background: var(--media-wash);
+    color: var(--media-tone);
+  }
+
+  .media-box__text {
+    display: grid;
+    min-width: 0;
+  }
+
+  .media-box__kind {
+    font-size: 0.7rem;
+    line-height: 1.3;
+    color: var(--color-text-muted);
+  }
+
+  .media-box__label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.3;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .media-box__arrow {
+    color: var(--media-tone);
+  }
+
+  .card__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin: auto 0 0;
+    font-size: var(--step--1);
+    color: var(--color-text-faint);
+  }
+
+  /* Sits above the stretched title link so it stays clickable. */
+  .card__md {
+    position: relative;
+    z-index: 1;
+    margin-left: auto;
+  }
+
+  .card__badge {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 0.1rem 0.4rem;
+    border: 1px dashed var(--color-border-strong);
+    border-radius: 999px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card,
+    .media-box {
+      transition: none;
+    }
+    .card:hover,
+    .card:focus-within,
+    .media-box:hover,
+    .media-box:focus-visible {
+      transform: none;
+    }
+  }
+</style>

@@ -3,6 +3,8 @@ import { Image } from 'astro:assets';
 import BaseLayout from './BaseLayout.astro';
 import PlaceholderImage from '../components/PlaceholderImage.astro';
 import ArticleResources from '../components/ArticleResources.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import type { MarkdownHeading } from 'astro';
 import { TAGS, tagHref } from '../data/tags';
 
 interface Crumb {
@@ -39,12 +41,14 @@ interface Props {
   readonly markdownHref: string;
   readonly schemaType?: 'BlogPosting' | 'TechArticle' | undefined;
   readonly seed: string;
+  /** Headings from the rendered entry, for the "On this page" list. */
+  readonly headings?: readonly MarkdownHeading[] | undefined;
 }
 
 const {
   title, description, datePublished, dateModified, tags, crumbs,
   hero, audio, youtube, youtubeLabel, additionalVideos, repositories, status, evergreen = false, markdownHref, seed,
-  schemaType = 'TechArticle',
+  schemaType = 'TechArticle', headings = [],
 } = Astro.props;
 
 const fmt = (date: Date) =>
@@ -119,6 +123,16 @@ const breadcrumbLd = {
           }
           {status === 'exploratory' && <span class="badge">Exploratory</span>}
         </p>
+
+        <ul class="article-head__tags" aria-label="Topics">
+          {
+            tags.map((slug) => (
+              <li>
+                <a href={tagHref(slug)}>{tagsBySlug.get(slug)?.label ?? slug}</a>
+              </li>
+            ))
+          }
+        </ul>
       </div>
     </header>
 
@@ -129,18 +143,7 @@ const breadcrumbLd = {
       </article>
 
       <aside class="article-side">
-        <section>
-          <h2 class="side-heading">Topics</h2>
-          <ul class="side-tags">
-            {
-              tags.map((slug) => {
-                const tag = tagsBySlug.get(slug);
-                return <li><a href={tagHref(slug)}>{tag?.label ?? slug}</a></li>;
-              })
-            }
-          </ul>
-          <p class="side-more"><a href="/tags/">All topics</a></p>
-        </section>
+        <TableOfContents headings={headings} />
 
         <section>
           <h2 class="side-heading">Read as markdown</h2>
@@ -199,12 +202,42 @@ const breadcrumbLd = {
   }
 
   .article-head__meta {
-    font-size: var(--step--1);
-    color: var(--color-text-faint);
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: var(--space-2xs);
     flex-wrap: wrap;
+    margin: 0;
+    padding: var(--space-3xs) var(--space-s);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .article-head__tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin: var(--space-s) 0 0;
+    padding: 0;
+  }
+
+  .article-head__tags a {
+    display: inline-block;
+    padding: 0.15rem 0.7rem;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+    border-radius: 999px;
+    background: var(--color-accent-wash);
+    color: var(--color-accent);
+    font-size: var(--step--1);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .article-head__tags a:hover {
+    border-color: var(--color-accent);
   }
 
   .badge {
@@ -241,6 +274,10 @@ const breadcrumbLd = {
     font-size: var(--step--1);
     display: grid;
     gap: var(--space-l);
+    /* A long list scrolls inside the sidebar instead of running off screen. */
+    max-height: calc(100vh - var(--nav-height) - var(--space-l));
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .side-heading {
@@ -252,35 +289,12 @@ const breadcrumbLd = {
     margin-bottom: var(--space-2xs);
   }
 
-  .side-tags {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3xs);
-  }
-
-  .side-tags a {
-    display: inline-block;
-    padding: 0.1rem 0.45rem;
-    border: 1px solid var(--color-border);
-    border-radius: 999px;
-    text-decoration: none;
-    color: var(--color-text-muted);
-  }
-
-  .side-tags a:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-  }
-
-  .side-more, .side-note { margin: var(--space-2xs) 0 0; color: var(--color-text-faint); }
+  .side-note { margin: var(--space-2xs) 0 0; color: var(--color-text-faint); }
 
   @media (max-width: 60rem) {
     /* minmax(0, 1fr), never a bare 1fr: the bare form has an `auto` minimum
        and lets wide content push the page past the viewport. */
     .article-body { grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); }
-    .article-side { position: static; }
+    .article-side { position: static; max-height: none; overflow: visible; }
   }
 </style>

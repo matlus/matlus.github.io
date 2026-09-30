@@ -31,7 +31,7 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { chapter } = Astro.props;
-const { Content } = await render(chapter);
+const { Content, headings } = await render(chapter);
 
 const topic = TOPICS.find((t) => t.slug === chapter.data.topic);
 const pillarSlug = topic?.pillar;
@@ -50,6 +50,7 @@ const crumbs = [
 ---
 
 <ArticleLayout
+  headings={headings}
   title={`${chapter.data.title} in ${languageLabel}`}
   description={chapter.data.description}
   datePublished={chapter.data.datePublished}

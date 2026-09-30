@@ -3,14 +3,22 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PlaceholderImage from '../components/PlaceholderImage.astro';
 import TagCloud from '../components/TagCloud.astro';
+import SiteStats from '../components/SiteStats.astro';
+import SectionCard from '../components/SectionCard.astro';
 import { heroFor } from '../lib/heroes';
+import { sectionCounts } from '../lib/site-stats';
 
 const hero = heroFor('site-home-collaborative-ai');
+
+const counts = await sectionCounts();
 
 const ENTRY_POINTS = [
   {
     label: 'PWI',
     href: '/pwi/',
+    icon: 'code',
+    count: counts.pwi,
+    unit: 'chapters',
     blurb:
       'Programming With Intent. Four pillars of operationalized guidance, with worked ' +
       'examples in Python and C#.',
@@ -18,6 +26,9 @@ const ENTRY_POINTS = [
   {
     label: 'Acceptance Testing',
     href: '/acceptance-testing/',
+    icon: 'shield',
+    count: counts.acceptance,
+    unit: 'articles',
     blurb:
       'Functional acceptance testing at the boundary, plus the surrounding discipline ' +
       'of strategy, structure, naming, and assertions.',
@@ -25,17 +36,22 @@ const ENTRY_POINTS = [
   {
     label: 'Writing',
     href: '/writing/',
+    icon: 'file',
+    count: counts.writing,
+    unit: 'articles',
     blurb: 'Essays on software architecture, applied AI, and building with language models.',
   },
   {
     label: 'Media',
     href: '/media/',
+    icon: 'play',
+    count: counts.media,
+    unit: 'recordings',
     blurb:
-      'Every article that has a video or an audio companion, in one table. Titles link ' +
-      'back to the article.',
+      'Every article with a video or an audio companion, with direct links to the ' +
+      'recording.',
   },
-];
-
+] as const;
 ---
 
 <BaseLayout
@@ -52,13 +68,14 @@ const ENTRY_POINTS = [
       }
 
       <div class="hero__text prose">
-        <h1>Software Engineering and Applied AI Engineering</h1>
+        <h1>Software Engineering and <span class="gradient-text">Applied AI Engineering</span></h1>
         <p class="hero__lede">
           I write about software architecture, programming, acceptance testing, and
           building with language models. The articles and chapters focus on decisions
           engineers can explain, test, and revisit.
         </p>
-        <p class="muted">
+        <SiteStats />
+        <p class="muted hero__byline">
           Shiv Kumar. Senior Software Solutions Architect and Senior Applied AI Engineer
           &amp; Architect.
         </p>
@@ -72,14 +89,8 @@ const ENTRY_POINTS = [
     <ul class="sections__grid">
       {
         ENTRY_POINTS.map((entry) => (
-          <li class="card">
-            <a href={entry.href} class="card__link">
-              <h3 class="card__title">{entry.label}</h3>
-              <p class="card__blurb">{entry.blurb}</p>
-              <span class="card__more" aria-hidden="true">
-                Read on
-              </span>
-            </a>
+          <li>
+            <SectionCard href={entry.href} title={entry.label} blurb={entry.blurb} icon={entry.icon} count={entry.count} unit={entry.unit} />
           </li>
         ))
       }
@@ -117,6 +128,10 @@ const ENTRY_POINTS = [
     line-height: 1.55;
   }
 
+  .hero__byline {
+    margin-top: var(--space-m);
+  }
+
   .sections {
     margin-top: var(--space-2xl);
   }
@@ -128,55 +143,5 @@ const ENTRY_POINTS = [
     display: grid;
     gap: var(--space-s);
     grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  }
-
-  .card {
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
-    transition:
-      border-color 0.15s ease,
-      box-shadow 0.15s ease,
-      transform 0.15s ease;
-  }
-
-  .card:hover {
-    border-color: var(--color-border-strong);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-  }
-
-  .card__link {
-    display: block;
-    padding: var(--space-m);
-    text-decoration: none;
-    color: inherit;
-    height: 100%;
-  }
-
-  .card__title {
-    font-size: var(--step-1);
-    margin-bottom: var(--space-2xs);
-  }
-
-  .card__blurb {
-    color: var(--color-text-muted);
-    font-size: var(--step--1);
-    margin-bottom: var(--space-s);
-  }
-
-  .card__more {
-    font-size: var(--step--1);
-    color: var(--color-accent);
-    font-weight: 600;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .card {
-      transition: none;
-    }
-    .card:hover {
-      transform: none;
-    }
   }
 </style>
