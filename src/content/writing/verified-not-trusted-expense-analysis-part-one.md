@@ -4,10 +4,12 @@ description: >-
   Expense totals need verifiable source coverage and reproducible calculations.
   Two prompts show how parsing, category rules, refunds, and code shape the evidence.
 datePublished: 2026-09-30
+dateModified: 2026-10-01
 tags:
   - verified-not-trusted
   - verification
   - prompting
+  - python
 hero: verified-not-trusted-expense-analysis-part-one
 status: established
 ---
@@ -70,13 +72,200 @@ Don't estimate totals or do the arithmetic in your head — show the code. After
 ```
 
 <details class="expense-example-output">
-<summary>Example output (illustrative placeholder)</summary>
+<summary>Recorded model output</summary>
 
-This is an illustrative placeholder, not output from a model run. It will be replaced with a recorded response to the precise prompt.
+I treated the **REI return on July 18 as −$68.00 against Shopping**. I also removed one of the two identical **Trader Joe’s $54.12 entries on July 22** as an apparent duplicate. If both were real purchases, add $54.12 to July groceries and the July/quarter totals.
 
-- Parsing and coverage: [Transaction count and source-line issues will appear here]
-- Issues and decisions: [Duplicate, refund, and category decisions will appear here]
-- Computed totals: [Monthly category tables and budget comparisons will appear here]
+### Spending by category
+
+| Category | June | July | August | Quarter |
+| --- | --- | --- | --- | --- |
+| Groceries | $624.34 | $829.20 | $982.79 | **$2,436.33** |
+| Dining & coffee | $212.74 | $165.14 | $398.69 | **$776.57** |
+| Shopping | $1,020.77 | $756.72 | $1,218.31 | **$2,995.80** |
+| Transportation | $461.41 | $373.67 | $562.58 | **$1,397.66** |
+| Travel | $0.00 | $0.00 | $1,631.82 | **$1,631.82** |
+| Health & fitness | $354.24 | $281.16 | $232.79 | **$868.19** |
+| Entertainment | $143.42 | $135.51 | $160.88 | **$439.81** |
+| Utilities & telecom | $143.13 | $143.13 | $143.13 | **$429.39** |
+| Subscriptions | $45.46 | $45.46 | $45.46 | **$136.38** |
+| Cash & transfers\* | $271.20 | $105.79 | $269.74 | **$646.73** |
+| **Total** | **$3,276.71** | **$2,835.78** | **$5,646.19** | **$11,758.68** |
+
+\* Zelle, Venmo, PayPal transfers, and ATM withdrawals are kept separate because the log does not say what the money ultimately paid for. They may not all represent additional consumption, so the overall total should be interpreted with that caveat.
+
+I classified Walgreens/CVS under **Health & fitness**, rather than Shopping. Amazon Prime is a subscription; ordinary Amazon purchases are Shopping.
+
+### Your two budget areas
+
+| Month | Dining & coffee | $260 budget | Shopping | \~$1,200 guideline |
+| --- | --- | --- | --- | --- |
+| June | $212.74 | **$47.26 under** | $1,020.77 | **$179.23 under** |
+| July | $165.14 | **$94.86 under** | $756.72 | **$443.28 under** |
+| August | $398.69 | **$138.69 over** | $1,218.31 | **$18.31 over** |
+| **Quarter** | **$776.57** | **$3.43 under $780** | **$2,995.80** | **$604.20 under $3,600** |
+
+The dining quarter total is interesting: **you came in almost exactly at the three-month budget**, but the monthly behavior is very different. June and July created enough room to absorb August.
+
+### Month-to-month changes
+
+| Category | June → July | July → August |
+| --- | --- | --- |
+| Dining & coffee | **−22.4%** | **+141.4%** |
+| Shopping | **−25.9%** | **+61.0%** |
+| Groceries | **+32.8%** | **+18.5%** |
+| Total logged spending | **−13.5%** | **+99.1%** |
+
+August's overall jump is heavily influenced by **$1,631.82 of travel**: two Delta charges, Marriott, Hertz, and airport parking. So the near-doubling of total spending isn't simply normal spending getting out of control.
+
+### The three things I'd pay attention to
+
+1. **Dining is the clearest budget warning.** June and July were comfortably below $260, but August hit **$398.69**, a 141% increase from July. Your quarter still looks fine at $776.57 versus $780, but that hides the August change. If August becomes the new normal, dining would run about **$1,664 over budget annually**.
+2. **Shopping is sizeable, but it isn't quietly becoming $2,000/month.** You averaged about **$998.60/month** across the quarter. August crossed your \~$1,200 guideline by only $18.31, and the quarter as a whole was about **$604 below** the corresponding $3,600 guideline. The REI refund is correctly reducing this category.
+3. **Groceries show the strongest sustained upward trend outside your budgeted categories.** They went **$624 → $829 → $983**, an increase of about **57% from June to August**. Unlike the August travel spike, this happened progressively across all three months. Since dining also jumped in August, the higher grocery spending did **not** appear to substitute for eating out that month.
+
+So the area I'd watch most closely in September is **food overall**: groceries plus dining went from **$837 in June → $994 in July → $1,381 in August**. That is a much stronger trend than looking at dining alone.
+
+</details>
+
+<details class="expense-example-output">
+<summary>Recorded code and intermediate output</summary>
+
+The following code and intermediate output were supplied from the same interactive chat. They show data preparation, category assignments, removal of the repeated entry, totals, and percentage changes. The original assignment to `raw` and the code for the budget comparisons were not included in these excerpts.
+
+Replaying the supplied code against the original expense file reproduced all 44 cells in the category totals table and all nine percentage calculations below, after excluding the file's two introductory lines. That leaves 198 transaction entries before removing the repeated entry and 197 afterward. This preparation is necessary: retaining the introductory lines shifts the row numbers, moves some expenses into the wrong month, and makes `df.drop(index=108)` remove a $54.22 AMC Theatres charge instead of the $54.12 Trader Joe's entry. The replay establishes how to reproduce the recorded figures; it does not establish how `raw` was prepared in the original chat.
+
+Months are assigned by line position rather than by parsing each transaction's date. The reproduced results therefore depend on the input order and the stated category and duplicate decisions. The code and output below are preserved as supplied.
+
+```python
+lines=[l.strip() for l in raw.splitlines() if l.strip()]
+# Find transition indices
+for i,l in enumerate(lines):
+    if "Panera Bread (07-01)" in l or "Netflix (8/2/26)" in l:
+        print(i,l)
+```
+
+```python
+import re, pandas as pd, numpy as np, math
+def amt(line):
+    ms=re.findall(r'(?<!\d)(-?)\$?(\d+\.\d{2})(?!\d)',line)
+    # there should be at least one; use first occurrence because only amount decimal
+    if not ms: return None
+    sign,num=ms[0]
+    return (-1 if sign=='-' else 1)*float(num)
+
+def merchant(line):
+    keys=[
+        "Trader Joe's","iCloud+ 200GB","Amazon Prime","Xfinity Internet","Shell","Local Coffee Co",
+        "Netflix","Planet Fitness App","Verizon Wireless","Planet Fitness","Steam","Spotify Premium","Aldi",
+        "Spotify Concert","Amazon","Best Buy","Kroger","Chevron","AMC Theatres","BP Gas","Home Depot","Lyft",
+        "Chipotle","McDonald's","Rustic Tap Brewery","Panera Bread","Target","REI","Riverside Physical Therapy",
+        "Costco","Barnes & Noble","Old Navy","City Parking Authority","Zelle Payment","Uber","ATM Cash Withdrawal",
+        "Bowl-O-Rama","Starbucks","Sushi Kame","Venmo - Sam","Walgreens","Thai Orchid","IKEA","CVS Pharmacy",
+        "Jiffy Lube","Whole Foods","Bagel Corner","Ticketmaster","Dr. Hensley Dental Copay","PayPal Transfer",
+        "Luigi's Pizza","Delta Air Lines","Airport Parking","Marriott","Hertz Rental Car"
+    ]
+    # special refund REI
+    for k in keys:
+        if k in line:
+            return k
+    return "Unknown"
+
+cats={}
+for m in ["Trader Joe's","Aldi","Kroger","Costco","Whole Foods"]: cats[m]="Groceries"
+for m in ["Local Coffee Co","Chipotle","McDonald's","Rustic Tap Brewery","Panera Bread","Starbucks","Sushi Kame","Thai Orchid","Bagel Corner","Luigi's Pizza"]: cats[m]="Dining & coffee"
+for m in ["Amazon","Best Buy","Home Depot","Target","REI","Barnes & Noble","Old Navy","IKEA"]: cats[m]="Shopping"
+for m in ["Shell","Chevron","BP Gas","Lyft","Uber","City Parking Authority","Jiffy Lube"]: cats[m]="Transportation"
+for m in ["iCloud+ 200GB","Amazon Prime","Netflix","Spotify Premium"]: cats[m]="Subscriptions"
+for m in ["Spotify Concert","Steam","AMC Theatres","Bowl-O-Rama","Ticketmaster"]: cats[m]="Entertainment"
+for m in ["Planet Fitness App","Planet Fitness","Riverside Physical Therapy","Dr. Hensley Dental Copay","Walgreens","CVS Pharmacy"]: cats[m]="Health & fitness"
+for m in ["Xfinity Internet","Verizon Wireless"]: cats[m]="Utilities & telecom"
+for m in ["Delta Air Lines","Airport Parking","Marriott","Hertz Rental Car"]: cats[m]="Travel"
+for m in ["Zelle Payment","Venmo - Sam","PayPal Transfer","ATM Cash Withdrawal"]: cats[m]="Cash & transfers"
+
+rows=[]
+for i,l in enumerate(lines):
+    month="June" if i<62 else ("July" if i<119 else "August")
+    m=merchant(l); a=amt(l)
+    rows.append([i,month,l,m,a,cats.get(m,"Other")])
+df=pd.DataFrame(rows,columns=["idx","month","line","merchant","amount","category"])
+df[df.merchant=="Unknown"], df[df.amount.isna()]
+```
+
+```text
+(Empty DataFrame
+ Columns: [idx, month, line, merchant, amount, category]
+ Index: [],
+ Empty DataFrame
+ Columns: [idx, month, line, merchant, amount, category]
+ Index: [])
+```
+
+```python
+df[(df.month=="July") & (df.merchant=="Trader Joe's")][["idx","line","amount"]]
+```
+
+```text
+     idx                             line  amount
+89    89   Trader Joe's (07-13) - $108.54  108.54
+95    95      July 16 Trader Joe's $34.31   34.31
+107  107  Trader Joe's (Jul. 22) - $54.12   54.12
+108  108  Trader Joe's (Jul. 22) - $54.12   54.12
+116  116    7/31 | Trader Joe's | $129.51  129.51
+```
+
+```python
+df2=df.drop(index=108).copy()
+pivot=df2.pivot_table(index="category",columns="month",values="amount",aggfunc="sum",fill_value=0)
+pivot=pivot[["June","July","August"]]
+pivot["Quarter"]=pivot.sum(axis=1)
+pivot.loc["TOTAL"]=pivot.sum(axis=0)
+pivot.round(2)
+```
+
+```text
+month                   June     July   August   Quarter
+category
+Cash & transfers      271.20   105.79   269.74    646.73
+Dining & coffee       212.74   165.14   398.69    776.57
+Entertainment         143.42   135.51   160.88    439.81
+Groceries             624.34   829.20   982.79   2436.33
+Health & fitness      354.24   281.16   232.79    868.19
+Shopping             1020.77   756.72  1218.31   2995.80
+Subscriptions          45.46    45.46    45.46    136.38
+Transportation        461.41   373.67   562.58   1397.66
+Travel                  0.00     0.00  1631.82   1631.82
+Utilities & telecom   143.13   143.13   143.13    429.39
+TOTAL                3276.71  2835.78  5646.19  11758.68
+```
+
+```python
+totals=pivot.loc["TOTAL",["June","July","August"]]
+changes={
+"total_Jul_vs_Jun":(totals["July"]/totals["June"]-1)*100,
+"total_Aug_vs_Jul":(totals["August"]/totals["July"]-1)*100,
+"groceries_Jul_vs_Jun":(pivot.loc["Groceries","July"]/pivot.loc["Groceries","June"]-1)*100,
+"groceries_Aug_vs_Jul":(pivot.loc["Groceries","August"]/pivot.loc["Groceries","July"]-1)*100,
+"groceries_Aug_vs_Jun":(pivot.loc["Groceries","August"]/pivot.loc["Groceries","June"]-1)*100,
+"dining_Jul_vs_Jun":(pivot.loc["Dining & coffee","July"]/pivot.loc["Dining & coffee","June"]-1)*100,
+"dining_Aug_vs_Jul":(pivot.loc["Dining & coffee","August"]/pivot.loc["Dining & coffee","July"]-1)*100,
+"shop_Jul_vs_Jun":(pivot.loc["Shopping","July"]/pivot.loc["Shopping","June"]-1)*100,
+"shop_Aug_vs_Jul":(pivot.loc["Shopping","August"]/pivot.loc["Shopping","July"]-1)*100,
+}
+changes
+```
+
+```text
+{'total_Jul_vs_Jun': np.float64(-13.456485316063993),
+ 'total_Aug_vs_Jul': np.float64(99.10536078257128),
+ 'groceries_Jul_vs_Jun': np.float64(32.8122497357209),
+ 'groceries_Aug_vs_Jul': np.float64(18.522672455378686),
+ 'groceries_Aug_vs_Jun': np.float64(57.41262773488802),
+ 'dining_Jul_vs_Jun': np.float64(-22.374729717025488),
+ 'dining_Aug_vs_Jul': np.float64(141.42545718784066),
+ 'shop_Jul_vs_Jun': np.float64(-25.867727303898036),
+ 'shop_Aug_vs_Jul': np.float64(60.99878422666243)}
+```
 
 </details>
 
