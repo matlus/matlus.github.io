@@ -1,0 +1,1372 @@
+﻿Programming To Exceptions
+Source: https://www.youtube.com/watch?v=5IKczyor-f4
+
+
+Raw transcript
+
+
+what's up YouTube today I'd like to talk
+to you about programming two exceptions
+now this is not so much about what are
+exceptions and how to handle them or how
+to catch them is none of that it
+certainly does encompass that sort of
+thing but this topic why I call it
+programming two exceptions has nothing
+to do with exception handling in fact
+the in my opinion the right way to
+handle exceptions is to not handle them
+and that is what this stuff this videos
+about this is a very very big idea or
+concept it's difficult to grasp or
+understand and so leads it's difficult
+for me to explain I to mean my mind is
+very simple so when I explain it to
+people they say yeah we got it but they
+don't all right so what I'm gonna tell
+you is pay attention to what I'm saying
+don't gloss over the stuff that you seem
+to know because there are gems in all of
+this and this is a big part of the
+programming with intent series that I
+have the very first video itself is
+called programming with intent method
+design if you haven't watched that video
+here please take a look at that video
+before you come to this one this is the
+the pivot around or the hinge around
+which programming to excel programming
+with intent hangs off of a whole lot of
+ideas are based on programming two
+exceptions this is a term that I have
+created or called it
+there's no look if you went and talked
+to somebody about programming into
+exceptions they wanna see know what that
+means
+they think you're talking about
+exception handling and I'm saying at the
+one to handle exceptions so to make it
+even more fun I'm going to say I love
+exceptions I absolutely love exceptions
+I throw exceptions all the time and I
+catch none
+that's what programming - exceptions is
+all about I'm mostly ho stating this
+stuff I certainly have a whole lot of
+exceptions of my application custom
+exceptions I throw at will any exception
+anytime
+I don't catch them alright so that said
+earlier the right way to do exception
+handling is to not handle them
+of course as I go deeper into this talk
+I'm hoping I will impart the the right
+ideas the right concepts to you
+initially I want to just go through some
+of the reasons for using exceptions not
+just using I mean throwing exceptions
+there are really good reasons to be
+throwing exceptions now it's easy to
+misuse them and I think the reason
+exceptions have got a bad rap typically
+in the community is one you fear
+exceptions we hate to see exceptions in
+our applications and I'd love to see
+them because when I see an exception is
+mine
+the difference is if you don't write
+code correctly you want to see
+exceptions you don't expect
+I write systems correctly and when I see
+exceptions they're ones that I threw for
+a damn good reason and that's the big
+difference there are a lot of ideas
+behind this but then I can go on and on
+because this is a difficult idea to
+impart it's a very simple concept for me
+to understand but I understand that most
+people they they understand a part of it
+and they walk off thinking they've got
+it so please pay attention nonstop and
+I'll try and make this not so boring or
+dragging on but everything I am saying
+is really important well when is it not
+ring alright so as you can see here the
+purpose of this presentation is to offer
+the guidelines for how to programming
+how to program two exceptions and when
+and how to use exceptions now except in
+handling in your code now if you can
+write code like you're seeing on the
+screen here if you can write code that
+has no conditional statements that's
+where you want to be I don't have
+conditional statements in my code now
+when I said when I have conditional
+statements of course there are some
+business rules or some classes that are
+handling or implementing certain rules
+that class would have
+conditional statement of course but if
+you look at the mass of my code if you
+look at the bulk of my code I probably
+have conditional statements in about
+depend on the complexity of the business
+system of course but generally I find
+that people have exceptions in in places
+that I would never have them right and
+so I know that I have far far far fewer
+conditional statements in my system than
+most people do and the reason is I think
+very simple if you look at the methods
+over here for example register remember
+internal this line over here what would
+happen if something went wrong in
+register memory internal the number
+would not be registered for n number
+reasons I think in order to register
+remember there are so many so many
+things that have to be in place here the
+reason I write code like this and can
+write code like this is because I
+program two exceptions I may already be
+doing this sometimes some cases but I'm
+saying this needs to be done everywhere
+in your system there's no ifs then spots
+and maybes this idea has to be followed
+through in your entire system and I'll
+explain why in cases where if you didn't
+do it that way you should do it that way
+as in this the way I'm showing it here
+because they're all caused the reasons
+for that so we'll get to that in the
+next slides one of the key concepts from
+programming with intent is this methods
+there are actions or commands
+there's methods there are actions or
+command mean they they get you to do
+something these methods claim to do
+something they should not return
+anything Bishop which they should be
+void returning so just think about the
+statement if you were to let's say
+update a record in the database and if
+the update failed what do you expect now
+I know when you are put to the to the
+test you say well you know also an
+exception I am betting if you went back
+and looked at your last five years of
+code that's not what you do
+obviously I see this today I mean I see
+every day today at work not code that
+I've written when I'm when I'm reviewing
+code or
+haven't we talking to people this is
+being done all the time
+methods there are actions the commands
+should be void returning you have to get
+in that habit now this is a blanket
+statement of course I'm sure there are
+anomalies but you know what if I told
+you there are anomalies you every
+scenario you find you're gonna say
+that's an anomaly so she said there's an
+anomaly second do it like this know as
+humans we can rationalize our way into
+things or out of things your aim for
+this specific rule is to say I'm gonna
+make sure all my actions or command
+methods avoid returning until you wear
+the anomaly exists but first year to
+sort of you know buy into this idea and
+conversely methods there are queries
+should return only the date of the claim
+I'll not return at all and this is a
+different idea so the first one you can
+imagine that your method is doing
+something there's no need for you to
+return something of course it's doing
+something you know asked you to get you
+something so we ask you to do something
+why does it need to return anything if
+you are returning an INT or a bowl or
+something it's for you for your sanity
+you want to know the method succeeded
+isn't it yeah of course that's what you
+want to do I'm saying written avoid if
+the method is unable to satisfy the
+request that you made we should do
+something
+it should throw an exception which means
+you on the call side don't have to worry
+about whether it succeeded or not if it
+didn't succeed even worried about it
+you have no code in your call sign that
+has to handle the scenario where it
+could not do something now we should see
+some of that code is simple code but in
+case you're wondering what I'm saying
+the second bullet is that query should
+return only the data they claimed return
+or not return at all if I said get
+customer and we see this some code for
+that I think in this lighting
+I said get customer given an ID get me
+this customer if the customers not found
+this method says is going to return the
+customer if the customer is not found
+this method should
+not return at all how do you not return
+at all exactly throw an exception the
+call site that cannot a call said to
+call the method that you're calling in
+the one that does the query each it is
+saying I'm going to either return to you
+a customer that you asked for or I'm not
+returning Peter there's no ifs tins and
+buts there's no null customer
+there's no some success or failure code
+in in relation to an all customer right
+it is either returning a customer or is
+not returning at all and again in order
+to pull this off query methods would
+have to throw an exception now as soon
+as I say something like this people say
+well but then what if the you know I
+don't want an exception to be thrown
+because I don't know if the customer is
+there well that's not I get so let's
+distinguish between get or retrieve
+customer which is really you're saying I
+know this this customer just give me
+this customer or retrieve this customer
+the other option is the search you don't
+know okay then don't call it get I don't
+call it retrieve call it search now
+search methods where you're searching
+and hoping to find something those
+methods are not they fall in the between
+they're not the commands of the queries
+they are the some other method but yes
+though that's an anomaly where you may
+have returned a lot of customer or if
+it's you're returning a collection then
+you'd be an empty collection or
+something right but that is not the
+normal case keep in mind here to be able
+to distinguish between the gets and the
+searches of the retrieves and the
+searches one is saying I know it's there
+please get me that and if it's not there
+it should throw an exception
+okay so both these methods of both these
+guidelines are basically saying that
+methods should be throwing an exception
+in the first case if the method can't do
+what you ask
+you should throw an exception in the
+second case if the method can get you
+what you asked for
+it should throw an exception all right
+both throw an exception the first one
+does is avoid returning all right
+so here's the XCore example if a method
+claims return something then you should
+return that on not return at all and if
+you get the code here
+it's simple chord you know but I'm
+trying to keep it simple yet I'm hoping
+to impart the idea so this method here
+send order confirmation email
+I'm betting most of you would have a had
+a conditional statement this is a fine
+court the customer and it's not null and
+blah-blah-blah-blah-blah
+then send the order confirmation email
+I'm saying don't do that you ask this
+method get customer to get your customer
+with an idea of 42 if it can't find an a
+customer ID 42 this method to get
+customer throws an exception that's it
+you don't know worried about who's gonna
+be bored let's talk about that later not
+enough you don't have to worry about it
+because you have no idea what to do if
+you don't get a customer what are you
+gonna do yes if I came up to and asked
+you for let's say I want to go eat food
+and I'm mean I'm broke as usual so I
+come and ask you hey can you give me ten
+bucks and you say no what the what am I
+supposed to do I mean the intent was me
+to get money from you second Kogut get
+some food but if you don't have the
+money then I don't get the food I mean I
+don't know what else to do you know I
+mean it's it's to think that we can come
+up with for every scenario we can come
+up with some sort of an alternative
+solution is insane your system should be
+writing the code for what it knows not
+what it doesn't know and it's not
+supposed to be imagining all the the
+scenarios where it doesn't know things
+and what am I supposed to do in those
+scenarios ring three simple concept
+right the code for the happy path don't
+worry about the unhappy parts
+ninety-nine percent of your systems code
+will get totally cleaned up you simply
+have to write code for the happy path
+try it try it you realize how cleaned up
+the code gets now immediately I'm sure
+you're thinking okay if you don't catch
+the exception then whose problem is it
+well it is your problem but not here
+meaning not in this method it is
+eventually it's not a problem it's
+you're a small space now call it a
+problem because not a problem but it is
+your applications responsibility to do
+something with any exceptions that fly
+out
+and we'll talk about this difference in
+us for that as well dipping what your
+application is is the services that a
+website is it whatever right so but it
+is the responsibility of your
+application to do something with any
+exceptions that you that fly out of your
+system or about the flowerless system
+but it's not the response to be of all
+the code that is trying to get work done
+which is the rest of the system right
+the assumption you make when you program
+the exceptions is this if I got to this
+line if execution got to this line
+unless it is you know 20 lines here and
+this is the 20th line if execution got
+to this line then all then the all other
+methods prior to this method was
+successful that is a huge assumption I
+can make if I'm programming to
+exceptions it's a huge assumption but
+it's a valid assumption this idea cleans
+up your code drastically so you want to
+program two exceptions because you wanna
+be the right code like this that does
+not have conditionals I'm guessing some
+of you written and you know you can put
+your hand up if you want to the
+different code like this where the
+second line here would say if customer
+is not null then sin or you know
+whatever the validation you think is
+valid I'm saying don't do that right
+right code like this so there are a few
+reasons let you read this these bullet
+points here on this line where their
+reasons for why you should not return
+error codes or return values that
+indicate success or failure or any any
+data structure that includes or is
+indicative of success or failure nice -
+error codes and return of course is the
+same as saying I've got an object today
+then one of the properties of the object
+tells me if there was an error or not so
+that includes all of that so you can
+pause this video and you can read this
+whole thing but essentially what I'm
+gonna say for this slide is that when
+you are not programming two exceptions
+your method is returning some some value
+there's nothing in the compiler that
+says if the caller of your method that
+that's returning some value that
+includes the success/failure or is the
+only thing is the success/failure the
+caller of a method has checked what you
+returned and there it has done the right
+thing there's nothing in programming
+that says that there's an feature like
+that
+now maybe some some linters and you know
+core cleaners might say you're not using
+the return value but there's nothing
+that actually enforces that you have to
+use the return value of a method because
+you didn't bother to check to see that
+method return the successors were all
+failure or whatever the cases with
+exceptions you don't even have to pick
+and choose it and you don't have a
+choice it just blows out but does it
+come back to you on the next line it
+blows out as it goes off the call stack
+so when you call it some method that
+throws an exception it is not your
+problem to handle that error that flour
+your code has to be just corn the next
+line if it succeeds I mean that's the
+basic idea so these are all the reasons
+for why you should not be using return
+cords ahead of course if you want to
+pause this pause it read it and one so
+when you program two exceptions as the
+title says here this changes all of your
+assumptions errors throw exceptions and
+this translates to methods returning
+valid data or not returning at all
+simplifies the code such that you can
+reason about the flaws of code and if
+you don't believe it believe me that
+simplifies the code writer and check it
+out your code becomes so simplified so
+clean no conditionals no indentations
+just simple one-line orchestration time
+bang bang bang that's it and I can
+methods return either return what this
+stays or does not return at all a
+standardized way to communicate error
+condition is no matter what the
+construct construct those properties
+methods in other words no matter what it
+is with you have an exception in the
+constructor or selling property is
+getting properties calling methods
+whatever it is there's only one way to
+report or communicate errors in your
+system exceptions it's no matter what it
+is you're always throwing the exception
+the return code over here bull Valley
+over there some structure that includes
+it down coordinates somewhere else and
+nobody has to know the 15 different ways
+in which you can return error
+information when there's only one
+standardized way to send or communicate
+exceptions in your system throw
+exceptions so the api's are consistent
+and there's an idea in programming two
+exceptions I call fail fast and fail
+visibly fail fast means as soon as the
+let's say you know data enters your
+system check it clean it then throw it
+off you if you don't like it in other
+words you're validating the data and I
+don't mean like in a controller
+essentially but think about this where
+you're building a business system a
+service application so I'm not talking
+about the service part the controllers
+in the web api aspects i'm talking about
+the actual code that is your system that
+i call what I consider my system in that
+system this is idea of the front door
+and the back door if you've watched my
+video with programming with intent I say
+if you lock the front door and you lock
+the back door
+you're safe in the house and this is a
+key concept if you lock your front door
+means if you've cleaned up all the deer
+that comes in into your system at the
+front door at no point in time can any
+bad incorrect invalid data enter your
+system from the front or from the back
+the back door could be database other
+services you might call to get data you
+ensure before that data comes back into
+your system from the back door it is
+clean is valid and if you've locked the
+front door and you lock the back door
+you're safe in the house now you can
+make all sorts of assumptions and clean
+up all sorts of code that you would
+probably have repeated 10 15 200 times
+in your system because you don't know
+the data you're getting is this correct
+and when you pass the day to somebody
+else they don't know if why somebody
+hasn't means some other class in your
+system that last doesn't trust what you
+just sent it and then you need call some
+real stat classes and so basically
+you're doing the same validation in
+number of times in a system right the in
+program is intent
+I say there's no need for methods to
+validate their validate their incoming
+arguments it's just a simple if you love
+the front door and you lock the back
+door
+you're safe in the house so I said these
+are all tied together programming with
+intent method design programming
+exceptions they're all part of
+programming with intent and you have to
+kind of use all of it you can't pick and
+choose the parts and pieces you like my
+anger then all kinds of weird things can
+happen okay I'll let you read this if
+you want to pause the video please pause
+the video but essentially what I found
+is that you know those people who do
+logging that's another topic discussion
+debate topic logging it's like they
+can't trust the system and I never log
+anything I mean my thing I don't mean I
+don't log exceptions that not the ones
+that are thrown but the ones that happen
+in my system that I never expected which
+are very very rare but they're technical
+in nature I will talk about what that
+means but if you are going to be writing
+code in such a way in your system that
+you can't trust it and I'm thinking I
+mean every time I see this happening is
+because people are not programming to
+exceptions they're trying to account for
+all the possible scenarios where the
+system can go wrong and as a result they
+can't they know they're not accounted
+for all the scenarios so there could be
+weird things happening yet on top of all
+that clutter they've been fees in their
+code base I'm saying don't write colder
+than you programming you program to the
+happy path don't were the exception spot
+every method you call should throw an
+exception if it can't do what you asked
+it to do or if it can't give you what
+you ask for that's it simple as that
+yeah now I can go home and start
+programming exceptions I'm not done yet
+now there are some guidelines
+responsibilities caveats that are in
+place when you throw exceptions when you
+program two exceptions one you need to
+write or have custom exceptions for
+every difference in are you'd wanna be
+used exceptions these are exceptions
+that you define and we talked a little
+bit about how that happens or what how
+do you define that hierarchy of
+exceptions but these are your exceptions
+you define them you're never using any
+other dotnet exceptions you define them
+give them proper type names that they
+will signify a very specific use case
+don't make generalized exceptions trees
+every unique scenario will need an
+exception that you define as a custom
+exception now maybe there are times
+where you might use the same exception
+type here and there but that's not a you
+need is the same exceptions occurring in
+different places but every exception is
+very specific it's not general it's not
+generic all right when you throw an
+exception there it comes with a huge
+responsibility so please I'm saying
+throw exceptions
+anytime we don't like something but it
+is totally irresponsible if you throw an
+exception and you don't explain the
+problem clearly so would you throw an
+exception there are some very strong
+criteria or strong prerequisites for
+when you throw an exception and these
+are never compromised one your error
+message should indicate clearly to the
+user and imagine it to be a human even
+though it may be another system clearly
+to the user what happened exactly
+provide that user with any information
+they provided you that caused the
+problem saying I didn't like you can't
+just say customer username is valid but
+what does the username you are like can
+you please provide me the username in
+the exception message so I know exactly
+which uses the name you're complaining
+about okay so you have to provide
+because the user with that clear
+interval a message indicating exactly
+what went wrong you have to provide them
+the information they provided you so
+that they can understand what is not
+even wrong but they am just saying
+generally it could be deep in the guts
+of a system whatever that method
+received as an argument that has to be a
+part of the exception message
+and 233 your message should also
+indicate to them valid possible valid
+values for example so for example if
+there's an enum or you're translating
+something into an enum a string in your
+system is that you know the user guard
+we send your string you need to respond
+as part of exception message the all the
+possible valid values even if this is a
+2 and a false you know this is this
+thing needs to be a boolean so please
+send it true or false as a string
+argument if this case sensitive make
+sure you indicate all that what I'm
+getting at is these three things or
+criteria or prerequisites for throwing
+an exception messages should be really
+really clear explaining to the user
+exactly what went wrong the message
+should include any information that they
+sent to you even if it came in
+indirectly so that they understand what
+might have gone wrong and therefore they
+can try and fix it and three your
+exception messages if and when possible
+and it happens more often than not
+please provide valid inputs so valid
+values for things that you know have
+caused the problem so that they know
+what they can send you to in order to
+not get the problem all right
+so that's the high level of guidelines
+for throwing exceptions and the message
+is particularly the types of the
+exceptions need to be unique and the
+messages need to be really clear if you
+are throwing an exception oh my gosh it
+would piss me off if you throw
+exceptions that did not give me enough
+information just last week at work at
+work I was working with one of the devs
+and they said they'd seen this exception
+I said okay what does it say luckily it
+wasn't my system this is not fun
+what's not fun don't know man it took us
+a day out of era what was not found
+I mean seriously is this how you want to
+design methods systems so don't be one
+of those people you should say exactly
+what was not found why it wasn't found
+what I might be able to do to find that
+thing okay so all those the piece of
+information need to be in there
+exception message is not okay to throw
+exceptions with how fast you know
+information in the message don't take
+shortcuts it's not okay to have the same
+exception type being reused across
+different generalized scenarios okay all
+right there is so have a feature or
+another idea from programming the
+exception is koalas data calls problem
+this is the same as saying you don't
+validate the inputs to your methods
+right why not because listen I asked you
+for a string you want to send me an old
+your problem it's not my problem I will
+not validate inputs to my methods one
+I've cleaned up I've locked the front
+door and I've locked the back door right
+that's a given on top of that and it's
+reasoning lock the front door and Lyle
+off the back door is to them safe in the
+house which means I don't have to
+validate every argument it comes into my
+methods
+just like you won't have to then why
+would I do that
+and if it does occur is not my problem
+if you call my method and you get an
+exception it's your problem you need to
+fix it up I'm not going to do a thing
+and please don't do that
+don't try and prevent the exceptions
+from occurring at the that is symptom
+right you need to fix the the problem at
+the root the cause of the problem not in
+this where the symptoms of each shown in
+other words you've seen them my methods
+running exception because you send me in
+validator where you want to fix it my
+method or your methods exactly
+so in the previous lighthouse if what I
+was trying to show over here is that
+they need to be a little right level
+abstraction as well for example if I'm
+working with the database and the
+database server could throw an exception
+do you write store process with
+exceptions in them no you should be your
+store frog should be throwing exceptions
+as well in the cases that makes sense to
+the at the database level right
+you can argue all this but at the end of
+the day that's what you should be doing
+it's not implementing business rules
+that you would know in your system is
+implementing rules that Hypno's in its
+system which is the database but let's
+say throws an exception
+do you want that exception to be seen
+outside your system like do you want a
+database exception to be thrown out and
+seen outside is your system of course
+not
+which means you might have to catch that
+exception the DB exception and then
+translate that exception into one of
+your exceptions and the message and
+throw that exception instead now when
+you do that please remember to use the
+original exception as the inner
+exception of your exception did it make
+sense so I'm making an assumption that
+you understand exceptions I'll never sit
+and explain to you what exceptions are
+every exception in dotnet has a unit
+exception in the cost of two are given
+if you are totally pure throwing a new
+exception inside of a cache block
+because you've caught the DB exemption
+exception and you will not translate it
+into one of your exceptions you would
+have to have a cache block and in your
+cache block you know say throw new your
+exception please ensure you pass the
+original exception as the inner
+exception of your exception does that
+make sense
+all right cool so you need to throw
+exceptions the right level of
+abstraction which also includes
+something like let's say I don't know
+using a file when I ask you to do
+something I haven't clue that you would
+be using a file and if I get an
+exception this is fine not for anything
+like what it's the fun to do with this
+stuff right like why would you want to
+confuse me when I don't even know you
+using a file I mean let's say you know
+after using a database right and you're
+not using a database you're using a file
+system I say insert custom you say file
+not found there what file you know I
+mean you do want to confuse end-users or
+s systems or consuming systems with this
+error message that doesn't make sense
+now you know that you're using a file
+system that means something to you let's
+say you know for every customer that you
+create in in your system you create a
+physical file because that's where you
+maintain the customers data as an
+example say Fusion I said please give me
+customer 42 and you didn't find the file
+you know what that means you know that
+the customer doesn't exist you can say
+file not found like that doesn't make
+sense mean wouldn't make sense to me
+right so you would have to translate
+that exception to say customer 42 not
+because when a file is missing in your
+mind in the in your system you know what
+that means to you I don't know what a
+file means to you but I know that
+customer doesn't exist me what it means
+to me right shift of translate that as
+well when you throw exceptions I
+apologize I'm going Lea fast and a bit
+scattered it's not it may sound like
+it's scattered and it may sound like as
+fast but I'm going really slow but you
+probably speed up the thing and you're
+going it you know twice the speed or
+something it's the topic that's
+difficult it's simple and difficult I
+don't not explain it a lot of people
+think they get it they walk away from
+after my explanation and they meet Eko
+and repeat the same mistake they were
+doing before I you know fond of doing it
+it's just one of those things throw
+exceptions any time you don't like
+something in your system any time you
+don't like something that occurs in a
+system throw an exception I throw so
+many exceptions in my system I have so
+many custom exceptions in my system and
+I throw them all over the place anytime
+I don't like a thrown exception I'm
+never trying to find ways and means not
+to throw exceptions right I asked you
+for this you didn't give me that out I
+asked you first thing you semia now out
+I'm not trying to entertain what to do
+with that problem now maybe some point
+in the system maybe at the UI level when
+you're working with the end users input
+you have to be a little more lenient
+right because the users would make
+mistakes I'm not talking about that
+front end system or the JavaScript you
+know I have part the browser side if you
+will if you if you got a web UI I'm
+talking about the system for me the
+system is not the front end of the UI
+follow says if anyone that loves you I
+love you I stupid ever none same system
+talking about not the UI do you I will
+receive any exceptions the system throws
+and the you I will have to translate
+that into something more user friendly
+or and decide where they should be using
+the same exception message it got from
+the services or systems wash does you
+have to translate that to something even
+simpler or just be vague about the
+problem right our systems are busy
+please try again even though we had a
+file not form of the Senate
+that's a UI thing I'm doing all the rest
+of your system and that that's what I'm
+talking about for the most part so if
+you throw exceptions everywhere there
+should be nope
+try caches in your system and don't
+pretend like you can catch any bloomin
+exception I send at you now if you do
+have a try-catch you should know be
+catch exception there's only one place
+in the entire system where you should
+see a try-catch and we'll get to that we
+should never have a try-catch for the
+most part in your system so the the
+problem does annoy to start with but if
+you do have a try cast like I was
+talking about the translating of
+exceptions for the database or the file
+system thing earlier yeah of course
+you'd have a try cast you're catching a
+specific exception don't catch general
+exception type catch a specific
+exception type and if it's something
+else you don't even know what to do that
+if it's out of memory if it's tackle or
+whatever else happened how would you
+know what to do with it so don't pit in
+or don't claim to be able to handle any
+and all exceptions you don't know how to
+do that so don't take or take it upon
+yourself to do that part of the job
+either
+let's fly out of the system that's the
+beauty of exceptions use the exceptions
+what they're truly har beauty beautiful
+ok in.net we have the tester to war
+pattern which is the try something try
+in parse or you know try get those kind
+of things those are the ones you want to
+use at the user input in a user input
+layer meaning that the UI the C shop
+side of the URL server and VC
+application you can't assume that the
+user when they passed us hint is gonna
+translate Amanda builded came to you as
+a string man and then you just see if we
+can be parsed and only then can you set
+it to be an end accident so it's not an
+end you might want to do a tryparse
+rather than throwing an exception
+there's an idea that's called some
+people call it do not use exceptions for
+control flaw there's only one poke I've
+read
+that actually explains that concept
+clear correctly right it's dr. Bob Bob
+Martin's book called
+clean code most of the people think
+every time it's one exception you're
+using exception for control for yes damn
+it that's what exceptions of what do you
+want me to use them for you know some
+choice words in my head right now if I
+don't use exceptions to control the flow
+what is the point that is the point of
+exceptions they just boot right out we
+just go off the call stack nobody has to
+be worried about handling them except
+for something of someone or one thing in
+your system exceptional control flow is
+when you know something is gonna happen
+I don't mean like the exceptional sinner
+that stood
+Brittney's no exceptions when there's an
+exceptional scenario what what's the
+next session scenario something that's
+exceptional exceptional and who comes up
+with these terms in software but you
+know if you cannot if you don't know
+enough don't try and explain it okay
+Oh speak clearly if you know it in your
+head you should we'll just speak it and
+explain it clearly right however this
+topic is difficult when he thrown
+exception anything anytime something
+happens that you don't like that you're
+not expecting you thrown exception
+period to you it's not about exceptional
+scenarios is not meeting your
+requirement you don't know what to do if
+you don't get this and thrown exception
+it's always exceptional going back to
+program do not use exception for control
+flow the the way people typically do it
+on how a misuse it is they they call a
+method let's say and this method is
+going to throw an exception and if it
+throws an exception then the result is
+and this is unfortunate but there's an
+example as the the method d-did you're
+in is it returning a true/false 20k
+success failure don't do that that's
+when this gets used
+that is if it succeeds you John are true
+they were told an exception in the cache
+block you'll return a false have you
+seen that code I have seen plenty of it
+and if you're a Java programmer let's
+move dotnet that's what you're doing Joe
+has his own issues I won't talk about
+that but mostly our programmers most job
+not all mostly our programmers that I
+have ever met and worked with do not
+understand exceptions it's not their
+fault their language doesn't know I have
+a clue what to do with exceptions long
+story won't go there but can you picture
+the code try do something catch and in
+the catch you set it down false and if
+they do something succeeds in the try
+you return or true that is programmer
+that is using exceptions for control
+flow you are letting an exception occur
+and if it occurs you will return a false
+if it doesn't occur you to turn a true
+that is not the point of this is that in
+those cases you should be using the
+testator pattern right the try parse int
+or try int dot tryparse and double the
+try pass in date/time dot try powers and
+so on because those Arsenal is there
+user input scenarios are very likely to
+be incorrect now talk about user
+problems in hard let's talk about login
+if you have a login method should be
+thrown exception if the login fails so
+she did it in a bowl login is a method
+is to do with the come on throw a
+goddamn exception if the user cannot log
+in correctly yes it happens frequently
+so what it's not an exceptional soon as
+I am saying it's not about exceptions in
+Oreos oh except in exceptional cases now
+it's nothing to do with that
+yes users could miss types a username
+and a password
+maybe have some validation step to
+ensure that the username and password
+itself is valid remember that lock the
+front door thing if you lock the front
+door and he lock the back door you're
+safe in the house but I mean getting
+into the login screen I'm guessing
+you've passed the front door
+right so for the case of a login throw
+an exception as a user does not succeed
+its login doesn't succeed you don't want
+to complicate your code anywhere right
+but when you're using exceptions like
+when he knows things are gonna feel like
+a user input right now let's say they
+get the customer leonor get 42 if I had
+to return a bull there first of all this
+bad design method design with to return
+a pool and to check if a customer exists
+when the method says get customer or
+customer exists and the way you're doing
+the customers this is you're calling
+this the store prop and then you're
+calling the other method they said get
+customer that method returns an
+exception so you say okay then I already
+have a method that gets me the customer
+42 right so I'll just gonna catch it
+here and if it throws an exception or
+general false in other words simply my
+mind works faster than my mouth does you
+have two methods in your system get
+customer we've given an ID and another
+one this is you know does customer exist
+it's very easy to say I already got to
+get customer method but it throws an
+exception if it can't find one so I can
+use that from the if cost does customer
+exist method cast that exception and
+return of false if it does and return or
+two if it doesn't that is using
+exceptions for control flaw I don't do
+that you won't have a separate method
+that profession goes to the database to
+see if a customer you know is there and
+if it's not that it returns a true or a
+false and so on right you don't want to
+use the other method that told an
+exception to do what you wanted over
+here I hope that got across to you if it
+didn't if you didn't understand the
+programming the exception so don't use
+the exception for control flow peace
+please write me a comment I'll try and
+explain it off send you to send you some
+code or something alright so this is
+about the exceptions and performance
+auto-peep so basic services are slower I
+don't really care how slow what are you
+building exactly built building some
+system that we know flies are lightning
+speed of course not heck you will be
+using c-sharp
+anyone the claims of using c-sharp to
+make a high-performance system thing
+again ya know in C++ there are many
+cases we will not allow throwing
+exceptions and in fact there are
+keywords in it and see photos that says
+no except that saying this method is
+guaranteeing that it will never throw an
+exception C++ is at a different level
+and even in those cases they did a
+survey recently I think about 50 50 50 %
+of the court based in c-sharp does not
+allow exceptions meaning their building
+systems that cannot afford to be slowed
+down or don't have the the
+infrastructure remember exceptions are
+part of the operating systems if we're
+working on an embedded system you don't
+have that infrastructure for exceptions
+so you can't have exceptions there then
+there are core systems in C++ there are
+trying to squeeze out as much
+performance as possible and they don't
+want you to throw exceptions in c-sharp
+there is no such case again if you have
+not misusing exceptions you should never
+have a problem with throwing exceptions
+so please don't get caught up in this
+whole thing about performance your
+system sucks already I can tell you if I
+do the code if if I do the code review
+system I probably guaranteed to increase
+the performance our system by 40%
+exceptions are not a problem everything
+else is now to be be serious don't not
+use exceptions because somebody tells
+you they're slow there are 10 other ways
+to get the performance of your system
+back and you can continue to throw
+exceptions in your systems to be faster
+trust me all right so
+[Music]
+my custom exceptions light is to be
+filled in it's gonna do you mind filling
+that slide in so I can talk about it
+okay the idea is I'm hoping very simple
+for every application that you start you
+need to have a base exception and I'll
+show you some hierarchies a base
+exception an actual code they need to be
+a base exception for your application by
+that name so let's say your operation is
+called my amp then there will be an
+exception base class for your app called
+my app base exception not exception base
+because the Convention says the
+exception in the world exception this
+application is really called Maya my app
+is what are the name of the app is base
+exception so that's your drew tree right
+so there's exception class in dotnet and
+then your exception descends from the
+Dartmouth's root exception not so in our
+here this is your app from here on in
+will be a branch one is for technical
+exceptions there that is for business
+exceptions now we'll get into the
+details of what that is so then there'll
+be my app technical base exception and
+my business base exception and after
+that the entire line of exceptions here
+the third level is this whole broad
+hierarchy not deep but broad hierarchy
+from that point forward way you design
+or define all of your exceptions that
+descend from those exceptions all right
+so if you want to see some code here let
+me show you some code now to find the
+code yeah so these are all the custom
+exceptions in this application and
+somewhere in here you're gonna find the
+obliques base exceptions this is the
+base exception for the applique that the
+application is called obliques and let's
+do big space exemption and then hanging
+off that you have the business exception
+obliques business exception that
+descends from Mobius base exception
+and the public's technical exception
+that descends from the you big space
+exception and after that all the
+exceptions that you see here are all
+descendants of those two exceptions the
+technical base and the business space
+right so what's the technical exception
+okay let's for some business exception
+any exception that you throw off your
+own accord because something was not
+working as per your requirement you have
+bunches or e-commerce not even when you
+lock that front door you're validating
+things and things don't work out
+correctly those are requirements that
+were not met by the caller of your
+application the user or another system
+any time you throw an exception you ever
+think about is this a business or
+technical exception but technically
+means is not your sorry business
+exceptions are not your problem they're
+causing a system a problem but they're
+not your problem to fix the caller
+typically has to fix it right that's a
+business exceptional technical
+exceptions are things that you might
+have to fix lets you misconfigured your
+configuration file and you've got some
+been a bad data and there and your
+systems blowing up that's a technical
+problem can't reach your database that's
+a technical exception and so on so
+alright so the technical exceptions
+won't fix by themselves typically you
+have to go in and make a change to the
+code or to the file or something has to
+be modified for a technical exception
+typically to get sorted out business
+exceptions are typically things that you
+throw I mean they're always things that
+you zero exceptions that you throw for
+reasons that you don't agree with
+something that's happening in your
+system it's not the system tooling
+certain you are throwing an exception
+but you're doing a session because
+they're business reasons for why and all
+you're throwing I said something is not
+correct the date is not correct range of
+dates is not correct what are the cases
+you throw an exception every single time
+something happens in your system that
+you don't like fail fast and fail
+visibly winning throw an exception
+don't hide the problem right
+your configuration system if you haven't
+seen the configuration provider video
+and the exceptions in the what that's
+supposed to be doing please take a look
+at that video over here it's important
+that's your backdoor your confirmation
+system is your backdoor you need to lock
+the backdoor it's to take a look at that
+video and see how I supposed to build
+conflation providers in your system as
+well now there's lots to cover here with
+regards to exceptions and programming
+I'll show you some code now some code
+that you might just generally to show
+you how things look so here is my the
+manager class it does a lot of work but
+you can see there is no conditional
+statements here yeah it's like simple
+stuff it's not simple by this very
+complicated stuff this that's happening
+is you don't get confused or fooled by
+the simplicity of the cordilla seem
+simple is not easy to make code that is
+doing complicated stuff look simple
+that's what you should be focusing on
+for example register remember this
+office was being called by the public
+method here that's a lot of stuff going
+on it's calling databases is sending off
+emails doing a bunch of things and every
+step there are validations but you don't
+see that here the stall point it's just
+simple bang bang bang bang bang every
+method is just doing orchestration and
+that's the beauty these are doers right
+these are commands register remember
+it's not saying get member another thing
+if it gets get member with user name
+okay let me ask you this this is a Get
+Set query query method should either
+return what they say they're gonna have
+done on not return at all right
+if you give an invalid user name for
+whatever reason less user names can't be
+longer this or shorter than that or
+whatever the case may be or said now if
+it's invalid user name in some form of
+fashion you would need to throw an
+exception right because you can't even
+bother to try and get try and get these
+in aim you're never gonna find one so
+step one just validate these Oh name is
+the user name valid as per your
+requirement and the issue
+one exception if there's anything wrong
+with regards to the structure or
+formatting of the username or what other
+cases it's got one exception there's no
+if throw if you don't like it throw if
+you like it it's gonna come to the next
+line which means username is not valid
+you can go get these in him now the the
+database might say well I didn't find
+this user but it's not the databases job
+to say if you didn't find any easier it
+doesn't know what you're trying to do
+with that right so you have to let thing
+user come back and the user happens to
+be now this man this a insure member was
+found will throw an exception again so
+in other words you're returning a member
+only if you can if you can't return a
+member you're throwing an exception the
+collar of this method will thank you for
+it believe me they will thank you for it
+might get a little bit time to get used
+to this idea as well programming to
+exceptions but they will thank you for
+it eventually so that's what code looks
+like in my systems at least they're very
+simple the message were pretty simple
+there's nothing simple about this I'm
+going to show you some other methanol
+because to catching exceptions in my
+systems is it let's say I'm building a
+web api application or web application
+and we see your web api application then
+there's only one place in which have a
+cache block for the most part just one
+place and that is it the entry the very
+first point of my system they are what I
+call the entry point you know whether
+the application it is with dotnet core
+and they spit on net you could use
+middleware so I've got this middleware
+application middleware class I mean and
+here is the one and only try cache in
+the entire system this entire system
+will have this one try catch it caches
+accessions this is the anomaly the only
+place you will catch exact it because
+you don't know what the exception is and
+pretty much the purpose here is this is
+a service application web api flick
+asian it has to translate and if you
+haven't watched my roles and
+responsibilities of controller and the
+video on middleware please take a look
+at that here I won't go into details of
+that but that's why this is over here so
+most of my applications have a single
+try catch another mean is exactly one
+but it's in that entry point so if the
+listed there are ten methods and we
+don't have middleware then each of those
+methods the entry point of a systems lab
+a try-catch because they are invariably
+translating that exception to something
+else some other format like the HTTP or
+something okay
+but nowhere else in the system allow a
+try/catch now they could be in the
+translation case so let me show you that
+scenario let's here you know they did so
+in this case for example our try-catch
+because i'm rolling back the transaction
+but I mean we really throwing the
+exception and so I'm not saying I nor I
+into the problem I said I don't know
+what the problem is I don't care what
+the follows I'm gonna have to roll back
+the trial version and then we throw the
+exception all right so that's as I have
+a try/catch but I'm not doing a much
+swallowing the exception I'm not logging
+I'm not doing anything right so what I
+say this was the only one place in which
+I where I would try cash I mean that
+when I'm doing something with the
+exception what about the exception all
+right in this case I got to start a
+frontal action and then if all goes okay
+I commit the transaction but if
+something goes wrong have to roll back
+the transaction and then I read through
+the exception I don't swallow it out put
+in did not occur then there's the cases
+where I'm doing that translation of
+exceptions let me see if I can find
+something aloud here I guess not this
+will be - this is to deepen my system -
+it's not trying to translate the
+exception so I might have to look
+elsewhere but you understand what I'm
+saying this is a database exception and
+I don't want that database exception
+flying out of my system so it will
+translate that exit so cause I'm gonna
+have to try have a try-catch for that
+scenario as well right all right man
+this was super speed but I'm hoping you
+know you guys are finding this
+interesting if I miss something if I
+like haven't explain myself to you
+please
+write me a comment tell me what it is
+that I missed or didn't explain clearly
+and I'll try and explain that to you if
+it wants me writing or making all of the
+video because I miss something really
+massive or important I might just do
+that but nonetheless and I appreciate
+your time please subscribe if you
+haven't already subscribed please it to
+notify button if you aren't already
+notified for some reason I have more
+views from non subscribers I don't know
+if YouTube is got a bug in their thing
+or not but there is about 40 60 or 70%
+are all subscribers so if you have
+subscribed please subscribe and thank
+you for your time and watching these
+videos and I will see you next time

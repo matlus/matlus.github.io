@@ -1,5 +1,29 @@
 # Handoff
 
+## Programming to Exceptions publication, October 2, 2026
+
+The two articles are publication candidates in `src/content/writing`, with the
+shared source recording's verified date of 2019-10-28 and an October 2 revision
+date. The owner authorized publication and reciprocal video links. See
+`programming-to-exceptions-publication-plan.md` for execution and deployment evidence.
+
+Part 1 places the order-placement comparison early and defines boundary handler
+as exception-handling middleware in a Web API. Part 2 develops specific throw
+locations, actionable messages, meaningful handling, request enrichment, HTTP
+diagnostic transport, and Application Insights custom dimensions. The retrieval
+and order-placement examples have distinct concrete exception types. The C#
+base is an explicitly synthesized teaching contract, with no changes to Meridian.
+
+Both parts have heroes, and six raster figures have accessible descriptions,
+captions, full-size links, and retained drawing prompts. Structured Logging has
+its own topic hero and metadata. The approved system font, smaller headings,
+and tighter gap below headings are included; body width, paragraph spacing,
+18px article text, and line spacing retain their existing values.
+
+Both full Meridian repositories remain private. Their public resource links and
+README backlinks are deferred until the owner publishes the corresponding code.
+
+
 ## Header search repair, September 30, 2026
 
 Issue #51 reproduced on the live homepage: the header accepted input but showed

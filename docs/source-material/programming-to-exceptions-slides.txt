@@ -1,0 +1,1145 @@
+SLIDE 1
+Programming to Exceptions
+Desired Outcome
+A analyst or Triage person should be able to look CAPI logs and immediately:
+Determine the true nature of the problem
+See and examine Input request data (to CAPI)
+See the values of specific data elements that may have caused the problem
+The above 2 bullets will also help with reproducing the exception
+Determine the CAPI service originating the exception
+Which in turn identifies an external system and the original message received from the external system if applicable
+All Business and Technical Exceptions are clearly and correctly identified and logged
+Only one log entry per exception
+CAPI should be agnostic and decoupled from SSP
+
+SLIDE 2
+Programming to Exceptions
+Desired Outcome
+Proper Exception Handling
+is our
+First and ONLY line of defense
+
+SLIDE 3
+Programming to Exceptions
+Method Design Guidelines
+Methods that are “Actions”, or “Commands” should be
+void returning
+Methods that are Queries should return
+only the data they claim
+, or
+not return at all
+.
+
+SLIDE 4
+Programming to Exceptions
+Method Design Guidelines
+If a Method claims to return something, then it should return that or
+Not Return At All
+.
+static void
+
+Main
+(
+string
+[]
+
+args
+)
+{
+
+var
+
+customer
+
+=
+
+GetCustomer
+(
+42
+);
+
+sendOrderConfirmationEmail
+(
+customer
+);
+}
+
+SLIDE 5
+Programming to Error/Return Codes
+When methods return error codes or Boolean, you are responsible for handling all errors, all the time for every method call through the entire call chain
+Failure to do so compromises the stability and error reporting of the entire system
+So it is common to ignore error codes and hope nothing goes wrong!
+The compiler can’t enforce/check that you to consume the return code from methods you’ve called. Errors codes can be easily ignored
+If statements for nearly every functional line of code, thus adding code complexity
+In this model of programming, if the API you’re calling fails, the program will muddle on with incorrect results or crash or corrupt data elsewhere. This makes finding the root-cause extremely difficult
+
+SLIDE 6
+Programming to Exceptions
+changes your Assumptions
+Errors throw Exceptions and this translates to methods returning valid data or not returning at all
+Simplifies code such that you can reason about the flow of code
+If you’ve reached “Here”, then everything before this was successful
+A method either returns what it states or does not return
+A standardized way to communicate error conditions, no matter what the construct (constructors, properties or methods).
+Exceptions promote API consistency
+Allow you to separate error-detection code from error-handling code
+Fail fast and fail Visibly
+
+SLIDE 7
+Programming to Exceptions
+changes your Assumptions
+With (well written) Programming to Exception based code – unexpected exceptions eventually cause the unhandled exception handler to be called. This is where the exception gets logged
+Typically uncover bugs in your application or scenarios that need to be accounted for, such as additional validations of input data
+Exceptions  promote instrumentation because they are a well defined method-failure model. Tools such as Performance Monitor, Profilers, Debuggers etc. are all aware of Exceptions
+The true power of exceptions though, lies in not handling them.
+
+SLIDE 8
+Exception Throwing guidelines
+Do NOT use Exceptions for Control Flow
+Huh?
+
+SLIDE 9
+Exceptions & Performance
+DO NOT
+ use error codes because of concerns that exceptions might affect performance negatively.
+Tester-Doer Pattern
+CONSIDER
+ the Try-Parse Pattern for members that might throw exceptions in common scenarios to avoid performance problems related to exceptions.
+✓
+DO
+ use the prefix "Try" and Boolean return type for methods implementing this pattern.
+✓
+DO
+ provide an exception-throwing member for each member using the Try-Parse Pattern.
+
+SLIDE 10
+Exception Catching guidelines
+A Method should only handle those exceptions it truly understands
+Either to translate the Exception to another Exception Type and throw (include original as inner)
+Or handle in some other way and Throw the original Exception
+Use UEFs only in the “front end” of the application and only if the default handling is not sufficient
+
+SLIDE 11
+Programming to Exceptions
+Custom Exceptions
+AppName
+BusinessBaseException
+Exception
+AppName
+BaseException
+AppName
+TechnicalBaseException
+RatedStateNotSupported
+Exception
+PayPlansValidation
+Exception
+PrefillValidation
+Exception
+XyzDownstreamService
+Exception
+MessageBrokerSend
+Exception
+XyzServiceTimedOut
+Exception
+Critical
+BusinessBaseException
+
+SLIDE 12
+Programming to Exceptions
+Requirements of Micro Services
+Level 3 Service
+CAPI
+API Gateway
+Level 1 Service
+Level 2 Service
+Level 1 Service
+Level 1 Service
+Level 2 Service
+Level 2 Service
+CAPI Logs
+ACL
+SSP
+Provider
+
+SLIDE 13
+Exception Throwing guidelines
+Throw exceptions when well defined requirements are violated
+Specific Exception types with a VERY clear messages
+Callers data – callers problem
+Your data – your problem
+Translate exceptions
+Prefer try-finally over try-catch
+Let the outer most exception handler log exceptions and Transform Exceptions to HTTP information
+
+SLIDE 14
+Exception Throwing guidelines
+Exception
+MUST
+ contain the following Information
+A message that clearly indicates the problem so that users/consuming Applications understand the nature of problem and can potentially fix the issue
+without your help
+Must contain contextual data/information
+Eg
+: The VIN number
+xxx
+ is not a valid VIN number
+Where possible, provide valid options
+Include input data – This will help with reproducing the problem
+The aim is for analysist/Triage personnel to be able to completely understand the problem and identify the
+System originating the exception
+Identify the Root Cause
+without your help
+
+SLIDE 15
+Programming to Exceptions
+Requirements of the
+Gateway
+ in All Services
+Gateway Receives HTTP Error from downstream service
+Transforms HTTP Error to Custom Exception and throw
+Exception could be Business or Technical
+(choose carefully)
+ExceptionData
+Action: Must include what it was attempting to do
+(which service it called)
+Message: Must include Original Message
+Translate original message to business meaning and language if applicable
+Must include
+CorrelationId
+/
+OriginatingMessageId
+Context: Must Include context information
+(relevant parts or entire input, Data sent to “external” service)
+OriginatingService
+: Indicate Originating Service as Itself
+DownstreamService
+:
+(
+eg.
+ DuckCreek)
+
+SLIDE 16
+Programming to Exceptions
+Requirements of the
+exception Handling Middleware
+Catch the Exception
+Transforms Exception to HTTP Response
+Set HTTP Status code to appropriate HTTP Status (4xx, 5xx etc.)
+Serialize
+ExceptionData
+ to JSON in Http Content
+Set HTTP Reason Phrase from Custom Exception’s Reason Phrase
+
+SLIDE 17
+Programming to Exceptions
+Requirements Of CAPI
+API Gateway (EHM)
+Catch the Exception
+Transforms Exception to HTTP Response
+Set HTTP Status code to appropriate HTTP Status (4xx, 5xx etc.)
+Serialize
+ExceptionData
+ to JSON in Http Content
+Set HTTP Reason Phrase from Custom Exception’s Reason Phrase
+
+SLIDE 18
+Programming to Exceptions
+High-Level Task (all Microservices)
+Gateway to be used and implemented “correctly”
+Calling services, Cosmos, Databases
+Try-catches to be removed (there should be no try-catch in services)
+Exception Hierarchy to be correctly established and created
+Exception should be thrown and must include Exception Data
+ (as defined)
+EHM to be implemented “correctly”
+Established a “Domain Façade” in every microservice
+Ensure “Service Interface Layers” are implemented correctly
+If data binding in controllers could throw exceptions – change the API or implement a media-type-formatter
+Remove validation and Domain Logic from Controllers/Functions
+Remove try-catch from Controllers/Functions
+Implement Anticorruption Layer (ACL)
+
+SLIDE 19
+Programming to Exceptions
+
+public async
+Task
+<
+UsdotRatingScore
+>
+
+GetUSDOTScore
+(
+UsdotRatingScoreRequest
+
+request
+)
+
+{
+
+logger
+.
+LogApiRequest
+<
+UsdotRatingScoreRequest
+>
+(
+request
+,
+
+LoggerConstants
+.
+ApiEndpointRating
+,
+
+HttpMethod
+.
+Post
+)
+;
+
+UsdotDataManager
+
+usdotDataManager
+
+=
+
+new
+
+UsdotDataManager
+(
+this
+.
+configurationProvider
+.
+GetDbConnectionString
+())
+;
+
+UsdotRatingScore
+
+response
+
+=
+new
+
+UsdotRatingScore
+()
+;
+
+try
+
+{
+
+RatingRequestValidator
+.
+EnsureRatingRequestValid
+(
+request
+,
+
+logger)
+;
+
+}
+
+catch
+
+(
+Exception
+
+ex
+)
+
+{
+
+response
+.
+Notices
+
+=
+
+new
+
+List
+<
+Notice
+>
+
+{
+
+new
+
+Notice
+
+{
+
+MessageId
+
+=
+
+NoticeConstants
+.
+UsdotRequestInvalid
+,
+
+Message
+
+=
+
+ex
+.
+Message
+,
+
+SourceService
+
+=
+
+NoticeConstants
+.
+UsdotAppId
+,
+
+Severity
+
+=
+
+NoticeConstants
+.
+SeverityError
+
+}
+
+}
+;
+
+this
+.
+logger
+.
+LogApiResponse
+<
+UsdotRatingScore
+>
+(
+response
+,
+
+LoggerConstants
+.
+ApiEndpointRating
+)
+;
+
+return
+
+response
+;
+
+}
+
+response
+.
+UsdotOrderDate
+
+=
+
+DateTime
+.
+Now
+;
+
+if
+
+(
+request
+.
+UsdotAnswer
+.
+ToUpper
+()
+
+==
+
+"NO"
+)
+
+{
+
+
+response
+.
+Usdotscore
+
+=
+
+9995
+;
+
+}
+
+else if
+(
+request
+.
+UsdotAnswer
+.
+ToUpper
+()
+.
+Contains
+(
+"NOT YET"
+))
+
+{
+
+response
+.
+Usdotscore
+
+=
+
+9992
+;
+
+}
+
+else if
+(
+request
+.
+UsdotAnswer
+.
+ToUpper
+()
+
+==
+"YES"
+)
+
+{
+
+try
+
+{
+
+response
+
+=
+
+await
+
+LookupRatingScore
+(
+request
+,
+
+usdotDataManager
+)
+;
+
+}
+
+catch
+(
+Exception
+
+ex
+)
+
+{
+
+this
+.
+logger
+.
+LogError
+(
+ex
+.
+Message
+,
+
+request
+)
+;
+
+response
+.
+Usdotscore
+
+=
+
+9996
+;
+
+}
+
+}
+
+this
+.
+logger
+.
+LogApiResponse
+<
+UsdotRatingScore
+>
+(
+response
+,
+
+LoggerConstants
+.
+ApiEndpointRating
+)
+;
+
+return
+
+response
+;
+
+}
+public async
+Task
+<
+UsDotRatingScore
+>
+
+GetUsDotRatingScore
+(
+UsDotRatingScoreRequest
+
+usDotRatingScoreRequest
+)
+{
+
+RatingRequestValidator
+.
+EnsureHasUsdotNumberAnswerValid
+(
+usDotRatingScoreRequest
+)
+;
+
+return
+
+usDotRatingScoreRequest
+.
+UsdotAnswer
+.
+ToUpper
+()
+
+switch
+
+{
+
+HasUsDotNumberNo
+
+=>
+new
+
+UsDotRatingScore
+(
+NoUsDotNumberScore9995
+)
+,
+
+HasUsDotNumberNotYet
+
+=>
+
+new
+
+UsDotRatingScore
+(
+NotYetUsDotNumberScore9992
+)
+,
+
+_
+
+=>
+
+await
+
+CalculateUsDotRatingScore
+(
+usDotRatingScoreRequest
+)
+
+}
+;
+}
+private static async
+Task
+<
+UsDotRatingScore
+>
+
+CalculateUsDotRatingScore
+(
+UsDotRatingScoreRequest
+
+usDotRatingScoreRequest
+)
+{
+
+RatingRequestValidator
+.
+EnsureRatingRequestValid
+(
+usDotRatingScoreRequest
+)
+;
+
+var
+
+(
+score
+,
+
+exception
+)
+
+=
+
+await
+
+usdotDataManager
+.
+GetUsDotRatingScore
+(
+usDotRatingScoreRequest
+)
+;
+
+//TODO: Shiv - We need to have the MAX
+UsDotNumber
+ (4141813) coming from our database
+
+return
+
+(
+score
+,
+exception
+,
+usdotNumber
+)
+switch
+
+ {
+
+(
+null
+,
+
+not null
+,
+
+_
+)
+ =>
+new
+
+UsDotRatingScore
+(
+LegacyPolicyScore9996
+)
+,
+
+  (
+null
+,
+
+null
+,
+
+>=
+4141813
+)
+=>
+
+new
+
+UsDotRatingScore
+(
+NewVentureNoHitScore999
+3)
+,
+
+  (
+null
+,
+null
+,
+ _
+)
+
+=>
+
+new
+
+UsDotRatingScore
+(
+TenuredNoHitScore9994
+),
+
+  (
+not
+
+null
+,
+
+null
+,
+_
+)
+
+=>
+
+score
+
+switch
+
+   {
+
+null
+ =>
+new
+
+UsDotRatingScore
+(
+LegacyPolicyDefaultScore9996
+)
+,
+
+{
+<
+
+0
+
+}
+
+=>
+
+new
+
+UsDotRatingScore
+(
+0
+)
+,
+
+{
+
+>
+MaxUsDotScore1000
+
+and not
+(
+NewVentureNoHitScore9993
+
+or
+
+TenuredNoHitScore9994
+)
+
+}
+ =>
+new
+UsDotRatingScore
+(
+MaxUsDotScore1000
+)
+,
+
+_
+=>
+score
+
+}
+,
+
+_
+
+=>
+
+throw
+
+exception
+!
+
+}
+;
+}
+
+SLIDE 20
+public
+
+async
+ Task<
+PrefillResponse
+>
+LookupRatingScore
+(
+int
+
+usdotNumber
+)
+{
+
+this
+.logger.LogApiGetRequest
+(
+usdotNumber
+,
+LoggerConstants.ApiEndpointPrefill
+);
+
+UsdotDataManager
+
+usdotDataManager
+ =
+new
+
+UsdotDataManager
+(
+this
+.configurationProvider.GetDbConnectionString
+());
+
+FMCSAResponse
+?
+fmcsaResponse
+ =
+null
+;
+
+var
+
+usdotRegistrationInfo
+ =
+await
+
+usdotDataManager.GetUsdotRegistration
+(
+usdotNumber
+).
+ConfigureAwait
+(
+false
+);
+
+var
+
+prefillSection
+ =
+this
+.configurationProvider.GetPrefillSection
+();
+
+var
+
+requestGuid
+ =
+Guid.NewGuid
+().
+ToString
+();
+
+this
+.client.BaseAddress
+ =
+new
+ Uri(
+prefillSection.BaseAddress
+,
+UriKind.Absolute
+);
+
+var
+ request =
+new
+
+FMCSARequest
+    {
+
+RequestPayload
+ = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(
+usdotNumber
+ +
+"?
+webKey
+="
+ +
+prefillSection.WebKey
+)),
+
+sessionId
+ =
+requestGuid
+,
+
+requestId
+ =
+requestGuid
+,
+
+RequestConfigurationId
+ =
+prefillSection.RequestConfigurationId
+,
+
+cacheOption
+ = 0,
+
+OriginationSourceId
+ =
+prefillSection.OriginationSourceId
+,
+
+ImmediateSourceId
+ =
+prefillSection.ImmediateSourceId
+    };
+
+try
+    {
+
+this
+.logger.LogApiRequest
+<
+FMCSARequest
+>(request,
+this
+.client.BaseAddress.AbsoluteUri
+,
+HttpMethod.Post
+);
+
+var
+
+fmcsaData
+ =
+await
+
+prefillService.GetPrefill
+(request,
+this
+.client.BaseAddress.AbsoluteUri
+);
+
+fmcsaResponse
+ =
+JsonConvert.DeserializeObject
+<
+FMCSAResponse
+>(
+fmcsaData.Response
+);
+
+this
+.logger.LogApiResponse
+<
+FMCSAResponse
+>(
+fmcsaResponse
+,
+this
+.client.BaseAddress.AbsoluteUri
+);
+    }
+
+catch
+ (Exception ex)
+    {
+
+this
+.logger.LogError
+(
+ex.Message
+, request);
+
+fmcsaResponse
+ =
+null
+;
+    }
+
+var
+
+prefillResponse
+ =
+fmcsaResponse
+?.content ==
+null
+ ?
+usdotRegistrationInfo
+ :
+PrefillResponseMapper.MapFMCSAResponseToPrefillResponse
+(
+fmcsaResponse
+,
+usdotRegistrationInfo
+);
+
+prefillResponse
+ ??=
+new
+
+PrefillResponse
+    {
+        Notices =
+new
+ List<Notice>
+            {
+
+new
+ Notice
+                {
+
+MessageId
+ =
+NoticeConstants.UsdotNotFound
+,
+                    Message =
+$"
+Usdot
+ Number
+{
+usdotNumber
+}
+ not found."
+,
+
+SourceService
+ =
+NoticeConstants.UsdotAppId
+                }
+            },
+    };
+
+prefillCryptorService.EncryptPrefillData
+(
+prefillResponse
+);
+
+this
+.logger.LogApiResponse
+(
+prefillResponse
+,
+LoggerConstants.ApiEndpointPrefill
+);
+
+return
+
+prefillResponse
+;
+}

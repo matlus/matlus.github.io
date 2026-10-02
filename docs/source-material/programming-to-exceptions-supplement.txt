@@ -1,0 +1,527 @@
+Programming TO Exceptions
+by Shiv Kumar
+Part 1 - Core Philosophy
+Takes long pause, scanning the room
+You know what's funny about error handling? We all think we're doing it right. I certainly did. For years, I was that developer - sprinkling if-checks like confetti, logging errors with a confidence that bordered on arrogance. 'Error occurred!' Mimics typing There, handled! Wry smile
+Want to know what shattered that confidence? Production. Pauses
+Production doesn't care about your clever error handling. Production is that brutal teacher who shows up at 3 AM with pop quizzes you never studied for. Silent failures. Data inconsistencies. Systems running happily along while everything is quietly, thoroughly going wrong.
+Walks to other side of stage
+I remember the exact moment it hit me. Four hours into debugging a critical issue, staring at logs filled with 'Error occurred!' messages. Helpful, right? Audience chuckles That's when I realized - my entire approach to error handling wasn't just wrong, it was... backwards.
+See, we were treating errors like unwanted guests. Something to catch, log, and usher out the door as quickly as possible. 'Nothing to see here, folks!' But production... production taught me that errors are more like messengers. And we were shooting the messenger. Every. Single. Time.
+Leans forward
+But here's where it gets interesting. Over the next decade, across dozens of production systems, through countless sleepless nights and emergency fixes, a pattern started emerging. The systems that truly stood the test of time? They weren't the ones with the most sophisticated error handling. They were the ones that embraced errors. Not as problems to handle, but as tools to harness.
+Pauses, takes a sip of water
+I'm about to share something that might sound crazy at first. A completely different way of thinking about exceptions. Not as errors to catch, but as allies to embrace. A philosophy I call 'Programming TO Exceptions.'
+And before you dismiss this as just another 'best practice' talk - every pattern, every practice I'm about to share has been battle-tested in production. Not just by me, but by teams across multiple organizations, multiple domains, multiple scales. This isn't theory. This is survival knowledge.
+Steps closer to audience
+Ready to rethink everything you know about error handling?
+Part 2 - Fundamental Principles
+Moves to center stage, becomes more contemplative
+You know what's fascinating about mistakes? Not the mistakes themselves, but the moment you realize you've been making them. Pauses For years.
+I was so proud of our error handling. Try-catch blocks everywhere. Logging in every corner. A safety net so fine, nothing could slip through. Dry laugh At least, that's what I thought.
+Steps forward with purpose
+But before I tell you about making exceptions smarter, there's something fundamental we need to talk about. Something that changed everything about how I viewed exceptions.
+Pauses, looks around room intently
+Exceptions. Do. Not. Return.
+Lets that sink in
+This isn't just syntax. This is philosophy. When you throw an exception, you're not returning a value. You're not suggesting something might be wrong. You're making a statement: 'This operation cannot continue.' Full stop.
+Moves to side of stage
+See, for years I treated exceptions like fancy return codes. Catch here, check there, maybe return null, maybe return false... Shakes head I was missing the point entirely.
+When your code throws an exception, it's not asking for permission. It's not saying 'hey, something might be wrong, what do you think?' It's declaring, with absolute certainty: 'I cannot fulfill this contract.'
+Steps forward with renewed energy
+And this brings us to something equally fundamental - something that will transform how you think about method design entirely.
+Pauses, draws imaginary line in the air
+In a system built on Programming TO Exceptions, every method falls into one of two categories. Just two. Action methods and Query methods.
+Moves to one side of stage
+Action methods DO things. They make changes. They update state. And here's the key - they don't return anything. Their contract is simple: if they return, they succeeded. If they don't... well, you'll hear about it through an exception.
+Becomes animated
+Think about this common flow: gestures as if writing code
+Copy
+EnsureOrderRequestIsValid(orderRequest) # Action - throws if invalid
+order = TransformToOrder(orderRequest) # Query - transforms to domain model
+SaveOrder(order) # Action - persists to DB
+EnsureCustomerCanBeNotified(order.CustomerId) # Action - throws if can't notify
+notification = BuildOrderNotification(order) # Query - builds notification content
+SendCustomerNotification(notification) # Action - sends notification
+PublishOrderCreatedEvent(order) # Action - publishes event
+Points to imaginary code
+See how the intent is crystal clear? Notice that 'Ensure' prefix on our validation methods? That's not just a naming convention - it's a contract. It tells you immediately: this method will throw if its condition isn't met. No return values, no status codes, just a pure guarantee.
+Moves to other side of stage
+Then we have Query methods. Their contract is equally clear - they return exactly what they promise. Not null. Not empty strings. Not special error codes. What they promise in their signature is what you get.
+Leans forward
+"But what if the query can't fulfill its contract?" Ah! Then it doesn't return at all. It throws an exception. Because returning null when you promised an Order isn't fulfilling the contract. It's breaking it.
+Steps to center, speaking deliberately
+Now, here's where it gets beautiful. When you embrace these principles, something magical happens to your code. Look at any method, and you'll see... just the happy path.
+Pauses for effect
+Because if execution reached this line of code, everything before it succeeded. No ifs. No buts. No checking return codes. No defensive programming. Just clean, clear, purposeful code.
+This isn't just about clean code. This is about confidence. About certainty. About knowing, without a doubt, that if your code is executing, it's executing correctly.
+Straightens up
+Now... small smile now we can talk about making exceptions smarter.
+Part 3 - Making Exceptions Smarter
+Moves center stage
+But making exceptions smarter... that journey took time. And like most good stories, it started with pain. Wry smile
+You see, exceptions gave us stack traces. Great! Points you to where it broke. But why? What was the state? What data caused it? Shakes head Stack traces alone were like trying to solve a murder mystery with just the crime scene location. No weapon, no motive, no suspects.
+Paces thoughtfully
+At first, we just added better messages. Then status codes. Counts on fingers Then severity levels. But something was still missing. We were still debugging in the dark.
+Stops suddenly
+Then came the revelation. What if exceptions weren't just error signals? What if they were... pauses debug packages? Complete snapshots of what went wrong?
+Becomes animated
+We started small. Added the basic properties - status codes, severity levels, reason phrases. Then came what I call the 'action intent' - does this need user intervention? System intervention? Manual support? Gestures expansively
+But the game-changer? Context. Leans in Rich, deep, meaningful context. Method parameters, local variables, system state - anything that could help reproduce the issue. When you're debugging at 3 AM, that context is worth its weight in gold.
+Steps back, serious tone
+Now, I know what some of you are thinking. 'That's a lot of overhead.' Pauses And you're right. It is. But let me ask you something...
+Moves to edge of stage
+What costs more? Taking the time to craft rich, meaningful exceptions? Or having your entire team spend hours - or days - trying to reproduce and debug issues with nothing but a stack trace and a prayer?
+Straightens jacket
+But here's where it gets really interesting. Once we had these rich exceptions, we discovered something unexpected. Something that changed how we thought about system observability entirely.
+Dramatic pause
+We didn't need INFO logs anymore.
+Watches audience reaction
+I know, I know. Sounds crazy, right? 'No INFO logs? How do you know what's happening in your system?' Smiles
+Let me tell you a secret: In fifteen years of running production systems this way, I've never missed them. Not once. When your exceptions are rich with context, when your validation is rock solid at your boundaries, when your error messages tell the complete story... INFO logs become noise. Pure noise.
+Moves center stage
+But to make this work, your exceptions need to be first-class citizens in your system. And I mean first-class.
+Leans forward, speaking intently
+You know what keeps me awake at night now? Not production issues. No. What keeps me awake is reviewing exception messages. Two-hour discussions about a single error message? Absolutely. Excessive? Pauses Not even close.
+Because here's what I learned the hard way: your exception message isn't just technical output - it's your system's moment of truth. It's your chance to clearly explain what went wrong, why it went wrong, and often most importantly, how to fix it.
+Takes a few steps, gathering thoughts
+Let me give you an example. Which message would you rather see?
+'PaymentPlanValidation failed'
+Waits a beat
+Or:
+'Payment plan amount $5000 exceeds maximum allowed limit of $3000 for Basic tier accounts. Available tiers: Premium ($10000 limit), Enterprise (unlimited)'
+Looks at audience
+See the difference? One leaves everyone guessing. The other empowers immediate action. One generates support tickets. The other... smiles the other lets users solve their own problems.
+Part 4 - Structure and Strategy
+Takes deliberate steps forward
+But clarity isn't just about messages. It's about structure. Organization. Hierarchy.
+Projects exception hierarchy diagram
+Take a look at this. Pauses This isn't just a diagram. This is a battle plan.
+Points to top level
+At the root, we have our base exception. Every exception in our system inherits from this. Slight smile And yes, I mean every exception. No rogue exceptions allowed in our house.
+Moves hand down to next level
+Then we split. Business exceptions on one side, technical exceptions on the other. Pauses Clean separation of concerns. Because a validation failure is fundamentally different from a service timeout, and your system should know the difference.
+Looks intently at audience
+But here's where it gets interesting. See these concrete exceptions at the bottom? Notice something? They're hyper-specific. One exception, one scenario, one place in the code. No generic error classes, no reused exceptions. When you see a 'PayPlanValidationException', you know exactly where to look.
+Steps back
+"Isn't that excessive?" I hear that a lot. Shakes head No. It's precise. It's intentional. It's clarity through specificity.
+Moves to center stage
+And this precision pays off at the boundaries. Remember those boundaries we talked about? This is where the magic happens.
+Gestures to indicate system boundaries
+At our boundaries - our API endpoints, our service interfaces - we have exactly two catches. Two. Our base exception, and... pauses everything else.
+Leans forward
+Think about that for a minute. Every exception we throw is caught by that first catch. We know its properties, its context, its meaning. We can translate it perfectly into the right response, the right message, the right action.
+And that second catch? Grim smile That's our safety net. Anything we didn't anticipate. Anything we didn't throw ourselves. Those are potential bugs, and they get treated accordingly - logged as critical, returned as 500 errors, escalated for immediate attention.
+Paces thoughtfully
+But here's the beautiful part - at our boundaries, we're not just catching exceptions. We're enriching them. Because at the boundary, we have something precious - the complete input state that triggered this whole operation.
+Moves to whiteboard
+Think about it. Your exception arrives with all its accumulated context, and now you add the initial request that started it all. Every parameter, every header, every bit of context - all becoming searchable properties in your logs.
+Draws quick diagram
+Status codes, severity levels, action intents, business context - all first-class citizens in your observability system. Want to alert on all failed payment validations for premium customers? One query. Need to track all timeout errors from a specific downstream service? It's right there.
+Steps back to center
+But here's the beautiful part. Over time, that second catch... it gets lonely. Because when you're Programming TO Exceptions, when you're thinking in terms of explicit failure modes, when you're making every exception count... those unexpected errors become rare. Really rare.
+Stops, turns to audience
+And that's when you know you've turned a corner. When your error handling isn't about catching problems anymore. It's about expressing intent. About making failure modes explicit. About turning exceptions from surprises into... guarantees.
+Steps forward
+But to make this work, you need one more crucial piece. You need to understand how to handle exceptions meaningfully...
+Part 5 - Meaningful Handling
+Moves to center stage, contemplative
+Let's talk about what it means to handle an exception. Pauses Actually, let me rephrase that. Let's talk about what it doesn't mean.
+Starts counting on fingers
+Catching and logging? That's not handling. That's notification. Catching and rethrowing? That's not handling. That's passing the buck. Empty catch blocks? Shudders dramatically That's not handling. That's burying problems alive.
+Faces audience directly
+Early in my career, I thought I was handling exceptions. Try-catch, log a message - 'Error occurred!' - and call it a day. Shakes head slowly I was so wrong.
+Moves to side of stage
+You see, true handling... that's about taking meaningful action. Let me say that again: Meaningful. Action.
+Begins pacing thoughtfully
+What's meaningful action? Retrying a failed network call with exponential backoff - that's handling. Switching to a backup service when the primary fails - that's handling. Implementing a circuit breaker to prevent cascade failures - absolutely handling.
+Stops suddenly
+But the most meaningful handling? It happens at your boundaries. And this is where it gets really interesting.
+Moves to whiteboard
+When an exception hits your boundary, you have something incredibly powerful - a complete reproduction package. Draws diagram Think about what you have:
+The original exception, rich with context from every layer it passed through. The complete input state that triggered the operation. The system state at the boundary itself.
+Turns to audience, excited
+Do you realize what this means? Pauses Every exception becomes a complete reproduction recipe.
+Steps forward
+"Cannot reproduce" becomes a phrase of the past. Because now, when a problem hits production, you don't just have an error message. You have everything you need to replay that exact scenario in your development environment.
+Moves to computer setup
+Look at how this changes debugging. Types Here's an exception from production. Not just the stack trace, but the exact API request that triggered it. The exact customer ID. The exact business context. Everything structured, everything queryable.
+Points to screen
+Want to reproduce this issue? Just replay this request. Want to find similar issues? Query by any context property. Want to prevent this class of problems? Set up alerts based on these exact patterns.
+Returns to center
+And this changes everything about how we handle production issues. No more "works on my machine". No more "can't reproduce". No more wild guessing about what the user was doing when it failed.
+Moves to side of stage
+This is why we put so much effort into enriching our exceptions at the boundary. We're not just logging errors - we're creating perfect snapshots of failure scenarios. Complete, reproducible, actionable snapshots.
+Speaks more intensely
+And when you combine this with structured logging and proper observability... pauses That's when things get really powerful.
+Draws new diagram
+Every exception property becomes a dimension you can query. Every piece of context becomes a filter you can apply. Want to find all payment validation failures for premium customers in the last hour? Snaps fingers Done. Want to alert on any order processing that fails after payment success? Simple query.
+Steps back
+But remember - this only works because we've made our exceptions rich, structured, and meaningful. Because we've turned them from simple error messages into complete debug packages.
+Moves center stage
+Which brings me to one of my most controversial rules: If you can't take meaningful action, don't catch the exception. Pauses At all.
+Watches audience reaction
+I know what you're thinking. "But what about logging? What about monitoring?" Smiles Those aren't actions. Those are observations. Important observations, yes, but not handling.
+Leans forward
+Here's the thing about letting exceptions propagate: they carry their context with them. Every layer they pass through is another chance to add information, to enrich the story. When they finally reach a boundary where real handling can occur - now you have the complete picture.
+Part 6 - Fail Fast and Fail Visibly
+Takes deliberate steps to center stage
+Let me tell you about one of the most powerful principles I've learned: Fail Fast and Fail Visibly.
+Gestures to create an imaginary house
+Think of your system like a house. You've got a front door where users come in. A back door where you talk to other services. Maybe some windows where configuration sneaks in. Pauses Where do you check for intruders?
+Waits for audience reaction
+At the doors! Emphatic gesture You don't let suspicious characters wander around your house hoping they'll behave. You stop them right at the entrance.
+Moves to side of stage
+This is what I mean by Failing Fast. Validate everything at your system boundaries. User input? Check it before it gets anywhere near your business logic. Configuration? Validate it the moment you load it. Response from a downstream service? Verify it before you process it.
+Leans forward
+"But wait," you might say, "isn't that defensive programming? Didn't you just tell us to avoid that?" Knowing smile
+Paces thoughtfully
+No, this is different. This isn't about peppering your business logic with guards and checks. This is about having strong, clear boundaries. Your core business logic should be clean, focused, assumption-free. Because you've already verified everything at the doors.
+Stops, turns to audience
+And when something's wrong? That's where the "Fail Visibly" part comes in. Don't swallow the error. Don't try to work around it. Don't return null and hope someone notices. Pauses Throw an exception. A clear, specific, well-documented exception.
+Moves center stage
+Remember those specific exceptions we talked about? This is where they shine. PayPlanValidationException doesn't just tell you something's wrong - it tells you exactly what's wrong, where it's wrong, and often, how to fix it.
+Gestures expansively
+And here's the beautiful part - when you fail fast and fail visibly, debugging becomes... almost trivial. No more hunting through logs trying to figure out where bad data came from. No more mysterious state corruptions. No more "well, it worked yesterday..."
+Takes a few steps forward
+Because every failure point becomes a guardian. A clear, visible, explicit guardian that says "This shall not pass!" And more importantly, "Here's why it shall not pass!"
+Thoughtful pause
+But there's something else that happens when you embrace this principle. Something unexpected. Your system becomes... self-documenting.
+Raises eyebrow
+Think about it. Every validation, every check, every potential failure point - they're all explicit. They're all visible. They're all... documented in your exceptions.
+Moves to edge of stage
+Want to know what inputs your API accepts? Look at the validation exceptions. Want to know what downstream service states you handle? Check the service exceptions. Want to understand your business rules? They're right there, in your business exceptions.
+Returns to center
+This is why I say Programming TO Exceptions isn't just about handling errors. It's about making your system's constraints explicit. It's about turning failure modes into documentation. It's about making the invisible... visible.
+Pauses, becomes more serious
+And this brings us to perhaps the most important question: How do we know we're doing this right? How do we measure success?
+Part 7 - Measuring Success
+Moves thoughtfully to center stage
+How do we know when Programming TO Exceptions is working? Pauses When your phone stops ringing at 3 AM.
+Smiles at audience reaction
+I'm only half joking. Because success here isn't just about reducing errors - it's about changing how we handle them entirely.
+Begins counting on fingers
+First, your debugging time plummets. When every exception carries rich context, when every failure point is explicit, when every error message tells a complete story... you spend less time hunting and more time fixing.
+Takes a few steps
+Second, your support tickets change. They stop being "Something's wrong!" and start being "I see I need to upgrade my account tier." Pauses That's not just better error handling - that's better user experience.
+Moves to side of stage
+Third, and this one surprised me - your team's discussions change. Code reviews stop being about catching edge cases and start being about crafting clear messages. About making failure modes explicit. About improving the system's ability to explain itself.
+Leans forward
+But there's a deeper measure of success. One that takes time to recognize.
+Speaks more slowly, deliberately
+Your system becomes... predictable. Not in the boring sense. Predictable in the reliable sense. When things go wrong - and they will go wrong - you know exactly what happened. No mystery crashes. No undefined states. No "well, that's weird..."
+Straightens up
+"But what about performance?" Nods I hear this a lot. "Aren't all these exceptions expensive?"
+Moves center stage
+Let me tell you about cost. You know what's expensive? Four developers spending three days tracking down a bug because the original error was swallowed somewhere in the stack. You know what's expensive? Users losing trust in your system because it fails silently.
+Pauses for effect
+The performance cost of throwing and catching exceptions? That's nothing compared to the cost of not knowing what's going wrong in your system.
+Becomes more animated
+And here's the thing about Programming TO Exceptions - it actually reduces the number of exceptions you throw over time. Because when you're explicit about failure modes, when you're clear about system boundaries, you catch problems before they become exceptions.
+Moves thoughtfully
+Remember that second catch block we talked about? The one for unexpected exceptions? In mature systems, it gets lonely. Really lonely. Because when you're doing this right, there are very few truly unexpected exceptions.
+Steps forward
+But the real measure of success? It's when your exceptions become your documentation. When new team members can understand your system's constraints just by looking at your exception hierarchy. When your error messages are so clear that users can solve their own problems.
+Part 8 - Conclusion
+Steps to center stage, speaking with quiet conviction
+Let me leave you with the key tenets of Programming TO Exceptions. Not rules, not guidelines... foundations.
+Pauses, lets the room settle
+First: Exceptions Do Not Return. They propagate. When you throw an exception, you're not suggesting something might be wrong. You're declaring with certainty: this operation cannot continue.
+Takes measured step
+Second: Handle at the Boundaries. Let your business logic be clean, clear, focused. Catch exceptions where they meet the outside world - at your APIs, your UIs, your service interfaces. That's where translation happens. That's where meaning meets action.
+Moves deliberately
+Third: Make Exceptions First-Class Citizens. Rich context. Clear messages. Specific types. Every exception a complete story of what went wrong and why. No shortcuts, no vague messages, no generic errors.
+Steps forward
+Fourth: Fail Fast, Fail Visibly. Check at the doors, not in the living room. Don't let bad data skulk around your system. When something's wrong, say it loud, say it clear, say it now.
+Pauses, looks around room
+Fifth: Handle Meaningfully or Don't Handle at All. Logging is not handling. Rethrowing is not handling. Empty catches? Shakes head Never. If you can't take meaningful action, let it propagate. Remember what I said earlier - sometimes the best way to handle exceptions is to not handle them at all.
+Moves center stage
+And finally: Trust the Mechanism. Trust that exceptions will carry their context. Trust that stack unwinding will clean up resources. Trust that being explicit about failure makes your system more reliable, not less.
+Takes final step forward
+Programming TO Exceptions isn't just about handling errors better. It's about building systems that speak clearly. Systems that fail gracefully. Systems that guide users and developers alike through the unexpected.
+Quiet, confident tone
+Because at the end of the day, exceptions aren't problems to be caught. They're opportunities to be explicit about what your system can and cannot do. They're your chance to turn confusion into clarity. Chaos into confidence.
+Final pause
+And that's how you build systems that let you sleep through the night.
+Steps back slightly
+Thank you.
+The Journey - Confronting Skepticism
+Moves to center stage, becomes reflective
+You know what's interesting about presenting radical ideas? Slight smile The resistance. The skepticism. The occasional person who stands up, face red with conviction, and declares "I would never work for you!" Mimics angry tone "Microsoft recommends..."
+Pauses, lets the echo fade
+In my early days, these moments would shake me. Touches chest Right here. That doubt would creep in. Was I wrong? Was I missing something? Was my experience invalid?
+Moves thoughtfully across stage
+But over the years, through countless production systems, through battles fought alongside engineers far more experienced than me, through failures and successes and everything in between... something changed.
+Stops, turns to audience
+Not my conviction. Shakes head My relationship with skepticism.
+Steps forward, speaking softly
+See, when someone challenges these ideas now - really challenges them, with that fire of certainty in their eyes - I feel something different. Not defensiveness. Not anxiety. But... curiosity.
+Gestures openly
+"Empty your glass," I tell them. "Keep an open mind. You might learn something." Pauses And you know what's fascinating? They usually do.
+Moves to side of stage
+But here's the real magic - so do I. Because every challenge, every skeptic, every heated argument... they all make me revisit my own journey. Question my own assumptions. Look for gaps in my own understanding.
+Returns to center
+And yet... thoughtful pause And yet, every time I go back to first principles, every time I reexamine the foundations of Programming TO Exceptions, they stand stronger. Not because I'm defending them. But because they've defended themselves. In production. Under load. At 3 AM when everything is on fire.
+Leans forward, speaking more intensely
+You want to know the most beautiful part? Those same skeptics? They often find me after the talk. The anger gone, replaced by something else... understanding. Sometimes even excitement.
+Smiles warmly
+And suddenly we're surrounded by a crowd, everyone listening intently as this former skeptic describes their own journey from resistance to realization. Their own moment of clarity. Their own empty glass, ready to be filled with new possibilities.
+Steps back, becoming more contemplative
+This is how paradigms shift. Not through argument. Not through force. But through experience. Through understanding. Through the humble admission that maybe, just maybe, there's a better way.
+Straightens up
+Because at the end of the day, this isn't about being right. It's about building better systems. More reliable systems. Systems that let us all sleep better at night.
+Quiet smile
+And if that means weathering a few storms of skepticism along the way... Shrugs Well, that's just part of the journey.
+
+
+-------------------------------------------------------------------------------
+
+
+Programming TO Exceptions
+by Shiv Kumar
+Part 1 - Core Philosophy
+Takes long pause, scanning the room
+You know what's funny about error handling? We all think we're doing it right. I certainly did. For years, I was that developer - sprinkling if-checks like confetti, logging errors with a confidence that bordered on arrogance. 'Error occurred!' Mimics typing There, handled! Wry smile
+Want to know what shattered that confidence? Production. Pauses
+Production doesn't care about your clever error handling. Production is that brutal teacher who shows up at 3 AM with pop quizzes you never studied for. Silent failures. Data inconsistencies. Systems running happily along while everything is quietly, thoroughly going wrong.
+Walks to other side of stage
+I remember the exact moment it hit me. Four hours into debugging a critical issue, staring at logs filled with 'Error occurred!' messages. Helpful, right? Audience chuckles That's when I realized - my entire approach to error handling wasn't just wrong, it was... backwards.
+See, we were treating errors like unwanted guests. Something to catch, log, and usher out the door as quickly as possible. 'Nothing to see here, folks!' But production... production taught me that errors are more like messengers. And we were shooting the messenger. Every. Single. Time.
+Leans forward
+But here's where it gets interesting. Over the next decade, across dozens of production systems, through countless sleepless nights and emergency fixes, a pattern started emerging. The systems that truly stood the test of time? They weren't the ones with the most sophisticated error handling. They were the ones that embraced errors. Not as problems to handle, but as tools to harness.
+Pauses, takes a sip of water
+I'm about to share something that might sound crazy at first. A completely different way of thinking about exceptions. Not as errors to catch, but as allies to embrace. A philosophy I call 'Programming TO Exceptions.'
+And before you dismiss this as just another 'best practice' talk - every pattern, every practice I'm about to share has been battle-tested in production. Not just by me, but by teams across multiple organizations, multiple domains, multiple scales. This isn't theory. This is survival knowledge.
+Steps closer to audience
+Ready to rethink everything you know about error handling?
+Part 2 - Fundamental Principles
+Moves to center stage, becomes more contemplative
+You know what's fascinating about mistakes? Not the mistakes themselves, but the moment you realize you've been making them. Pauses For years.
+I was so proud of our error handling. Try-catch blocks everywhere. Logging in every corner. A safety net so fine, nothing could slip through. Dry laugh At least, that's what I thought.
+Steps forward with purpose
+But before I tell you about making exceptions smarter, there's something fundamental we need to talk about. Something that changed everything about how I viewed exceptions.
+Pauses, looks around room intently
+Exceptions. Do. Not. Return.
+Lets that sink in
+This isn't just syntax. This is philosophy. When you throw an exception, you're not returning a value. You're not suggesting something might be wrong. You're making a statement: 'This operation cannot continue.' Full stop.
+Moves to side of stage
+See, for years I treated exceptions like fancy return codes. Catch here, check there, maybe return null, maybe return false... Shakes head I was missing the point entirely.
+When your code throws an exception, it's not asking for permission. It's not saying 'hey, something might be wrong, what do you think?' It's declaring, with absolute certainty: 'I cannot fulfill this contract.'
+Steps forward with renewed energy
+And this brings us to something equally fundamental - something that will transform how you think about method design entirely.
+Pauses, draws imaginary line in the air
+In a system built on Programming TO Exceptions, every method falls into one of two categories. Just two. Action methods and Query methods.
+Moves to one side of stage
+Action methods DO things. They make changes. They update state. And here's the key - they don't return anything. Their contract is simple: if they return, they succeeded. If they don't... well, you'll hear about it through an exception.
+Becomes animated
+Think about this common flow: gestures as if writing code
+Copy
+EnsureOrderRequestIsValid(orderRequest) # Action - throws if invalid
+order = TransformToOrder(orderRequest) # Query - transforms to domain model
+SaveOrder(order) # Action - persists to DB
+EnsureCustomerCanBeNotified(order.CustomerId) # Action - throws if can't notify
+notification = BuildOrderNotification(order) # Query - builds notification content
+SendCustomerNotification(notification) # Action - sends notification
+PublishOrderCreatedEvent(order) # Action - publishes event
+Points to imaginary code
+See how the intent is crystal clear? Notice that 'Ensure' prefix on our validation methods? That's not just a naming convention - it's a contract. It tells you immediately: this method will throw if its condition isn't met. No return values, no status codes, just a pure guarantee.
+Moves to other side of stage
+Then we have Query methods. Their contract is equally clear - they return exactly what they promise. Not null. Not empty strings. Not special error codes. What they promise in their signature is what you get.
+Leans forward
+"But what if the query can't fulfill its contract?" Ah! Then it doesn't return at all. It throws an exception. Because returning null when you promised an Order isn't fulfilling the contract. It's breaking it.
+Steps to center, speaking deliberately
+Now, here's where it gets beautiful. When you embrace these principles, something magical happens to your code. Look at any method, and you'll see... just the happy path.
+Pauses for effect
+Because if execution reached this line of code, everything before it succeeded. No ifs. No buts. No checking return codes. No defensive programming. Just clean, clear, purposeful code.
+This isn't just about clean code. This is about confidence. About certainty. About knowing, without a doubt, that if your code is executing, it's executing correctly.
+Straightens up
+Now... small smile now we can talk about making exceptions smarter.
+Part 3 - Making Exceptions Smarter
+Moves center stage
+But making exceptions smarter... that journey took time. And like most good stories, it started with pain. Wry smile
+You see, exceptions gave us stack traces. Great! Points you to where it broke. But why? What was the state? What data caused it? Shakes head Stack traces alone were like trying to solve a murder mystery with just the crime scene location. No weapon, no motive, no suspects.
+Paces thoughtfully
+At first, we just added better messages. Then status codes. Counts on fingers Then severity levels. But something was still missing. We were still debugging in the dark.
+Stops suddenly
+Then came the revelation. What if exceptions weren't just error signals? What if they were... pauses debug packages? Complete snapshots of what went wrong?
+Becomes animated
+We started small. Added the basic properties - status codes, severity levels, reason phrases. Then came what I call the 'action intent' - does this need user intervention? System intervention? Manual support? Gestures expansively
+But the game-changer? Context. Leans in Rich, deep, meaningful context. Method parameters, local variables, system state - anything that could help reproduce the issue. When you're debugging at 3 AM, that context is worth its weight in gold.
+Steps back, serious tone
+Now, I know what some of you are thinking. 'That's a lot of overhead.' Pauses And you're right. It is. But let me ask you something...
+Moves to edge of stage
+What costs more? Taking the time to craft rich, meaningful exceptions? Or having your entire team spend hours - or days - trying to reproduce and debug issues with nothing but a stack trace and a prayer?
+Straightens jacket
+But here's where it gets really interesting. Once we had these rich exceptions, we discovered something unexpected. Something that changed how we thought about system observability entirely.
+Dramatic pause
+We didn't need INFO logs anymore.
+Watches audience reaction
+I know, I know. Sounds crazy, right? 'No INFO logs? How do you know what's happening in your system?' Smiles
+Let me tell you a secret: In fifteen years of running production systems this way, I've never missed them. Not once. When your exceptions are rich with context, when your validation is rock solid at your boundaries, when your error messages tell the complete story... INFO logs become noise. Pure noise.
+Moves center stage
+But to make this work, your exceptions need to be first-class citizens in your system. And I mean first-class.
+Leans forward, speaking intently
+You know what keeps me awake at night now? Not production issues. No. What keeps me awake is reviewing exception messages. Two-hour discussions about a single error message? Absolutely. Excessive? Pauses Not even close.
+Because here's what I learned the hard way: your exception message isn't just technical output - it's your system's moment of truth. It's your chance to clearly explain what went wrong, why it went wrong, and often most importantly, how to fix it.
+Takes a few steps, gathering thoughts
+Let me give you an example. Which message would you rather see?
+'PaymentPlanValidation failed'
+Waits a beat
+Or:
+'Payment plan amount $5000 exceeds maximum allowed limit of $3000 for Basic tier accounts. Available tiers: Premium ($10000 limit), Enterprise (unlimited)'
+Looks at audience
+See the difference? One leaves everyone guessing. The other empowers immediate action. One generates support tickets. The other... smiles the other lets users solve their own problems.
+Part 4 - Structure and Strategy
+Takes deliberate steps forward
+But clarity isn't just about messages. It's about structure. Organization. Hierarchy.
+Projects exception hierarchy diagram
+Take a look at this. Pauses This isn't just a diagram. This is a battle plan.
+Points to top level
+At the root, we have our base exception. Every exception in our system inherits from this. Slight smile And yes, I mean every exception. No rogue exceptions allowed in our house.
+Moves hand down to next level
+Then we split. Business exceptions on one side, technical exceptions on the other. Pauses Clean separation of concerns. Because a validation failure is fundamentally different from a service timeout, and your system should know the difference.
+Looks intently at audience
+But here's where it gets interesting. See these concrete exceptions at the bottom? Notice something? They're hyper-specific. One exception, one scenario, one place in the code. No generic error classes, no reused exceptions. When you see a 'PayPlanValidationException', you know exactly where to look.
+Steps back
+"Isn't that excessive?" I hear that a lot. Shakes head No. It's precise. It's intentional. It's clarity through specificity.
+Moves to center stage
+And this precision pays off at the boundaries. Remember those boundaries we talked about? This is where the magic happens.
+Gestures to indicate system boundaries
+At our boundaries - our API endpoints, our service interfaces - we have exactly two catches. Two. Our base exception, and... pauses everything else.
+Leans forward
+Think about that for a minute. Every exception we throw is caught by that first catch. We know its properties, its context, its meaning. We can translate it perfectly into the right response, the right message, the right action.
+And that second catch? Grim smile That's our safety net. Anything we didn't anticipate. Anything we didn't throw ourselves. Those are potential bugs, and they get treated accordingly - logged as critical, returned as 500 errors, escalated for immediate attention.
+Paces thoughtfully
+But here's the beautiful part - at our boundaries, we're not just catching exceptions. We're enriching them. Because at the boundary, we have something precious - the complete input state that triggered this whole operation.
+Moves to whiteboard
+Think about it. Your exception arrives with all its accumulated context, and now you add the initial request that started it all. Every parameter, every header, every bit of context - all becoming searchable properties in your logs.
+Draws quick diagram
+Status codes, severity levels, action intents, business context - all first-class citizens in your observability system. Want to alert on all failed payment validations for premium customers? One query. Need to track all timeout errors from a specific downstream service? It's right there.
+Steps back to center
+But here's the beautiful part. Over time, that second catch... it gets lonely. Because when you're Programming TO Exceptions, when you're thinking in terms of explicit failure modes, when you're making every exception count... those unexpected errors become rare. Really rare.
+Stops, turns to audience
+And that's when you know you've turned a corner. When your error handling isn't about catching problems anymore. It's about expressing intent. About making failure modes explicit. About turning exceptions from surprises into... guarantees.
+Steps forward
+But to make this work, you need one more crucial piece. You need to understand how to handle exceptions meaningfully...
+Part 5 - Meaningful Handling
+Moves to center stage, contemplative
+Let's talk about what it means to handle an exception. Pauses Actually, let me rephrase that. Let's talk about what it doesn't mean.
+Starts counting on fingers
+Catching and logging? That's not handling. That's notification. Catching and rethrowing? That's not handling. That's passing the buck. Empty catch blocks? Shudders dramatically That's not handling. That's burying problems alive.
+Faces audience directly
+Early in my career, I thought I was handling exceptions. Try-catch, log a message - 'Error occurred!' - and call it a day. Shakes head slowly I was so wrong.
+Moves to side of stage
+You see, true handling... that's about taking meaningful action. Let me say that again: Meaningful. Action.
+Begins pacing thoughtfully
+What's meaningful action? Retrying a failed network call with exponential backoff - that's handling. Switching to a backup service when the primary fails - that's handling. Implementing a circuit breaker to prevent cascade failures - absolutely handling.
+Stops suddenly
+But the most meaningful handling? It happens at your boundaries. And this is where it gets really interesting.
+Moves to whiteboard
+When an exception hits your boundary, you have something incredibly powerful - a complete reproduction package. Draws diagram Think about what you have:
+The original exception, rich with context from every layer it passed through. The complete input state that triggered the operation. The system state at the boundary itself.
+Turns to audience, excited
+Do you realize what this means? Pauses Every exception becomes a complete reproduction recipe.
+Steps forward
+"Cannot reproduce" becomes a phrase of the past. Because now, when a problem hits production, you don't just have an error message. You have everything you need to replay that exact scenario in your development environment.
+Moves to computer setup
+Look at how this changes debugging. Types Here's an exception from production. Not just the stack trace, but the exact API request that triggered it. The exact customer ID. The exact business context. Everything structured, everything queryable.
+Points to screen
+Want to reproduce this issue? Just replay this request. Want to find similar issues? Query by any context property. Want to prevent this class of problems? Set up alerts based on these exact patterns.
+Returns to center
+And this changes everything about how we handle production issues. No more "works on my machine". No more "can't reproduce". No more wild guessing about what the user was doing when it failed.
+Moves to side of stage
+This is why we put so much effort into enriching our exceptions at the boundary. We're not just logging errors - we're creating perfect snapshots of failure scenarios. Complete, reproducible, actionable snapshots.
+Speaks more intensely
+And when you combine this with structured logging and proper observability... pauses That's when things get really powerful.
+Draws new diagram
+Every exception property becomes a dimension you can query. Every piece of context becomes a filter you can apply. Want to find all payment validation failures for premium customers in the last hour? Snaps fingers Done. Want to alert on any order processing that fails after payment success? Simple query.
+Steps back
+But remember - this only works because we've made our exceptions rich, structured, and meaningful. Because we've turned them from simple error messages into complete debug packages.
+Moves center stage
+Which brings me to one of my most controversial rules: If you can't take meaningful action, don't catch the exception. Pauses At all.
+Watches audience reaction
+I know what you're thinking. "But what about logging? What about monitoring?" Smiles Those aren't actions. Those are observations. Important observations, yes, but not handling.
+Leans forward
+Here's the thing about letting exceptions propagate: they carry their context with them. Every layer they pass through is another chance to add information, to enrich the story. When they finally reach a boundary where real handling can occur - now you have the complete picture.
+Part 6 - Fail Fast and Fail Visibly
+Takes deliberate steps to center stage
+Let me tell you about one of the most powerful principles I've learned: Fail Fast and Fail Visibly.
+Gestures to create an imaginary house
+Think of your system like a house. You've got a front door where users come in. A back door where you talk to other services. Maybe some windows where configuration sneaks in. Pauses Where do you check for intruders?
+Waits for audience reaction
+At the doors! Emphatic gesture You don't let suspicious characters wander around your house hoping they'll behave. You stop them right at the entrance.
+Moves to side of stage
+This is what I mean by Failing Fast. Validate everything at your system boundaries. User input? Check it before it gets anywhere near your business logic. Configuration? Validate it the moment you load it. Response from a downstream service? Verify it before you process it.
+Leans forward
+"But wait," you might say, "isn't that defensive programming? Didn't you just tell us to avoid that?" Knowing smile
+Paces thoughtfully
+No, this is different. This isn't about peppering your business logic with guards and checks. This is about having strong, clear boundaries. Your core business logic should be clean, focused, assumption-free. Because you've already verified everything at the doors.
+Stops, turns to audience
+And when something's wrong? That's where the "Fail Visibly" part comes in. Don't swallow the error. Don't try to work around it. Don't return null and hope someone notices. Pauses Throw an exception. A clear, specific, well-documented exception.
+Moves center stage
+Remember those specific exceptions we talked about? This is where they shine. PayPlanValidationException doesn't just tell you something's wrong - it tells you exactly what's wrong, where it's wrong, and often, how to fix it.
+Gestures expansively
+And here's the beautiful part - when you fail fast and fail visibly, debugging becomes... almost trivial. No more hunting through logs trying to figure out where bad data came from. No more mysterious state corruptions. No more "well, it worked yesterday..."
+Takes a few steps forward
+Because every failure point becomes a guardian. A clear, visible, explicit guardian that says "This shall not pass!" And more importantly, "Here's why it shall not pass!"
+Thoughtful pause
+But there's something else that happens when you embrace this principle. Something unexpected. Your system becomes... self-documenting.
+Raises eyebrow
+Think about it. Every validation, every check, every potential failure point - they're all explicit. They're all visible. They're all... documented in your exceptions.
+Moves to edge of stage
+Want to know what inputs your API accepts? Look at the validation exceptions. Want to know what downstream service states you handle? Check the service exceptions. Want to understand your business rules? They're right there, in your business exceptions.
+Returns to center
+This is why I say Programming TO Exceptions isn't just about handling errors. It's about making your system's constraints explicit. It's about turning failure modes into documentation. It's about making the invisible... visible.
+Pauses, becomes more serious
+And this brings us to perhaps the most important question: How do we know we're doing this right? How do we measure success?
+Part 7 - Measuring Success
+Moves thoughtfully to center stage
+How do we know when Programming TO Exceptions is working? Pauses When your phone stops ringing at 3 AM.
+Smiles at audience reaction
+I'm only half joking. Because success here isn't just about reducing errors - it's about changing how we handle them entirely.
+Begins counting on fingers
+First, your debugging time plummets. When every exception carries rich context, when every failure point is explicit, when every error message tells a complete story... you spend less time hunting and more time fixing.
+Takes a few steps
+Second, your support tickets change. They stop being "Something's wrong!" and start being "I see I need to upgrade my account tier." Pauses That's not just better error handling - that's better user experience.
+Moves to side of stage
+Third, and this one surprised me - your team's discussions change. Code reviews stop being about catching edge cases and start being about crafting clear messages. About making failure modes explicit. About improving the system's ability to explain itself.
+Leans forward
+But there's a deeper measure of success. One that takes time to recognize.
+
+Speaks more slowly, deliberately
+Your system becomes... predictable. Not in the boring sense. Predictable in the reliable sense. When things go wrong - and they will go wrong - you know exactly what happened. No mystery crashes. No undefined states. No "well, that's weird..."
+Straightens up
+"But what about performance?" Nods I hear this a lot. "Aren't all these exceptions expensive?"
+Moves center stage
+Let me tell you about cost. You know what's expensive? Four developers spending three days tracking down a bug because the original error was swallowed somewhere in the stack. You know what's expensive? Users losing trust in your system because it fails silently.
+Pauses for effect
+The performance cost of throwing and catching exceptions? That's nothing compared to the cost of not knowing what's going wrong in your system.
+Becomes more animated
+And here's the thing about Programming TO Exceptions - it actually reduces the number of exceptions you throw over time. Because when you're explicit about failure modes, when you're clear about system boundaries, you catch problems before they become exceptions.
+Moves thoughtfully
+Remember that second catch block we talked about? The one for unexpected exceptions? In mature systems, it gets lonely. Really lonely. Because when you're doing this right, there are very few truly unexpected exceptions.
+Steps forward
+But the real measure of success? It's when your exceptions become your documentation. When new team members can understand your system's constraints just by looking at your exception hierarchy. When your error messages are so clear that users can solve their own problems.
+Part 8 - Conclusion
+Steps to center stage, speaking with quiet conviction
+Let me leave you with the key tenets of Programming TO Exceptions. Not rules, not guidelines... foundations.
+Pauses, lets the room settle
+First: Exceptions Do Not Return. They propagate. When you throw an exception, you're not suggesting something might be wrong. You're declaring with certainty: this operation cannot continue.
+Takes measured step
+Second: Handle at the Boundaries. Let your business logic be clean, clear, focused. Catch exceptions where they meet the outside world - at your APIs, your UIs, your service interfaces. That's where translation happens. That's where meaning meets action.
+Moves deliberately
+Third: Make Exceptions First-Class Citizens. Rich context. Clear messages. Specific types. Every exception a complete story of what went wrong and why. No shortcuts, no vague messages, no generic errors.
+Steps forward
+Fourth: Fail Fast, Fail Visibly. Check at the doors, not in the living room. Don't let bad data skulk around your system. When something's wrong, say it loud, say it clear, say it now.
+Pauses, looks around room
+Fifth: Handle Meaningfully or Don't Handle at All. Logging is not handling. Rethrowing is not handling. Empty catches? Shakes head Never. If you can't take meaningful action, let it propagate. Remember what I said earlier - sometimes the best way to handle exceptions is to not handle them at all.
+Moves center stage
+And finally: Trust the Mechanism. Trust that exceptions will carry their context. Trust that stack unwinding will clean up resources. Trust that being explicit about failure makes your system more reliable, not less.
+Takes final step forward
+Programming TO Exceptions isn't just about handling errors better. It's about building systems that speak clearly. Systems that fail gracefully. Systems that guide users and developers alike through the unexpected.
+Quiet, confident tone
+Because at the end of the day, exceptions aren't problems to be caught. They're opportunities to be explicit about what your system can and cannot do. They're your chance to turn confusion into clarity. Chaos into confidence.
+Final pause
+And that's how you build systems that let you sleep through the night.
+Steps back slightly
+Thank you.

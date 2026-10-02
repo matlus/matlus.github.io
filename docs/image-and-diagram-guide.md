@@ -1,10 +1,11 @@
 # Images and Diagrams
 
-Updated: 2026-09-30
+Updated: 2026-10-02
 
 The site uses technical editorial ink for hero art. Diagrams within articles
-default to pastel architectural infographics, with two sculpted 3D styles
-available when their treatment suits the article.
+default to pastel architectural infographics. A flat style with fine outlines
+and two sculpted 3D styles are also available when their treatment suits the
+article.
 
 | | Hero and editorial images | Simple boxology | Illustrated diagrams |
 |---|---|---|---|
@@ -161,6 +162,26 @@ Generate PNG or JPEG for richly illustrated diagrams. Keep the original at nativ
 resolution and export smaller versions as needed. Record the actual delivered
 dimensions. Provide descriptive alt text and explain the important relationships
 in a caption or nearby prose.
+
+### Flat diagrams with fine outlines
+
+Use [generate-flat-fine-line-diagram.md](../prompts/generate-flat-fine-line-diagram.md)
+for flat cards with delicate coloured outlines, bold condensed lettering, navy
+connectors, and a pale blue-grey textured vignette. The owner supplied the Custom
+Exceptions image on 2026-10-02 as the style reference. Its optimized copy is
+retained at [flat-fine-line-diagram.webp](style-references/flat-fine-line-diagram.webp).
+
+Combine the shared style prompt with a separate drawing brief containing the
+new subject, exact labels, component counts, groups, arrow directions, and any
+marker or legend meanings. The assistant completes the brief from the article
+or supplied description. The reference's exception hierarchy and icon meanings
+remain specific to that drawing. Its condensed diagram lettering is independent
+of the website's reading font.
+
+This option keeps cards flat and their borders fine, approximately 1.3–1.5
+pixels at an image width of 1820 pixels. Connectors remain slightly heavier for
+clarity. Follow the same label, connection, and accessible-caption checks used
+for the other diagram styles.
 
 ### Sculpted 3D options
 

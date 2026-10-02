@@ -311,6 +311,7 @@ hr {
  * sits just under the bar; the fallback covers pages without the script.
  */
 .prose :is(h2, h3, h4) {
+  margin-bottom: var(--space-2xs);
   scroll-margin-top: var(--anchor-offset, calc(var(--nav-height) + 0.75rem));
 }
 

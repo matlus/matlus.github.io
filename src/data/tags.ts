@@ -21,6 +21,13 @@ export interface Tag {
 
 export const TAGS = [
   {
+    slug: 'structured-logging',
+    label: 'Structured Logging',
+    description:
+      'Structured logging records named properties alongside an event so people and tools can ' +
+      'filter, correlate, and investigate failures without parsing message text.',
+  },
+  {
     slug: 'architecture',
     label: 'Architecture',
     description:

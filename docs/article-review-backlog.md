@@ -1,5 +1,31 @@
 # Article review backlog
 
+## Programming to Exceptions publication
+
+- [x] Apply the October 2 editorial decisions to both articles. Customer retrieval
+  and order placement use distinct concrete exceptions. The happy-path comparison
+  is explicitly a teaching adaptation, and boundary handler is defined as
+  exception-handling middleware in a Web API before its first diagram.
+- [x] Place six diagrams, including the owner's hierarchy and approved order
+  comparison, with alt text, captions, full-size links, and retained prompts.
+  Add both article heroes and remove the two optional image planning notes.
+- [x] Run the required metadata sub-agent against the finished pair. Keep the
+  existing Part 1 tags; add Structured Logging to Part 2 with a distinct topic
+  hero and prompt. Try-Parse remains covered by the existing Design Patterns tag.
+- [x] Verify the shared public recording's calendar date as October 28, 2019.
+  Both articles use that date, an October 2, 2026 modification date, and the same
+  YouTube resource. The article bodies stand independently of the recording.
+- [x] Compile the current complete C# foundations and both exact order comparison
+  listings. Exercise all six failure positions, both successful paths, copied
+  context, authoritative policy fields, cause preservation, HTTP failure records,
+  diagnostic JSON, and boundary enrichment.
+- [ ] Verify the exact `origin/main` deployment, both live canonical URLs, and the
+  saved YouTube description backlinks. Execution evidence belongs in
+  `docs/programming-to-exceptions-publication-plan.md`.
+- [ ] When the Meridian sample-code repository becomes public, verify its URL
+  and add article-to-repository and README-to-article links. The current examples
+  explain their behavior without requiring access to that private repository.
+
 ## Architecture with Intent topic overview
 
 - [ ] Read the [October 29, 2012 transcript](https://docs.google.com/document/d/15XMR_su9_W864wGCH5LvgxGhu5IelHYf_Dk_wsYbcP0/edit).
