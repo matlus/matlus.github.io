@@ -8,7 +8,7 @@ import ArticleCard from '../../components/ArticleCard.astro';
 import { TOPICS } from '../../data/topics';
 import { PILLAR_COPY } from '../../data/pillars';
 import { heroFor } from '../../lib/heroes';
-import { loadPwiArticleTopics, loadTopicCards, publishedTopicsFirst } from '../../lib/pwi-topic-links';
+import { loadPwiArticleTopics, loadPwiPillarArticles, loadTopicCards, publishedTopicsFirst } from '../../lib/pwi-topic-links';
 
 /**
  * One route for both pillar hubs and topic hubs, because both sit one segment
@@ -75,6 +75,7 @@ const headings = overviewContent?.headings;
 
 // A pillar page shows each published topic as a card; topics still pending stay as a short list.
 const topicCards = isTopic ? undefined : await loadTopicCards(props.topics);
+const pillarArticles = isTopic ? [] : await loadPwiPillarArticles(Astro.params.slug ?? '');
 
 const description = isTopic
   ? (props.chapters[0]?.data.description ?? props.title)
@@ -146,6 +147,29 @@ const description = isTopic
       </>
     ) : (
       <>
+        {pillarArticles.length > 0 && (
+          <section aria-labelledby="pillar-articles-heading">
+            <h2 id="pillar-articles-heading">Read the articles</h2>
+            <p class="muted scope">Read these in order. The reference chapters follow below.</p>
+            <ul class="card-grid cards">
+              {pillarArticles.map((article) => (
+                <li>
+                  <ArticleCard
+                    href={`/writing/${article.id}/`}
+                    title={article.data.title}
+                    description={article.data.description}
+                    date={article.data.datePublished}
+                    tags={article.data.tags}
+                    hero={article.data.hero ? heroFor(article.data.hero) : undefined}
+                    markdownHref={`/writing/${article.id}.md`}
+                    level={3}
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+        {pillarArticles.length > 0 && <h2 class="reference-heading">Reference chapters</h2>}
         <p class="muted scope">
           {props.topics.length} topics. Chapter numbers are deliberately absent, because
           the two language families number their chapters independently.
@@ -208,5 +232,6 @@ const description = isTopic
 
   .back { margin-top: var(--space-l); font-size: var(--step--1); }
   .cards { margin-top: var(--space-m); }
+  .reference-heading { margin-top: var(--space-xl); }
   .pending-heading { margin-top: var(--space-xl); font-size: var(--step-1); }
 </style>

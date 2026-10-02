@@ -2,6 +2,12 @@
 
 ## Programming to Exceptions publication, October 2, 2026
 
+The pillar hub now leads with Part 1 and Part 2 in reading order under "Read the
+articles," followed by the older reference chapters. `loadPwiPillarArticles`
+keeps that reading list separate from chapter-topic routing and excludes drafts.
+Both posts also remain in Writing and search. Their original 2019 date determines
+their position in the chronological Writing list.
+
 The two articles are published from `src/content/writing`, with the
 shared source recording's verified date of 2019-10-28 and an October 2 revision
 date. Publication commit `f97196261f72035feedaf0577f0e6892c77111e3` deployed

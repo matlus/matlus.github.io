@@ -11,6 +11,22 @@ const ARTICLE_TOPIC_SLUGS: ReadonlyMap<string, string> = new Map([
   ['factory-method-pattern', 'factory-method-pattern'],
 ]);
 
+/** Article reading order on a pillar hub, independent of its reference chapters. */
+const PILLAR_ARTICLE_SLUGS: ReadonlyMap<string, readonly string[]> = new Map([
+  ['programming-to-exceptions', [
+    'programming-to-exceptions-method-contracts',
+    'programming-to-exceptions-diagnostics-and-boundaries',
+  ]],
+]);
+
+export async function loadPwiPillarArticles(pillarSlug: string) {
+  const slugs = PILLAR_ARTICLE_SLUGS.get(pillarSlug) ?? [];
+  const articles = await getCollection('writing', ({ id, data }) =>
+    !data.draft && slugs.includes(id),
+  );
+  return articles.sort((left, right) => slugs.indexOf(left.id) - slugs.indexOf(right.id));
+}
+
 export async function loadPwiArticleTopics() {
   const articles = await getCollection('writing', ({ id, data }) =>
     !data.draft && ARTICLE_TOPIC_SLUGS.has(id),
