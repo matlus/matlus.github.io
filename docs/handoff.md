@@ -2,10 +2,13 @@
 
 ## Programming to Exceptions publication, October 2, 2026
 
-The two articles are publication candidates in `src/content/writing`, with the
+The two articles are published from `src/content/writing`, with the
 shared source recording's verified date of 2019-10-28 and an October 2 revision
-date. The owner authorized publication and reciprocal video links. See
-`programming-to-exceptions-publication-plan.md` for execution and deployment evidence.
+date. Publication commit `f97196261f72035feedaf0577f0e6892c77111e3` deployed
+successfully in Pages run 37027699821. Both canonical URLs returned HTTP 200,
+and fresh public YouTube metadata verified the two description backlinks and
+the preserved PWI link. See `programming-to-exceptions-publication-plan.md`
+for execution and deployment evidence.
 
 Part 1 places the order-placement comparison early and defines boundary handler
 as exception-handling middleware in a Web API. Part 2 develops specific throw

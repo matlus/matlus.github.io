@@ -19,7 +19,7 @@
   listings. Exercise all six failure positions, both successful paths, copied
   context, authoritative policy fields, cause preservation, HTTP failure records,
   diagnostic JSON, and boundary enrichment.
-- [ ] Verify the exact `origin/main` deployment, both live canonical URLs, and the
+- [x] Verify the exact `origin/main` deployment, both live canonical URLs, and the
   saved YouTube description backlinks. Execution evidence belongs in
   `docs/programming-to-exceptions-publication-plan.md`.
 - [ ] When the Meridian sample-code repository becomes public, verify its URL

@@ -7,9 +7,8 @@ diagrams, article heroes, and verified source links. Commit the related changes
 to `origin/main`, verify the resulting GitHub Pages deployment, and complete the
 applicable website, YouTube, and public code-repository cross-links.
 
-**Execution authorized October 2, 2026.** Editorial work, diagrams, heroes,
-metadata, and local publication checks are complete. Website deployment and
-the shared YouTube description update follow those checks. Repository visibility
+**Completed October 2, 2026.** Both articles are live with finished diagrams,
+heroes, metadata, and verified reciprocal video links. Repository visibility
 is unchanged; public Meridian linkage remains deferred.
 
 ## Confirmed starting point
@@ -42,7 +41,7 @@ is unchanged; public Meridian linkage remains deferred.
 | Primary assistant as editor | Revise both articles, reconcile terminology, prepare examples and source links | Completed |
 | Primary assistant as image author | Complete briefs, generate and inspect images, place optimized assets | Completed |
 | Required metadata sub-agent | Read both final articles and the extraction prompt; report descriptions and tags | Completed by `publication_metadata` |
-| Primary assistant as publisher | Run checks, commit and integrate into `origin/main`, verify deployment and cross-links | In progress |
+| Primary assistant as publisher | Run checks, commit and integrate into `origin/main`, verify deployment and cross-links | Completed |
 
 Use the current chat's configured model and reasoning settings for execution.
 The metadata sub-agent inherits those settings; no model overrides are selected.
@@ -237,8 +236,30 @@ Current verification passed:
 - Browser: desktop and phone layouts inspected. Body text remains 18px, the
   approved heading gap is retained, and dense figures scroll within their own
   container on phones with full-size links available. Both Markdown exports retain
-  captions, diagram references, historical dates, and the shared source-video link.
+  diagram explanations, historical dates, and the shared source-video link.
 
-Deployment and external backlink evidence will be recorded after the first
-publication deployment. The full Meridian repositories were rechecked as private;
-their README and article resource links remain explicitly deferred.
+## Publication and cross-link evidence
+
+Publication commit `f97196261f72035feedaf0577f0e6892c77111e3` reached `origin/main`.
+[GitHub Pages run 37027699821](https://github.com/matlus/matlus.github.io/actions/runs/37027699821)
+matched that exact SHA and completed successfully. Both canonical article URLs
+returned HTTP 200 after deployment:
+
+- [Part 1: Method Contracts and Failure](https://matlus.com/writing/programming-to-exceptions-method-contracts/)
+- [Part 2: Diagnostics and Boundaries](https://matlus.com/writing/programming-to-exceptions-diagnostics-and-boundaries/)
+
+Both article resource sections link to the public
+[Programming To Exceptions recording](https://www.youtube.com/watch?v=5IKczyor-f4).
+Its description was updated in YouTube Studio with labelled links to both articles,
+preserving the existing text, website link, and PWI homepage link. Studio confirmed
+"All changes saved." Fresh public video metadata independently confirmed both
+canonical article links and the existing PWI link on October 2.
+
+The closing documentation commit also removes inline formatting from the hierarchy
+caption so the existing Markdown exporter retains its complete explanation. Local
+checks cover both published articles and all six diagram explanations.
+
+The full Meridian repositories were rechecked as private. Their README and article
+resource links remain explicitly deferred; no repository was made public and no
+unrelated repository was substituted. This is a completed website/video linkage,
+with future public-code linkage recorded in the review backlog.
