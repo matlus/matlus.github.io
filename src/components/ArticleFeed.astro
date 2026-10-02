@@ -1,0 +1,82 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ArticleCard from './ArticleCard.astro';
+import { heroFor } from '../lib/heroes';
+
+interface Props {
+  readonly posts: readonly CollectionEntry<'writing'>[];
+  readonly pageSize?: number;
+}
+
+const { posts, pageSize = 6 } = Astro.props;
+---
+
+<article-feed data-page-size={pageSize}>
+  <ul class="card-grid" data-feed-results>
+    {posts.map((post) => (
+      <li data-feed-item>
+        <ArticleCard
+          href={`/writing/${post.id}/`}
+          title={post.data.title}
+          description={post.data.description}
+          date={post.data.datePublished}
+          updated={post.data.dateModified}
+          tags={post.data.tags}
+          hero={post.data.hero ? heroFor(post.data.hero) : undefined}
+          status={post.data.status}
+          markdownHref={`/writing/${post.id}.md`}
+          level={3}
+        />
+      </li>
+    ))}
+  </ul>
+  {posts.length === 0 && <p class="muted">Nothing published yet.</p>}
+  <nav class="feed-paging" aria-label="Article results" hidden data-feed-paging>
+    <button type="button" data-feed-previous>Newer articles</button>
+    <p role="status" aria-live="polite" aria-atomic="true" data-feed-status></p>
+    <button type="button" data-feed-next>Older articles</button>
+  </nav>
+</article-feed>
+
+<script>
+  class ArticleFeed extends HTMLElement {
+    connectedCallback() {
+      const items = Array.from(this.querySelectorAll<HTMLElement>('[data-feed-item]'));
+      const controls = this.querySelector<HTMLElement>('[data-feed-paging]');
+      const previous = this.querySelector<HTMLButtonElement>('[data-feed-previous]');
+      const next = this.querySelector<HTMLButtonElement>('[data-feed-next]');
+      const status = this.querySelector<HTMLElement>('[data-feed-status]');
+      const size = Number(this.dataset['pageSize']);
+      if (!controls || !previous || !next || !status || !Number.isInteger(size) || size < 1 || !items.length) return;
+
+      let page = 0;
+      const pages = Math.ceil(items.length / size);
+      const showPage = () => {
+        const start = page * size;
+        items.forEach((item, index) => { item.hidden = index < start || index >= start + size; });
+        previous.disabled = page === 0;
+        next.disabled = page === pages - 1;
+        status.textContent = `Articles ${start + 1}–${Math.min(start + size, items.length)} of ${items.length} · Page ${page + 1} of ${pages}`;
+      };
+      const move = (direction: number) => {
+        page = Math.max(0, Math.min(pages - 1, page + direction));
+        showPage();
+        this.scrollIntoView({ block: 'start', behavior: 'instant' });
+      };
+      previous.addEventListener('click', () => move(-1));
+      next.addEventListener('click', () => move(1));
+      showPage();
+      controls.hidden = pages <= 1;
+    }
+  }
+  if (!customElements.get('article-feed')) customElements.define('article-feed', ArticleFeed);
+</script>
+
+<style>
+  article-feed { display: block; scroll-margin-top: var(--anchor-offset); }
+  [hidden] { display: none !important; }
+  .feed-paging { display: flex; flex-wrap: wrap; gap: var(--space-s); justify-content: center; align-items: center; margin-top: var(--space-l); }
+  .feed-paging p { margin: 0; font-size: var(--step--1); color: var(--color-text-muted); }
+  button { font: inherit; font-size: var(--step--1); color: var(--color-accent); background: var(--color-surface); border: 1px solid var(--color-border-strong); border-radius: var(--radius); padding: var(--space-xs) var(--space-s); cursor: pointer; }
+  button:disabled { opacity: 0.45; cursor: default; }
+</style>

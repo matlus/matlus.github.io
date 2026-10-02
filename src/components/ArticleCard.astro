@@ -15,6 +15,7 @@ interface Props {
   readonly title: string;
   readonly description: string;
   readonly date: Date;
+  readonly updated?: Date | undefined;
   readonly tags?: readonly string[] | undefined;
   readonly hero?: ImageMetadata | undefined;
   /** Small label above the title, such as "Part 3" or "Chapter". */
@@ -31,6 +32,7 @@ const {
   title,
   description,
   date,
+  updated,
   tags = [],
   hero,
   kicker,
@@ -129,7 +131,10 @@ const hasRecordings = videos.length > 0 || audio !== undefined;
     }
 
     <p class="card__foot">
-      <time datetime={date.toISOString().slice(0, 10)}>{fmt(date)}</time>
+      {updated && updated.getTime() > date.getTime() && (
+        <span>Updated <time datetime={updated.toISOString().slice(0, 10)}>{fmt(updated)}</time> · </span>
+      )}
+      <time datetime={date.toISOString().slice(0, 10)}>{updated ? 'Published ' : ''}{fmt(date)}</time>
       {status === 'exploratory' && <span class="card__badge">Exploratory</span>}
       {markdownHref && <a class="card__md" href={markdownHref}>Markdown</a>}
     </p>

@@ -65,6 +65,12 @@ export const getStaticPaths = (async () => {
 
 const props = Astro.props;
 const isTopic = props.kind === 'topic';
+// The teaching series has one language-independent reading path.
+// Preserve the existing topic URL by forwarding it to that shared hub.
+if (isTopic && props.topic.slug === 'validation-exception-handling') {
+  return Astro.redirect('/pwi/programming-to-exceptions/', 301);
+}
+const isExceptionsPillar = !isTopic && Astro.params.slug === 'programming-to-exceptions';
 const overview = isTopic
   ? (await getCollection('overviews', ({ data }) => !data.draft))
       .find((entry) => entry.data.topic === props.topic.slug)
@@ -150,7 +156,11 @@ const description = isTopic
         {pillarArticles.length > 0 && (
           <section aria-labelledby="pillar-articles-heading">
             <h2 id="pillar-articles-heading">Read the articles</h2>
-            <p class="muted scope">Read these in order. The reference chapters follow below.</p>
+            <p class="muted scope">
+              {isExceptionsPillar
+                ? 'Start with Part 1, then continue to Part 2. The concepts apply across languages; the worked examples use C#.'
+                : 'Read these in order.'}
+            </p>
             <ul class="card-grid cards">
               {pillarArticles.map((article) => (
                 <li>
@@ -169,6 +179,7 @@ const description = isTopic
             </ul>
           </section>
         )}
+        {!isExceptionsPillar && <>
         {pillarArticles.length > 0 && <h2 class="reference-heading">Reference chapters</h2>}
         <p class="muted scope">
           {props.topics.length} topics. Chapter numbers are deliberately absent, because
@@ -198,6 +209,13 @@ const description = isTopic
             <h2 class="pending-heading">Not yet published</h2>
             <TopicList topics={topicCards.pending} basePath="/pwi/" published={props.published} articleLinks={props.articleLinks} />
           </>
+        )}
+        </>}
+        {isExceptionsPillar && (
+          <p class="back">
+            Related guidance: <a href="/pwi/method-design/">Method Design</a> and{' '}
+            <a href="/writing/gateway-design-pattern/">Gateway Design</a>.
+          </p>
         )}
         <p class="back"><a href="/pwi/">All of PWI</a></p>
       </>

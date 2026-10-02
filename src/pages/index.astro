@@ -1,57 +1,14 @@
 ---
-import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PlaceholderImage from '../components/PlaceholderImage.astro';
-import TagCloud from '../components/TagCloud.astro';
-import SiteStats from '../components/SiteStats.astro';
-import SectionCard from '../components/SectionCard.astro';
-import { heroFor } from '../lib/heroes';
-import { sectionCounts } from '../lib/site-stats';
+import ArticleFeed from '../components/ArticleFeed.astro';
 
-const hero = heroFor('site-home-collaborative-ai');
-
-const counts = await sectionCounts();
-
-const ENTRY_POINTS = [
-  {
-    label: 'PWI',
-    href: '/pwi/',
-    icon: 'code',
-    count: counts.pwi,
-    unit: 'chapters',
-    blurb:
-      'Programming With Intent. Four pillars of operationalized guidance, with worked ' +
-      'examples in Python and C#.',
-  },
-  {
-    label: 'Acceptance Testing',
-    href: '/acceptance-testing/',
-    icon: 'shield',
-    count: counts.acceptance,
-    unit: 'articles',
-    blurb:
-      'Functional acceptance testing at the boundary, plus the surrounding discipline ' +
-      'of strategy, structure, naming, and assertions.',
-  },
-  {
-    label: 'Writing',
-    href: '/writing/',
-    icon: 'file',
-    count: counts.writing,
-    unit: 'articles',
-    blurb: 'Essays on software architecture, applied AI, and building with language models.',
-  },
-  {
-    label: 'Media',
-    href: '/media/',
-    icon: 'play',
-    count: counts.media,
-    unit: 'recordings',
-    blurb:
-      'Every article with a video or an audio companion, with direct links to the ' +
-      'recording.',
-  },
-] as const;
+const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort((left, right) =>
+  Math.max(right.data.datePublished.getTime(), right.data.dateModified?.getTime() ?? 0) -
+  Math.max(left.data.datePublished.getTime(), left.data.dateModified?.getTime() ?? 0) ||
+  right.data.datePublished.getTime() - left.data.datePublished.getTime() ||
+  left.data.title.localeCompare(right.data.title),
+);
 ---
 
 <BaseLayout
@@ -59,89 +16,21 @@ const ENTRY_POINTS = [
   description="Shiv Kumar writes about software engineering, applied AI engineering, Programming With Intent, and acceptance testing."
   isHome={true}
 >
-  <header class="hero">
-    <div class="page">
-      {
-        hero
-          ? <Image src={hero} alt="" class="hero__image" widths={[640, 1024, 1600]} sizes="(max-width: 72rem) 100vw, 72rem" loading="eager" />
-          : <PlaceholderImage seed="matlus-home" ratio="tall" label="Site banner placeholder" />
-      }
-
-      <div class="hero__text prose">
-        <h1>Software Engineering and <span class="gradient-text">Applied AI Engineering</span></h1>
-        <p class="hero__lede">
-          I write about software architecture, programming, acceptance testing, and
-          building with language models. The articles and chapters focus on decisions
-          engineers can explain, test, and revisit.
-        </p>
-        <SiteStats />
-        <p class="muted hero__byline">
-          Shiv Kumar. Senior Software Solutions Architect and Senior Applied AI Engineer
-          &amp; Architect.
-        </p>
-      </div>
-    </div>
+  <header class="page home-intro">
+    <h1>Software Engineering and <span class="gradient-text">Applied AI Engineering</span></h1>
+    <p class="muted">Articles by Shiv Kumar on software architecture, programming, acceptance testing, and building with language models.</p>
   </header>
-
-  <section class="page sections" aria-labelledby="sections-heading">
-    <h2 id="sections-heading" class="visually-hidden">Sections</h2>
-
-    <ul class="sections__grid">
-      {
-        ENTRY_POINTS.map((entry) => (
-          <li>
-            <SectionCard href={entry.href} title={entry.label} blurb={entry.blurb} icon={entry.icon} count={entry.count} unit={entry.unit} />
-          </li>
-        ))
-      }
-    </ul>
-  </section>
-
-  <section class="page">
-    <TagCloud />
+  <section class="page latest" aria-labelledby="latest-articles-heading">
+    <h2 id="latest-articles-heading">Latest articles</h2>
+    <p class="muted">New and updated articles, most recent first.</p>
+    <ArticleFeed posts={posts} />
   </section>
 </BaseLayout>
 
 <style>
-  .hero {
-    padding-top: var(--space-l);
-  }
-
-  .hero__image {
-    display: block;
-    width: 100%;
-    height: auto;
-    border-radius: var(--radius-lg);
-  }
-
-  .hero__text {
-    margin-top: var(--space-l);
-  }
-
-  .hero h1 {
-    margin-bottom: var(--space-s);
-  }
-
-  .hero__lede {
-    font-size: var(--step-1);
-    color: var(--color-text-muted);
-    line-height: 1.55;
-  }
-
-  .hero__byline {
-    margin-top: var(--space-m);
-  }
-
-  .sections {
-    margin-top: var(--space-2xl);
-  }
-
-  .sections__grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--space-s);
-    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  }
+  .home-intro { padding-top: var(--space-l); }
+  .home-intro h1 { max-width: var(--measure); margin-bottom: var(--space-s); }
+  .home-intro p { max-width: var(--measure); }
+  .latest { margin-top: var(--space-l); }
+  .latest > h2 { font-size: var(--step-2); }
 </style>

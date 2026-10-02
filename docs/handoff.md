@@ -1,10 +1,27 @@
 # Handoff
 
+## Homepage article browsing, October 2, 2026
+
+The homepage now leads with an article feed instead of repeating the header's
+section menus. Six results appear at a time; Newer articles and Older articles
+change the result group in place without navigating to another page. All cards
+are present in the static HTML, so articles remain reachable without JavaScript.
+The feed uses the latest of the article's publication and revision dates for
+recency, with original publication dates retained and labeled alongside updates.
+The shared card layout, site width, and article typography are unchanged.
+
+Programming to Exceptions now presents only the shared Part 1 and Part 2 reading
+path. The former Validation and Exception Handling topic hub forwards to that
+pillar hub. Existing C# and Python chapter URLs still serve the unchanged corpus
+for established links; they are no longer offered as separate introductory paths
+on the pillar hub. Those chapters overlap with the teaching series but also carry
+language-specific implementation rules and review checklists.
+
 ## Programming to Exceptions publication, October 2, 2026
 
-The pillar hub now leads with Part 1 and Part 2 in reading order under "Read the
-articles," followed by the older reference chapters. `loadPwiPillarArticles`
-keeps that reading list separate from chapter-topic routing and excludes drafts.
+The pillar hub leads with Part 1 and Part 2 in reading order under "Read the
+articles." `loadPwiPillarArticles` keeps that reading list separate from
+chapter-topic routing and excludes drafts.
 Both posts also remain in Writing and search. Their original 2019 date determines
 their position in the chronological Writing list.
 
