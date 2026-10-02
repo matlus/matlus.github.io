@@ -14,6 +14,8 @@ interface Crumb {
 
 interface Props {
   readonly title: string;
+  /** A literal phrase to emphasize visually, with plain metadata retained. */
+  readonly titleEmphasis?: string | undefined;
   readonly description: string;
   readonly datePublished: Date;
   readonly dateModified?: Date | undefined;
@@ -46,10 +48,17 @@ interface Props {
 }
 
 const {
-  title, description, datePublished, dateModified, tags, crumbs,
+  title, titleEmphasis, description, datePublished, dateModified, tags, crumbs,
   hero, audio, youtube, youtubeLabel, additionalVideos, repositories, status, evergreen = false, markdownHref, seed,
   schemaType = 'TechArticle', headings = [],
 } = Astro.props;
+
+const emphasisIndex = titleEmphasis === undefined ? -1 : title.indexOf(titleEmphasis);
+if (titleEmphasis !== undefined && emphasisIndex === -1) {
+  throw new Error(`Title emphasis must be a phrase in the title: ${title}`);
+}
+const titleBeforeEmphasis = title.slice(0, emphasisIndex);
+const titleAfterEmphasis = title.slice(emphasisIndex + (titleEmphasis?.length ?? 0));
 
 const fmt = (date: Date) =>
   date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', timeZone: 'UTC' });
@@ -112,7 +121,7 @@ const breadcrumbLd = {
       }
 
       <div class="article-head__text prose">
-        <h1>{title}</h1>
+        <h1>{titleEmphasis === undefined ? title : <>{titleBeforeEmphasis}<em class="gradient-text">{titleEmphasis}</em>{titleAfterEmphasis}</>}</h1>
         <p class="article-head__lede">{description}</p>
 
         <p class="article-head__meta">
