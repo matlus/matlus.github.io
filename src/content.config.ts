@@ -59,6 +59,8 @@ const base = z.object({
 const writing = defineCollection({
   loader: glob({ base: './src/content/writing', pattern: '**/*.md' }),
   schema: base.extend({
+    /** One literal title phrase receives visual emphasis in the article heading. */
+    titleEmphasis: z.string().min(1).optional(),
     status: z.enum(['exploratory', 'established']).default('established'),
   }),
 });

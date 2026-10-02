@@ -1,10 +1,11 @@
 ---
 title: "Verified, Not Trusted: Expense Analysis, Part One"
+titleEmphasis: "Verified, Not Trusted"
 description: >-
   Expense totals need verifiable source coverage and reproducible calculations.
   Two prompts show how parsing, category rules, refunds, and code shape the evidence.
 datePublished: 2026-09-30
-dateModified: 2026-10-01
+dateModified: 2026-10-02
 tags:
   - verified-not-trusted
   - verification
@@ -16,13 +17,26 @@ status: established
 
 ## Comparing Two Prompts
 
-Verified, not trusted means checking the evidence behind an AI-generated answer before using it. For an expense total, that means checking which transactions were counted, how they were categorized, and whether the calculation reproduces the reported amount. A clear explanation or a tidy table is not enough to establish those facts.
+***Verified, not trusted*** means checking the evidence behind an AI-generated answer before using it. For an expense total, that means checking which transactions were counted, how they were categorized, and whether the calculation reproduces the reported amount. A clear explanation or a tidy table is not enough to establish those facts.
 
 This exercise uses two prompts to analyze the same expense log. Both ask for monthly spending, budget comparisons, and three findings. The second also specifies how the model should prepare the data and calculate the results before interpreting them.
 
 Each total depends on earlier decisions: which lines become transactions, what their amounts mean, and how they are categorized. A table alone does not show whether those decisions were sound. A more precise prompt makes more of the work available to check.
 
 The question throughout the exercise is: Can we trace each conclusion back to the transactions and the rules that produced it?
+
+<div class="article-callout" role="note" aria-label="Idea">
+  <svg class="article-callout__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/icons/callouts.svg#idea"></use></svg>
+  <div class="article-callout__content">
+    <p><strong>Instruction is not assurance.</strong></p>
+    <p>An instruction in a prompt or a skill tells the model what to do. Two things can still go wrong:</p>
+    <ol>
+      <li>The model never does the requested work. We assume it did because we gave it the instruction.</li>
+      <li>The model says it completed the work, but it did not follow every requirement of the instruction.</li>
+    </ol>
+    <p>We need evidence that the work was done and that it met the requirements. <strong><em>Verified, not trusted</em></strong> means checking both.</p>
+  </div>
+</div>
 
 ## The data and the task
 
@@ -305,7 +319,7 @@ Each clause has a specific job. It asks for work that supports verification, or 
 
 > “Once the data is clean, use code to compute monthly totals by category”
 
-**What this changes:** This puts calculation after parsing, categorization, and cleanup, and requests executable arithmetic. Verified, not trusted applies to both inputs and calculations: review the cleaned transactions and category rules, then run the code and check that it reproduces the reported totals.
+**What this changes:** This puts calculation after parsing, categorization, and cleanup, and requests executable arithmetic. ***Verified, not trusted*** applies to both inputs and calculations: review the cleaned transactions and category rules, then run the code and check that it reproduces the reported totals.
 
 
 ### 6. Show evidence before conclusions
@@ -374,10 +388,12 @@ Review both responses against the same checks:
 - Dining and shopping are compared with the two stated monthly targets
 - Each finding can be traced to the relevant transactions and computed totals
 
-These checks give “verified, not trusted” a practical meaning. Confidence in a total comes from accounting for the source entries and reproducing the calculation. Confidence in a finding comes from checking it against those totals. A result that still depends on an unresolved category or possible duplicate should state that dependency.
+These checks give ***Verified, not trusted*** a practical meaning. Confidence in a total comes from accounting for the source entries and reproducing the calculation. Confidence in a finding comes from checking it against those totals. A result that still depends on an unresolved category or possible duplicate should state that dependency.
 
 ## From instructions to a repeatable workflow
 
-The more precise prompt spells out work that the standard prompt leaves to the model. It helps us ask for evidence and identify decisions that need review. Verified, not trusted applies to this prompt too: we must check the evidence, reproduce the calculations, and limit the findings to what the data supports.
+The more precise prompt spells out work that the standard prompt leaves to the model. It helps us ask for evidence and identify decisions that need review. ***Verified, not trusted*** applies to this prompt too: we must check the evidence, reproduce the calculations, and limit the findings to what the data supports.
+
+If we discover that a refund was counted as a purchase, telling the model to preserve negative amounts is only the start. Keep that input and the expected signed result as a regression test, and run it when the prompt, model, or calculation code changes. That gives the correction a lasting check.
 
 Part two will move these steps into a coded workflow. It will examine which operations can be controlled by the application, where classification still requires judgment, and how to check the result before presenting findings.
