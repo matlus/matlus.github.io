@@ -58,7 +58,7 @@ A Gateway may need to inspect an SDK object, check a missing field, or convert l
 
 An incoming request dataclass should hold what arrived. Trimming a value, changing case, or replacing a missing field inside `__post_init__` hides a rule where a reader sees only data. If a business rule calls for normalization, the Manager can create a new request in a named step before validation and orchestration. The original request remains an honest record of the input.
 
-The [Python Validation and Exception Handling chapter](/pwi/validation-exception-handling/python/) describes those entry checks.
+The [boundary-validation guidance in Programming to Exceptions](/writing/programming-to-exceptions-method-contracts/#fail-fast-and-fail-visibly) describes those entry checks.
 
 ## C# examples
 
@@ -96,7 +96,7 @@ In C#, `DateTimeOffset? ShippedAt` can mean an order has not shipped. For a regi
 
 ### Keep the record honest
 
-A positional record should store the values it receives. If the Manager needs to normalize a request, a named step can produce a changed copy with a `with` expression. The record's constructor should not silently trim, change case, or replace missing input. The [C# Validation and Exception Handling chapter](/pwi/validation-exception-handling/csharp/) shows where normalization and validation occur.
+A positional record should store the values it receives. If the Manager needs to normalize a request, a named step can produce a changed copy with a `with` expression. The record's constructor should not silently trim, change case, or replace missing input. The [normalization and validation guidance in Programming to Exceptions](/writing/programming-to-exceptions-method-contracts/#fail-fast-and-fail-visibly) shows where normalization and validation occur.
 
 Splitting a model has a cost in either language: more types, files, imports, and decisions for readers. I do it when variants have genuinely different shapes and repeated guards show that several consumers are paying for the ambiguity. One local guard alone does not call for a family of types.
 

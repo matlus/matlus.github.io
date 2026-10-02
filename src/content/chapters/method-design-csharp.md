@@ -278,7 +278,7 @@ Genre genre = GenreParser.Parse(genreAsString);
 IReadOnlyList<Movie> movies = await _domainFacade.GetMoviesByGenreAsync(genre);
 ```
 
-Now the domain method has one meaning for its argument. It does not have to guess which strings represent valid genres or repeat the parsing on every call. A value object earns its place when it captures a real domain distinction or invariant, rather than merely wrapping a string to make a signature look typed. [Validation and Exception Handling](/pwi/validation-exception-handling/csharp/) explains who owns the boundary check.
+Now the domain method has one meaning for its argument. It does not have to guess which strings represent valid genres or repeat the parsing on every call. A value object earns its place when it captures a real domain distinction or invariant, rather than merely wrapping a string to make a signature look typed. [Validation and Exception Handling](/writing/programming-to-exceptions-method-contracts/#fail-fast-and-fail-visibly) explains who owns the boundary check.
 
 ### Put Arguments in an Order the Caller Can Read
 
@@ -875,7 +875,7 @@ A worked example combining an encapsulated conditional with other cleanup (remov
 The method-design decisions above stand on their own. These articles develop adjacent topics in more detail:
 
 - [Naming Conventions](/pwi/naming-conventions/csharp/) covers the words used for methods, parameters, and locals, including domain vocabulary and the `Async` suffix. This chapter explains what an action or query name promises its caller.
-- [Validation and Exception Handling](/pwi/validation-exception-handling/csharp/) covers validation at the boundary where data enters the domain. This chapter explains why an internal method can trust inputs that boundary has already checked.
+- [Validation and Exception Handling](/writing/programming-to-exceptions-method-contracts/#fail-fast-and-fail-visibly) covers validation at the boundary where data enters the domain. This chapter explains why an internal method can trust inputs that boundary has already checked.
 - [LINQ Query Semantics](/pwi/linq-query-semantics/csharp/) covers operator choices such as `Single` versus `First` and when to materialize a sequence. This chapter explains what result cardinality and collection type the method promises.
 
 These Method Design rules apply to production methods and reusable test-support

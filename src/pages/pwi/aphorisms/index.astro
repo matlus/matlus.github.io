@@ -11,7 +11,7 @@ import { APHORISMS_ALL as APHORISMS, APHORISM_CATEGORIES } from '../../../data/a
  * the link bidirectional without anyone maintaining a second list by hand.
  */
 
-const chapters = await getCollection('chapters');
+const chapters = await getCollection('chapters', ({ data }) => !data.draft);
 
 /** Phrases quoted in a chapter's Relevant Aphorisms block. */
 function quotedPhrases(body: string): string[] {

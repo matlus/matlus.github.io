@@ -16,6 +16,7 @@ const PILLAR_ARTICLE_SLUGS: ReadonlyMap<string, readonly string[]> = new Map([
   ['programming-to-exceptions', [
     'programming-to-exceptions-method-contracts',
     'programming-to-exceptions-diagnostics-and-boundaries',
+    'programming-to-exceptions-logging-and-progress',
   ]],
 ]);
 
@@ -39,6 +40,11 @@ export async function loadPwiArticleTopics() {
       throw new Error(`No PWI topic registered for article ${article.id}`);
     }
     links.set(topicSlug, `/writing/${article.id}/`);
+  }
+
+  // The former language-specific topic now has one shared series destination.
+  if ((await loadPwiPillarArticles('programming-to-exceptions')).length > 0) {
+    links.set('validation-exception-handling', '/pwi/programming-to-exceptions/');
   }
 
   return { articles, links };

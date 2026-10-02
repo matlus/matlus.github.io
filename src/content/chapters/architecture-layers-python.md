@@ -220,7 +220,7 @@ The goal is a clean abstraction. Changing the implementation while preserving th
 
 Interfaces, protocols, factories, configuration, or runtime dispatch may support those choices, but they are mechanisms rather than the governing intent.
 
-[Clean Abstractions Around Libraries](/writing/clean-abstractions-around-libraries/) develops this seam with Gateways, Data Managers, Configuration Providers, message brokers, and an in-process library example. [Intentional Model Design](/writing/intentional-model-design/) explains why the domain models crossing these seams must express their own requirements clearly. The [Validation and Exception Handling chapter](/pwi/validation-exception-handling/python/) covers the checks and failure translation at those doors.
+[Clean Abstractions Around Libraries](/writing/clean-abstractions-around-libraries/) develops this seam with Gateways, Data Managers, Configuration Providers, message brokers, and an in-process library example. [Intentional Model Design](/writing/intentional-model-design/) explains why the domain models crossing these seams must express their own requirements clearly. The [Validation and Exception Handling chapter](/writing/programming-to-exceptions-method-contracts/#fail-fast-and-fail-visibly) covers the checks and failure translation at those doors.
 
 ### Where Gateways and Resource Models Live
 

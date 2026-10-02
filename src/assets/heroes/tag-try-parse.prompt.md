@@ -1,0 +1,5 @@
+# Try-Parse topic hero
+
+Generated with the built-in image generation tool.
+
+Use case: stylized-concept. Website topic hero: Try-Parse pattern. Hand-drawn technical editorial pen-and-ink illustration with fine cross-hatching, warm ivory paper, sparse navy blue and green-orange accents, vintage engineering manual style, visible pencil construction lines. Depict a desktop document input reader with a broad paper strip entering a small sorting mechanism. Two clean output trays immediately beside it: one contains an orderly accepted punched card with a small green check, the other contains a rejected malformed card with a small orange cross. The machine provides an ordinary answer about whether the input can be parsed; no catastrophic breakage or explosion. Evocative subject, no flowchart, no gears as default decoration, no people. Wide landscape; meaningful objects centered within a shallow horizontal band for website hero cropping. No text, digits, labels, code, logos or watermark. Opaque warm ivory background.

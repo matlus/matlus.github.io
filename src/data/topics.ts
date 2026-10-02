@@ -109,13 +109,11 @@ export const TOPICS: readonly Topic[] = [
   { slug: 'messaging-patterns', title: 'Messaging Patterns', section: 'pwi', pillar: 'architecture-with-intent', scope: 'language-independent', examples: PY_CS },
   {
     slug: 'validation-exception-handling',
-    title: 'Validation and Exception Handling',
+    title: 'Programming to Exceptions series',
     section: 'pwi', pillar: 'programming-to-exceptions',
     scope: 'language-independent',
-    examples: PY_CS,
-    note:
-      'The Python chapter also covers structured logging. Canonical title drops it ' +
-      'so the two families share one heading. Confirm this is the intended scope.',
+    examples: CS,
+    note: 'Method contracts, exception design, and logging in one shared reading sequence.',
   },
 
   { slug: 'testing-strategy', title: 'Testing Strategy', section: 'acceptance-testing', scope: 'language-independent', examples: CS },

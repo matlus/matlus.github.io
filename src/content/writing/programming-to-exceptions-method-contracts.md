@@ -1,9 +1,9 @@
 ---
 title: "Programming to Exceptions, Part 1: Method Contracts and Failure"
-description: "Method contracts let callers write the happy path and let failures propagate. C# examples distinguish commands, required retrieval, search, and boundary validation."
+description: "Method contracts let callers rely on completed work and let failures propagate. C# examples distinguish retrieval from search, validate domain entry points, and assign handling to its owner."
 datePublished: 2019-10-28
 dateModified: 2026-10-02
-tags: ["error-handling", "method-design", "boundary-validation", "design-patterns", "csharp"]
+tags: ["error-handling", "method-design", "boundary-validation", "design-patterns", "try-parse", "architectural-patterns", "domain-facade", "configuration-provider", "gateway-pattern", "data-manager", "csharp"]
 draft: false
 hero: programming-to-exceptions-method-contracts
 youtube: "https://www.youtube.com/watch?v=5IKczyor-f4"
@@ -17,7 +17,7 @@ The application still has to deal with failure. The important decision is where 
 
 Separating those responsibilities changes the code throughout the system. It affects method design, validation, exception types, resource ownership, logging, and the application boundary. Applying only the return conventions while leaving failures swallowed elsewhere cannot give callers the guarantees this approach depends on.
 
-This first part establishes those guarantees. [Part 2](../programming-to-exceptions-diagnostics-and-boundaries/) develops the exception hierarchy and the diagnostic information that travels to the boundary. The C# examples use customer registration and order placement to illustrate the design.
+This first part establishes those guarantees. [Part 2](../programming-to-exceptions-diagnostics-and-boundaries/) develops the exception hierarchy and the diagnostic information that travels to the boundary. [Part 3](../programming-to-exceptions-logging-and-progress/) explains structured logging and progress reporting. The C# examples use customer registration and order placement to illustrate the design.
 
 ## Write the happy path
 
@@ -214,7 +214,9 @@ Fail fast means detecting a violated requirement at the place that can establish
 
 I describe the domain as a house with a front door and a back door. The front door admits requests. The back door admits configuration, database results, and responses from external services. Validate the data entering through both.
 
-This boundary-validation guidance already has a home in [Validation Philosophy: Lock the Doors](/pwi/validation-exception-handling/csharp/#validation-philosophy---lock-the-doors). Requests from a UI or an upstream service enter through the front door; responses from downstream services enter through a back door. Reject invalid data at those entry points so the rest of the domain can rely on what it receives.
+Requests from a UI or an upstream service enter through the front door; responses from downstream services enter through a back door. Reject invalid data at those entry points so the rest of the domain can rely on what it receives.
+
+Wire parsing and conversion belong to the Service Interface Layer. The domain receives its own typed request or model, not a second raw representation to interpret. Business-rule validation belongs to the domain and must still run when a different host calls it.
 
 The front door belongs to the domain. A browser may validate a form for convenience, but another caller can bypass that browser. The system has to enforce its own requirements. In this architecture, the Service Interface Layer translates transport input and forwards it through the Domain Facade. The Facade is the public entry point and delegates the work to Managers. Every public Manager method validates its inputs through specialized validators before doing dependent business work. Those methods are the front door where validation is enforced. Controllers and cloud functions stay focused on their transport role.
 
@@ -227,6 +229,8 @@ At the back door, a Configuration Provider validates raw settings when it loads 
   <p class="article-diagram__full"><a href="/images/diagrams/validated-domain-entry-points.webp">Open full-size diagram</a></p>
 </figure>
 <!-- diagram:end validated-domain-entry-points -->
+
+When a business rule requires normalization, make it a named Manager step that produces a new request, then validate that request. Keep models as pure data. A constructor that quietly trims, changes case, or substitutes a value hides a business decision. Validators report violations; they should not each normalize the same fields again. [Intentional Model Design](/writing/intentional-model-design/) develops the model contracts, while [Method Design](/pwi/method-design/csharp/#action-methods-and-query-methods) develops the methods that act on them.
 
 Once those guarantees hold, internal methods can use the values they receive without repeating the same validation throughout the call chain. A business rule can still require a conditional. A validator certainly can. Programming to Exceptions removes repeated uncertainty about completed calls; it does not remove business decisions.
 
@@ -322,7 +326,7 @@ The question to ask is what this method promises and whether a negative answer i
 
 **Catching an exception is not the same as handling it.** Catching and logging observes the failure. Catching and swallowing conceals it. Handling means taking a meaningful action the component understands, such as a defined retry, recovery, rollback, or translation.
 
-If a method does not know how to take that action, it should not catch the exception. Let the failure propagate to the component that does. The [meaningful-handling guidance](/pwi/validation-exception-handling/csharp/#meaningful-handling) develops this responsibility.
+If a method does not know how to take that action, it should not catch the exception. Let the failure propagate to the component that does. The [meaningful-handling guidance](/writing/programming-to-exceptions-diagnostics-and-boundaries/#meaningful-handling-changes-the-outcome) develops this responsibility.
 
 Most orchestration has no reason to catch. Catching an exception to log its message and then returning normally makes the failed operation appear successful. Catching and returning `null`, an empty value, or a default score merely changes the form of the hidden failure.
 

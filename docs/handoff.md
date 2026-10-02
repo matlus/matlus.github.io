@@ -1,5 +1,25 @@
 # Handoff
 
+## Programming to Exceptions consolidation, October 2, 2026
+
+The shared series now has three parts: method contracts, exception design and
+boundaries, then logging and progress. Part 3 receives the detailed Application
+Insights section and its figure from Part 2 and adds deliberate progress reporting
+for long-running work. Parts 1 and 2 retain missing validation, normalization,
+provider-translation and concurrent-failure guidance from the older references.
+See `programming-to-exceptions-consolidation.md` for the source-coverage map and
+conflicts resolved under the owner's guidance.
+
+The old C# and Python Validation and Exception Handling corpus files are retained
+unchanged as drafts. Their HTML URLs and former topic hub redirect to the shared
+Programming to Exceptions hub; their Markdown URLs return the three-part reading
+guide. They are excluded from public article/chapter listings and search.
+Part 2's published logging headings remain as links into Part 3.
+
+The three posts share the source recording and retain its 2019-10-28 date, with
+the October 2 revision date. New topic heroes cover Try-Parse and Progress Reporting;
+Part 3 has its own ink illustration. Article typography and layout are unchanged.
+
 ## Homepage article browsing, October 2, 2026
 
 The homepage now leads with an article feed instead of repeating the header's
@@ -10,12 +30,9 @@ The feed uses the latest of the article's publication and revision dates for
 recency, with original publication dates retained and labeled alongside updates.
 The shared card layout, site width, and article typography are unchanged.
 
-Programming to Exceptions now presents only the shared Part 1 and Part 2 reading
-path. The former Validation and Exception Handling topic hub forwards to that
-pillar hub. Existing C# and Python chapter URLs still serve the unchanged corpus
-for established links; they are no longer offered as separate introductory paths
-on the pillar hub. Those chapters overlap with the teaching series but also carry
-language-specific implementation rules and review checklists.
+Programming to Exceptions initially presented the shared Part 1 and Part 2 reading
+path. The subsequent consolidation above adds Part 3 and replaces the former
+language-specific pages with redirects after preserving their useful teaching.
 
 ## Programming to Exceptions publication, October 2, 2026
 

@@ -1,6 +1,6 @@
 ---
 title: "Programming to Exceptions, Part 2: Diagnostics and Boundaries"
-description: "Specific exceptions preserve the cause and context of a failure. Gateways and middleware carry that record across HTTP into Application Insights custom dimensions."
+description: "Specific exceptions preserve failure meaning, causes, and context. A shallow C# hierarchy, Gateway translation, and middleware enrichment carry diagnostic records across service boundaries."
 datePublished: 2019-10-28
 dateModified: 2026-10-02
 tags: ["error-handling", "class-design", "architecture", "service-interface-layer", "structured-logging", "gateway-pattern", "data-manager", "architectural-patterns", "csharp"]
@@ -11,7 +11,7 @@ youtube: "https://www.youtube.com/watch?v=5IKczyor-f4"
 
 A useful exception tells the application why an operation could not complete. It also gives the people investigating the failure enough information to identify the responsible component, examine the relevant input, and decide what to do next.
 
-[Part 1](../programming-to-exceptions-method-contracts/) established the method contract: complete the promised work, return the promised data, or throw. This part follows the exception from the point of detection to the application boundary. Along the way, its type expresses the failure, its context records the facts, and any translation preserves the original cause.
+[Part 1](../programming-to-exceptions-method-contracts/) established the method contract: complete the promised work, return the promised data, or throw. This part follows the exception from the point of detection to the application boundary. [Part 3](../programming-to-exceptions-logging-and-progress/) explains the resulting logs and progress reporting. Along the way, its type expresses the failure, its context records the facts, and any translation preserves the original cause.
 
 That propagation lets ordinary orchestration describe the happy path as a sequence of method calls. Reaching the next step means the earlier calls fulfilled their contracts. The callers need no success check after each call, and a failed call cannot be overlooked merely because someone ignored a return value. The diagnostic and boundary design in this part makes those escaping failures useful to the component that can act on them.
 
@@ -53,6 +53,8 @@ The abstract types establish the diagnostic contract and shared defaults. Throw 
 <!-- diagram:end custom-exceptions-hierarchy -->
 
 Define each concrete exception for one specific failure scenario and one originating throw location. Do not design concrete exceptions for reuse across unrelated operations. When you see the type in a log, you should already know which operation failed and where to look. A service-specific timeout or retry-exhaustion type identifies that dependency immediately; a generic reusable timeout type does not. A type named `CustomerRegistrationRequestValidationException` immediately narrows the operation to investigate. A type named `ValidationException` could have come from anywhere.
+
+A shared implementation can centralize parsing, context extraction, and translation without making the concrete exceptions generic. One leaf identifies one originating failure scenario. Keep timeout and retry-exhaustion types specific to the service and operation that failed.
 
 A single validator can report several related input violations together. Those violations belong to the same request-validation scenario. That does not justify reusing its exception for an unrelated provider timeout or a different operation's rules.
 
@@ -100,7 +102,7 @@ For a small bounded set, provide the actual supported values:
 
 > Genre 'Sci-fi' is not supported. Possible values are Action, Comedy, Drama, and Science Fiction.
 
-Those are illustrative constraints and choices. Use the application's real values. Boundary acceptance tests can verify that a message contains the value they supplied, the violated constraint, and the available correction. That also reveals whether the system received the same value the caller sent. Keep credentials and other values that must not be disclosed out of messages and diagnostic records.
+Those are illustrative constraints and choices. Use the application's real values. The component owning a bounded set should also expose its displayable choices, so messages stay consistent with the accepted values. Boundary acceptance tests can verify that a message contains the value they supplied, the violated constraint, and the available correction. That also reveals whether the system received the same value the caller sent. Keep credentials and other values that must not be disclosed out of messages and diagnostic records.
 
 Keep a short, stable `Reason` alongside the detailed `Message`. The reason supports classification and response translation. The message explains this particular occurrence. A stable log-event identifier identifies the operation or stage without requiring log queries to parse prose.
 
@@ -468,6 +470,8 @@ public sealed class OrderPlacementCustomerNotFoundException
 }
 ```
 
+Keep branch bases abstract and concrete leaves sealed. Build the occurrence-specific message at the originating throw site, where the rejected values and corrective information are available. The leaf supplies the stable reason and response policy. Context carries diagnostic facts; add a typed payload property when a programmatic consumer actually needs one. The application base requires the log event and other diagnostic inputs so a convenient constructor cannot quietly omit them.
+
 The branch defaults of 400 and 500 are starting policies. A leaf can specify conflict, not found, unavailable, or another status when the API contract requires it. A customer missing during order placement is a refusal of that request; a missing resource at a customer retrieval endpoint may need a different HTTP translation. Choose deliberately.
 
 ## Translate where you understand the external failure
@@ -508,6 +512,10 @@ For a service Gateway, preserve the attempted operation, originating application
 
 The [Gateway article](/writing/gateway-design-pattern/) develops this responsibility. Together with resource-model mapping, exception translation forms an anticorruption boundary: the external service's vocabulary and protocol do not spread through the domain.
 
+Centralize the provider classification and context extraction when several Gateway operations need them. Keep each operation's meaning explicit: downloading a document, deleting one, and publishing a message are different contracts. Their translations must not collapse into a reusable operations exception. Catch the provider's documented exception family or use a filter for a known status; a broad catch in the Gateway can conceal a programming defect as a provider failure.
+
+A helper designed to throw on every path can use C#'s [`DoesNotReturn` attribute](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.codeanalysis.doesnotreturnattribute). It declares the helper's terminal intent for analysis. Verify that every reachable path actually throws. A validator returns normally for valid input, so it must not carry that attribute. This is an application of the [method-contract guidance](../programming-to-exceptions-method-contracts/#an-action-or-command-method-completes-its-work-or-throws).
+
 ## Meaningful handling changes the outcome
 
 Catching an exception intercepts its propagation. Handling it requires a meaningful action. Logging alone is observation; swallowing a failure without a recovery decision conceals it. Catch only when the component understands how to act on that failure. Otherwise, let it travel up the call stack to a component with that responsibility.
@@ -525,6 +533,43 @@ Consider an order-placement requirement that allows a caller to resubmit an orde
 That is different from catching missing-customer retrieval merely to implement a Boolean existence query method. Here, an attempted write meets an authoritative constraint, and the owning component resolves what that means.
 
 Cleanup and rollback can also justify a catch followed by propagation. Preserve the original failure with `throw;` when rethrowing it from its catch, or attach it as `InnerException` when translating. The [C# reference](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/exception-handling-statements) explains the stack-trace distinction. A cleanup failure must not silently replace the failure that initiated cleanup.
+
+## Preserve every failure from concurrent work
+
+Independent operations can fail together. When a component owns a concurrent document-ingestion batch, its diagnostic responsibility covers every failed item. Reporting only the first exception leaves part of the failed work unexplained.
+
+C#'s `await` propagates one exception from a faulted `Task.WhenAll`. The combined task's `Exception` retains the complete fault set. Preserve that task and translate the set into a specific domain exception at the batch owner. [Microsoft's task exception guidance](https://learn.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-exception-handling) explains that distinction.
+
+```csharp
+Task documentIngestion = Task.WhenAll(documentIngestionTasks);
+
+try
+{
+    await documentIngestion;
+}
+catch (Exception) when (documentIngestion.IsFaulted)
+{
+    AggregateException failures = documentIngestion.Exception!.Flatten();
+
+    throw new DocumentIngestionBatchException(
+        $"Document ingestion failed for {failures.InnerExceptions.Count} " +
+        "operation(s). Inspect the item failures before reattempting the batch.",
+        DocumentIngestionLogEvent.IngestBatch,
+        new ContextualData
+        {
+            { "DocumentIngestion.RunId", runId },
+            { "DocumentIngestion.FailureCount", failures.InnerExceptions.Count },
+            { "DocumentIngestion.ItemFailures", JsonSerializer.Serialize(
+                failures.InnerExceptions.Select(
+                    MeridianOrderingException.GetExceptionDetails)) }
+        },
+        innerException: failures);
+}
+```
+
+This is a teaching example using the base from this article. The ingestion application supplies its own application name, `DocumentIngestionBatchException`, and log event. Each child failure already carries the item identity and context captured by that operation. The context projection retains those diagnostic records; the aggregate retains the original exception objects and their causal chains. The catch owns a specific transformation at the batch boundary and lets the transformed failure propagate.
+
+Do not expose a bare aggregate to callers as the domain explanation, or discard siblings merely to fit a single-exception response. Keep one application failure with all of its item failures. Successful items and durable side effects also matter when deciding what a reattempt may repeat. Cancellation follows the owning operation's cancellation policy; the filter above handles a faulted combined task, not a task whose only outcome is cancellation.
 
 ## The outer boundary records and translates
 
@@ -565,7 +610,7 @@ public async Task InvokeAsync(HttpContext httpContext)
 
 In the usual application, this middleware is the outermost try-catch. The domain detects failures and throws them; ordinary callers let them propagate. The narrowly scoped catches described above exist to satisfy particular business and recovery requirements. An ASP.NET application and a FastAPI application use the same arrangement, although their host APIs differ.
 
-Ordinary domain failures need these two categories. The host must honor its own lifecycle rules. Recognized request cancellation belongs to the host's cancellation policy. Once an HTTP response has started, the translator cannot replace it with a new error response; it must follow the host's termination policy. Streaming endpoints require particular care around that boundary.
+Ordinary domain failures need these two categories. The host must honor its own lifecycle rules. A recognized caller cancellation should propagate under the host's cancellation policy rather than be recorded as a defect and answered with HTTP 500. Once an HTTP response has started, the translator cannot replace it with a new error response; it must follow the host's termination policy. Streaming endpoints require particular care around that boundary.
 
 Malformed JSON or other input that cannot bind also belongs to the Service Interface Layer. Configure binding and formatting so callers receive the defined transport refusal before the domain operation starts. Keep domain validation and business decisions in the domain rather than duplicating them in controllers.
 
@@ -634,51 +679,18 @@ That record lets a developer reproduce the problem at C using C's request and lo
 
 ## One diagnostic record with the relevant facts
 
-For an escaping failure, let the outermost responsible handler write its diagnostic record. Intermediate components can attach context without logging the same exception again. That produces a record containing the application meaning, original cause, local values, and boundary request facts together.
+The outermost responsible handler combines approved incoming request facts with the exception's meaning, local context, and original causes. Intermediate callers can enrich that record without logging the same escaping failure again. Capture permitted request data before processing consumes it.
 
-Capture relevant input in a form that can help reproduce the failure. That may include a redacted request snapshot, approved headers, customer and order identifiers, the attempted downstream operation, and the specific data element violating the rule. Buffer or capture permitted request data before the body is consumed; a handler cannot assume the original body is still readable after processing fails.
+[Part 3](../programming-to-exceptions-logging-and-progress/) develops the logging policy, provider wiring, retained reproduction state, and progress events for long-running work.
 
 ## Application Insights custom dimensions
 
-The contextual data is intended to become structured logging properties. In Application Insights, those properties appear as **custom dimensions**, exposed as `customDimensions` in its application-scoped log tables. Other structured logging systems provide the same capability under their own property or attribute conventions.
-
-The logger must map the snapshot into those properties. A JSON object named `custom_dimensions`, or a formatted diagnostic string written as the message, does not by itself configure Application Insights ingestion. The telemetry adapter has to supply the values through its supported property mechanism. The [Application Insights telemetry model](https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete) describes custom properties on telemetry items.
-
-Store fields such as `ExceptionType`, `Action`, `OriginatingService`, `DownstreamService`, `Order.Reference`, and `Customer.Id` as separate dimensions. For a distributed failure, retain the full nested chain and promote useful facts about its root cause into stable dimensions such as `Failure.OriginatingService` and `Failure.ExceptionType`. Promote those facts from the actual originating record, rather than the last service to wrap it.
-
-A log query can then identify a particular failure without searching prose:
-
-```kusto
-exceptions
-| where tostring(customDimensions["Failure.OriginatingService"]) == "C"
-| where tostring(customDimensions["Order.Reference"]) == "ORDER-1042"
-| project timestamp, problemId, customDimensions
-```
-
-This example uses the Application Insights application-scoped `exceptions` schema. When querying the underlying workspace's [`AppExceptions` table](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/appexceptions), the corresponding property column is `Properties` and the timestamp is `TimeGenerated`. Match the query to the scope in use.
-
-The same dimensions support filters for user-correctable refusals, provider timeouts, and failures requiring infrastructure action. They can feed dashboards and [log search alert rules](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-create-log-alert-rule). A support engineer can open a matching record, inspect the boundary request and local values, and reproduce the failure using the captured facts.
-
-<!-- diagram:start exception-context-custom-dimensions -->
-<figure id="exception-context-custom-dimensions" class="article-diagram article-diagram--raster">
-  <img class="article-diagram__image" src="/images/diagrams/exception-context-custom-dimensions.webp" alt="Incoming request information and throw-site context form an exception diagnostic record. Application Insights stores individual custom dimensions including ExceptionType, Failure.OriginatingService, Order.Reference, CorrelationId, and CauseChain, supporting filtering, frequency alerts, and reproduction." width="1942" height="809" loading="lazy" decoding="async" />
-  <figcaption>Useful context becomes searchable custom dimensions. Expose the originating service and other filter fields individually, preserve the cause chain, and use the captured request and relevant state to reproduce the problem.</figcaption>
-  <p class="article-diagram__full"><a href="/images/diagrams/exception-context-custom-dimensions.webp">Open full-size diagram</a></p>
-</figure>
-<!-- diagram:end exception-context-custom-dimensions -->
-
-Retain the chain as structured data or a defined JSON property, and keep the dimensions used for filtering individually accessible. Check the telemetry adapter's limits on property size and retained data. A truncated diagnostic chain cannot support the complete investigation the design intends, so large reproduction records may need approved durable storage with a reference carried in the log.
-
-I generally avoid informational logging that narrates every step of an otherwise dependable call chain. A complete failure record removes much of the reason for those “entered method” and “leaving method” messages. Business audit records, operational measurements, and evidence of required recovery work still serve their own purposes. A component that deliberately handles a failure and continues must fulfill whatever recording obligation that policy defines; the outer exception handler will never see a swallowed failure.
-
-Exceptions also integrate with debugger, profiler, and runtime instrumentation. Explicit types and clear causes make those tools more useful without requiring every caller to implement another failure-reporting convention.
-
-Request context greatly improves reproduction, but a request alone cannot reproduce every incident. Changing database state, concurrency, provider responses, and configuration versions can matter. Capture those facts when the scenario needs them, and describe remaining uncertainty honestly. Keep failure reporting reliable: serialization and logging problems must not conceal the initiating failure.
+The diagnostic snapshot must become named telemetry properties to support searching, filtering, and alerts. [Part 3's Application Insights section](../programming-to-exceptions-logging-and-progress/#application-insights-custom-dimensions) shows the mapping and queries. The JSON envelope alone does not configure telemetry ingestion.
 
 ## Turn an unexpected failure into an explicit contract
 
 An unexpected-exception record is a starting point for investigation. Determine why the failure escaped as an unclassified framework or vendor exception. Correct the producer of invalid internal data, add missing boundary validation, or define a specific translation at the external boundary that understands it.
 
-Then verify the behavior. For a business refusal, inspect the concrete type, message, remedy, and context, together with the side effects the failed request must not leave. For a technical failure, preserve its cause and verify the resulting durable state. Verify that the HTTP boundary writes the intended status and safe explanation while keeping internal details in the diagnostic record.
+Then verify the behavior. For a business refusal, inspect the concrete type, message, remedy, and context, together with the side effects the failed request must not leave. Assert the non-sensitive rejected value and permitted choices when those are part of the message contract. Test exception behavior through the operation that throws it; empty leaf-constructor tests say little about whether the failure contract is correct. For a technical failure, preserve its cause and verify the resulting durable state. Verify that the HTTP boundary writes the intended status and safe explanation while keeping internal details in the diagnostic record.
 
 Useful measures include how often unexpected failures escape, how long diagnosis takes, whether support can identify the responsible service, and whether users can correct a refusal from its message. A more explicit system can reduce unexpected failures as previously unknown scenarios gain validation, translation, and tests. That improvement has to be observed in the system; the hierarchy alone cannot guarantee it.

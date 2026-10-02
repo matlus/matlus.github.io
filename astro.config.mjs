@@ -62,6 +62,9 @@ export default defineConfig({
   },
   redirects: {
     '/tags/factory-method/': '/writing/factory-method-pattern/',
+    '/pwi/validation-exception-handling/': '/pwi/programming-to-exceptions/',
+    '/pwi/validation-exception-handling/csharp/': '/pwi/programming-to-exceptions/',
+    '/pwi/validation-exception-handling/python/': '/pwi/programming-to-exceptions/',
   },
   markdown: {
     shikiConfig: {
@@ -77,7 +80,8 @@ export default defineConfig({
     sitemap({
       // The markdown twins are alternates of pages already listed, so they
       // would be duplicate entries rather than new destinations.
-      filter: (page) => !page.endsWith('.md') && !page.endsWith('/tags/factory-method/'),
+      filter: (page) => !page.endsWith('.md') && !page.endsWith('/tags/factory-method/') &&
+        !page.includes('/pwi/validation-exception-handling/'),
     }),
   ],
 });

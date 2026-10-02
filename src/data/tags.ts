@@ -21,6 +21,21 @@ export interface Tag {
 
 export const TAGS = [
   {
+    slug: 'try-parse',
+    label: 'Try-Parse',
+    description:
+      'The Try-Parse pattern gives parsing a Boolean answer for defined invalid-input outcomes. ' +
+      'Other failures still throw, and callers requiring the result can use the corresponding throwing operation.',
+  },
+  {
+    slug: 'progress-reporting',
+    label: 'Progress Reporting',
+    description:
+      'Reporting the steps, completed work, and elapsed time of a running operation through stable ' +
+      'run, item, and step identifiers. Completion events describe work that actually finished, ' +
+      'so operators can distinguish progress, stalls, and failures.',
+  },
+  {
     slug: 'structured-logging',
     label: 'Structured Logging',
     description:
