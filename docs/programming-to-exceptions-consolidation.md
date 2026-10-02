@@ -95,3 +95,27 @@ Inspect the generated reading order, redirects, legacy Markdown guides and absen
 of duplicate chapter bodies. Check the new article and hero in desktop and narrow
 layouts. Match the Pages deployment to the exact pushed commit, verify canonical
 live URLs, and add Part 3 to the public source video's existing article links.
+
+## Live publication evidence
+
+Commit `7e6de669fd5487b74ae1e5db04c477d73c8df8f8` reached `origin/main`.
+[Pages run 37041511666](https://github.com/matlus/matlus.github.io/actions/runs/37041511666)
+matched that exact SHA and succeeded. All three canonical articles, the shared hub,
+the three legacy HTML redirects and both legacy Markdown guides returned HTTP 200
+with their expected content. The browser confirmed the three cards in reading order.
+
+The public [source recording](https://www.youtube.com/watch?v=5IKczyor-f4) now has
+labelled Part 1, Part 2 and Part 3 links in its description. The existing description
+and PWI link were preserved. Studio confirmed the saved state; a fresh public
+metadata retrieval independently confirmed all three canonical article URLs and
+the PWI link. All three articles link back to that recording.
+
+Both full Meridian repositories were rechecked as private. Reciprocal public-code
+links remain deferred, as in the original publication plan. No visibility change
+or unrelated repository substitution was made.
+
+The optimized hero assets and their built-in image-generation prompts are saved as
+`src/assets/heroes/programming-to-exceptions-logging-and-progress.{webp,prompt.md}`,
+`src/assets/heroes/tag-try-parse.{webp,prompt.md}`, and
+`src/assets/heroes/tag-progress-reporting.{webp,prompt.md}`. The generated originals
+remain outside the repository in the owner's generated-image workspace.

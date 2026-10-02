@@ -20,6 +20,12 @@ The three posts share the source recording and retain its 2019-10-28 date, with
 the October 2 revision date. New topic heroes cover Try-Parse and Progress Reporting;
 Part 3 has its own ink illustration. Article typography and layout are unchanged.
 
+Consolidation commit `7e6de669fd5487b74ae1e5db04c477d73c8df8f8` deployed in
+Pages run 37041511666. Live checks verified all three articles, the shared hub,
+legacy redirects and Markdown guides. The source video's description now links to
+all three parts, independently confirmed through fresh public metadata. Meridian
+repository visibility remains private, so public code backlinks remain deferred.
+
 ## Homepage article browsing, October 2, 2026
 
 The homepage now leads with an article feed instead of repeating the header's
