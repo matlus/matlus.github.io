@@ -1,0 +1,3 @@
+Create a new explanatory illustration. The first reference supplies historical content; the second supplies ONLY the pastel architectural infographic style.
+
+Main heading: Add the application class. Illustrate Add New Item: category Visual C# > Web, selected Global Application Class, Name Global.asax, Add and Cancel buttons. Short right-panel description: A class for handling Web Application events. Omit unrelated templates and retain the exact filename. Use a coherent pastel architectural infographic style: pale textured paper, navy upright readable labels, fine blue outlines, restrained shallow-dimensional panels and mint/butter/coral accents. Generous whitespace. No unrelated source screenshot chrome.

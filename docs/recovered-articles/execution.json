@@ -1,0 +1,2723 @@
+{
+  "articles": [
+    {
+      "index": 0,
+      "title": "Using LocalDB in Visual Studio Online",
+      "slug": "using-localdb-in-visual-studio-online",
+      "datePublished": "2014-12-02",
+      "sourceMetadata": "metadata/Using LocalDB in Visual Studio Online.json",
+      "sourceHtml": "html/Using LocalDB in Visual Studio Online.html",
+      "originalUrl": "http://matlus.com/using-localdb-in-visual-studio-online/",
+      "url": "/writing/using-localdb-in-visual-studio-online/",
+      "codeBlocks": 3,
+      "codeHashes": [
+        "059ed633c511ad27195c4bb364bdcdac7f2af2e21d5f1a0e843b2745c148bf5d",
+        "a94d9e46844c2511e95d82e0931ec5e139a12ab73dcf84bd96f325ad89ea592c",
+        "4a9195e8e467e4576dc3ebb61c9f317a2545f42f392cc50cb7f3769506e39a2e"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240809192335/http://msdn.microsoft.com/en-us/library/hh212961.aspx",
+          "to": "https://web.archive.org/web/20240809192335/http://msdn.microsoft.com/en-us/library/hh212961.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809192335/http://msdn.microsoft.com/en-us/library/hh850448.aspx",
+          "to": "https://web.archive.org/web/20240809192335/http://msdn.microsoft.com/en-us/library/hh850448.aspx"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 1,
+      "title": "Azure Startup Tasks – Running as Administrator",
+      "slug": "azure-startup-tasks-running-as-administrator",
+      "datePublished": "2012-05-01",
+      "sourceMetadata": "metadata/Azure Startup Tasks – Running as Administrator.json",
+      "sourceHtml": "html/Azure Startup Tasks – Running as Administrator.html",
+      "originalUrl": "http://www.matlus.com/azure-startup-tasks-running-as-administrator/",
+      "url": "/writing/azure-startup-tasks-running-as-administrator/",
+      "codeBlocks": 3,
+      "codeHashes": [
+        "9c6319f1f7b753bfd0449d9f6a6093d8c01de086b7d4ee926cb42746ed8ec43d",
+        "18d5db5ad296f41692ddd8196c22bbafe3b4ad66f8133569145de36af1194e2d",
+        "02ecad82b34904c3c3d2eb9f97125f0aee8b40df8b309a4b9d05003fed152bc0"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "Publish-Windows-Azure-Application",
+          "sourcePath": null,
+          "sourceUrl": "https://web.archive.org/web/20240915034619im_/http://www.matlus.com/content/uploads/2014/02/Publish-Windows-Azure-Application_3.png",
+          "asset": "/images/writing/azure-startup-tasks-running-as-administrator/figure-01.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-42ee19a5-3f9a-4bb5-ac99-ec91245da44b.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240915034619/http://learn.iis.net/page.aspx/114/getting-started-with-appcmdexe/",
+          "to": "https://web.archive.org/web/20240915034619/http://learn.iis.net/page.aspx/114/getting-started-with-appcmdexe/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240915034619/http://msdn.microsoft.com/en-us/library/microsoft.web.administration.servermanager(v=vs.90).aspx",
+          "to": "https://web.archive.org/web/20240915034619/http://msdn.microsoft.com/en-us/library/microsoft.web.administration.servermanager(v=vs.90).aspx"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 2,
+      "title": "Installing MSMQ in an Azure WebRole instance",
+      "slug": "installing-msmq-in-an-azure-webrole-instance",
+      "datePublished": "2012-05-01",
+      "sourceMetadata": "metadata/Installing MSMQ in an Azure WebRole instance.json",
+      "sourceHtml": "html/Installing MSMQ in an Azure WebRole instance.html",
+      "originalUrl": "http://matlus.com/installing-msmq-in-an-azure-webrole-instance/",
+      "url": "/writing/installing-msmq-in-an-azure-webrole-instance/",
+      "codeBlocks": 2,
+      "codeHashes": [
+        "f0f2498a7dbd6d8a8f87eb0276755c875c7c3297fe8907cfcdbe01c7fd8988d8",
+        "c0fb79f25d048291ac095df4022e06d85de31d052e3a3fcd6c572fba3531c388"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "MSMQOnWebRole1",
+          "sourcePath": null,
+          "sourceUrl": "https://web.archive.org/web/20240911171330im_/http://www.matlus.com/content/uploads/2014/02/MSMQOnWebRole1_3.png",
+          "asset": "/images/writing/installing-msmq-in-an-azure-webrole-instance/figure-01.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-79af8543-e17a-473e-88b1-635e54043dc9.png"
+        },
+        {
+          "index": 1,
+          "originalAlt": "MSMQOnWebRole2",
+          "sourcePath": null,
+          "sourceUrl": "https://web.archive.org/web/20240911171330im_/http://www.matlus.com/content/uploads/2014/02/MSMQOnWebRole2_3.png",
+          "asset": "/images/writing/installing-msmq-in-an-azure-webrole-instance/figure-02.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-6eca761e-735b-41de-aabb-5d50d7d84fb7.png"
+        },
+        {
+          "index": 2,
+          "originalAlt": "VisualStudioAdvancedSaveOptions",
+          "sourcePath": null,
+          "sourceUrl": "https://web.archive.org/web/20240911171330im_/http://www.matlus.com/content/uploads/2014/02/VisualStudioAdvancedSaveOptions_3.png",
+          "asset": "/images/writing/installing-msmq-in-an-azure-webrole-instance/figure-03.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-558579ad-c67f-4a34-9fa8-7ee2c8d54546.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240911171330/http://technet.microsoft.com/en-us/library/cc749102(v=ws.10).aspx",
+          "to": "https://web.archive.org/web/20240911171330/http://technet.microsoft.com/en-us/library/cc749102(v=ws.10).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240911171330/http://technet.microsoft.com/en-us/library/cc766272(v=ws.10).aspx",
+          "to": "https://web.archive.org/web/20240911171330/http://technet.microsoft.com/en-us/library/cc766272(v=ws.10).aspx"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 3,
+      "title": "Cross Domain RESTful CRUD Operations using jQuery",
+      "slug": "cross-domain-restful-crud-operations-using-jquery",
+      "datePublished": "2012-03-29",
+      "sourceMetadata": "metadata/Cross Domain RESTful CRUD Operations using jQuery.json",
+      "sourceHtml": "html/Cross Domain RESTful CRUD Operations using jQuery.html",
+      "originalUrl": "http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/",
+      "url": "/writing/cross-domain-restful-crud-operations-using-jquery/",
+      "codeBlocks": 3,
+      "codeHashes": [
+        "740399e41b1014bd1e1954590fcecf628224c3e8ce646916d625ba6cc7d24ca0",
+        "ba269cd18863bb627e36ed3cc8a11dcee17ef980d2041e4331c7f16f377fce27",
+        "7db79ab276804eb8ffea621734a6aad1076b6439528436b661d61c806b6d2489"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240915042434/http://www.matlus.com/rest-apis-put-and-delete-cause-http-error-404/",
+          "to": "/writing/rest-apis-put-and-delete-cause-http-error-404/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240915042434/http://www.w3.org/TR/cors/",
+          "to": "https://web.archive.org/web/20240915042434/http://www.w3.org/TR/cors/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240915042434/http://msdn.microsoft.com/en-us/library/system.net.http.delegatinghandler(v=vs.110).aspx",
+          "to": "https://web.archive.org/web/20240915042434/http://msdn.microsoft.com/en-us/library/system.net.http.delegatinghandler(v=vs.110).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240915042434/http://www.matlus.com/delegatinghandler-for-x-http-method-override/",
+          "to": "/writing/delegatinghandler-for-x-http-method-override/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240915042434/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/",
+          "to": "/writing/jsonpmediatypeformatter-web-api-jsonp/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240915042434/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/",
+          "to": "/writing/as-net-web-api-supporting-restful-crud-operations/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240915042434/http://www.matlus.com/delegatinghandler-for-x-http-method-override/",
+          "to": "/writing/delegatinghandler-for-x-http-method-override/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240915042434/http://localhost/yourpage.html",
+          "to": "https://web.archive.org/web/20240915042434/http://localhost/yourpage.html"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 4,
+      "title": "jQuery.data()–Assigning objects to dynamic elements",
+      "slug": "jquery-data-assigning-objects-to-dynamic-elements",
+      "datePublished": "2012-03-29",
+      "sourceMetadata": "metadata/jQuery.data()–Assigning objects to dynamic elements.json",
+      "sourceHtml": "html/jQuery.data()–Assigning objects to dynamic elements.html",
+      "originalUrl": "http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/",
+      "url": "/writing/jquery-data-assigning-objects-to-dynamic-elements/",
+      "codeBlocks": 2,
+      "codeHashes": [
+        "2503290fd2f1c4022b32d25fc77a7443b61d8e15ebd612bc144ee9876187d70e",
+        "36128856e08a5d45eaf56be71dbd23d7a97e24c2d68bed78bc34b57beca66526"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240915032819/http://api.jquery.com/jQuery.data/",
+          "to": "https://web.archive.org/web/20240915032819/http://api.jquery.com/jQuery.data/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 5,
+      "title": "A Generic RESTful CRUD HttpClient",
+      "slug": "a-generic-restful-crud-httpclient",
+      "datePublished": "2012-03-10",
+      "sourceMetadata": "metadata/A Generic RESTful CRUD HttpClient.json",
+      "sourceHtml": "html/A Generic RESTful CRUD HttpClient.html",
+      "originalUrl": "http://www.matlus.com/a-generic-restful-crud-httpclient/",
+      "url": "/writing/a-generic-restful-crud-httpclient/",
+      "codeBlocks": 4,
+      "codeHashes": [
+        "2f50695fea04d1e8fa2049ee3efddb6d914a63c5dfc45925e2b36b5bfb15698e",
+        "3145f13473f212e1963fafed7f0b61a022287652b012012246bc75d3d10cf9a0",
+        "fd9d0db304ad666922f1182915d1743ff27fe73a41ae5ac56079370d5c417e99",
+        "b19838eb29a45bd3cee7540e7ed8cf2d1d01901ae806f6eb790371a9595896d2"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240624011608/http://www.matlus.com/asp-net-web-api-with-webforms/",
+          "to": "/writing/asp-net-web-api-with-webforms/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240624011608/http://www.matlus.com/self-host-asp-net-web-api/",
+          "to": "/writing/self-host-asp-net-web-api/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240624011608/http://www.matlus.com/httpclient-net-4-5/",
+          "to": "/writing/httpclient-net-4-5/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/",
+          "to": "/writing/as-net-web-api-supporting-restful-crud-operations/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240624011608/http://www.matlus.com/a-generic-restful-crud-httpclient/",
+          "to": "/writing/a-generic-restful-crud-httpclient/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/",
+          "to": "/writing/as-net-web-api-supporting-restful-crud-operations/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240624011608/http://nuget.org/packages/aspnetwebapi",
+          "to": "https://web.archive.org/web/20240624011608/http://nuget.org/packages/aspnetwebapi"
+        },
+        {
+          "from": "https://web.archive.org/web/20240624011608/http://nuget.org/packages/System.Net.Http.Formatting",
+          "to": "https://web.archive.org/web/20240624011608/http://nuget.org/packages/System.Net.Http.Formatting"
+        },
+        {
+          "from": "https://web.archive.org/web/20240624011608/http://www.matlus.com/httpclient-net-4-5/",
+          "to": "/writing/httpclient-net-4-5/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/",
+          "to": "/writing/as-net-web-api-supporting-restful-crud-operations/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240624011608/http://msdn.microsoft.com/en-us/library/ff649690.aspx",
+          "to": "https://web.archive.org/web/20240624011608/http://msdn.microsoft.com/en-us/library/ff649690.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/",
+          "to": "/writing/as-net-web-api-supporting-restful-crud-operations/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 6,
+      "title": "DelegatingHandler for X-HTTP-Method-Override",
+      "slug": "delegatinghandler-for-x-http-method-override",
+      "datePublished": "2012-03-03",
+      "sourceMetadata": "metadata/DelegatingHandler for X-HTTP-Method-Override.json",
+      "sourceHtml": "html/DelegatingHandler for X-HTTP-Method-Override.html",
+      "originalUrl": "http://www.matlus.com/delegatinghandler-for-x-http-method-override/",
+      "url": "/writing/delegatinghandler-for-x-http-method-override/",
+      "codeBlocks": 3,
+      "codeHashes": [
+        "d541d82ba47f8ebe45566b40ac4d51cff34b56e1a7d10f29ff45a72a9923cd0a",
+        "030acf7eb0449debd623f5d22bfb2a9fcab305ed6d6bb90af7ead9c2014017e3",
+        "e12e1b072093a05629ba933d3edc42eddfc38d3e09164b5eb3a3859560307ad4"
+      ],
+      "images": [],
+      "links": [],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 7,
+      "title": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "slug": "as-net-web-api-supporting-restful-crud-operations",
+      "datePublished": "2012-03-03",
+      "sourceMetadata": "metadata/ASP.NET Web API Supporting RESTful CRUD Operations.json",
+      "sourceHtml": "html/ASP.NET Web API Supporting RESTful CRUD Operations.html",
+      "originalUrl": "http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/",
+      "url": "/writing/as-net-web-api-supporting-restful-crud-operations/",
+      "codeBlocks": 4,
+      "codeHashes": [
+        "4c4ba61844e1d2f3076a51630c40dae6a1d20e50d1c4212d580988d76cd4db42",
+        "65a325611463a696b6bec7badefaf72e989e3dad58dafb438c5b54c0a1692fed",
+        "378b8e72fb4c7844f3bb0d3e3bee88bb59d9a051b2a70fb1292c66ad42a4e18f",
+        "4f71dc5060bb8472f7bcbf715d704a450a1d88829de265ecfa25ea2aee7a046d"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240712155625/http://www.matlus.com/asp-net-web-api-with-webforms/",
+          "to": "/writing/asp-net-web-api-with-webforms/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712155625/http://www.matlus.com/a-generic-restful-crud-httpclient/",
+          "to": "/writing/a-generic-restful-crud-httpclient/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712155625/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/",
+          "to": "/writing/cross-domain-restful-crud-operations-using-jquery/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712155625/http://www.matlus.com/api/members/skumar",
+          "to": "https://web.archive.org/web/20240712155625/http://www.matlus.com/api/members/skumar"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712155625/http://www.matlus.com/asp-net-web-api-with-webforms/",
+          "to": "/writing/asp-net-web-api-with-webforms/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712155625/http://msdn.microsoft.com/en-us/library/system.runtime.serialization.datacontractserializer.aspx",
+          "to": "https://web.archive.org/web/20240712155625/http://msdn.microsoft.com/en-us/library/system.runtime.serialization.datacontractserializer.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712155625/http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.1.2",
+          "to": "https://web.archive.org/web/20240712155625/http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.1.2"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712155625/http://www.w3.org/Protocols/rfc2616/rfc2616.html",
+          "to": "https://web.archive.org/web/20240712155625/http://www.w3.org/Protocols/rfc2616/rfc2616.html"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712155625/http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.1",
+          "to": "https://web.archive.org/web/20240712155625/http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.1"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 8,
+      "title": "JsonpMediaTypeFormatter–Web API JSONP",
+      "slug": "jsonpmediatypeformatter-web-api-jsonp",
+      "datePublished": "2012-03-03",
+      "sourceMetadata": "metadata/JsonpMediaTypeFormatter–Web API JSONP.json",
+      "sourceHtml": "html/JsonpMediaTypeFormatter–Web API JSONP.html",
+      "originalUrl": "http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/",
+      "url": "/writing/jsonpmediatypeformatter-web-api-jsonp/",
+      "codeBlocks": 2,
+      "codeHashes": [
+        "87b5ebade006cf54408b1ca35ae08dff1194d733a40842dd69d71ffdd4cf00f2",
+        "3db14a490865941396d24fa977b01a0956c24b841d9792cbd1a284f29605feb7"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240915043013/http://msdn.microsoft.com/en-us/library/system.net.http.formatting.mediatypeformatter_methods(v=vs.108).aspx",
+          "to": "https://web.archive.org/web/20240915043013/http://msdn.microsoft.com/en-us/library/system.net.http.formatting.mediatypeformatter_methods(v=vs.108).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240915043013/http://msdn.microsoft.com/en-us/library/system.net.http.formatting.jsonmediatypeformatter(v=vs.108).aspx",
+          "to": "https://web.archive.org/web/20240915043013/http://msdn.microsoft.com/en-us/library/system.net.http.formatting.jsonmediatypeformatter(v=vs.108).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240915043013/http://www.matlus.com/api/members/skumar",
+          "to": "https://web.archive.org/web/20240915043013/http://www.matlus.com/api/members/skumar"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 9,
+      "title": "HttpClient .NET 4.5",
+      "slug": "httpclient-net-4-5",
+      "datePublished": "2012-02-20",
+      "sourceMetadata": "metadata/HttpClient .NET 4.5.json",
+      "sourceHtml": "html/HttpClient .NET 4.5.html",
+      "originalUrl": "http://www.matlus.com/httpclient-net-4-5/",
+      "url": "/writing/httpclient-net-4-5/",
+      "codeBlocks": 3,
+      "codeHashes": [
+        "f34c6f43dc18e9520eee041e23bccf4b1062cf6e671fd28ed69d2c09df86d3d2",
+        "fc705836c0d2702286e728c69fbe9dbb7366a9a9843ce3ad37538d3ab3fa7ea4",
+        "2045500c8ef058a3b1e8bf05d54986c5de37a61662047852c309a2bf6d5b3a53"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx",
+          "to": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx",
+          "to": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpresponsemessage(v=vs.110).aspx",
+          "to": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpresponsemessage(v=vs.110).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712143051/http://www.matlus.com/self-host-asp-net-web-api/",
+          "to": "/writing/self-host-asp-net-web-api/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712143051/http://www.matlus.com/self-host-asp-net-web-api/",
+          "to": "/writing/self-host-asp-net-web-api/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpcontent(v=vs.110).aspx",
+          "to": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpcontent(v=vs.110).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.stringcontent(v=vs.110).aspx",
+          "to": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.stringcontent(v=vs.110).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.bytearraycontent(v=vs.110).aspx",
+          "to": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.bytearraycontent(v=vs.110).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.multipartcontent(v=vs.110).aspx",
+          "to": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.multipartcontent(v=vs.110).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.streamcontent(v=vs.110).aspx",
+          "to": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.streamcontent(v=vs.110).aspx"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 10,
+      "title": "Self Host ASP.NET Web API",
+      "slug": "self-host-asp-net-web-api",
+      "datePublished": "2012-02-20",
+      "sourceMetadata": "metadata/Self Host ASP.NET Web API.json",
+      "sourceHtml": "html/Self Host ASP.NET Web API.html",
+      "originalUrl": "http://matlus.com/self-host-asp-net-web-api/",
+      "url": "/writing/self-host-asp-net-web-api/",
+      "codeBlocks": 2,
+      "codeHashes": [
+        "9e2201086c21d474b68b74c8c9a55298d5c64d836b7f35d826aa8656716d4bd1",
+        "a25eb47ff9509246d617e6fb63e0b6f7af541bf6e9d6cfb6e01afd3e685ebc43"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240809175938/https://nuget.org/packages/AspNetWebApi.SelfHost",
+          "to": "https://web.archive.org/web/20240809175938/https://nuget.org/packages/AspNetWebApi.SelfHost"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809175938/http://nuget.org/packages/aspnetwebapi",
+          "to": "https://web.archive.org/web/20240809175938/http://nuget.org/packages/aspnetwebapi"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809175938/http://nuget.org/packages/AspNetWebApi.Core",
+          "to": "https://web.archive.org/web/20240809175938/http://nuget.org/packages/AspNetWebApi.Core"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809175938/https://nuget.org/packages/AspNetWebApi.SelfHost",
+          "to": "https://web.archive.org/web/20240809175938/https://nuget.org/packages/AspNetWebApi.SelfHost"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.webhost.httpcontrollerroutehandler_methods(v=vs.108).aspx",
+          "to": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.webhost.httpcontrollerroutehandler_methods(v=vs.108).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.apicontroller(v=vs.108).aspx",
+          "to": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.apicontroller(v=vs.108).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809175938/http://www.matlus.com/asp-net-web-api-with-webforms/",
+          "to": "/writing/asp-net-web-api-with-webforms/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.apicontroller(v=vs.108).aspx",
+          "to": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.apicontroller(v=vs.108).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809175938/http://localhost:8080/api/customers/",
+          "to": "https://web.archive.org/web/20240809175938/http://localhost:8080/api/customers/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809175938/http://localhost:8080/api/customers/1",
+          "to": "https://web.archive.org/web/20240809175938/http://localhost:8080/api/customers/1"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809175938/http://www.fiddler2.com/fiddler2/",
+          "to": "https://web.archive.org/web/20240809175938/http://www.fiddler2.com/fiddler2/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809175938/http://www.matlus.com/httpclient-net-4-5/",
+          "to": "/writing/httpclient-net-4-5/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx",
+          "to": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 11,
+      "title": "Quartz for ASP.NET",
+      "slug": "quartz-for-aspnet",
+      "datePublished": "2010-11-10",
+      "sourceMetadata": "metadata/Quartz for ASP.NET.json",
+      "sourceHtml": "html/Quartz for ASP.NET.html",
+      "originalUrl": "http://matlus.com/quartz-for-aspnet/",
+      "url": "/writing/quartz-for-aspnet/",
+      "codeBlocks": 3,
+      "codeHashes": [
+        "cc8f36b45226fb033e5802a15a81e4ea1fe7c23c4ead0e4134d16bc984871154",
+        "160e573aab3df345858200ef28e94dfc78117cb39db0b4d65e1cc46df07660be",
+        "2e2e710f99841f0def2916f0551037678afb2c914d3e99eb050ca4806ab71948"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "Quartz Design And Control Flow",
+          "sourcePath": "docs/source-material/matlus-wayback/images/6bf2a9f7a9ea6440-BuilderDesignAndControlFlow_8873aee6-9745-4fcf-a5b3-49b4e1d9070e.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/BuilderDesignAndControlFlow_8873aee6-9745-4fcf-a5b3-49b4e1d9070e.jpg",
+          "asset": "/images/writing/quartz-for-aspnet/figure-01.webp",
+          "status": "selected",
+          "kind": "diagram",
+          "generatedOriginal": "exec-973fab79-4717-47a4-80a9-f1005219eda3.png"
+        },
+        {
+          "index": 1,
+          "originalAlt": "Quartz For ASP.NET Build By Composition",
+          "sourcePath": "docs/source-material/matlus-wayback/images/44edae5fde159818-BuilderForASPNETBuildByComposition_970bef33-dcda-4898-86fd-f96df20651c5.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/BuilderForASPNETBuildByComposition_970bef33-dcda-4898-86fd-f96df20651c5.jpg",
+          "asset": "/images/writing/quartz-for-aspnet/figure-02.webp",
+          "status": "selected",
+          "kind": "diagram",
+          "generatedOriginal": "exec-1c201459-8636-4a5e-90c3-ef8f2dd7e735.png"
+        },
+        {
+          "index": 2,
+          "originalAlt": "InsideOutFlow",
+          "sourcePath": "docs/source-material/matlus-wayback/images/d2deffb109526d13-InsideOutFlow_e8aa0001-1671-4c15-9a88-fddb80b7753e.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/InsideOutFlow_e8aa0001-1671-4c15-9a88-fddb80b7753e.jpg",
+          "asset": "/images/writing/quartz-for-aspnet/figure-03.webp",
+          "status": "selected",
+          "kind": "diagram",
+          "generatedOriginal": "exec-a7fe8d43-92cb-4153-957d-931ac313735d.png"
+        },
+        {
+          "index": 3,
+          "originalAlt": "CreatingTheQuartzProjectItemFolder",
+          "sourcePath": "docs/source-material/matlus-wayback/images/f61db7ddc4e56ade-CreatingTheQuartzProjectItemFolder_1940c44b-7133-4db9-90ca-288e50e2e1f6.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/CreatingTheQuartzProjectItemFolder_1940c44b-7133-4db9-90ca-288e50e2e1f6.jpg",
+          "asset": "/images/writing/quartz-for-aspnet/figure-04.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-7f27601b-c33e-4e8e-b2a7-099e48241770.png"
+        },
+        {
+          "index": 4,
+          "originalAlt": "QuartzNewProjectDialog",
+          "sourcePath": "docs/source-material/matlus-wayback/images/9e6364e00eae9f0e-QuartzNewProjectDialog_1041fdb7-162a-4b89-aa0a-c36ee4830e87.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/QuartzNewProjectDialog_1041fdb7-162a-4b89-aa0a-c36ee4830e87.jpg",
+          "asset": "/images/writing/quartz-for-aspnet/figure-05.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-ffe6b56a-3512-4b59-9d25-9817e41c5c7c.png"
+        },
+        {
+          "index": 5,
+          "originalAlt": "CreatingTheQuartzItemTemplateFolder",
+          "sourcePath": "docs/source-material/matlus-wayback/images/02ed455a39c8c9af-CreatingTheQuartzItemTemplateFolder_2de25e85-d46c-4adc-b68b-5d9358ba94a8.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/CreatingTheQuartzItemTemplateFolder_2de25e85-d46c-4adc-b68b-5d9358ba94a8.jpg",
+          "asset": "/images/writing/quartz-for-aspnet/figure-06.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-9e8c57a7-e399-4d53-9816-1b09e0cfc832.png"
+        },
+        {
+          "index": 6,
+          "originalAlt": "QuartzAddNewItemShowingBuilderAndView",
+          "sourcePath": "docs/source-material/matlus-wayback/images/421c04fd59eb3305-QuartzAddNewItemShowingBuilderAndView_e91d1d44-9cee-4458-b51f-8db7123c347b.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/QuartzAddNewItemShowingBuilderAndView_e91d1d44-9cee-4458-b51f-8db7123c347b.jpg",
+          "asset": "/images/writing/quartz-for-aspnet/figure-07.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-f829a91a-238a-4876-826b-cbca178b6d81.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240809182901/http://www.matlus.com/problems-with-asp-net-mvc-framework-design/",
+          "to": "/writing/problems-with-asp-net-mvc-framework-design/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809182901/http://www.matlus.com/content/uploads/Quartz/Matlus.Quartz.zip",
+          "to": "https://web.archive.org/web/20240809182901/http://www.matlus.com/content/uploads/Quartz/Matlus.Quartz.zip"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 12,
+      "title": "ASP.NET Web API with WebForms",
+      "slug": "asp-net-web-api-with-webforms",
+      "datePublished": "2012-02-17",
+      "sourceMetadata": "metadata/ASP.NET Web API with WebForms.json",
+      "sourceHtml": "html/ASP.NET Web API with WebForms.html",
+      "originalUrl": "http://www.matlus.com/asp-net-web-api-with-webforms/",
+      "url": "/writing/asp-net-web-api-with-webforms/",
+      "codeBlocks": 1,
+      "codeHashes": [
+        "7f1b39f9efa06ae04a9a574f0f4b61dd7829a80611708af75e83946cfc43bf29"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "WebAPIProject1",
+          "sourcePath": "docs/source-material/matlus-wayback/images/04e9058d016d0e9d-WebAPIProject1_thumb.png",
+          "sourceUrl": "https://web.archive.org/web/20240414174833im_/http://www.matlus.com/content/uploads/2012/03/WebAPIProject1_thumb.png",
+          "asset": "/images/writing/asp-net-web-api-with-webforms/figure-01.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-72b0cec6-07cd-4b3e-8087-def9e04a2dc6.png"
+        },
+        {
+          "index": 1,
+          "originalAlt": "WebAPIProject2",
+          "sourcePath": "docs/source-material/matlus-wayback/images/fb31e4ac0ea51fac-WebAPIProject2_thumb.png",
+          "sourceUrl": "https://web.archive.org/web/20240414174833im_/http://www.matlus.com/content/uploads/2012/03/WebAPIProject2_thumb.png",
+          "asset": "/images/writing/asp-net-web-api-with-webforms/figure-02.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-d6ed096b-a85f-48bb-9da0-c2e0e0838808.png"
+        },
+        {
+          "index": 2,
+          "originalAlt": "WebAPIProject3",
+          "sourcePath": "docs/source-material/matlus-wayback/images/6fdde56d46074418-WebAPIProject3_thumb_1.png",
+          "sourceUrl": "https://web.archive.org/web/20240414174833im_/http://www.matlus.com/content/uploads/2012/03/WebAPIProject3_thumb_1.png",
+          "asset": "/images/writing/asp-net-web-api-with-webforms/figure-03.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-38ef6ba2-fd60-451a-b8c1-8d5d15e5cf2a.png"
+        },
+        {
+          "index": 3,
+          "originalAlt": "WebAPIProject4",
+          "sourcePath": "docs/source-material/matlus-wayback/images/ef3ea8e97221f109-WebAPIProject4_thumb.png",
+          "sourceUrl": "https://web.archive.org/web/20240414174833im_/http://www.matlus.com/content/uploads/2012/03/WebAPIProject4_thumb.png",
+          "asset": "/images/writing/asp-net-web-api-with-webforms/figure-04.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-9df7c111-8817-4f09-b1ef-1dd144ad7959.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240414174833/http://nuget.org/packages/aspnetwebapi",
+          "to": "https://web.archive.org/web/20240414174833/http://nuget.org/packages/aspnetwebapi"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414174833/http://nuget.org/packages/AspNetWebApi.Core",
+          "to": "https://web.archive.org/web/20240414174833/http://nuget.org/packages/AspNetWebApi.Core"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414174833/https://nuget.org/packages/AspNetWebApi.SelfHost",
+          "to": "https://web.archive.org/web/20240414174833/https://nuget.org/packages/AspNetWebApi.SelfHost"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414174833/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/",
+          "to": "/writing/as-net-web-api-supporting-restful-crud-operations/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414174833/http://www.matlus.com/a-generic-restful-crud-httpclient/",
+          "to": "/writing/a-generic-restful-crud-httpclient/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414174833/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/",
+          "to": "/writing/as-net-web-api-supporting-restful-crud-operations/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414174833/http://www.matlus.com/a-generic-restful-crud-httpclient/",
+          "to": "/writing/a-generic-restful-crud-httpclient/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 13,
+      "title": "REST APIs, PUT and DELETE cause HTTP Error 404.0 - Not Found",
+      "slug": "rest-apis-put-and-delete-cause-http-error-404",
+      "datePublished": "2011-12-30",
+      "sourceMetadata": "metadata/REST APIs, PUT and DELETE cause HTTP Error 404.0 - Not Found.json",
+      "sourceHtml": "html/REST APIs, PUT and DELETE cause HTTP Error 404.0 - Not Found.html",
+      "originalUrl": "http://www.matlus.com/rest-apis-put-and-delete-cause-http-error-404/",
+      "url": "/writing/rest-apis-put-and-delete-cause-http-error-404/",
+      "codeBlocks": 0,
+      "codeHashes": [],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "IISManagerHandlerMappings",
+          "sourcePath": "docs/source-material/matlus-wayback/images/02e38c0831650a38-IISManagerHandlerMappings_thumb_2.png",
+          "sourceUrl": "https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerHandlerMappings_thumb_2.png",
+          "asset": "/images/writing/rest-apis-put-and-delete-cause-http-error-404/figure-01.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-60c043b2-e0a0-4f0e-a2e6-6a24f515d8c3.png"
+        },
+        {
+          "index": 1,
+          "originalAlt": "IISManagerExtensionlessUrlHandler",
+          "sourcePath": "docs/source-material/matlus-wayback/images/5f52bc567f6c020e-IISManagerExtensionlessUrlHandler_thumb_1.png",
+          "sourceUrl": "https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerExtensionlessUrlHandler_thumb_1.png",
+          "asset": "/images/writing/rest-apis-put-and-delete-cause-http-error-404/figure-02.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-0ebaa22c-b45d-4953-87cb-86dce4a19e88.png"
+        },
+        {
+          "index": 2,
+          "originalAlt": "IISManagerEditManagedHandler",
+          "sourcePath": "docs/source-material/matlus-wayback/images/4eed1524ce86c34a-IISManagerEditManagedHandler_thumb.png",
+          "sourceUrl": "https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerEditManagedHandler_thumb.png",
+          "asset": "/images/writing/rest-apis-put-and-delete-cause-http-error-404/figure-03.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-2a83c9dd-5c98-430f-b48e-1dde4980b4d8.png"
+        },
+        {
+          "index": 3,
+          "originalAlt": "IISManagerEditVerbs",
+          "sourcePath": "docs/source-material/matlus-wayback/images/529858029f3d7c33-IISManagerEditVerbs_thumb.png",
+          "sourceUrl": "https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerEditVerbs_thumb.png",
+          "asset": "/images/writing/rest-apis-put-and-delete-cause-http-error-404/figure-04.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-c61caaa2-21cb-4575-bf67-a28a40f7aa72.png"
+        },
+        {
+          "index": 4,
+          "originalAlt": "Applicationhostconfig",
+          "sourcePath": "docs/source-material/matlus-wayback/images/44bf20a95ef17990-Applicationhostconfig_thumb_1.png",
+          "sourceUrl": "https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/Applicationhostconfig_thumb_1.png",
+          "asset": "/images/writing/rest-apis-put-and-delete-cause-http-error-404/figure-05.webp",
+          "status": "selected",
+          "kind": "instructional-reconstruction",
+          "generatedOriginal": "exec-54de0d41-a067-4fe3-b5e5-f998b94d028f.png"
+        }
+      ],
+      "links": [],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 14,
+      "title": "C# to Html Syntax Highlighter using Roslyn",
+      "slug": "c-to-html-syntax-highlighter-using-roslyn",
+      "datePublished": "2011-11-27",
+      "sourceMetadata": "metadata/C# to Html Syntax Highlighter using Roslyn.json",
+      "sourceHtml": "html/C# to Html Syntax Highlighter using Roslyn.html",
+      "originalUrl": "http://matlus.com/c-to-html-syntax-highlighter-using-roslyn/",
+      "url": "/writing/c-to-html-syntax-highlighter-using-roslyn/",
+      "codeBlocks": 7,
+      "codeHashes": [
+        "4c16db4d6f67dd977885e715a54ed8bc87d54286cac84f44d3c953247683a5b3",
+        "64bdd0c26d8b1bb73b67eff14b44faeb75606ba59b61b7e41e0e260af0b6f437",
+        "fb27be3976415781cdc9820a72dbb630392b916d711c6876b88b49bc6ccc3a19",
+        "0da16c920a817a6d5dbcb317ab30134bc632782bb21674a66be03d14670e0cfa",
+        "864b9d434df7ab5ee25e70c43d4d4d15e75e2e1b63926638fe9dd064dc9ac760",
+        "b9b8e78b2ac16fabb2bcdca823288a6b49bfda1cc9110154248e96767b6c6fd9",
+        "80e53dd8da9f9a054b1800489467d8eb3efbe7ce7fe308301b2d3259d6f285f4"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240415164648/http://matlus.com/syntaxhighlighter",
+          "to": "https://web.archive.org/web/20240415164648/http://matlus.com/syntaxhighlighter"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415164648/http://social.msdn.microsoft.com/profile/shyam%20namboodiripad/?ws=usercard-mini",
+          "to": "https://web.archive.org/web/20240415164648/http://social.msdn.microsoft.com/profile/shyam%20namboodiripad/?ws=usercard-mini"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 15,
+      "title": "Disrupting the World Wide Web - Innovating the World Wide Net",
+      "slug": "innovating-the-world-wide-net",
+      "datePublished": "2011-03-21",
+      "sourceMetadata": "metadata/Disrupting the World Wide Web - Innovating the World Wide Net.json",
+      "sourceHtml": "html/Disrupting the World Wide Web - Innovating the World Wide Net.html",
+      "originalUrl": "http://matlus.com/innovating-the-world-wide-net/",
+      "url": "/writing/innovating-the-world-wide-net/",
+      "codeBlocks": 0,
+      "codeHashes": [],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "WorldWideWeb",
+          "sourcePath": "docs/source-material/matlus-wayback/images/36d8f7e0875ef0bf-WorldWideWeb_9dab62e5-b2a2-4e04-8688-c9dbd85e95e1.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240712215900im_/http://www.matlus.com/content/uploads/2011/03/WorldWideWeb_9dab62e5-b2a2-4e04-8688-c9dbd85e95e1.jpg",
+          "asset": "/images/writing/innovating-the-world-wide-net/figure-01.webp",
+          "status": "selected",
+          "kind": "diagram-reconstruction",
+          "generatedOriginal": "exec-f9faeba1-4e63-4a4b-a41d-172dd7384c82.png"
+        },
+        {
+          "index": 1,
+          "originalAlt": "WorldWideNet",
+          "sourcePath": "docs/source-material/matlus-wayback/images/146246ffeb134ef4-WorldWideNet_6204a363-20de-4ae8-a193-5ecfd00ef01b.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240712215900im_/http://www.matlus.com/content/uploads/2011/03/WorldWideNet_6204a363-20de-4ae8-a193-5ecfd00ef01b.jpg",
+          "asset": "/images/writing/innovating-the-world-wide-net/figure-02.webp",
+          "status": "selected",
+          "kind": "diagram-reconstruction",
+          "generatedOriginal": "exec-13af51c1-9cf6-4356-aca2-5f79c3276467.png"
+        }
+      ],
+      "links": [],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 16,
+      "title": "WCF 4.0 Getting Started",
+      "slug": "wcf-4-0-getting-started",
+      "datePublished": "2011-03-05",
+      "sourceMetadata": "metadata/WCF 4.0 Getting Started.json",
+      "sourceHtml": "html/WCF 4.0 Getting Started.html",
+      "originalUrl": "http://www.matlus.com/wcf-4-0-getting-started/",
+      "url": "/writing/wcf-4-0-getting-started/",
+      "codeBlocks": 13,
+      "codeHashes": [
+        "b721542bbbe45fe5deda287fb29b4372dd26f50237197a0e7996fbbc0b58d95b",
+        "2b33710da49000002be02e6d6ed18af2b57d25e149725f713fe2bae9bf1b85f1",
+        "b0573009a9b28fb7c4ec09024ad30afb85531ca5e181a6fc859de6e11be51200",
+        "e6baf29b72c718acd6cf002b41a9af7abf63ad32693cc124f49b7e41edfb3339",
+        "be91c4f99562e615e66829dc28b4a3c5c144e005afcf845b2a06f47a0e2e390c",
+        "b4ce562c0725cd6061f349634b3ea2c3f81d48d2a706bc603c91df2f6306108e",
+        "997e99fd5a41cf27631b567778c348872cbf46ac52f3ee60367f36b1071e00db",
+        "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "8ab5762ecc14ba7bc10749a22eea9a41cc07a604a731265288c3e0c4e5569afd",
+        "516b70795d44c355f77269aa262d52f190d0fc7d725f73a71b4ab6f425337a33",
+        "bbd71909f0bae3667dde6d5debf2e3939cf346000ccdd01afb08652740ba7350",
+        "4a23ec641849985b19d80f9f0c7a47e95bfd5e9a127c521d079f119b624e91db",
+        "cf70c5db59d9b9aef918d4ceb9debb1466542874df6c6a8a6eeacbfbf8f0db37"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "MetadataPublishingNotSupported",
+          "sourcePath": "docs/source-material/matlus-wayback/images/0868dbdf8739446a-MetadataPublishingNotSupported_680328fc-b106-4c9a-bf7e-6a29678f6863.jpg",
+          "sourceUrl": "https://web.archive.org/web/20230331000243im_/http://www.matlus.com/content/uploads/2011/03/MetadataPublishingNotSupported_680328fc-b106-4c9a-bf7e-6a29678f6863.jpg",
+          "asset": "/images/writing/wcf-4-0-getting-started/figure-01.webp",
+          "status": "selected",
+          "kind": "diagram-reconstruction",
+          "generatedOriginal": "exec-b3df57f4-1068-40a7-890b-abc41a1ed205.png"
+        },
+        {
+          "index": 1,
+          "originalAlt": "MetadataPublishingAsWSDL",
+          "sourcePath": "docs/source-material/matlus-wayback/images/014a81d07af4fac6-MetadataPublishingAsWSDL_5d893635-44d3-45fa-ab08-563b293cd63e.jpg",
+          "sourceUrl": "https://web.archive.org/web/20230331000243im_/http://www.matlus.com/content/uploads/2011/03/MetadataPublishingAsWSDL_5d893635-44d3-45fa-ab08-563b293cd63e.jpg",
+          "asset": "/images/writing/wcf-4-0-getting-started/figure-02.webp",
+          "status": "selected",
+          "kind": "diagram-reconstruction",
+          "generatedOriginal": "exec-7590e65c-6847-4dae-9612-1dd4b7cc8368.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20230331000243/http://www.matlus.com/iasyncresult-making-existing-methods-asnchronous/",
+          "to": "/writing/iasyncresult-making-existing-methods-asnchronous/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 17,
+      "title": "ASP.NET Response.Redirect Performance Issue",
+      "slug": "asp-net-response-redirect-performance-issue",
+      "datePublished": "2011-03-02",
+      "sourceMetadata": "metadata/ASP.NET Response.Redirect Performance Issue.json",
+      "sourceHtml": "html/ASP.NET Response.Redirect Performance Issue.html",
+      "originalUrl": "http://matlus.com/asp-net-response-redirect-performance-issue/",
+      "url": "/writing/asp-net-response-redirect-performance-issue/",
+      "codeBlocks": 2,
+      "codeHashes": [
+        "55c3c9a2927480c5f0a90ad06d54820c6dc90b4e2aef45b0079c4b004e9efc62",
+        "c6965274e4bdb77513f2daabccab3dbe04891a0006bb1355618698da67068109"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20221207121548/http://www.matlus.com/orion/",
+          "to": "/writing/orion/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 18,
+      "title": "HttpWebRequest - Asynchronous Programming Model/Task.Factory.FromAsyc",
+      "slug": "httpwebrequest-asynchronous-programming",
+      "datePublished": "2011-02-23",
+      "sourceMetadata": "metadata/HttpWebRequest - Asynchronous Programming Model-Task.Factory.FromAsyc.json",
+      "sourceHtml": "html/HttpWebRequest - Asynchronous Programming Model-Task.Factory.FromAsyc.html",
+      "originalUrl": "http://www.matlus.com/httpwebrequest-asynchronous-programming",
+      "url": "/writing/httpwebrequest-asynchronous-programming/",
+      "codeBlocks": 11,
+      "codeHashes": [
+        "8410aecd3b9a71ce3455aa2f699b6ab6f508c825c8c0d031ba258299130372c9",
+        "e25d21058bccc9dcd1c644eeb9bddef9baf04145fad4925b3801cc1dbf7dc3f7",
+        "41517dc2e30d88e870c799b37b15792bd8e0a8e9e45962d65d155bd5fb54efc5",
+        "0da044702d4036cf83d76ebe05f23ff12c586507b5db2fc127d2dd72c0c87bf1",
+        "993472831b6221dd77502fd65fde311ed5d339460fd7e17f5fb4f7705f2fd86b",
+        "a435a258ccb72e517fe0b133f261edecdc674132e074bb5feb04448c13ae9206",
+        "88fa05b513ff1cca68b0fcc99f341ae6bb5ca3c23b21d3635d926922e2e297c6",
+        "ba509d26e8c56e48af5e1c177b565be278f4e43f6af24d38c5592ff4840a94f6",
+        "3b072f19f1a534a64ab961ddbfd545728de9cc92f1e772d15b5d26ed92aa2032",
+        "694fc7adbceae23ac42361ec45b4a84aeac538735ef1e9eb280470d3ddb8fc28",
+        "a818b491eae62c19588008b1a370947133e039df4cc05d49246c3c10f764e8f1"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240809051734/http://www.matlus.com/data-parallel-parallel-programming-in-net/",
+          "to": "/writing/data-parallel-parallel-programming-in-net/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809051734/http://www.matlus.com/data-parallel-parallel-programming-in-net/",
+          "to": "/writing/data-parallel-parallel-programming-in-net/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240809051734/http://www.matlus.com/data-parallel-parallel-programming-in-net/",
+          "to": "/writing/data-parallel-parallel-programming-in-net/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 19,
+      "title": "Linq - SelectMany",
+      "slug": "linq-selectmany",
+      "datePublished": "2011-02-17",
+      "sourceMetadata": "metadata/Linq - SelectMany.json",
+      "sourceHtml": "html/Linq - SelectMany.html",
+      "originalUrl": "http://matlus.com/linq-selectmany/",
+      "url": "/writing/linq-selectmany/",
+      "codeBlocks": 8,
+      "codeHashes": [
+        "9fa9d125c5980afce980de87a91fc636313b964f4d33db8bb9941d2a9299214f",
+        "c4845e8031104c9d4fc150bf82dfe0e1db1357526c6f98b12317018f0178871c",
+        "0c68cc5d990410db34f3f15fa5f4dd374113f0e0ce8350f415172f8c29e6d08e",
+        "628ac21746dae7d0892a9e08b13280fceb815c2571097c1446c14acc4511cc52",
+        "296c4b655f411c02d739b028cf87342cd208fa36ab9c227e79a31cd85bf5cf50",
+        "613261575920e056b350e5b025d14c0bf0fe6d4eba8e09c7a149e6c77f3b709d",
+        "2cb4063597bbb2ef48f5d1d34e08f24f2b5961e4a3f8fe37b704ed186a465c7a",
+        "2037808ee5e0868610bbf339b4ac4f79de78a4d89a8eaff9d224d926947ae2d0"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240415161339/http://msdn.microsoft.com/en-us/library/system.linq.enumerable.selectmany.aspx",
+          "to": "https://web.archive.org/web/20240415161339/http://msdn.microsoft.com/en-us/library/system.linq.enumerable.selectmany.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415161339/http://www.matlus.com/quartz-for-aspnet/",
+          "to": "/writing/quartz-for-aspnet/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 20,
+      "title": "Data Parallel – Parallel Programming in C#/.NET",
+      "slug": "data-parallel-parallel-programming-in-net",
+      "datePublished": "2011-02-10",
+      "sourceMetadata": "metadata/Data Parallel – Parallel Programming in C#-.NET.json",
+      "sourceHtml": "html/Data Parallel – Parallel Programming in C#-.NET.html",
+      "originalUrl": "http://matlus.com/data-parallel-parallel-programming-in-net/",
+      "url": "/writing/data-parallel-parallel-programming-in-net/",
+      "codeBlocks": 13,
+      "codeHashes": [
+        "6287b1e86cf580da4e1742d02e56cf91f06f63acac7845fc32281699b9404abe",
+        "7f2345d93e9737aba19d62d32fcae89cb273864ba7e49d00881d2674f549b07d",
+        "c89e678fab7f1c2a64535628af29265e53cc2feb7ac727edacb66739715e6d4a",
+        "f41dd0ddf05318fce575e1ec98b91ab824e8ec8b701ab15c3714549923ae9031",
+        "920529d73ef0d995697fcf15c4c3dc4c5e37f966acf47cb3b911fcaad7867756",
+        "054bdf966e1909b27accc756aa810b4facca8e4ac8d60bd3eb2950993065f7cf",
+        "714f1e5eeafcb7c5750ceb3e9e99e17c30fd7ce80a0e3c7bdb8a2d732e322d00",
+        "c9f34453039b337c8cd498429534ef05aba2e88cce6da0665ffe056f68edd104",
+        "a507fa62babbcfc0530d91f710ec792241c9d6797353ed449a0aa7ba4317ca9f",
+        "c6e024bc03b7ed0bbb7820a962ed28af419ad698d3d98d764a2ca02f5370429e",
+        "f9e089be229c09587c8e217f466127cb3a4db78e074537af1200bf86c404ac11",
+        "25bdd50296191bb4114071c3ea5d56d8c92b0ee78bbeb51169b3874b5b8340b7",
+        "8f7b3dc17f9473c879df51acc71ed5e7083581aaf20a7b03b8035fff242174d2"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "CPU Utilization By Non-ParallelizedMethod",
+          "sourcePath": "docs/source-material/matlus-wayback/images/20434327096f8d06-CPUUtilizationByNonParallelizedMethod_9144915f-c898-4efc-a807-cec7d5a1aff3.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415153637im_/http://www.matlus.com/content/uploads/2011/02/CPUUtilizationByNonParallelizedMethod_9144915f-c898-4efc-a807-cec7d5a1aff3.jpg",
+          "asset": "/images/writing/data-parallel-parallel-programming-in-net/figure-01.webp",
+          "status": "selected",
+          "kind": "historical-performance-illustration",
+          "generatedOriginal": "exec-5704fe80-c7f5-48e2-b26c-72f3333b90ed.png"
+        },
+        {
+          "index": 1,
+          "originalAlt": "DataParallel-ForkJoin",
+          "sourcePath": "docs/source-material/matlus-wayback/images/1d5fc8573e4a3b74-DataParallel-ForkJoin_16eb5d66-5a94-48ae-af92-ce4d9e9af7f4.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415153637im_/http://www.matlus.com/content/uploads/2011/02/DataParallel-ForkJoin_16eb5d66-5a94-48ae-af92-ce4d9e9af7f4.jpg",
+          "asset": "/images/writing/data-parallel-parallel-programming-in-net/figure-02.webp",
+          "status": "selected",
+          "kind": "diagram",
+          "generatedOriginal": "exec-6868fd21-b909-4fb1-97d6-cb53c0c5593f.png"
+        },
+        {
+          "index": 2,
+          "originalAlt": "CPUUtilizationByPLinqMethod",
+          "sourcePath": "docs/source-material/matlus-wayback/images/c11cfefb34eec8d9-CPUUtilizationByPLinqMethod_cd525471-4b88-4024-b39d-a0926a9498df.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415153637im_/http://www.matlus.com/content/uploads/2011/02/CPUUtilizationByPLinqMethod_cd525471-4b88-4024-b39d-a0926a9498df.jpg",
+          "asset": "/images/writing/data-parallel-parallel-programming-in-net/figure-03.webp",
+          "status": "selected",
+          "kind": "historical-performance-illustration",
+          "generatedOriginal": "exec-2299df33-3007-41d1-b6f1-d088b14961a8.png"
+        },
+        {
+          "index": 3,
+          "originalAlt": "CPUUtilizationByQueueUserWorkItemMethod",
+          "sourcePath": "docs/source-material/matlus-wayback/images/4680aad69c9d1c04-CPUUtilizationByQueueUserWorkItemMethod_7d5c31c8-7bbe-42a0-8562-1bbc8be90c98.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415153637im_/http://www.matlus.com/content/uploads/2011/02/CPUUtilizationByQueueUserWorkItemMethod_7d5c31c8-7bbe-42a0-8562-1bbc8be90c98.jpg",
+          "asset": "/images/writing/data-parallel-parallel-programming-in-net/figure-04.webp",
+          "status": "selected",
+          "kind": "historical-performance-illustration",
+          "generatedOriginal": "exec-f6d7d817-4ceb-4179-8cc7-0ae94645dd88.png"
+        },
+        {
+          "index": 4,
+          "originalAlt": "CPUUtilizationByParallelForMethod",
+          "sourcePath": "docs/source-material/matlus-wayback/images/35cca5ed1877ad89-CPUUtilizationByParallelForMethod_58e06240-4303-4163-8953-1b71688367d1.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415153637im_/http://www.matlus.com/content/uploads/2011/02/CPUUtilizationByParallelForMethod_58e06240-4303-4163-8953-1b71688367d1.jpg",
+          "asset": "/images/writing/data-parallel-parallel-programming-in-net/figure-05.webp",
+          "status": "selected",
+          "kind": "historical-performance-illustration",
+          "generatedOriginal": "exec-ec822334-3c8e-44d8-b90b-d306c0db38a2.png"
+        },
+        {
+          "index": 5,
+          "originalAlt": "CPUUtilizationRandomDataByPLinqAndQUWIMethod",
+          "sourcePath": "docs/source-material/matlus-wayback/images/8566e78c625ceeac-CPUUtilizationRandomDataByPLinqAndQUWIMethod_79e57c0e-ca55-4021-99b2-b5b36073629e.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415153637im_/http://www.matlus.com/content/uploads/2011/02/CPUUtilizationRandomDataByPLinqAndQUWIMethod_79e57c0e-ca55-4021-99b2-b5b36073629e.jpg",
+          "asset": "/images/writing/data-parallel-parallel-programming-in-net/figure-06.webp",
+          "status": "selected",
+          "kind": "historical-performance-illustration",
+          "generatedOriginal": "exec-7cf37334-c3f1-4434-877e-a7f1754d553a.png"
+        },
+        {
+          "index": 6,
+          "originalAlt": "RunningOn8CoreMachine",
+          "sourcePath": "docs/source-material/matlus-wayback/images/a77b7323b9fd8fe4-RunningOn8CoreMachine_754c22d0-632c-4ee0-9431-e84f0369cd91.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415153637im_/http://www.matlus.com/content/uploads/2011/02/RunningOn8CoreMachine_754c22d0-632c-4ee0-9431-e84f0369cd91.jpg",
+          "asset": "/images/writing/data-parallel-parallel-programming-in-net/figure-07.webp",
+          "status": "selected",
+          "kind": "historical-performance-illustration",
+          "generatedOriginal": "exec-3f7627c8-8741-4058-8942-71c8834a6335.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240415153637/http://msdn.microsoft.com/en-us/library/system.threading.parallel.for.aspx",
+          "to": "https://web.archive.org/web/20240415153637/http://msdn.microsoft.com/en-us/library/system.threading.parallel.for.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415153637/http://msdn.microsoft.com/en-us/library/system.threading.interlocked.aspx",
+          "to": "https://web.archive.org/web/20240415153637/http://msdn.microsoft.com/en-us/library/system.threading.interlocked.aspx"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 21,
+      "title": "Getting the No Of CPUs and Cores",
+      "slug": "getting-the-no-of-cpus-and-cores",
+      "datePublished": "2011-02-07",
+      "sourceMetadata": "metadata/Getting the No Of CPUs and Cores.json",
+      "sourceHtml": "html/Getting the No Of CPUs and Cores.html",
+      "originalUrl": "http://www.matlus.com/getting-the-no-of-cpus-and-cores/",
+      "url": "/writing/getting-the-no-of-cpus-and-cores/",
+      "codeBlocks": 2,
+      "codeHashes": [
+        "46805d6fad40e55b7741a975ef41622c79e10c51fb157c1ce4bd50b252903660",
+        "903dad5a1eab66014466a372ab48b46b851c0bc2f4ae9b8a913ccb7d805805d5"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20230605173454/http://msdn.microsoft.com/en-us/library/aa394373(v=vs.85).aspx",
+          "to": "https://web.archive.org/web/20230605173454/http://msdn.microsoft.com/en-us/library/aa394373(v=vs.85).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20230605173454/http://msdn.microsoft.com/en-us/library/aa394102(v=vs.85).aspx",
+          "to": "https://web.archive.org/web/20230605173454/http://msdn.microsoft.com/en-us/library/aa394102(v=vs.85).aspx"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 22,
+      "title": "IAsyncResult–Making Existing methods Asnchronous",
+      "slug": "iasyncresult-making-existing-methods-asnchronous",
+      "datePublished": "2011-02-07",
+      "sourceMetadata": "metadata/IAsyncResult–Making Existing methods Asnchronous.json",
+      "sourceHtml": "html/IAsyncResult–Making Existing methods Asnchronous.html",
+      "originalUrl": "http://www.matlus.com/iasyncresult-making-existing-methods-asnchronous/",
+      "url": "/writing/iasyncresult-making-existing-methods-asnchronous/",
+      "codeBlocks": 8,
+      "codeHashes": [
+        "ccb7aeb6a06f52454174c6bd5f0acbdc309a21c4de5da2a3293b57351065e851",
+        "821a5a90115fef3256e94b711e7167d3ee03b7ae55aded6ad491794f2990f7da",
+        "91540c20a8ad71bea9aace7b379a862e5312f9ca905a42447195e84100dee8c1",
+        "001644815dda008374e02af837d424ed940b95faf112b4769a6ffec4ec1fd2eb",
+        "58e2869b17396720c0b632a3198d217d2d3a64974b668714856c250c99b5b8d7",
+        "4d9b9eaf0847be3b2cc2019774306fb021d640a9e24fdf40de8e2e956ee0464f",
+        "183c629b2240f769433918fcc0e3f66bfdb3ac5de2ff4f3d00c6902c846af9b8",
+        "b7286b9ed32a8353e9216863d7c117b1ca660866302579bbb6d20c4f5d327614"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "AMPSampleOutput",
+          "sourcePath": "docs/source-material/matlus-wayback/images/4d808b31a864eda6-AMPSampleOutput_0d7e9d93-2f31-4af4-948e-9dac2fbf2d41.jpg",
+          "sourceUrl": "https://web.archive.org/web/20221205001011im_/http://www.matlus.com/content/uploads/2011/02/AMPSampleOutput_0d7e9d93-2f31-4af4-948e-9dac2fbf2d41.jpg",
+          "asset": "/images/writing/iasyncresult-making-existing-methods-asnchronous/figure-01.webp",
+          "status": "selected",
+          "kind": "console-illustration",
+          "generatedOriginal": "exec-c5ec60d6-a116-47fd-85c5-b2a626118928.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20221205001011/http://msdn.microsoft.com/en-us/magazine/cc163467.aspx",
+          "to": "https://web.archive.org/web/20221205001011/http://msdn.microsoft.com/en-us/magazine/cc163467.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20221205001011/http://www.bluebytesoftware.com/blog/PermaLink,guid,661dc0d7-9759-4a91-ad97-247c66d6f784.aspx",
+          "to": "https://web.archive.org/web/20221205001011/http://www.bluebytesoftware.com/blog/PermaLink,guid,661dc0d7-9759-4a91-ad97-247c66d6f784.aspx"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 23,
+      "title": "UrlEncode –The correct encoding",
+      "slug": "urlencode-the-correct-encoding",
+      "datePublished": "2011-02-03",
+      "sourceMetadata": "metadata/UrlEncode –The correct encoding.json",
+      "sourceHtml": "html/UrlEncode –The correct encoding.html",
+      "originalUrl": "http://www.matlus.com/urlencode-the-correct-encoding/",
+      "url": "/writing/urlencode-the-correct-encoding/",
+      "codeBlocks": 1,
+      "codeHashes": [
+        "c86022141535c7f45b316e1ba9c601153d5e9cf2909fccd815bb41cca06bda5c"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20230331000205/http://www.matlus.com/oauth-c-library/",
+          "to": "/writing/oauth-c-library/"
+        },
+        {
+          "from": "https://web.archive.org/web/20230331000205/http://en.wikipedia.org/wiki/Percent-encoding",
+          "to": "https://web.archive.org/web/20230331000205/http://en.wikipedia.org/wiki/Percent-encoding"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 24,
+      "title": "Stop/Start Windows Service",
+      "slug": "stopstart-windows-service",
+      "datePublished": "2011-02-02",
+      "sourceMetadata": "metadata/Stop-Start Windows Service.json",
+      "sourceHtml": "html/Stop-Start Windows Service.html",
+      "originalUrl": "http://matlus.com/stopstart-windows-service/",
+      "url": "/writing/stopstart-windows-service/",
+      "codeBlocks": 3,
+      "codeHashes": [
+        "fdd375aac9585b4f4044534f0e0b04aa40abdd09833f86d3c805bb781274274e",
+        "c01f38c6be617bb7f0308312fbdcb6d6a2b40ee3cde116c0048290876c6c64ab",
+        "72b112600cb89c9d1c81a5be7c79ec8f82e3c8531546c36628a56169be7bddcf"
+      ],
+      "images": [],
+      "links": [],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 25,
+      "title": "MSSQL–Reset Identity seed",
+      "slug": "mssql-reset-identity-seed",
+      "datePublished": "2011-02-02",
+      "sourceMetadata": "metadata/MSSQL–Reset Identity seed.json",
+      "sourceHtml": "html/MSSQL–Reset Identity seed.html",
+      "originalUrl": "http://www.matlus.com/mssql-reset-identity-seed/",
+      "url": "/writing/mssql-reset-identity-seed/",
+      "codeBlocks": 0,
+      "codeHashes": [],
+      "images": [],
+      "links": [],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 26,
+      "title": "Linq Group By - Finding Duplicates",
+      "slug": "linq-group-by-finding-duplicates",
+      "datePublished": "2011-02-02",
+      "sourceMetadata": "metadata/Linq Group By - Finding Duplicates.json",
+      "sourceHtml": "html/Linq Group By - Finding Duplicates.html",
+      "originalUrl": "http://www.matlus.com/linq-group-by-finding-duplicates/",
+      "url": "/writing/linq-group-by-finding-duplicates/",
+      "codeBlocks": 2,
+      "codeHashes": [
+        "3863829d10420fb3c6dc3ecf85bddde48dfabb601592cadec85d598885b2b36b",
+        "4f393161eaee0660db34d58e9a02f0ec7c742b7194ff0d0b8c5f387a55ea4278"
+      ],
+      "images": [],
+      "links": [],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 27,
+      "title": "DataContractSerializer-IEnumerable<T>",
+      "slug": "ienumerablet-datacontractserializer",
+      "datePublished": "2011-01-25",
+      "sourceMetadata": "metadata/DataContractSerializer-IEnumerable-T-.json",
+      "sourceHtml": "html/DataContractSerializer-IEnumerable-T-.html",
+      "originalUrl": "http://matlus.com/ienumerablet-datacontractserializer/",
+      "url": "/writing/ienumerablet-datacontractserializer/",
+      "codeBlocks": 5,
+      "codeHashes": [
+        "3fa1dce70a59bfe0d99dbc195fa13c1988afdda17dd718cefd9d9de08e72e2a6",
+        "79581e4270342baa38ceaf36aeed0df3a126c851f0b958f46c0b25e67f154259",
+        "8d0403f97cf6676ec9f19cf00bbcb0c8e9e5f3a9f4b6718adec54456a6f68336",
+        "04176adfbb6ef0712f9ccbb1566b79fc13b0b07d8775292fb3f36aca01373f2b",
+        "47e76dc5645499d12fe4326f6ffee476ea4a266bd655226856915442d1f484ff"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240415161635/http://msdn.microsoft.com/en-us/library/system.runtime.serialization.datacontractserializer.aspx",
+          "to": "https://web.archive.org/web/20240415161635/http://msdn.microsoft.com/en-us/library/system.runtime.serialization.datacontractserializer.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415161635/http://msdn.microsoft.com/en-us/library/system.web.script.serialization.javascriptserializer.aspx",
+          "to": "https://web.archive.org/web/20240415161635/http://msdn.microsoft.com/en-us/library/system.web.script.serialization.javascriptserializer.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415161635/http://www.matlus.com/datareader-wrappers-typesafe/",
+          "to": "/writing/datareader-wrappers-typesafe/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415161635/http://www.matlus.com/datareader-wrappers-typesafe/",
+          "to": "/writing/datareader-wrappers-typesafe/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 28,
+      "title": "svcTraceViewer - Debugging WCF Sevices",
+      "slug": "svctraceviewer-debugging-wcf-sevices",
+      "datePublished": "2011-01-24",
+      "sourceMetadata": "metadata/svcTraceViewer - Debugging WCF Sevices.json",
+      "sourceHtml": "html/svcTraceViewer - Debugging WCF Sevices.html",
+      "originalUrl": "http://www.matlus.com/svctraceviewer-debugging-wcf-sevices/",
+      "url": "/writing/svctraceviewer-debugging-wcf-sevices/",
+      "codeBlocks": 1,
+      "codeHashes": [
+        "c0c3c7b66afde0e5ada3271b6c5048ef124e061168ef625f99ac1340bc405eb2"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "svcTraceViewerScreenShot",
+          "sourcePath": "docs/source-material/matlus-wayback/images/bb2e9b5805dc533c-svcTraceViewerScreenShot_thumb.jpg",
+          "sourceUrl": "https://web.archive.org/web/20220812171727im_/http://www.matlus.com/content/uploads/2011/01/svcTraceViewerScreenShot_thumb.jpg",
+          "asset": "/images/writing/svctraceviewer-debugging-wcf-sevices/figure-01.webp",
+          "status": "selected",
+          "kind": "diagnostic-illustration",
+          "generatedOriginal": "exec-e8852248-dfe4-4774-9ff8-21e093610fae.png"
+        }
+      ],
+      "links": [],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 29,
+      "title": "Fastest Website on the Planet!",
+      "slug": "fastest-website-on-the-planet",
+      "datePublished": "2011-01-22",
+      "sourceMetadata": "metadata/Fastest Website on the Planet!.json",
+      "sourceHtml": "html/Fastest Website on the Planet!.html",
+      "originalUrl": "http://matlus.com/fastest-website-on-the-planet/",
+      "url": "/writing/fastest-website-on-the-planet/",
+      "codeBlocks": 0,
+      "codeHashes": [],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "MatlusOnShowSlow",
+          "sourcePath": "docs/source-material/matlus-wayback/images/e00417622d18d186-MatlusOnShowSlow_1cfbf4af-1bba-4d61-ba73-cba4dd96d0ad.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415151026im_/http://www.matlus.com/content/uploads/2011/01/MatlusOnShowSlow_1cfbf4af-1bba-4d61-ba73-cba4dd96d0ad.jpg",
+          "asset": "/images/writing/fastest-website-on-the-planet/figure-01.webp",
+          "status": "selected",
+          "kind": "historical-performance-illustration",
+          "generatedOriginal": "exec-0e9b7090-fcc9-40f0-a925-d60255790015.png"
+        },
+        {
+          "index": 1,
+          "originalAlt": "image",
+          "sourcePath": "docs/source-material/matlus-wayback/images/e9515563e91693d7-image_b76464eb-2c6f-4e97-9263-c7d748cac2ec.png",
+          "sourceUrl": "https://web.archive.org/web/20240415151026im_/http://www.matlus.com/content/uploads/2011/01/image_b76464eb-2c6f-4e97-9263-c7d748cac2ec.png",
+          "asset": "/images/writing/fastest-website-on-the-planet/figure-02.webp",
+          "status": "selected",
+          "kind": "historical-performance-illustration",
+          "generatedOriginal": "exec-02a5fb48-c62f-4741-856b-a5b0c490102a.png"
+        },
+        {
+          "index": 2,
+          "originalAlt": "GoogleTimeSpentDownloadingAPage",
+          "sourcePath": "docs/source-material/matlus-wayback/images/74f787693c0d22ac-GoogleTimeSpentDownloadingAPage_b3de8a26-9d46-4f02-acef-368171d77405.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415151026im_/http://www.matlus.com/content/uploads/2011/01/GoogleTimeSpentDownloadingAPage_b3de8a26-9d46-4f02-acef-368171d77405.jpg",
+          "asset": "/images/writing/fastest-website-on-the-planet/figure-03.webp",
+          "status": "selected",
+          "kind": "historical-performance-illustration",
+          "generatedOriginal": "exec-c0d2205b-0a23-45be-aff9-df59b4ad337b.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240415151026/http://www.matlus.com/quartz-for-aspnet/",
+          "to": "/writing/quartz-for-aspnet/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415151026/http://www.matlus.com/orion/",
+          "to": "/writing/orion/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415151026/http://www.matlus.com/quartz-for-aspnet/",
+          "to": "/writing/quartz-for-aspnet/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415151026/http://www.matlus.com/",
+          "to": "https://web.archive.org/web/20240415151026/http://www.matlus.com/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415151026/http://www.showslow.com/",
+          "to": "https://web.archive.org/web/20240415151026/http://www.showslow.com/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415151026/http://developer.yahoo.com/yslow/",
+          "to": "https://web.archive.org/web/20240415151026/http://developer.yahoo.com/yslow/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415151026/http://code.google.com/speed/page-speed/",
+          "to": "https://web.archive.org/web/20240415151026/http://code.google.com/speed/page-speed/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415151026/http://code.google.com/speed/page-speed/",
+          "to": "https://web.archive.org/web/20240415151026/http://code.google.com/speed/page-speed/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415151026/http://www.matlus.com/orion/",
+          "to": "/writing/orion/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 30,
+      "title": "Orion - A Blog Engine",
+      "slug": "orion",
+      "datePublished": "2011-01-13",
+      "sourceMetadata": "metadata/Orion - A Blog Engine.json",
+      "sourceHtml": "html/Orion - A Blog Engine.html",
+      "originalUrl": "http://www.matlus.com/orion/",
+      "url": "/writing/orion/",
+      "codeBlocks": 0,
+      "codeHashes": [],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240414162744/http://www.matlus.com/quartz-for-aspnet/",
+          "to": "/writing/quartz-for-aspnet/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414162744/http://www.matlus.com/quartz-for-aspnet/",
+          "to": "/writing/quartz-for-aspnet/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414162744/http://explore.live.com/windows-live-writer?os=other",
+          "to": "https://web.archive.org/web/20240414162744/http://explore.live.com/windows-live-writer?os=other"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414162744/http://www.matlus.com/metaweblog-api-c-library/",
+          "to": "/writing/metaweblog-api-c-library/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414162744/http://www.matlus.com/uploads/orion/orion.zip",
+          "to": "https://web.archive.org/web/20240414162744/http://www.matlus.com/uploads/orion/orion.zip"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414162744/http://www.matlus.com/quartz-for-aspnet/",
+          "to": "/writing/quartz-for-aspnet/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 31,
+      "title": "MetaWeblog API C# Library",
+      "slug": "metaweblog-api-c-library",
+      "datePublished": "2011-01-12",
+      "sourceMetadata": "metadata/MetaWeblog API C# Library.json",
+      "sourceHtml": "html/MetaWeblog API C# Library.html",
+      "originalUrl": "http://www.matlus.com/metaweblog-api-c-library/",
+      "url": "/writing/metaweblog-api-c-library/",
+      "codeBlocks": 3,
+      "codeHashes": [
+        "078cdeaf192675c23f3a00105b00e983d179eec594309695d1cd3d60dc99ea11",
+        "34b16101814891857eea23aeb72b88789bd53d799b1197b6dc554b9b36861b22",
+        "e6a72d8f4352ecdbad460ede3cb565706ac995798159c77054005a87c0b3dc07"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "MetaWebLog API Flow",
+          "sourcePath": "docs/source-material/matlus-wayback/images/3aaa5c0e3cc5ed16-MetaWeblogFlow.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240414180543im_/http://www.matlus.com/content/uploads/2011/01/MetaWeblogFlow.jpg",
+          "asset": "/images/writing/metaweblog-api-c-library/figure-01.webp",
+          "status": "selected",
+          "kind": "diagram",
+          "generatedOriginal": "exec-9937baf1-eea9-48c1-a37d-e695fbc5840c.png"
+        },
+        {
+          "index": 1,
+          "originalAlt": "Class Diagram of the MeataWeblog C# Library",
+          "sourcePath": "docs/source-material/matlus-wayback/images/6fc65a3e67ad036a-MatlusMetaWeblogClassDiagram.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240414180543im_/http://www.matlus.com/content/uploads/2011/01/MatlusMetaWeblogClassDiagram.jpg",
+          "asset": "/images/writing/metaweblog-api-c-library/figure-02.webp",
+          "status": "selected",
+          "kind": "class-diagram",
+          "generatedOriginal": "exec-33accd21-87d5-4640-8f9c-982ea1868005.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240414180543/http://www.matlus.com/orion/",
+          "to": "/writing/orion/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414180543/http://www.matlus.com/quartz-for-aspnet/",
+          "to": "/writing/quartz-for-aspnet/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414180543/http://explore.live.com/windows-live-writer?os=other",
+          "to": "https://web.archive.org/web/20240414180543/http://explore.live.com/windows-live-writer?os=other"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414180543/http://www.codeplex.com/",
+          "to": "https://web.archive.org/web/20240414180543/http://www.codeplex.com/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414180543/http://metaweblogger.codeplex.com/",
+          "to": "https://web.archive.org/web/20240414180543/http://metaweblogger.codeplex.com/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414180543/http://explore.live.com/windows-live-writer?os=other",
+          "to": "https://web.archive.org/web/20240414180543/http://explore.live.com/windows-live-writer?os=other"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414180543/http://www.xmlrpc.com/metaWeblogApi",
+          "to": "https://web.archive.org/web/20240414180543/http://www.xmlrpc.com/metaWeblogApi"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414180543/http://www.xmlrpc.com/metaWeblogApi",
+          "to": "https://web.archive.org/web/20240414180543/http://www.xmlrpc.com/metaWeblogApi"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414180543/http://www.matlus.com/quartz-for-aspnet/",
+          "to": "/writing/quartz-for-aspnet/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414180543/http://www.matlus.com/orion/",
+          "to": "/writing/orion/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414180543/http://www.matlus.com/content/uploads/MetaWeblog/MatlusMetaWeblog.zip",
+          "to": "https://web.archive.org/web/20240414180543/http://www.matlus.com/content/uploads/MetaWeblog/MatlusMetaWeblog.zip"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 32,
+      "title": "Data Access Layer CodeGen",
+      "slug": "data-access-layer-codegen",
+      "datePublished": "2010-12-19",
+      "sourceMetadata": "metadata/Data Access Layer CodeGen.json",
+      "sourceHtml": "html/Data Access Layer CodeGen.html",
+      "originalUrl": "http://www.matlus.com/data-access-layer-codegen/",
+      "url": "/writing/data-access-layer-codegen/",
+      "codeBlocks": 4,
+      "codeHashes": [
+        "298fa2da5ad9e962e305db826adef0f30cf98011e34e8a2fddae3f54020c2e81",
+        "25356569f23acc6508102cab3d1bc3ebd86886919fcf523539955b412b8b63a4",
+        "7fb74da1edb98decba6bb52c8e719fea02cb52a9386d6d69f3c9aa0e3e74b181",
+        "5771fabf5280fe35cf2655cdb6e9bc741c0038f92965a7cc65e1e4f130899d8b"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240414172206/http://www.matlus.com/datareader-wrappers-typesafe/",
+          "to": "/writing/datareader-wrappers-typesafe/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414172206/http://www.matlus.com/content/uploads/SpCodeGenerator/SpCodeGenerator.zip",
+          "to": "https://web.archive.org/web/20240414172206/http://www.matlus.com/content/uploads/SpCodeGenerator/SpCodeGenerator.zip"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414172206/http://www.matlus.com/datareader-wrappers-typesafe/",
+          "to": "/writing/datareader-wrappers-typesafe/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 33,
+      "title": "OAuth C# Library",
+      "slug": "oauth-c-library",
+      "datePublished": "2010-12-06",
+      "sourceMetadata": "metadata/OAuth C# Library.json",
+      "sourceHtml": "html/OAuth C# Library.html",
+      "originalUrl": "http://www.matlus.com/oauth-c-library/",
+      "url": "/writing/oauth-c-library/",
+      "codeBlocks": 2,
+      "codeHashes": [
+        "604fae4fd9360e26ab1db913ae159b184697ed3e7a10e1089b8ff8fce23990eb",
+        "4173c24e670de6d689dd9490266aa48d67bdc8cd765d57375a16d5fdba6ecd75"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "OAuthPage",
+          "sourcePath": "docs/source-material/matlus-wayback/images/f6a6ecef2bd5d446-OAuthPage_f13d6eed-ed75-4506-bd7a-2632acdecfb6.png",
+          "sourceUrl": "https://web.archive.org/web/20240414161938im_/http://www.matlus.com/content/uploads/2011/01/OAuthPage_f13d6eed-ed75-4506-bd7a-2632acdecfb6.png",
+          "asset": "/images/writing/oauth-c-library/figure-01.webp",
+          "status": "selected",
+          "kind": "interface-illustration",
+          "generatedOriginal": "exec-ad9e90ed-4628-4e59-8373-e9f77630626b.png"
+        },
+        {
+          "index": 1,
+          "originalAlt": "GoogleAccountLogin",
+          "sourcePath": "docs/source-material/matlus-wayback/images/94e0364f02c9e0e3-GoogleAccountLogin_fd0b4cab-b441-40c8-aca5-33abd9ef9765.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240414161938im_/http://www.matlus.com/content/uploads/2011/01/GoogleAccountLogin_fd0b4cab-b441-40c8-aca5-33abd9ef9765.jpg",
+          "asset": "/images/writing/oauth-c-library/figure-02.webp",
+          "status": "selected",
+          "kind": "interface-illustration",
+          "generatedOriginal": "exec-1918fa67-fb1b-4054-84e6-8fd6227e2eac.png"
+        },
+        {
+          "index": 2,
+          "originalAlt": "OAuthSuccess",
+          "sourcePath": "docs/source-material/matlus-wayback/images/3887539b75f9173b-OAuthSuccess_240cb52b-0c57-429e-b564-610bf9f459fe.png",
+          "sourceUrl": "https://web.archive.org/web/20240414161938im_/http://www.matlus.com/content/uploads/2011/01/OAuthSuccess_240cb52b-0c57-429e-b564-610bf9f459fe.png",
+          "asset": "/images/writing/oauth-c-library/figure-03.webp",
+          "status": "selected",
+          "kind": "interface-illustration",
+          "generatedOriginal": "exec-6b3dbb7b-f716-417b-8df7-ab0b919db977.png"
+        },
+        {
+          "index": 3,
+          "originalAlt": "OAuthProcess",
+          "sourcePath": "docs/source-material/matlus-wayback/images/54f2ba02f88a1d43-OAuthProcess_8910534d-5ff9-4bff-a2d4-fe4a3b3df152.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240414161938im_/http://www.matlus.com/content/uploads/2011/01/OAuthProcess_8910534d-5ff9-4bff-a2d4-fe4a3b3df152.jpg",
+          "asset": "/images/writing/oauth-c-library/figure-04.webp",
+          "status": "selected",
+          "kind": "sequence-diagram",
+          "generatedOriginal": "exec-b5f58b33-cef4-4e28-af1f-3912d21d6008.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240414161938/http://oauth.net/core/1.0/",
+          "to": "https://web.archive.org/web/20240414161938/http://oauth.net/core/1.0/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414161938/http://oauth.net/core/1.0a/",
+          "to": "https://web.archive.org/web/20240414161938/http://oauth.net/core/1.0a/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414161938/http://code.google.com/apis/accounts/docs/AuthSub.html",
+          "to": "https://web.archive.org/web/20240414161938/http://code.google.com/apis/accounts/docs/AuthSub.html"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414161938/http://code.google.com/apis/accounts/docs/OAuth_ref.html",
+          "to": "https://web.archive.org/web/20240414161938/http://code.google.com/apis/accounts/docs/OAuth_ref.html"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414161938/http://dev.twitter.com/pages/auth#at-twitter",
+          "to": "https://web.archive.org/web/20240414161938/http://dev.twitter.com/pages/auth#at-twitter"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414161938/http://developer.yahoo.com/oauth/guide/oauth-auth-flow.html",
+          "to": "https://web.archive.org/web/20240414161938/http://developer.yahoo.com/oauth/guide/oauth-auth-flow.html"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414161938/http://vimeo.com/api/docs/oauth",
+          "to": "https://web.archive.org/web/20240414161938/http://vimeo.com/api/docs/oauth"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414161938/http://code.google.com/p/oauth-csharp-dotnet/",
+          "to": "https://web.archive.org/web/20240414161938/http://code.google.com/p/oauth-csharp-dotnet/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 34,
+      "title": "C# Class Factory - High Performance",
+      "slug": "high-performance-class-factory",
+      "datePublished": "2010-11-23",
+      "sourceMetadata": "metadata/C# Class Factory - High Performance.json",
+      "sourceHtml": "html/C# Class Factory - High Performance.html",
+      "originalUrl": "http://www.matlus.com/high-performance-class-factory/",
+      "url": "/writing/high-performance-class-factory/",
+      "codeBlocks": 10,
+      "codeHashes": [
+        "1cd6186c9b8c3913352bf9cebeccfc89d55da38303f93b6610a017e796d71e27",
+        "0472ded7a21e491f4a9e59e94e3edcc7a1feb1fe9ef7fb4fa087857b588f5375",
+        "1503fe1fa2f333b31846a2c775fa321e88d5220adcd6032994597bbdf6fb0004",
+        "1b2f57415c7c0c5457b5823b2ffbae62909af78e6077b19bd776a7b707e50239",
+        "81d8b13bdc9db47d97e6c5a075f05eef7b6b6aefa34eb153bbac9d2dcbb1c146",
+        "278db5cb45e9d0f66a7ee78c4f182d420077e5843dcaedd092cad55d4f01c760",
+        "503118ad61cda4e44d58a353f1bfebc1cfc3fa7f803bb8dbf0690dd3596c28e7",
+        "db92a613e9423d09af0fedc73042d7f392e50abbb6f18ba9403c174f1b6d2b9a",
+        "59e0ed148e85183e8d5b103cfb334f203926b65d46e509ff3f827d6411093591",
+        "18e961de516f8c93c08e3cda63282587fa55a1e41e2c6f570fbe977466c26cfd"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "FactoryDesignPattern",
+          "sourcePath": "docs/source-material/matlus-wayback/images/e5074cc550b74786-FactoryDesignPattern_41e6373b-9f78-413f-9163-bf7b1f3563aa.jpg",
+          "sourceUrl": "https://web.archive.org/web/20220812180808im_/http://www.matlus.com/content/uploads/2011/02/FactoryDesignPattern_41e6373b-9f78-413f-9163-bf7b1f3563aa.jpg",
+          "asset": "/images/writing/high-performance-class-factory/figure-01.webp",
+          "status": "selected",
+          "kind": "diagram",
+          "generatedOriginal": "exec-07b0f87d-17c1-47a6-8a8e-2e54535d0473.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20220812180808/http://www.matlus.com/quartz-for-aspnet/",
+          "to": "/writing/quartz-for-aspnet/"
+        },
+        {
+          "from": "https://web.archive.org/web/20220812180808/http://msdn.microsoft.com/en-us/library/system.reflection.emit.dynamicmethod.aspx",
+          "to": "https://web.archive.org/web/20220812180808/http://msdn.microsoft.com/en-us/library/system.reflection.emit.dynamicmethod.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20220812180808/http://msdn.microsoft.com/en-us/library/system.reflection.emit.ilgenerator.aspx",
+          "to": "https://web.archive.org/web/20220812180808/http://msdn.microsoft.com/en-us/library/system.reflection.emit.ilgenerator.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20220812180808/http://msdn.microsoft.com/en-us/library/cye39zsf.aspx",
+          "to": "https://web.archive.org/web/20220812180808/http://msdn.microsoft.com/en-us/library/cye39zsf.aspx"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 35,
+      "title": "The Purpose and function of a Data Access Layer",
+      "slug": "the-purpose-and-function-of-a-data-access-layer",
+      "datePublished": "2010-11-20",
+      "sourceMetadata": "metadata/The Purpose and function of a Data Access Layer.json",
+      "sourceHtml": "html/The Purpose and function of a Data Access Layer.html",
+      "originalUrl": "http://www.matlus.com/the-purpose-and-function-of-a-data-access-layer/",
+      "url": "/writing/the-purpose-and-function-of-a-data-access-layer/",
+      "codeBlocks": 2,
+      "codeHashes": [
+        "3d3ce1038d2ebe893b110ba7a57b25db719c8ef9e4bef158d73471209122f268",
+        "69e63ac3982f2cf4448c50ed664e3fadd8a74d013f8b6fcc18b32cabeeb34211"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20230924012918/http://www.matlus.com/datareader-wrappers-typesafe/",
+          "to": "/writing/datareader-wrappers-typesafe/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 36,
+      "title": "ASP.NET Performance-Instantiating Business Layers",
+      "slug": "instantiating-business-layers-asp-net-performance",
+      "datePublished": "2010-11-19",
+      "sourceMetadata": "metadata/ASP.NET Performance-Instantiating Business Layers.json",
+      "sourceHtml": "html/ASP.NET Performance-Instantiating Business Layers.html",
+      "originalUrl": "http://matlus.com/instantiating-business-layers-asp-net-performance/",
+      "url": "/writing/instantiating-business-layers-asp-net-performance/",
+      "codeBlocks": 2,
+      "codeHashes": [
+        "a88bf69cb56e498d4dbf17b2e77ebfeeffd4bf069267349563a1cc0278c52d07",
+        "c3535170f872fe02cfc54200e10c4a4936075b2ac01d852605ad2bcae98ddcf6"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "IISAppPoolAndGlobal",
+          "sourcePath": "docs/source-material/matlus-wayback/images/819f942d4debb3f2-IISAppPoolAndGlobal_7a87db2b-b0be-4e84-96dd-d2bf6d0f4cfa.jpg",
+          "sourceUrl": "https://web.archive.org/web/20221207131040im_/http://www.matlus.com/content/uploads/2011/01/IISAppPoolAndGlobal_7a87db2b-b0be-4e84-96dd-d2bf6d0f4cfa.jpg",
+          "asset": "/images/writing/instantiating-business-layers-asp-net-performance/figure-01.webp",
+          "status": "selected",
+          "kind": "diagram",
+          "generatedOriginal": "exec-c8c291ad-c540-4d15-97ad-f16fd96954f5.png"
+        },
+        {
+          "index": 1,
+          "originalAlt": "GlobalBusinessLayerDataLayer",
+          "sourcePath": "docs/source-material/matlus-wayback/images/d9ab82171ee06c03-GlobalBusinessLayerDataLayer_2819bcfe-6884-4589-be6f-b17b6fc03791.jpg",
+          "sourceUrl": "https://web.archive.org/web/20221207131040im_/http://www.matlus.com/content/uploads/2011/01/GlobalBusinessLayerDataLayer_2819bcfe-6884-4589-be6f-b17b6fc03791.jpg",
+          "asset": "/images/writing/instantiating-business-layers-asp-net-performance/figure-02.webp",
+          "status": "selected",
+          "kind": "diagram",
+          "generatedOriginal": "exec-08ce0c63-a06c-4d2e-811c-0a26e0d0eeea.png"
+        }
+      ],
+      "links": [],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 37,
+      "title": "DataReader Wrappers - TypeSafe",
+      "slug": "datareader-wrappers-typesafe",
+      "datePublished": "2010-11-18",
+      "sourceMetadata": "metadata/DataReader Wrappers - TypeSafe.json",
+      "sourceHtml": "html/DataReader Wrappers - TypeSafe.html",
+      "originalUrl": "http://www.matlus.com/datareader-wrappers-typesafe/",
+      "url": "/writing/datareader-wrappers-typesafe/",
+      "codeBlocks": 18,
+      "codeHashes": [
+        "8e0849e64169e497f99930ced49edab170df5023bb9457262cc4959733e19596",
+        "b40f6ac232e17df3f78b9fe711649c979c0c8de2fed17e9a0c073ccd9af9934d",
+        "39def5df2d1aedc7c9a3467eb3793dbd2c1751898ce33451074ad494224d4e1f",
+        "83bf09ee19ad253f1a174d95391165fe2cdf4bb068c36fec49b56913a6eb7e2b",
+        "678d64886de2939bd7895203d29fe9591e29dd2ff4078b537a84ee90e6d10730",
+        "f28ddeeb663c01e5c6c928cf238e5da2395c05fb62d3118fff32c0458d58094c",
+        "eda1323cf27c613ad5790c331e044f09aadce74524ac9d5786abb71522236502",
+        "db7ddbc76e7007c3d97e1adcede85bb8e67aa7f09bb6b09b2b4306172117bde3",
+        "a1f0b5c236ce2ce6b723e988f3475e2b6e0980be6f8076bc33d0ba42c74ba5d6",
+        "932a331dfb3a7203c8f1e24d8e75910318358e9eb1925cde6ef542f8c19aaebe",
+        "1409bc9caa1fa10a5390e589099f50a8547a01deee936a60c179b45c4b79c064",
+        "cea3e1534b021fbf56d9a6ebc22dc8550542d5f99dc6130828fc9d352ade5d63",
+        "b4071f6b8d86b22984fe8d594a7f4a1ddb1bcd39de31af4c6711a88be581b1fb",
+        "4a355b871101636d7f86871afcdd3b5bca7d96472d637e25ea880d6c034dc460",
+        "0f4b652a9b9fd7acfa275b4e8339255c5e02ec27b49df6e2127f336619bce8b0",
+        "f2ca99f3913cc6985036db0d234fd343e17536e0ba5eabcaf636f6a36262db19",
+        "36a9e7f1c95b82ffb99743e0c5c4ce95d83c9a430aac59f84ef3cbfab6145068",
+        "36a9e7f1c95b82ffb99743e0c5c4ce95d83c9a430aac59f84ef3cbfab6145068"
+      ],
+      "images": [],
+      "links": [],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "heroGeneratedOriginal": "exec-6b0479df-a449-42ad-b4d0-9274f119edee.png",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 38,
+      "title": "ChangeType<T> - Changing the type of a variable in C#",
+      "slug": "changetypet-changing-the-type-of-a-variable-in-c",
+      "datePublished": "2010-11-08",
+      "sourceMetadata": "metadata/ChangeType-T- - Changing the type of a variable in C#.json",
+      "sourceHtml": "html/ChangeType-T- - Changing the type of a variable in C#.html",
+      "originalUrl": "http://matlus.com/changetypet-changing-the-type-of-a-variable-in-c/",
+      "url": "/writing/changetypet-changing-the-type-of-a-variable-in-c/",
+      "codeBlocks": 15,
+      "codeHashes": [
+        "7c91e9f83609dea9f215feb0917d7f96929703be0f2b72517b74e7e796329738",
+        "5e67afae273de3d344001a31a9362bbf3f9968ebb49909b5a7194fc14cc3b165",
+        "9b1176c3132fe3c285ec78e134c085786d67eebf309079618d361f9a7be65eb6",
+        "e45a3899416ea7f323e6cb312aa13932b2dbfc65cb8e9f35da9476cbd9878bab",
+        "a1a38c8dcebb13cc2a82a39b7c59fe743ee345cd1a968f801c5b70f964c5d9df",
+        "d36e5f9da6b480014caa2da1a5223d7c5a7c7755835bcdca78dc744c9df6fe55",
+        "24f7ef716f70866440b1d8bad949d2654d215ce12efb87074beff043cd1ae601",
+        "8d7bab1fdc57aeb54d7a1bb35bd18e6d97c0588ea1874721bdfa1c02335a12c1",
+        "8d9a042aee10937997c3fdceda249b537431e2cefbb2dfcccc0c527f3db0ff18",
+        "d47d472df9625422de659b757a344f280f71719dc195374ffd8684499b80e1f4",
+        "8a4f349c35463f653784b05be27cdaabf90a830b68fe5aed58a691132cc1a40d",
+        "a50abc769babf03fa92d7f4d3756c004bce636bc144ac61b521c3657407716c7",
+        "06abb95a89b226309c5bf5b379ef675925055e74a275e3110b15879f7cfd5553",
+        "46411cb1ca655899bd352f592635b7ca99e5d38310c81d5fe554fe4a18b85230",
+        "507cd5d0b7cb6ad3762a7def3e7f6908001b572e3a68976611e98fa5deada01b"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240415161728/http://msdn.microsoft.com/en-us/library/system.convert(v=VS.100).aspx",
+          "to": "https://web.archive.org/web/20240415161728/http://msdn.microsoft.com/en-us/library/system.convert(v=VS.100).aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415161728/http://msdn.microsoft.com/en-us/library/dtb69x08.aspx",
+          "to": "https://web.archive.org/web/20240415161728/http://msdn.microsoft.com/en-us/library/dtb69x08.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415161728/http://msdn.microsoft.com/en-us/library/system.iconvertible.aspx",
+          "to": "https://web.archive.org/web/20240415161728/http://msdn.microsoft.com/en-us/library/system.iconvertible.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415161728/http://msdn.microsoft.com/en-us/library/ms171819.aspx",
+          "to": "https://web.archive.org/web/20240415161728/http://msdn.microsoft.com/en-us/library/ms171819.aspx"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 39,
+      "title": "Razor Engine Host",
+      "slug": "razor-engine-host",
+      "datePublished": "2010-11-05",
+      "sourceMetadata": "metadata/Razor Engine Host.json",
+      "sourceHtml": "html/Razor Engine Host.html",
+      "originalUrl": "http://www.matlus.com/razor-engine-host/",
+      "url": "/writing/razor-engine-host/",
+      "codeBlocks": 5,
+      "codeHashes": [
+        "8b1e8766a9cbf8751617bcaf269f11ee8ab4e63fa957f9c6ba361698531f3ae9",
+        "096820921b0556c865a69b8e8e0a59efdccb3a9e23696461823cdbf67a2756c8",
+        "675c3075efa6ef821f09832f29e2da31ecdf90308ea40566edc19d3e7ed39d49",
+        "93101c69e18e4934a70eb1cfcdcb9c2c3c9e06dcb7ba0259978977e78d6da120",
+        "332e0cbeaceb04b4ff847f6d4e0663ee5abb56f61ae00622175fd62aa3629127"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "RazorEngineHostApp",
+          "sourcePath": "docs/source-material/matlus-wayback/images/7d4b60facde10d0e-RazorEngineHostApp_f2491d0f-d745-4f2d-aa71-d6e1c22f1121.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240414162309im_/http://www.matlus.com/content/uploads/2011/01/RazorEngineHostApp_f2491d0f-d745-4f2d-aa71-d6e1c22f1121.jpg",
+          "asset": "/images/writing/razor-engine-host/figure-01.webp",
+          "status": "selected",
+          "kind": "interface-illustration",
+          "generatedOriginal": "exec-d0c1bc08-e043-428d-830b-e70d72e0f500.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240414162309/http://weblogs.asp.net/scottgu/archive/2010/07/02/introducing-razor.aspx",
+          "to": "https://web.archive.org/web/20240414162309/http://weblogs.asp.net/scottgu/archive/2010/07/02/introducing-razor.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414162309/http://www.asp.net/mvc/mvc3",
+          "to": "https://web.archive.org/web/20240414162309/http://www.asp.net/mvc/mvc3"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 40,
+      "title": "ASP.NET MVC Framework Design Problems",
+      "slug": "problems-with-asp-net-mvc-framework-design",
+      "datePublished": "2010-10-27",
+      "sourceMetadata": "metadata/ASP.NET MVC Framework Design Problems.json",
+      "sourceHtml": "html/ASP.NET MVC Framework Design Problems.html",
+      "originalUrl": "http://matlus.com/problems-with-asp-net-mvc-framework-design/",
+      "url": "/writing/problems-with-asp-net-mvc-framework-design/",
+      "codeBlocks": 3,
+      "codeHashes": [
+        "ab45a4f5ceafe9903f2051ff08383dab878dd0cdcef63762951d771594c56259",
+        "6548bcb59a89605bb94b47bef7163f5b1e865236079525d54d4755588552dfb6",
+        "2b2baa8f869ad70385df57d37c544d53f232c76d7e9d8e98b813606c3bc751eb"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "MVCAndBuilderDesignPattern",
+          "sourcePath": "docs/source-material/matlus-wayback/images/378ada4f7d1bced0-MVCAndBuilderDesignPattern_e3b9fae1-b5cc-4557-8214-f7042d037bed.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240911164124im_/http://www.matlus.com/content/uploads/2011/01/MVCAndBuilderDesignPattern_e3b9fae1-b5cc-4557-8214-f7042d037bed.jpg",
+          "asset": "/images/writing/problems-with-asp-net-mvc-framework-design/figure-01.webp",
+          "status": "selected",
+          "kind": "diagram",
+          "generatedOriginal": "exec-1f659e4f-a2a3-4294-a85c-3844313ab834.png"
+        },
+        {
+          "index": 1,
+          "originalAlt": "MVCRenderActionFlow",
+          "sourcePath": "docs/source-material/matlus-wayback/images/f5d270d9b92e61b1-MVCRenderActionFlow_e57146e4-8a59-408e-a383-df77ba6c3ca9.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240911164124im_/http://www.matlus.com/content/uploads/2011/01/MVCRenderActionFlow_e57146e4-8a59-408e-a383-df77ba6c3ca9.jpg",
+          "asset": "/images/writing/problems-with-asp-net-mvc-framework-design/figure-02.webp",
+          "status": "selected",
+          "kind": "diagram",
+          "generatedOriginal": "exec-bf4ea059-de24-4e48-9dd9-73a39ca7edb5.png"
+        },
+        {
+          "index": 2,
+          "originalAlt": "BuilderForASPNETBuildByComposition",
+          "sourcePath": "docs/source-material/matlus-wayback/images/7f488e6174010669-BuilderForASPNETBuildByComposition_bda2425a-9724-4a0b-9925-76483deadd05.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240911164124im_/http://www.matlus.com/content/uploads/2011/01/BuilderForASPNETBuildByComposition_bda2425a-9724-4a0b-9925-76483deadd05.jpg",
+          "asset": "/images/writing/problems-with-asp-net-mvc-framework-design/figure-03.webp",
+          "status": "selected",
+          "kind": "diagram",
+          "generatedOriginal": "exec-08e29ac3-748e-4f09-b800-30c4e85ce90c.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240911164124/http://www.matlus.com/quartz-for-aspnet/",
+          "to": "/writing/quartz-for-aspnet/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 41,
+      "title": "ASP.NET MVC3 - Razor View Engine",
+      "slug": "asp-net-mvc3-razor-view-engine",
+      "datePublished": "2010-10-04",
+      "sourceMetadata": "metadata/ASP.NET MVC3 - Razor View Engine.json",
+      "sourceHtml": "html/ASP.NET MVC3 - Razor View Engine.html",
+      "originalUrl": "http://matlus.com/asp-net-mvc3-razor-view-engine/",
+      "url": "/writing/asp-net-mvc3-razor-view-engine/",
+      "codeBlocks": 7,
+      "codeHashes": [
+        "1194a96c361b1ec6d4a686b2e0c56e5db61f0fc91a217f427057261b071ffb7e",
+        "5fe1a7322ecffd0f90bacd56a3db8c379c49aabef798a784e65c362d017531fd",
+        "76fede0cf79ce19ee97d55b94aae0fb2776f7d069f5be65402d52df1f3b81670",
+        "4321151ce8dcbf1f9e20471d872672cf92f8c912d4c1657b42294729380833f0",
+        "00b0121aaddaab24698844aa4fdef0000492b3df0a88134c2b5e9ce6cb87b1ea",
+        "e7ad9982aa2cb896ab4a2bc2b652843998bcb7067c4c3e5e0ac72f0b0dd06f4c",
+        "e65a528d4ec2a765f8c485f380f9d8edd80a1a7dadceb176a2346e978e91c6b3"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "MovieListingsScreenshot",
+          "sourcePath": "docs/source-material/matlus-wayback/images/6a86b72b2edf2d31-MovieListingsScreenshot_458300b4-22b2-4bab-bed6-eb1955b55185.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415162151im_/http://www.matlus.com/content/uploads/2011/01/MovieListingsScreenshot_458300b4-22b2-4bab-bed6-eb1955b55185.jpg",
+          "asset": "/images/writing/asp-net-mvc3-razor-view-engine/figure-01.webp",
+          "status": "selected",
+          "kind": "interface-illustration",
+          "generatedOriginal": "exec-8d5e5307-f384-4260-b388-a80d1c4b28b4.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240415162151/http://sparkviewengine.com/",
+          "to": "https://web.archive.org/web/20240415162151/http://sparkviewengine.com/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415162151/http://code.google.com/p/nhaml/",
+          "to": "https://web.archive.org/web/20240415162151/http://code.google.com/p/nhaml/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415162151/http://ndjango.org/index.php?title=NDjango_Home",
+          "to": "https://web.archive.org/web/20240415162151/http://ndjango.org/index.php?title=NDjango_Home"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415162151/http://matlus.com/quartz-for-aspnet/",
+          "to": "/writing/quartz-for-aspnet/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 42,
+      "title": "Html5 File Upload with Progress",
+      "slug": "html5-file-upload-with-progress",
+      "datePublished": "2010-09-25",
+      "sourceMetadata": "metadata/Html5 File Upload with Progress.json",
+      "sourceHtml": "html/Html5 File Upload with Progress.html",
+      "originalUrl": "http://matlus.com/html5-file-upload-with-progress/",
+      "url": "/writing/html5-file-upload-with-progress/",
+      "codeBlocks": 6,
+      "codeHashes": [
+        "ed3a4a9d6dbe3f666a25ade70924c24a08a8ab2e1062ef2018143aae72954188",
+        "711db1f6996e6fd068e42e25aad51188d6b2199531d9f1584ede09dce8ecd434",
+        "f0f50e8f51c3c32642e3f7fece7c78070f7606c968b08161f5a6f1798ad25128",
+        "13f0fbe876e4b406b4ab71f21fe8811d6087335f1c087cc4c9e0de1f2f719fb3",
+        "20617c2b88945340dc3fd1f493437e64ad0ad672d1677eb3bbb2ffbe82434309",
+        "7ec38316af2ad37254c91c72e47e7f59281edda771771f1ffd42a10524b51fb9"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "Html5FileUpload1",
+          "sourcePath": "docs/source-material/matlus-wayback/images/fc51540959d6a892-Html5FileUpload1_6023e7c1-a2a8-43ee-bb13-c2439888adf9.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415161255im_/http://www.matlus.com/content/uploads/2011/01/Html5FileUpload1_6023e7c1-a2a8-43ee-bb13-c2439888adf9.jpg",
+          "asset": "/images/writing/html5-file-upload-with-progress/figure-01.webp",
+          "status": "selected",
+          "kind": "interface-illustration",
+          "generatedOriginal": "exec-321e6a40-d789-4cad-9ede-9478388e56e2.png"
+        },
+        {
+          "index": 1,
+          "originalAlt": "Html5FileUpload2",
+          "sourcePath": "docs/source-material/matlus-wayback/images/213e85c362244f2d-Html5FileUpload2_f8ce435b-691a-4102-97c4-47cf159436e3.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415161255im_/http://www.matlus.com/content/uploads/2011/01/Html5FileUpload2_f8ce435b-691a-4102-97c4-47cf159436e3.jpg",
+          "asset": "/images/writing/html5-file-upload-with-progress/figure-02.webp",
+          "status": "selected",
+          "kind": "interface-illustration",
+          "generatedOriginal": "exec-5e5ddda0-2927-4576-a2f5-2f2f2aaaa10f.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240415161255/http://www.w3.org/TR/XMLHttpRequest2/",
+          "to": "https://web.archive.org/web/20240415161255/http://www.w3.org/TR/XMLHttpRequest2/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415161255/http://www.w3.org/TR/progress-events/",
+          "to": "https://web.archive.org/web/20240415161255/http://www.w3.org/TR/progress-events/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415161255/http://exposureroom.biz/upload.aspx",
+          "to": "https://web.archive.org/web/20240415161255/http://exposureroom.biz/upload.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415161255/http://www.w3.org/TR/FileAPI/",
+          "to": "https://web.archive.org/web/20240415161255/http://www.w3.org/TR/FileAPI/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415161255/http://www.w3.org/TR/2010/WD-XMLHttpRequest2-20100907/#the-formdata-interface",
+          "to": "https://web.archive.org/web/20240415161255/http://www.w3.org/TR/2010/WD-XMLHttpRequest2-20100907/#the-formdata-interface"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415161255/http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#xmlhttprequestupload",
+          "to": "https://web.archive.org/web/20240415161255/http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#xmlhttprequestupload"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 43,
+      "title": "IE 9 Beta - What's hot and what's not",
+      "slug": "ie-9-beta-whats-hot-and-whats-not",
+      "datePublished": "2010-09-16",
+      "sourceMetadata": "metadata/IE 9 Beta - What's hot and what's not.json",
+      "sourceHtml": "html/IE 9 Beta - What's hot and what's not.html",
+      "originalUrl": "http://www.matlus.com/ie-9-beta-whats-hot-and-whats-not/",
+      "url": "/writing/ie-9-beta-whats-hot-and-whats-not/",
+      "codeBlocks": 0,
+      "codeHashes": [],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240414180627/http://ie.microsoft.com/testdrive/benchmarks/SunSpider/Default.html",
+          "to": "https://web.archive.org/web/20240414180627/http://ie.microsoft.com/testdrive/benchmarks/SunSpider/Default.html"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414180627/http://ie.microsoft.com/testdrive/benchmarks/Acid3/Default.html",
+          "to": "https://web.archive.org/web/20240414180627/http://ie.microsoft.com/testdrive/benchmarks/Acid3/Default.html"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414180627/http://www.matlus.com/html-5-video-and-flash/",
+          "to": "/writing/html-5-video-and-flash/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240414180627/http://www.azarask.in/blog/post/designing-tab-candy/",
+          "to": "https://web.archive.org/web/20240414180627/http://www.azarask.in/blog/post/designing-tab-candy/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 44,
+      "title": "The Future of Flash Player",
+      "slug": "the-future-of-flash-player",
+      "datePublished": "2010-09-09",
+      "sourceMetadata": "metadata/The Future of Flash Player.json",
+      "sourceHtml": "html/The Future of Flash Player.html",
+      "originalUrl": "http://matlus.com/the-future-of-flash-player/",
+      "url": "/writing/the-future-of-flash-player/",
+      "codeBlocks": 0,
+      "codeHashes": [],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240415154146/http://www.webmproject.org/",
+          "to": "https://web.archive.org/web/20240415154146/http://www.webmproject.org/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415154146/http://blogs.adobe.com/flashplatform/2010/05/adobe_support_for_vp8.html",
+          "to": "https://web.archive.org/web/20240415154146/http://blogs.adobe.com/flashplatform/2010/05/adobe_support_for_vp8.html"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415154146/http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html",
+          "to": "https://web.archive.org/web/20240415154146/http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 45,
+      "title": "Google TV, Apple TV or just a computer",
+      "slug": "google-tv-apple-tv-or-just-a-computer",
+      "datePublished": "2010-09-09",
+      "sourceMetadata": "metadata/Google TV, Apple TV or just a computer.json",
+      "sourceHtml": "html/Google TV, Apple TV or just a computer.html",
+      "originalUrl": "http://matlus.com/google-tv-apple-tv-or-just-a-computer/",
+      "url": "/writing/google-tv-apple-tv-or-just-a-computer/",
+      "codeBlocks": 0,
+      "codeHashes": [],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "ComputerToHDTVHookup (1)",
+          "sourcePath": "docs/source-material/matlus-wayback/images/5d2a8216b3d8cda4-ComputerToHDTVHookup%20(1)_4ae2b996-caed-4aca-8e71-8838b43d8d30.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415150642im_/http://www.matlus.com/content/uploads/2011/01/ComputerToHDTVHookup%20(1)_4ae2b996-caed-4aca-8e71-8838b43d8d30.jpg",
+          "asset": "/images/writing/google-tv-apple-tv-or-just-a-computer/figure-01.webp",
+          "status": "selected",
+          "kind": "diagram",
+          "generatedOriginal": "exec-90d2b66b-7dec-4f23-8403-9d0e0faf4ebc.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240415150642/http://www.google.com/tv/",
+          "to": "https://web.archive.org/web/20240415150642/http://www.google.com/tv/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415150642/http://www.apple.com/appletv/",
+          "to": "https://web.archive.org/web/20240415150642/http://www.apple.com/appletv/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415150642/http://www.boxee.tv/",
+          "to": "https://web.archive.org/web/20240415150642/http://www.boxee.tv/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415150642/http://www.google.com/products?q=DVI-D+to+HDMI&um=1&ie=UTF-8&ei=0JiJTJOdNcX_lgeZh70K&sa=X&oi=product_result_group&ct=title&resnum=1&ved=0CDoQrQQwAA",
+          "to": "https://web.archive.org/web/20240415150642/http://www.google.com/products?q=DVI-D+to+HDMI&um=1&ie=UTF-8&ei=0JiJTJOdNcX_lgeZh70K&sa=X&oi=product_result_group&ct=title&resnum=1&ved=0CDoQrQQwAA"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415150642/http://exposureroom.com/",
+          "to": "https://web.archive.org/web/20240415150642/http://exposureroom.com/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415150642/http://exposureroom.com/",
+          "to": "https://web.archive.org/web/20240415150642/http://exposureroom.com/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415150642/http://vimeo.com/",
+          "to": "https://web.archive.org/web/20240415150642/http://vimeo.com/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415150642/http://www.netgear.com/products/home/hometheater/media-players/NTV550.aspx",
+          "to": "https://web.archive.org/web/20240415150642/http://www.netgear.com/products/home/hometheater/media-players/NTV550.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415150642/http://www.roku.com/",
+          "to": "https://web.archive.org/web/20240415150642/http://www.roku.com/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415150642/http://www.vunow.com/",
+          "to": "https://web.archive.org/web/20240415150642/http://www.vunow.com/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415150642/http://www.neurostechnology.com/neuros-link",
+          "to": "https://web.archive.org/web/20240415150642/http://www.neurostechnology.com/neuros-link"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "heroGeneratedOriginal": "exec-3b851408-b2ed-4fd3-abb4-9d32718ad716.png",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 46,
+      "title": "Html 5 Video Element Poster",
+      "slug": "html-5-video-element-poster",
+      "datePublished": "2010-09-01",
+      "sourceMetadata": "metadata/Html 5 Video Element Poster.json",
+      "sourceHtml": "html/Html 5 Video Element Poster.html",
+      "originalUrl": "http://matlus.com/html-5-video-element-poster/",
+      "url": "/writing/html-5-video-element-poster/",
+      "codeBlocks": 0,
+      "codeHashes": [],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "Html5VideoPosterFrame1",
+          "sourcePath": "docs/source-material/matlus-wayback/images/00cf5187ef7f4dd6-Html5VideoPosterFrame1_90b56724-b87d-4b57-b246-d214fe715d05.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415154330im_/http://www.matlus.com/content/uploads/2011/01/Html5VideoPosterFrame1_90b56724-b87d-4b57-b246-d214fe715d05.jpg",
+          "asset": "/images/writing/html-5-video-element-poster/figure-01.webp",
+          "status": "selected",
+          "kind": "poster-illustration",
+          "generatedOriginal": "exec-e24d0838-0d48-4702-a267-e1f07a919554.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240415154330/http://exposureroom.com/",
+          "to": "https://web.archive.org/web/20240415154330/http://exposureroom.com/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "heroGeneratedOriginal": "exec-86c57f25-ab7e-4a1d-956a-f0309c807835.png",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 47,
+      "title": "Finding links on a Web page",
+      "slug": "finding-links-on-a-web-page",
+      "datePublished": "2010-08-31",
+      "sourceMetadata": "metadata/Finding links on a Web page.json",
+      "sourceHtml": "html/Finding links on a Web page.html",
+      "originalUrl": "http://www.matlus.com/finding-links-on-a-web-page/",
+      "url": "/writing/finding-links-on-a-web-page/",
+      "codeBlocks": 2,
+      "codeHashes": [
+        "7012dd9f9b6a36c6614c85b69d651d28a6ffdbc1dcedfb26fecffdac0e0413e7",
+        "908f52c56c9cad4dd4068b78c2219f2264b8be2de281953c1d32de84fd3c48e2"
+      ],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240414164426/http://htmlagilitypack.codeplex.com/",
+          "to": "https://web.archive.org/web/20240414164426/http://htmlagilitypack.codeplex.com/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "heroGeneratedOriginal": "exec-18a876b0-04fb-43fa-8394-8379aac3ec53.png",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 48,
+      "title": "H.264 Free for Internet Broadcast",
+      "slug": "h-264-free-for-internet-broadcast",
+      "datePublished": "2010-08-30",
+      "sourceMetadata": "metadata/H.264 Free for Internet Broadcast.json",
+      "sourceHtml": "html/H.264 Free for Internet Broadcast.html",
+      "originalUrl": "http://matlus.com/h-264-free-for-internet-broadcast/",
+      "url": "/writing/h-264-free-for-internet-broadcast/",
+      "codeBlocks": 0,
+      "codeHashes": [],
+      "images": [],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240415154617/http://www.mpegla.com/main/default.aspx",
+          "to": "https://web.archive.org/web/20240415154617/http://www.mpegla.com/main/default.aspx"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415154617/http://youtube.com/",
+          "to": "https://web.archive.org/web/20240415154617/http://youtube.com/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415154617/http://exposureroom.com/",
+          "to": "https://web.archive.org/web/20240415154617/http://exposureroom.com/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415154617/http://vimeo.com/",
+          "to": "https://web.archive.org/web/20240415154617/http://vimeo.com/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "heroGeneratedOriginal": "exec-f24e21ee-3a29-4163-b8c0-cde62429157c.png",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 49,
+      "title": "Expanding Code listings",
+      "slug": "expanding-code-listings",
+      "datePublished": "2010-08-30",
+      "sourceMetadata": "metadata/Expanding Code listings.json",
+      "sourceHtml": "html/Expanding Code listings.html",
+      "originalUrl": "http://matlus.com/expanding-code-listings/",
+      "url": "/writing/expanding-code-listings/",
+      "codeBlocks": 6,
+      "codeHashes": [
+        "a34c2a26cc7fbb5c0bba07b11ee46a1f63009dd7340dd650bb2d2254ca6fde6c",
+        "4020b73d213c26787f9f6a2071553e683389ec47b14d0abe4cceaffe9df39abb",
+        "b8faa93cce97e77fd796f59dc636100058be4b439d2ecd02799d2f63cb187434",
+        "d57f2effcdb8a53c39fc906d139f1304ca4dc21e9d1709ec3af1a496f76e1d59",
+        "4cd471b6adc0f4f448c74269cf4e618c85c36483152d3fbe89a766339ed5ff98",
+        "d07967f470b66c764fda8b23dc63e4a3d3f6fc0c08e4243529a83423928b9a3c"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "WidenCodeListing",
+          "sourcePath": "docs/source-material/matlus-wayback/images/f898fbd7876e57f7-WidenCodeListing_fb34ddd0-68bd-4628-9075-52c0e39fc7f9.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240222150539im_/http://www.matlus.com/content/uploads/2011/01/WidenCodeListing_fb34ddd0-68bd-4628-9075-52c0e39fc7f9.jpg",
+          "asset": "/images/writing/expanding-code-listings/figure-01.webp",
+          "status": "selected",
+          "kind": "concept-illustration",
+          "generatedOriginal": "exec-5f84c544-0be8-4b61-914f-fad1378878f9.png"
+        },
+        {
+          "index": 1,
+          "originalAlt": "VisonOfCodelistingRequirements",
+          "sourcePath": "docs/source-material/matlus-wayback/images/fc5f22773c5454c3-VisonOfCodelistingRequirements_fe333471-a490-45ee-ab9c-163d564b5dcd.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240222150539im_/http://www.matlus.com/content/uploads/2011/01/VisonOfCodelistingRequirements_fe333471-a490-45ee-ab9c-163d564b5dcd.jpg",
+          "asset": "/images/writing/expanding-code-listings/figure-02.webp",
+          "status": "selected",
+          "kind": "interface-diagram",
+          "generatedOriginal": "exec-bcdf5c6d-0e35-4f9b-8c03-5b3d2559a0ad.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240222150539/http://wordpress.org/",
+          "to": "https://web.archive.org/web/20240222150539/http://wordpress.org/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240222150539/http://manoli.net/csharpformat/",
+          "to": "https://web.archive.org/web/20240222150539/http://manoli.net/csharpformat/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240222150539/http://alexgorbatchev.com/SyntaxHighlighter/",
+          "to": "https://web.archive.org/web/20240222150539/http://alexgorbatchev.com/SyntaxHighlighter/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240222150539/http://code.google.com/p/google-code-prettify/",
+          "to": "https://web.archive.org/web/20240222150539/http://code.google.com/p/google-code-prettify/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240222150539/http://shjs.sourceforge.net/",
+          "to": "https://web.archive.org/web/20240222150539/http://shjs.sourceforge.net/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240222150539/http://code.google.com/p/jquery-chili-js/",
+          "to": "https://web.archive.org/web/20240222150539/http://code.google.com/p/jquery-chili-js/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240222150539/http://softwaremaniacs.org/soft/highlight/en/",
+          "to": "https://web.archive.org/web/20240222150539/http://softwaremaniacs.org/soft/highlight/en/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240222150539/http://pradador.com/code/lighterjs/",
+          "to": "https://web.archive.org/web/20240222150539/http://pradador.com/code/lighterjs/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240222150539/http://www.viget.com/inspire/simple-jquery-solution-to-a-simple-problem/",
+          "to": "https://web.archive.org/web/20240222150539/http://www.viget.com/inspire/simple-jquery-solution-to-a-simple-problem/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "heroGeneratedOriginal": "exec-52e1832f-3420-4235-9187-2ae5e0e8653e.png",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 50,
+      "title": "Html 5 Video and Flash",
+      "slug": "html-5-video-and-flash",
+      "datePublished": "2010-08-27",
+      "sourceMetadata": "metadata/Html 5 Video and Flash.json",
+      "sourceHtml": "html/Html 5 Video and Flash.html",
+      "originalUrl": "http://matlus.com/html-5-video-and-flash/",
+      "url": "/writing/html-5-video-and-flash/",
+      "codeBlocks": 0,
+      "codeHashes": [],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "Html5Video",
+          "sourcePath": "docs/source-material/matlus-wayback/images/8c8c431f3ca2fbd5-Html5Video.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415144145im_/http://matlus.com/content/uploads/2011/01/Html5Video.jpg",
+          "asset": "/images/writing/html-5-video-and-flash/figure-01.webp",
+          "status": "selected",
+          "kind": "concept-illustration",
+          "generatedOriginal": "exec-f62c5e2e-35f5-4ce7-96f0-3aaacc9db951.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240415144145/http://ie.microsoft.com/testdrive/",
+          "to": "https://web.archive.org/web/20240415144145/http://ie.microsoft.com/testdrive/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415144145/http://www.mozilla.com/en-US/firefox/beta/",
+          "to": "https://web.archive.org/web/20240415144145/http://www.mozilla.com/en-US/firefox/beta/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415144145/http://www.google.com/chrome",
+          "to": "https://web.archive.org/web/20240415144145/http://www.google.com/chrome"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415144145/http://www.apple.com/safari/",
+          "to": "https://web.archive.org/web/20240415144145/http://www.apple.com/safari/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415144145/http://www.techspot.com/downloads/40-opera-for-windows.html",
+          "to": "https://web.archive.org/web/20240415144145/http://www.techspot.com/downloads/40-opera-for-windows.html"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415144145/http://exposureroom.com/news/view.aspx/371/",
+          "to": "https://web.archive.org/web/20240415144145/http://exposureroom.com/news/view.aspx/371/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415144145/http://www.webmproject.org/",
+          "to": "https://web.archive.org/web/20240415144145/http://www.webmproject.org/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "heroGeneratedOriginal": "exec-81a8471e-42bb-40f9-bc89-207620c5402c.png",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 51,
+      "title": "Setting up IIS 7.0 - Ftp 7.5 for IIS Manager Users",
+      "slug": "iis-manager-users",
+      "datePublished": "2010-08-29",
+      "sourceMetadata": "metadata/Setting up IIS 7.0 - Ftp 7.5 for IIS Manager Users.json",
+      "sourceHtml": "html/Setting up IIS 7.0 - Ftp 7.5 for IIS Manager Users.html",
+      "originalUrl": "http://matlus.com/iis-manager-users/",
+      "url": "/writing/iis-manager-users/",
+      "codeBlocks": 2,
+      "codeHashes": [
+        "7ffe7d9b7b01b5143171b33fbe39dfdc01d5f58b0994c61253cb58ea428b6766",
+        "137e306c76a82f2619cd2b52a87edb75104ba51cbb6625facf123a1579198d1b"
+      ],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "IISManagerUsers",
+          "sourcePath": "docs/source-material/matlus-wayback/images/d777400e05d49b4a-IISManagerUsers_3.png",
+          "sourceUrl": "https://web.archive.org/web/20240415161506im_/http://www.matlus.com/content/uploads/2011/01/IISManagerUsers_3.png",
+          "asset": "/images/writing/iis-manager-users/figure-01.webp",
+          "status": "selected",
+          "kind": "concept-illustration",
+          "generatedOriginal": "exec-1c7957d1-c83e-4240-97c4-41b4973d30c7.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240415161506/http://learn.iis.net/page.aspx/310/what-is-new-for-microsoft-and-ftp-75/",
+          "to": "https://web.archive.org/web/20240415161506/http://learn.iis.net/page.aspx/310/what-is-new-for-microsoft-and-ftp-75/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415161506/http://learn.iis.net/page.aspx/301/creating-a-new-ftp-site/",
+          "to": "https://web.archive.org/web/20240415161506/http://learn.iis.net/page.aspx/301/creating-a-new-ftp-site/"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415161506/http://learn.iis.net/page.aspx/321/configure-ftp-with-iis-7-manager-authentication/",
+          "to": "https://web.archive.org/web/20240415161506/http://learn.iis.net/page.aspx/321/configure-ftp-with-iis-7-manager-authentication/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "heroGeneratedOriginal": "exec-15d1759c-94b4-4f7d-90b7-8ff16ab0b250.png",
+      "renderedStatus": "passed"
+    },
+    {
+      "index": 52,
+      "title": "Flash Mobile 10.1 is Slow",
+      "slug": "flash-mobile-10-1-is-slow",
+      "datePublished": "2010-08-28",
+      "sourceMetadata": "metadata/Flash Mobile 10.1 is Slow.json",
+      "sourceHtml": "html/Flash Mobile 10.1 is Slow.html",
+      "originalUrl": "http://matlus.com/flash-mobile-10-1-is-slow/",
+      "url": "/writing/flash-mobile-10-1-is-slow/",
+      "codeBlocks": 0,
+      "codeHashes": [],
+      "images": [
+        {
+          "index": 0,
+          "originalAlt": "FlashMobile",
+          "sourcePath": "docs/source-material/matlus-wayback/images/9d2dd4efb7881b36-FlashMobile.jpg",
+          "sourceUrl": "https://web.archive.org/web/20240415153439im_/http://matlus.com/content/uploads/2011/01/FlashMobile.jpg",
+          "asset": "/images/writing/flash-mobile-10-1-is-slow/figure-01.webp",
+          "status": "selected",
+          "kind": "device-illustration",
+          "generatedOriginal": "exec-6886286d-5764-4769-98f7-54bf7385bf5b.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "https://web.archive.org/web/20240415153439/http://www.zdnet.com/blog/btl/adobe-launches-flash-101-for-mobile-more-than-half-of-all-smartphones-by-2012/36077",
+          "to": "https://web.archive.org/web/20240415153439/http://www.zdnet.com/blog/btl/adobe-launches-flash-101-for-mobile-more-than-half-of-all-smartphones-by-2012/36077"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415153439/http://www.iphonehacks.com/2010/08/poor-performance-flash-player-droid-2-justifies-apple-decision-allow-flash-iphone.html",
+          "to": "https://web.archive.org/web/20240415153439/http://www.iphonehacks.com/2010/08/poor-performance-flash-player-droid-2-justifies-apple-decision-allow-flash-iphone.html"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415153439/http://gizmodo.com/5546439/speed-tests-show-flash-101-slowing-down-android-22-significantly",
+          "to": "https://web.archive.org/web/20240415153439/http://gizmodo.com/5546439/speed-tests-show-flash-101-slowing-down-android-22-significantly"
+        },
+        {
+          "from": "https://web.archive.org/web/20240415153439/http://www.eweek.com/c/a/Mobile-and-Wireless/Adobe-Flash-Player-101-on-Android-Slow-But-Pretty-188395/",
+          "to": "https://web.archive.org/web/20240415153439/http://www.eweek.com/c/a/Mobile-and-Wireless/Adobe-Flash-Player-101-on-Android-Slow-But-Pretty-188395/"
+        }
+      ],
+      "metadataStatus": "reviewed",
+      "heroStatus": "selected",
+      "fidelityStatus": "source-and-rendered-passed",
+      "publicationStatus": "ready",
+      "heroGeneratedOriginal": "exec-6a5f1a5b-f0ea-4211-a9f5-ae91b6394ffe.png",
+      "renderedStatus": "passed"
+    }
+  ],
+  "verification": {
+    "date": "2026-10-03",
+    "articles": 53,
+    "originalCodeBlocks": 198,
+    "archiveChecksums": 215,
+    "inlineIllustrations": 59,
+    "newTopics": 71,
+    "imageResourcesChecked": 342,
+    "historicalRedirects": 53,
+    "sourceCheck": "passed",
+    "renderedCheck": "passed",
+    "deploymentEvidence": "See the publication pull request for the merge commit, Pages run and live verification."
+  }
+}

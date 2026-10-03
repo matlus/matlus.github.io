@@ -1,0 +1,395 @@
+---
+title: A Generic RESTful CRUD HttpClient
+description: A generic HttpClient wraps asynchronous RESTful CRUD operations and JSON
+  formatting. A MemberRepository and console client show how to use it with typed
+  resources.
+datePublished: '2012-03-10'
+dateModified: '2026-10-03'
+tags:
+- httpclient
+- rest
+- async-await
+- csharp
+hero: a-generic-restful-crud-httpclient
+draft: false
+---
+
+In earlier posts, we looked at:
+
+- Building a simple Web API Service: [ASP.NET Web API with WebForms](/writing/asp-net-web-api-with-webforms/)
+- Self-Hosting a Web API service: [Self Host ASP.NET Web API](/writing/self-host-asp-net-web-api/)
+- Building a very simple Web API Client: [HttpClient .NET 4.5](/writing/httpclient-net-4-5/)
+- Realistic Web API service: [ASP.NET Web API Supporting RESTful CRUD Operations](/writing/as-net-web-api-supporting-restful-crud-operations/)
+
+In this post we’ll be looking at a generic asynchronous RESTful CRUD HttpClient that can be used with any service (including the services in the list above). This class will make it extremely simple for us to build RESTful clients going against services that talk REST. If you want to build a RESTful cross-domain client (or not cross domain) using JavaScript/jQuery, then take a look at this post: [Cross Domain RESTful CRUD Operations using jQuery](/writing/a-generic-restful-crud-httpclient/).
+
+We’ll use the service we built in [ASP.NET Web API Supporting RESTful CRUD Operations](/writing/as-net-web-api-supporting-restful-crud-operations/) post as our service for which we’ll build a fully functional client.
+
+## Prerequisites
+
+If you’re just starting down this path, you’ll need to install (as of this writing) a couple of NuGet packages:
+
+- [ASP.NET Web API](https://web.archive.org/web/20240624011608/http://nuget.org/packages/aspnetwebapi)
+- [System.Net.Http.Formatting](https://web.archive.org/web/20240624011608/http://nuget.org/packages/System.Net.Http.Formatting)
+
+You’ll find the command line for installing these package on their respective pages.
+
+## Refactoring a simple implementation
+
+As with most things of this nature, it starts with refactoring implementations you might have done a couple of times. So towards that end, you may want to take a look at the this post ([HttpClient .NET 4.5](/writing/httpclient-net-4-5/)) for a very basic implementation from which we derived the class we’ll look at here.
+
+## GenericRestfulCrudHttpClient
+
+The entire class is listed in the code listing below. It’s a really simple abstraction frankly. And you can see it’s hardcoded to support only JSON. This is simple to change or make customizable or configurable so I’ll leave it up to you to do if you need such a beast.
+
+The comments in the code should help you understand how to use it. We’ll now make a simple client application that uses this class to talk REST and perform CRUD operations against a RESTful service that supports CRUD operation such as [ASP.NET Web API Supporting RESTful CRUD Operations](/writing/as-net-web-api-supporting-restful-crud-operations/)
+
+### GenericRestfulCrudHttpClient
+
+
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Matlus.Web.WebLib.WebApi.HttpClients
+{
+    /// <summary>
+    /// This class exposes RESTful CRUD functionality in a generic way, abstracting
+    /// the implementation and useage details of HttpClient, HttpRequestMessage,
+    /// HttpResponseMessage, ObjectContent, Formatters etc. 
+    /// </summary>
+    /// <typeparam name="T">This is the Type of Resource you want to work with, such as Customer, Order etc.</typeparam>
+    /// <typeparam name="TResourceIdentifier">This is the type of the identifier that uniquely identifies a specific resource such as Id or Username etc.</typeparam>
+    public class GenericRestfulCrudHttpClient<T, TResourceIdentifier> : IDisposable where T : class
+    {
+        private bool disposed = false;
+        private HttpClient httpClient;
+        protected readonly string serviceBaseAddress;
+        private readonly string addressSuffix;
+        private readonly string jsonMediaType = "application/json";
+
+        /// <summary>
+        /// The constructor requires two parameters that essentially initialize the underlying HttpClient.
+        /// In a RESTful service, you might have URLs of the following nature (for a given resource - Member in this example):<para />
+        /// 1. http://www.somedomain/api/members/<para />
+        /// 2. http://www.somedomain/api/members/jdoe<para />
+        /// Where the first URL will GET you all members, and allow you to POST new members.<para />
+        /// While the second URL supports PUT and DELETE operations on a specifc member.
+        /// </summary>
+        /// <param name="serviceBaseAddress">As per the example, this would be "http://www.somedomain"</param>
+        /// <param name="addressSuffix">As per the example, this would be "api/members/"</param>
+
+        public GenericRestfulCrudHttpClient(string serviceBaseAddress, string addressSuffix)
+        {
+            this.serviceBaseAddress = serviceBaseAddress;
+            this.addressSuffix = addressSuffix;
+            httpClient = MakeHttpClient(serviceBaseAddress);
+        }
+
+        protected virtual HttpClient MakeHttpClient(string serviceBaseAddress)
+        {
+            httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri(serviceBaseAddress);
+            httpClient.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(jsonMediaType));
+            httpClient.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse("gzip"));
+            httpClient.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse("defalte"));
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("Matlus_HttpClient", "1.0")));
+            return httpClient;
+        }
+
+        public async Task<IEnumerable<T>> GetManyAsync()
+        {
+            var responseMessage = await httpClient.GetAsync(addressSuffix);
+            responseMessage.EnsureSuccessStatusCode();
+            return await responseMessage.Content.ReadAsAsync<IEnumerable<T>>();
+        }
+
+        public async Task<T> GetAsync(TResourceIdentifier identifier)
+        {
+            var responseMessage = await httpClient.GetAsync(addressSuffix + identifier.ToString());
+            responseMessage.EnsureSuccessStatusCode();
+            return await responseMessage.Content.ReadAsAsync<T>();
+        }
+
+        public async Task<T> PostAsync(T model)
+        {
+            var requestMessage = new HttpRequestMessage();
+            var objectContent = CreateJsonObjectContent(model);
+            var responseMessage = await httpClient.PostAsync(addressSuffix, objectContent);
+            return await responseMessage.Content.ReadAsAsync<T>();
+        }
+
+        public async Task PutAsync(TResourceIdentifier identifier, T model)
+        {
+            var requestMessage = new HttpRequestMessage();
+            var objectContent = CreateJsonObjectContent(model);
+            var responseMessage = await httpClient.PutAsync(addressSuffix + identifier.ToString(), objectContent);
+        }
+
+        public async Task DeleteAsync(TResourceIdentifier identifier)
+        {
+            var r = await httpClient.DeleteAsync(addressSuffix + identifier.ToString());
+        }
+
+        private ObjectContent CreateJsonObjectContent(T model)
+        {
+            var requestMessage = new HttpRequestMessage();
+            return requestMessage.CreateContent<T>(
+                model,
+                MediaTypeHeaderValue.Parse(jsonMediaType),
+                new MediaTypeFormatter[] { new JsonMediaTypeFormatter() },
+                new FormatterSelector());
+        }
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposed && disposing)
+            {
+                if (httpClient != null)
+                {
+                    var hc = httpClient;
+                    httpClient = null;
+                    hc.Dispose();
+                }
+                disposed = true;
+            }
+        }
+
+        #endregion IDisposable Members
+    }
+}
+```
+
+
+
+### Code listing showing the entire GenericRestfulCrudHttpClient
+
+So now that we have this class, let’s take a look at building a client application that talks to a REST service.
+
+## Building a Working Client
+
+What we’re going to do next is build a [Repository](https://web.archive.org/web/20240624011608/http://msdn.microsoft.com/en-us/library/ff649690.aspx) that essentially gets its data from a remote service. Essentially a Remote Proxy or Gateway.
+
+### MemberRepository.cs
+
+
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
+using System.Threading.Tasks;
+using Matlus.Web.WebLib.WebApi.HttpClients;
+
+namespace Matlus.Web
+{
+    public class MemberRepository : IDisposable
+    {
+        private bool disposed = false;
+        private GenericRestfulCrudHttpClient<Member, string> memberClient =
+            new GenericRestfulCrudHttpClient<Member, string>("http://localhost:17413/", "api/members/");
+
+        public async Task<IEnumerable<Member>> GetMembersAsync()
+        {
+            return await memberClient.GetManyAsync();
+        }
+
+        public async Task<Member> GetMemberAsync(string username)
+        {
+            return await memberClient.GetAsync(username);
+        }
+
+        public async Task<Member> PostMemberAsync(Member member)
+        {
+            return await memberClient.PostAsync(member);
+        }
+
+        public async Task PutMemberAsync(string username, Member member)
+        {
+            await memberClient.PutAsync(username, member);
+        }
+
+        public async Task DeleteMemberAsync(string username)
+        {
+            await memberClient.DeleteAsync(username);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposed && disposing)
+            {
+                if (memberClient != null)
+                {
+                    var mc = memberClient;
+                    memberClient = null;
+                    mc.Dispose();
+                }
+                disposed = true;
+            }            
+        }
+    }
+}
+```
+
+
+
+### The Member Repository class
+
+As you can see from the code listing above, the <code>MemberRepository</code> class has the base CRUD methods for a <code>Member</code>. That is all methods are strongly typed on the type <code>Member</code>.
+
+This class internally uses an instance of the <code>GenericRestfulCrudHttpClient</code> and declares a closed generic type (the private <code>memberClient</code> variable in the code listing above) that works with the <code>Member</code> type.
+
+I hope you can see how easily we could make various other closed generic types from the <code>GenericRestfulCrudHttpClient</code> class that work with other types we may have our application (such as Customer, Order etc.). You don’t need a different repository class for the other types, but that’s entirely your choice.
+
+***Be sure to change the serviceBaseAddress to match your service.***
+
+The Member class is just a POCO and is listed below. It’s the same class that the service ([ASP.NET Web API Supporting RESTful CRUD Operations](/writing/as-net-web-api-supporting-restful-crud-operations/)) uses as well.
+
+### Member.cs
+
+
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
+using System.Threading.Tasks;
+using Matlus.Web.WebLib.WebApi.HttpClients;
+
+namespace Matlus.Web
+{
+    [DataContract]
+    public sealed class Member
+    {
+        #region Properties
+
+        [DataMember(Name = "username")]
+        public string Username { get; set; }
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
+        [DataMember(Name = "firstName")]
+        public string FirstName { get; set; }
+        [DataMember(Name = "lastName")]
+        public string LastName { get; set; }
+        [DataMember(Name = "email")]
+        public string Email { get; set; }
+        [DataMember(Name = "createdDate")]
+        public DateTime CreatedDate { get; set; }
+
+        #endregion Properties
+
+        public Member()
+            : base()
+        {
+        }
+    }
+}
+```
+
+
+
+### The POCO Member class
+
+Finally, we get to the actual RESTful CRUD Http Client.
+
+The client is nothing fancy really, but you can see how easy it is to call the various CRUD methods of the <code>MemberRepository </code>class.
+
+### RESTful CRUD HttpClient
+
+
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Matlus.Web;
+
+namespace Matlus.RestClient
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            WorkWithMembers();
+            Console.ReadLine();
+        }
+
+        private async static void WorkWithMembers()
+        {
+            using (var memberRepository = new MemberRepository())
+            {
+                //GET All Members
+                var members = await memberRepository.GetMembersAsync();
+                foreach (var item in members)
+                    Console.WriteLine(item.FirstName + " " + item.LastName);
+                Console.WriteLine();
+
+                //GET Specific Member
+                var member = await memberRepository.GetMemberAsync("skumar");
+                Console.WriteLine("GetMemberAsync: " + member.FirstName + " " + member.LastName);
+                Console.WriteLine();
+
+                //POST new Member
+                var newMember = new Matlus.Web.Member
+                {
+                    Username = "testUsername",
+                    FirstName = "TestFirstName",
+                    LastName = "TestLastName",
+                    Email = "testUsername@gmail.com"
+                };
+                var newlyCreatedUsername = await memberRepository.PostMemberAsync(newMember);
+                Console.WriteLine("PostMemberAsync: " + newMember.FirstName + " " + newMember.LastName);
+                Console.WriteLine();
+
+                //PUT Member (i.e. update the member)
+                newMember.FirstName = "TestFirstNameModified";
+                await memberRepository.PutMemberAsync(newMember.Username, newMember);
+                var updateMember = await memberRepository.GetMemberAsync(newMember.Username);
+                Console.WriteLine("PutMethod: " + updateMember.FirstName + " " + updateMember.LastName);
+                Console.WriteLine();
+
+                //DELETE Member
+                await memberRepository.DeleteMemberAsync(newMember.Username);
+                members = await memberRepository.GetMembersAsync();
+                foreach (var item in members)
+                    Console.WriteLine(item.FirstName + " " + item.LastName);
+
+            }
+        }
+    }
+}
+
+```
+
+
+
+### The code for the RESTful CRUD client application
+
+That concludes this post.

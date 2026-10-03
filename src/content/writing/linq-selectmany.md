@@ -1,0 +1,226 @@
+---
+title: Linq - SelectMany
+description: SelectMany flattens related sequences into a single result. Categories
+  and posts explain its collection selector, result selector, joins, and nested foreach
+  behavior.
+datePublished: '2011-02-17'
+dateModified: '2026-10-03'
+tags:
+- linq
+- delegates
+- csharp
+hero: linq-selectmany
+draft: false
+---
+
+The linq SelectMany method is probably one of the most powerful method on the Enumerable class but sadly also of of the most difficult to understand. As per the the [MSDN documentation for Enumerable.SelectMany](https://web.archive.org/web/20240415161339/http://msdn.microsoft.com/en-us/library/system.linq.enumerable.selectmany.aspx), this method is described as:
+
+> ***Projects each element of a sequence to an IEnumerable&lt;T> and flattens the resulting sequences into one sequence.***
+
+I don't know about you, but I had to re-read this statement multiple times just to figure out what it was saying and even then, couldn't figure out where or why I'd use it. And then I thought well, maybe it's like doing a join, where for each element of sequence 1, I could produce many elements from sequence 2 and then get a flatten result (similar to doing a join in a database across a one-to-many relationship). Another way to look it is a nested foreach, where where you iterate over sequence 1 and for each element of sequence 1 you "find" or get all matching elements in sequence 2.
+
+Once I had that picture in mind I set about trying to write a linq query to see how I could achieve this. Before we take a look at that, lets take a look at the classes and data, we'll be using in this post. Code Listing 1 below, shows the two classes we'll be working with, and the initial data these classes have.
+
+### The Category and Post classes
+
+
+
+```csharp
+  public class Category
+  {
+    public int Id { get; set; }
+    public string Name { get; set; }
+  }
+
+  class Post
+  {
+    public int Id { get; set; }
+    public int CategoryId { get; set; }
+    public string Title { get; set; }
+  }
+```
+
+
+
+### Code Listing 1: Showing the Category and Post classes
+
+In Code Listing 2, below we can see the initial data we'll be working with. You'll notice that there are 3 Categories
+
+1. Programming
+2. Html 5
+3. jQuery
+
+And that there are multiple posts in each of these categories. For instance there are 2 posts categorized as Html 5 (Category id = 2).
+
+1. Html 5 Video Element Poster
+2. Html5 File Upload with Progress
+
+### The Category and Post data
+
+
+
+```csharp
+var categories = new Category[]
+{
+  new Category() { Id=1, Name ="Programming"},
+  new Category() { Id=2, Name ="Html"},
+  new Category() { Id=3, Name ="jQuery"}
+};
+
+var posts = new Post[]
+{
+  new Post { Id=1, CategoryId=1, Title="Data Parallel – Parallel Programming in C#/.NET"},
+  new Post { Id=2, CategoryId=1, Title="Getting the No Of CPUs and Cores"},
+  new Post { Id=3, CategoryId=1, Title="Orion - A Blog Engine"},
+  new Post { Id=4, CategoryId=1, Title="Quartz for ASP.NET"},
+  new Post { Id=5, CategoryId=2, Title="Html 5 Video Element Poster"},
+  new Post { Id=6, CategoryId=2, Title="Html5 File Upload with Progress"},
+  new Post { Id=7, CategoryId=3, Title="Expanding Code listings"},
+  new Post { Id=8, CategoryId=3, Title="jQuery working with select option"},
+  new Post { Id=9, CategoryId=3, Title="jQuery working with checkboxes and radio button"}
+};
+```
+
+
+
+### Code Listing 2: Showing the Category and Post classes populated with data
+
+The "foreign key" in the Post class in this case is CategoryId. No that's not how the database is modeled in [Quartz for ASP.NET](/writing/quartz-for-aspnet/ "Quartz for ASP.NET") (the blogging engine I use for this blog), I'm using this structure to keep things simple. Moving on&#8230;So if we were to do a "inner join" between these two sequences, the result should look like the output below.
+
+
+
+```text
+Programming :  Data Parallel - Parallel Programming in C#/.NET
+Programming :  Getting the No Of CPUs and Cores
+Programming :  Orion - A Blog Engine
+Programming :  Quartz for ASP.NET
+Html        :  Html 5 Video Element Poster
+Html        :  Html5 File Upload with Progress
+jQuery      :  Expanding Code listings
+jQuery      :  jQuery working with select option
+jQuery      :  jQuery working with checkboxes and radio button
+
+```
+
+
+
+The linq query syntax for this is actually quite simple if you've done joins using linq before. It looks like that shown in Code Listing 3 below. Both versions produce the same result. It's almost like the old join syntax versus the ASNI SQL syntax for a join in SQL.
+
+### 
+
+
+
+```csharp
+var categoryPosts = from c in categories                          
+                    join p in posts on c.Id equals p.CategoryId
+                    select new { CategoryName = c.Name, PostTitle = p.Title };
+
+OR
+
+var categoryPosts = from c in categories
+                    from p in posts                           
+                    where c.Id == p.CategoryId
+                    select new { CategoryName = c.Name, PostTitle = p.Title };
+
+```
+
+
+
+### Code Listing 3: Doing a Join using Linq and query expression syntax
+
+What's important to note here is that the first version shown in Code Listing 3 above is actually translated by the compiler to use a SelectMany. The code thus generated would look similar to what have in Code Listing 4 below.
+
+So far so good. Now lets go back to the SelectMany method. Let's also re-examine the statement of what SelectMany does.
+
+*Projects each element of a sequence to an IEnumerable&lt;T>.*
+
+So the elements in our sequence are the various Categories and we have the ability to project each Category to an IEnumerable&lt;Post>. That is for each Category, project the Posts that pertain to the Category. Effectively, a one-to-many. But we're not done yet.
+
+*Flattens the resulting sequence into **one** sequence.*
+
+So essentially producing one resulting sequence that is the flattened version of multiple, one-to-manys, thus giving us a "join". You could also think of SelectMany that does a nested foreach (as explained earlier), where the outer foreach is our categories sequence and the inner foreach is the sequence of posts.
+
+Well, even after digesting the above, attempting to write the linq statement using the method syntax (versus the query expression syntax) turned out to be quite confusing indeed.
+
+Here is the equivalent linq method syntax for using one of the many overloads of the SelectMany method:
+
+### Showing the syntax for using the SelectMany Enumerable Method
+
+
+
+```csharp
+var categoryPosts2 = categories.SelectMany(
+            c => posts.Where(p => p.CategoryId == c.Id),
+            (c, p) => new { CategoryName = c.Name, PostTitle = p.Title });
+```
+
+
+
+### Code Listing 4: Using the SelectMany method to do the same thing
+
+Let's break this down so we can better understand what is going on. The overload we're using in this case is:
+
+### The SelectMany overload being used
+
+
+
+```csharp
+public static IEnumerable<TResult> SelectMany<TSource, TCollection, TResult>(
+    this IEnumerable<TSource> source,
+    Func<TSource, IEnumerable<TCollection>> collectionSelector,
+    Func<TSource, TCollection, TResult> resultSelector
+)
+
+which in our case translates to
+
+Enumerable<Category>.SelectMany(Func<Category, IEnumerable<Post>>, collectionSelector, Func<Category, Post, `a> resultSelector
+
+
+```
+
+
+
+So the first parameter is a Func that takes a Category and returns an IEnumerable&lt;Post>. Of course the posts it returns are those that match the category (see  code listing 4 above). In other words, *the first parameter maps each category to a sequence of matching posts.*
+
+The second parameter transforms each matched pair:
+
+{ (c1, p1), (c1, p2), (c1, p3), (c1, p4), (c2, p5), (c2, p6), (c3, p7), (c3, p8), (c3, p9)}
+
+into a new anonymous type that has a CategoryName property and a PostTitle property.
+
+The implementation of SelectMany would look like the following:
+
+### The actual implementation of SelectMany
+
+
+
+```csharp
+foreach (TSource item in source)
+  foreach (TCollection subItem in collectionSelector(item))
+    yield return resultSelector(item, subItem);
+```
+
+
+
+### Implementation of SelectMany in terms of nested foreaches and calling delegates
+
+Where the <code>collectionSelector</code> delegate and <code>resultSelector</code> delegates have the signature described above.
+
+Now it so happens that the second parameter of the SelectMany method we're using is optional, in that there is another overload that requires only the first parameter. So what would happen if we used this overload instead?
+
+In order to better understand what we'll get, we need to modify our data a bit. So let's remove the Programming Category from our sequence of categories (just comment out the first item).
+
+What we'll get is simply a sequence of Posts (IEnumerable&lt;Post>) that have associated categories (an "inner join" if you will) but without the projection (our anonymous type). So the first 4 posts in our data won't be part of this result a shown below. The number is the Id of the Post (and not the CategoryId).
+
+
+
+```text
+5 : Html 5 Video Element Poster
+6 : Html5 File Upload with Progress
+7 : Expanding Code listings
+8 : jQuery working with select option
+9 : jQuery working with checkboxes and radio button
+
+```
+
+

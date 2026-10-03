@@ -1,0 +1,3 @@
+Create a new explanatory illustration. The first reference supplies historical content; the second supplies ONLY the pastel architectural infographic style.
+
+Main heading: Add the API controller. Illustrate Add New Item: category Visual C# > Web; selected Web API Controller Class; Name CustomersController.cs; Add and Cancel buttons. A separate small note says Controller names end in Controller. Omit all unrelated templates, preserve exact names. Use a coherent pastel architectural infographic style: pale textured paper, navy upright readable labels, fine blue outlines, restrained shallow-dimensional panels and mint/butter/coral accents. Generous whitespace. No unrelated source screenshot chrome.

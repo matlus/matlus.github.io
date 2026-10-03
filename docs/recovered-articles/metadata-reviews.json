@@ -1,0 +1,2162 @@
+[
+  {
+    "index": 0,
+    "title": "Using LocalDB in Visual Studio Online",
+    "description": "Run database tests on Visual Studio Online by creating a LocalDB instance, publishing a dacpac, and invoking the batch file from the build definition's Pre Test Script.",
+    "reasoning": {
+      "claim": "Prepare LocalDB and the application database before CI tests run.",
+      "carriedBy": "SqlLocalDB and SqlPackage commands, build-server paths, publish profiles, and Pre Test Script configuration."
+    },
+    "tags": [
+      {
+        "slug": "localdb",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "continuous-integration",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "testing",
+        "status": "existing",
+        "kind": "subject"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "localdb",
+        "label": "LocalDB",
+        "description": "SQL Server LocalDB instances for local applications and automated tests, including instance creation, connection strings, and database deployment.",
+        "nearest": "load-testing",
+        "reason": "LocalDB is a database technology; load-testing describes measuring systems under concurrent demand."
+      },
+      {
+        "slug": "continuous-integration",
+        "label": "Continuous Integration",
+        "description": "Automating builds and tests as changes enter a shared codebase, including build definitions, prerequisite setup, and repeatable execution environments.",
+        "nearest": "interface-segregation",
+        "reason": "Build automation is unrelated to separating interface roles."
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "title": "Azure Startup Tasks – Running as Administrator",
+    "description": "Azure role startup configuration affects IIS administration. An OnStart impersonation example and a later elevated Runtime update explain the approaches explored.",
+    "reasoning": {
+      "claim": "Role startup context affects administrative work; the author's update replaces the original impersonation requirement with elevated Runtime configuration.",
+      "carriedBy": "AppCmd behavior, RoleEntryPoint.OnStart, the complete MsImpersonation class, and the source's elevated Runtime correction."
+    },
+    "tags": [
+      {
+        "slug": "azure",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "windows-impersonation",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "iis",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "azure",
+        "label": "Azure",
+        "description": "Deploying and operating applications on Microsoft Azure, including service configuration, role startup, storage, and execution environments.",
+        "nearest": "architecture",
+        "reason": "Azure is a specific cloud platform; architecture describes system organization independently of platform."
+      },
+      {
+        "slug": "windows-impersonation",
+        "label": "Windows Impersonation",
+        "description": "Executing work under a different Windows identity through logon tokens and impersonation contexts, including privileges and identity lifetime.",
+        "nearest": "test-isolation",
+        "reason": "Windows identity and privilege handling is distinct from ownership of test resources."
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "title": "Installing MSMQ in an Azure WebRole instance",
+    "description": "Use a local MSMQ queue to move large-file processing out of an Azure WebRole request, then install the queue service with a startup task and deploy its batch file.",
+    "reasoning": {
+      "claim": "A local queue can defer large-file processing beyond the web request, and MSMQ can be installed by a role startup task.",
+      "carriedBy": "Upload processing flows, the same-instance message processor, ServiceDefinition startup configuration, and batch-file deployment requirements."
+    },
+    "tags": [
+      {
+        "slug": "azure",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "msmq",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "background-processing",
+        "status": "new",
+        "kind": "subject"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "msmq",
+        "label": "MSMQ",
+        "description": "Microsoft Message Queuing for passing work between processes through local or remote queues, including installation and queue-based processing.",
+        "nearest": "llm-systems",
+        "reason": "MSMQ is a messaging service, not language-model infrastructure."
+      },
+      {
+        "slug": "background-processing",
+        "label": "Background Processing",
+        "description": "Moving work beyond the initiating request into another execution context, with explicit handoff, processing responsibilities, and completion behavior.",
+        "nearest": "library-boundaries",
+        "reason": "Process handoff and deferred execution are separate subjects from contracts around external libraries."
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "title": "Cross Domain RESTful CRUD Operations using jQuery",
+    "description": "Cross-domain CRUD needs changes on both sides: a Web API DelegatingHandler handles origin headers and method overrides while jQuery sends the matching requests.",
+    "reasoning": {
+      "claim": "Cross-domain CRUD requires corresponding server handling and browser request configuration.",
+      "carriedBy": "Origin and OPTIONS response headers, method override handling, a complete jQuery CRUD client, and testing across different ports."
+    },
+    "tags": [
+      {
+        "slug": "asp-net-web-api",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "rest",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "cors",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "jquery",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "http-method-override",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      },
+      {
+        "slug": "javascript",
+        "status": "new",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "asp-net-web-api",
+        "label": "ASP.NET Web API",
+        "description": "The ASP.NET Web API framework for HTTP services, including ApiController routing, hosting, message handlers, formatters, and response construction.",
+        "nearest": "async-await",
+        "reason": "A web-service framework is distinct from the asynchronous language features it may use."
+      },
+      {
+        "slug": "rest",
+        "label": "REST",
+        "description": "Designing and consuming resource-oriented HTTP APIs through resource identifiers, method semantics, representations, and response status codes.",
+        "nearest": "testing",
+        "reason": "REST describes API interaction semantics rather than verification practices."
+      },
+      {
+        "slug": "cors",
+        "label": "Cross-Origin Resource Sharing",
+        "description": "The HTTP mechanism through which a server permits browser requests from another origin, including origin headers, preflight requests, and allowed methods or headers.",
+        "nearest": "refactoring",
+        "reason": "Browser origin permissions are unrelated to internal code reorganization. JSONP remains a separate subject."
+      },
+      {
+        "slug": "jquery",
+        "label": "jQuery",
+        "description": "Using jQuery to work with browser elements, events, attached data, and Ajax requests.",
+        "nearest": "jev",
+        "reason": "jQuery is a browser JavaScript library, unrelated to the Jev model."
+      },
+      {
+        "slug": "http-method-override",
+        "label": "HTTP Method Override",
+        "description": "Carrying an intended HTTP method in a header on another request method, then translating it before dispatch to an application handler.",
+        "nearest": "method-design",
+        "reason": "HTTP method transport and dispatch differ from programming-language method contracts."
+      },
+      {
+        "slug": "javascript",
+        "label": "JavaScript",
+        "description": "Material specific to JavaScript, or illustrated with JavaScript examples.",
+        "nearest": "typescript",
+        "reason": "The source contains JavaScript, without TypeScript syntax or type checking."
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "title": "jQuery.data()–Assigning objects to dynamic elements",
+    "description": "Store a complete JSON object in a dynamic element's data attribute, then retrieve it with jQuery.data() to populate a form without extracting each attribute.",
+    "reasoning": {
+      "claim": "Serialize an object into one data attribute while constructing an element, then retrieve the object through jQuery.data().",
+      "carriedBy": "The comparison with individual data attributes, JSON.stringify and quoting, dynamic list construction, and form population."
+    },
+    "tags": [
+      {
+        "slug": "jquery",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "json",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "javascript",
+        "status": "new",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "json",
+        "label": "JSON",
+        "description": "Representing structured data with JSON and converting between JSON text and application objects, including serialization and response handling.",
+        "nearest": "python",
+        "reason": "JSON is a data representation used across languages, not a Python-specific subject."
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "title": "A Generic RESTful CRUD HttpClient",
+    "description": "A generic HttpClient wraps asynchronous RESTful CRUD operations and JSON formatting. A MemberRepository and console client show how to use it with typed resources.",
+    "reasoning": {
+      "claim": "A generic asynchronous wrapper can make typed REST CRUD clients reusable across resource types.",
+      "carriedBy": "GenericRestfulCrudHttpClient, JSON request and response conversion, MemberRepository, and the complete asynchronous console example."
+    },
+    "tags": [
+      {
+        "slug": "httpclient",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "rest",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "async-await",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "httpclient",
+        "label": "HttpClient",
+        "description": "The .NET HttpClient API for sending HTTP requests and consuming responses, including request content, headers, asynchronous calls, and typed data conversion.",
+        "nearest": "test-isolation",
+        "reason": "HttpClient is an HTTP client API, not a test ownership or cleanup practice."
+      }
+    ]
+  },
+  {
+    "index": 6,
+    "title": "DelegatingHandler for X-HTTP-Method-Override",
+    "description": "An X-HTTP-Method-Override header lets POST requests carry PUT or DELETE intent. A Web API DelegatingHandler translates the method before controller dispatch.",
+    "reasoning": {
+      "claim": "A DelegatingHandler can translate a POST request's override header before Web API dispatch.",
+      "carriedBy": "Browser and firewall restrictions, the handler implementation and registration, and a jQuery PUT-via-POST request."
+    },
+    "tags": [
+      {
+        "slug": "asp-net-web-api",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "http-method-override",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      },
+      {
+        "slug": "javascript",
+        "status": "new",
+        "kind": "language"
+      }
+    ],
+    "newTags": []
+  },
+  {
+    "index": 7,
+    "title": "ASP.NET Web API Supporting RESTful CRUD Operations",
+    "description": "Map member CRUD operations to HTTP methods and resource URIs, then implement an ApiController with response status codes, Location headers, and error responses.",
+    "reasoning": {
+      "claim": "CRUD controllers should express their outcomes using HTTP resource, method, status, and header semantics.",
+      "carriedBy": "The CRUD operation table, MembersController implementation, and detailed explanations of GET, POST, PUT, DELETE, and failure responses."
+    },
+    "tags": [
+      {
+        "slug": "asp-net-web-api",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "rest",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "error-handling",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": []
+  },
+  {
+    "index": 8,
+    "title": "JsonpMediaTypeFormatter–Web API JSONP",
+    "description": "A JsonMediaTypeFormatter subclass wraps JSON in a callback for JSONP responses. Registration and controller-level control explain both the solution and its limits.",
+    "reasoning": {
+      "claim": "A formatter can supply JSONP responses, but the author prefers explicit controller-level control over where JSONP is permitted.",
+      "carriedBy": "The formatter's callback wrapping and GET check, application registration, and the concluding discussion of endpoint responsibility."
+    },
+    "tags": [
+      {
+        "slug": "asp-net-web-api",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "jsonp",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "jsonp",
+        "label": "JSONP",
+        "description": "Returning JSON inside a JavaScript callback so browser clients can consume script responses across origins, including callback selection and endpoint exposure.",
+        "nearest": "python",
+        "reason": "JSONP is a browser response technique, not language-specific Python material; it is also distinct from JSON representation and CORS headers."
+      }
+    ]
+  },
+  {
+    "index": 9,
+    "title": "HttpClient .NET 4.5",
+    "description": "Use HttpClient to send GET, POST, PUT, and DELETE requests, serialize Customer objects with ObjectContent, and read typed responses from a self-hosted Web API.",
+    "reasoning": {
+      "claim": "HttpClient can implement a basic CRUD client with typed objects in request and response bodies.",
+      "carriedBy": "The complete Customer client, typed sequence responses, EnsureSuccessStatusCode, and ObjectContent construction."
+    },
+    "tags": [
+      {
+        "slug": "httpclient",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "rest",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "json",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": []
+  },
+  {
+    "index": 10,
+    "title": "Self Host ASP.NET Web API",
+    "description": "Run an ASP.NET Web API in a console process with HttpSelfHostServer, register routes, and exercise a CustomersController backed by an in-memory customer list.",
+    "reasoning": {
+      "claim": "ASP.NET Web API can serve HTTP requests from a console application through its self-hosting support.",
+      "carriedBy": "Self-host configuration and server startup, route registration, CustomersController, and browser requests against the running process."
+    },
+    "tags": [
+      {
+        "slug": "asp-net-web-api",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "self-hosting",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "rest",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "self-hosting",
+        "label": "Self-Hosting",
+        "description": "Running a network service inside an application's own process, with explicit listener configuration, routing, startup, and lifetime management.",
+        "nearest": "speculative-fan-out",
+        "reason": "Service hosting and lifetime are separate from parallel model judgments."
+      }
+    ]
+  },
+  {
+    "index": 11,
+    "title": "Quartz for ASP.NET",
+    "description": "Quartz composes ASP.NET pages through a Builder, reusable HTML templates, and view objects. The walkthrough covers their relationships and Visual Studio templates.",
+    "reasoning": {
+      "claim": "Quartz gives a Builder responsibility for composing a page from independently chosen view objects and HTML templates.",
+      "carriedBy": "Control-flow comparisons, Builder and view responsibilities, template reuse, and Visual Studio project and item installation."
+    },
+    "tags": [
+      {
+        "slug": "quartz-aspnet",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "html-templates",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "composition-over-inheritance",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "polymorphism",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "quartz-aspnet",
+        "label": "Quartz for ASP.NET",
+        "description": "Shiv Kumar's ASP.NET page-composition framework, where Builders assemble view objects and HTML templates into dynamic pages.",
+        "nearest": "transport-spy",
+        "reason": "This is a named page-composition framework, unrelated to transport observation. It must not be confused with the Quartz.NET scheduler."
+      },
+      {
+        "slug": "html-templates",
+        "label": "HTML Templates",
+        "description": "Reusable HTML structures whose placeholders receive application data or rendered views, including template selection and separation from rendering code.",
+        "nearest": "template-method",
+        "reason": "HTML rendering templates are distinct from the Template Method software design pattern."
+      }
+    ]
+  },
+  {
+    "index": 12,
+    "title": "ASP.NET Web API with WebForms",
+    "description": "Add an ApiController to an ASP.NET WebForms project and register its HTTP route in Global.asax, then test customer requests and inspect JSON or XML responses.",
+    "reasoning": {
+      "claim": "A WebForms project can host Web API controllers by installing the required packages and registering an HTTP route.",
+      "carriedBy": "Project and controller setup, Web Site versus Web Application placement, Global.asax route registration, and browser verification."
+    },
+    "tags": [
+      {
+        "slug": "asp-net-web-api",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "webforms",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "webforms",
+        "label": "ASP.NET WebForms",
+        "description": "Building and configuring ASP.NET WebForms applications, including application startup, project structure, and integration with HTTP services.",
+        "nearest": "refactoring",
+        "reason": "WebForms names a specific web framework, not behavior-preserving code reorganization."
+      }
+    ]
+  },
+  {
+    "index": 13,
+    "title": "REST APIs, PUT and DELETE cause HTTP Error 404.0 - Not Found",
+    "description": "PUT and DELETE requests can stop at IIS before reaching a REST API. Add the verbs to the extensionless handler through IIS Manager or IIS Express configuration.",
+    "reasoning": {
+      "claim": "The extensionless handler's permitted verbs can prevent PUT and DELETE from reaching the application.",
+      "carriedBy": "IIS Manager request restrictions and the corresponding applicationhost.config change for IIS Express."
+    },
+    "tags": [
+      {
+        "slug": "iis",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "rest",
+        "status": "new",
+        "kind": "subject"
+      }
+    ],
+    "newTags": []
+  },
+  {
+    "index": 14,
+    "title": "C# to Html Syntax Highlighter using Roslyn",
+    "description": "Roslyn syntax trees and semantic information drive a C# to HTML highlighter, with a SyntaxWalker and explicit handling for type names whose definitions are unavailable.",
+    "reasoning": {
+      "claim": "Build an HTML syntax highlighter that handles incomplete semantic information about C# type names.",
+      "carriedBy": "SyntaxTree and SemanticModel setup, SyntaxWalker token and trivia visitors, and special-case identifier handling; no sibling."
+    },
+    "tags": [
+      {
+        "slug": "roslyn",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "syntax-highlighting",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "visitor-pattern",
+        "status": "new",
+        "kind": "pattern"
+      },
+      {
+        "slug": "design-patterns",
+        "status": "existing",
+        "kind": "pattern"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "roslyn",
+        "label": "Roslyn",
+        "description": "The .NET compiler platform exposes syntax trees, symbols, and semantic information for tools that inspect, transform, or generate source code.",
+        "nearest": "transport-spy",
+        "reason": "Transport observation does not cover compiler APIs or source analysis."
+      },
+      {
+        "slug": "syntax-highlighting",
+        "label": "Syntax Highlighting",
+        "description": "Classifying source-code tokens and rendering them with distinct visual styles, including the relationship between syntactic structure and semantic information.",
+        "nearest": "async-streams",
+        "reason": "Asynchronous enumeration does not cover source-code rendering."
+      },
+      {
+        "slug": "visitor-pattern",
+        "label": "Visitor Pattern",
+        "description": "Applying operations while visiting elements of an object structure, with separate handling for the kinds of elements encountered.",
+        "nearest": "iterator-pattern",
+        "reason": "Iteration supplies traversal; Visitor separates operations according to the visited element."
+      }
+    ]
+  },
+  {
+    "index": 15,
+    "title": "Disrupting the World Wide Web - Innovating the World Wide Net",
+    "description": "The World Wide Net vision connects people through programmable devices, native applications, and an operating-system sandbox that reaches beyond the browser.",
+    "reasoning": {
+      "claim": "The author's vision extends online interaction into programmable physical devices through native applications and operating-system sandboxes.",
+      "carriedBy": "The distinction between Internet and Web, mobile and console capabilities, device APIs, and operating-system permissions; no sibling."
+    },
+    "tags": [
+      {
+        "slug": "connected-devices",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "sandboxing",
+        "status": "new",
+        "kind": "subject"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "connected-devices",
+        "label": "Connected Devices",
+        "description": "Physical devices connected to computers or networks, with software interfaces that let applications read their state or control their behavior.",
+        "nearest": "code-review",
+        "reason": "Reviewing code does not cover networked hardware and device APIs."
+      },
+      {
+        "slug": "sandboxing",
+        "label": "Sandboxing",
+        "description": "Restricting an application's access to system resources and exposing permitted capabilities through controlled interfaces and permissions.",
+        "nearest": "error-handling",
+        "reason": "Failure handling does not cover execution permissions or resource isolation."
+      }
+    ]
+  },
+  {
+    "index": 16,
+    "title": "WCF 4.0 Getting Started",
+    "description": "Build a WCF service and client around Customer contracts, then configure transport bindings, create client proxies, and publish metadata through WSDL and MEX.",
+    "reasoning": {
+      "claim": "A working WCF service and client can be built with contracts and programmatic configuration, then extended with proxy and metadata support.",
+      "carriedBy": "Customer service and data contracts, ServiceHost endpoints, ChannelFactory and ClientBase proxies, and WSDL/MEX publication; no sibling."
+    },
+    "tags": [
+      {
+        "slug": "wcf",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "service-proxies",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "wcf",
+        "label": "WCF",
+        "description": "Windows Communication Foundation services and clients, including contracts, transport bindings, endpoints, hosting, metadata exchange, and diagnostics.",
+        "nearest": "mocking",
+        "reason": "Test substitution does not cover the WCF communication framework."
+      },
+      {
+        "slug": "service-proxies",
+        "label": "Service Proxies",
+        "description": "Client-side objects that expose a remote service's operations and translate local calls into messages sent through a transport.",
+        "nearest": "service-locator",
+        "reason": "A service locator selects collaborators; a service proxy invokes a remote service."
+      }
+    ]
+  },
+  {
+    "index": 17,
+    "title": "ASP.NET Response.Redirect Performance Issue",
+    "description": "Use the Response.Redirect overload with endResponse set to false to avoid ThreadAbortException, then structure request handling so execution finishes deliberately.",
+    "reasoning": {
+      "claim": "Avoid the exception-driven termination of Response.Redirect by selecting its overload and structuring the remaining control flow.",
+      "carriedBy": "Response.End and ThreadAbortException explanation, CompleteRequest behavior, and a BuildPage branch example; no sibling."
+    },
+    "tags": [
+      {
+        "slug": "asp-net",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "error-handling",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "asp-net",
+        "label": "ASP.NET",
+        "description": "Building web applications with ASP.NET, including request processing, handlers, controllers, responses, and framework behavior.",
+        "nearest": "class-design",
+        "reason": "Class organization does not cover the ASP.NET web application framework."
+      }
+    ]
+  },
+  {
+    "index": 18,
+    "title": "HttpWebRequest - Asynchronous Programming Model/Task.Factory.FromAsyc",
+    "description": "HttpWebRequest callbacks and Task.Factory.FromAsync support asynchronous GET and POST calls, with five approaches compared for collecting concurrent responses.",
+    "reasoning": {
+      "claim": "Match HTTP I/O to an asynchronous workflow and compare alternatives when a caller must wait for every response.",
+      "carriedBy": "The HttpSocket wrapper, Begin/End and FromAsync implementations, connection limits, five wait-for-all approaches, and timing results; no sibling."
+    },
+    "tags": [
+      {
+        "slug": "http",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "asynchronous-io",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "asynchronous-programming-model",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "task-composition",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "benchmarking",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "http",
+        "label": "HTTP",
+        "description": "HTTP request and response behavior, including methods, headers, connections, content, and client-server communication.",
+        "nearest": "testing",
+        "reason": "Testing does not cover HTTP protocol behavior or request construction."
+      },
+      {
+        "slug": "asynchronous-programming-model",
+        "label": "Asynchronous Programming Model",
+        "description": "The .NET Asynchronous Programming Model exposes Begin and End method pairs, IAsyncResult, callbacks, and state for asynchronous operations.",
+        "nearest": "asynchronous-io",
+        "reason": "The specific Begin/End API contract also applies to asynchronous computation and deserves its own subject."
+      }
+    ]
+  },
+  {
+    "index": 19,
+    "title": "Linq - SelectMany",
+    "description": "SelectMany flattens related sequences into a single result. Categories and posts explain its collection selector, result selector, joins, and nested foreach behavior.",
+    "reasoning": {
+      "claim": "Understand SelectMany by following related categories and posts through selection, flattening, and result projection.",
+      "carriedBy": "Concrete category/post data, query and method syntax, selector delegate signatures, nested foreach implementation, and overload results; no sibling."
+    },
+    "tags": [
+      {
+        "slug": "linq",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "delegates",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "linq",
+        "label": "LINQ",
+        "description": "Language Integrated Query operations over data, including filtering, projection, joins, grouping, and the relationship between query and method syntax.",
+        "nearest": "class-design",
+        "reason": "Class design does not cover sequence queries and their operators."
+      }
+    ]
+  },
+  {
+    "index": 20,
+    "title": "Data Parallel – Parallel Programming in C#/.NET",
+    "description": "Data parallelism distributes compute-bound work across cores. Prime-counting examples compare PLINQ, Parallel.For, thread-local state, partitioning, and measured timings.",
+    "reasoning": {
+      "claim": "Use data parallelism for compute-bound work while accounting for partition balance, shared state, and hardware utilization.",
+      "carriedBy": "Prime-counting implementations using PLINQ, Parallel.For, and QueueUserWorkItem; local state; partitioning and work stealing; CPU utilization and timings; no sibling."
+    },
+    "tags": [
+      {
+        "slug": "parallel-programming",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "concurrency",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "benchmarking",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "parallel-programming",
+        "label": "Parallel Programming",
+        "description": "Dividing computational work so multiple processors or cores execute it at the same time, with attention to partitioning, scheduling, synchronization, and overhead.",
+        "nearest": "levels-of-abstraction",
+        "reason": "Abstraction levels concern responsibility boundaries; parallel programming concerns simultaneous computation. Concurrency overlaps but is broader than distributing computation across cores."
+      }
+    ]
+  },
+  {
+    "index": 21,
+    "title": "Getting the No Of CPUs and Cores",
+    "description": "WMI queries expose core counts, logical and physical processors, bitness, and architecture in C#, with narrower queries returning only the CPU information required.",
+    "reasoning": {
+      "claim": "Retrieve processor hardware information through WMI and limit queries to the required properties.",
+      "carriedBy": "ManagementObjectSearcher queries for Win32_Processor and Win32_ComputerSystem, architecture decoding, and selecting specific properties; no sibling."
+    },
+    "tags": [
+      {
+        "slug": "wmi",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "cpu-hardware",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "wmi",
+        "label": "WMI",
+        "description": "Windows Management Instrumentation exposes management information about Windows systems through queryable classes and properties.",
+        "nearest": "naming",
+        "reason": "Naming does not cover Windows management APIs."
+      },
+      {
+        "slug": "cpu-hardware",
+        "label": "CPU Hardware",
+        "description": "Processor characteristics such as physical packages, cores, logical processors, instruction-set architecture, and address width.",
+        "nearest": "csharp",
+        "reason": "A language tag does not identify processor hardware as a subject."
+      }
+    ]
+  },
+  {
+    "index": 22,
+    "title": "IAsyncResult–Making Existing methods Asnchronous",
+    "description": "Expose an existing synchronous method through Begin and End operations using delegates and IAsyncResult, carrying callback state while reusing the original computation.",
+    "reasoning": {
+      "claim": "An existing synchronous computation can be exposed through APM Begin/End methods without rewriting its implementation.",
+      "carriedBy": "Begin/End signatures, delegate BeginInvoke/EndInvoke, an AsyncState carrier, and a prime-counting callback example; no sibling."
+    },
+    "tags": [
+      {
+        "slug": "asynchronous-programming-model",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "delegates",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": []
+  },
+  {
+    "index": 23,
+    "title": "UrlEncode –The correct encoding",
+    "description": "A C# UrlEncode implementation preserves unreserved characters and percent-encodes others, with character-by-character comparisons against HttpUtility.UrlEncode.",
+    "reasoning": {
+      "claim": "Present the author's URL encoding implementation and show how its output differs from HttpUtility.UrlEncode.",
+      "carriedBy": "An explicit unreserved-character list, the UrlEncode loop, and comparison tables for punctuation and spaces; no sibling."
+    },
+    "tags": [
+      {
+        "slug": "url-encoding",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "http",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "url-encoding",
+        "label": "URL Encoding",
+        "description": "Representing data in URL components through percent encoding, with attention to reserved characters, unreserved characters, and form-encoding conventions.",
+        "nearest": "concurrency",
+        "reason": "Concurrent operations do not cover URL character representation."
+      }
+    ]
+  },
+  {
+    "index": 24,
+    "title": "Stop/Start Windows Service",
+    "description": "Start, stop, and restart Windows services from C# using net commands or ServiceController, with redirected process output, error handling, and completion waits.",
+    "reasoning": {
+      "claim": "Control Windows service lifecycle through either command-line processes or the .NET ServiceController API.",
+      "carriedBy": "ServiceBounce process execution with asynchronous output/error reads, WindowsServiceBounce status waits, and service lookup/restart usage; no sibling."
+    },
+    "tags": [
+      {
+        "slug": "windows-services",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "process-management",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "windows-services",
+        "label": "Windows Services",
+        "description": "Background services managed by Windows, including service discovery, lifecycle commands, status changes, and programmatic control.",
+        "nearest": "interfaces",
+        "reason": "Language interfaces do not cover operating-system service management."
+      },
+      {
+        "slug": "process-management",
+        "label": "Process Management",
+        "description": "Launching and controlling operating-system processes, collecting standard output and errors, waiting for completion, and interpreting exit status.",
+        "nearest": "progress-reporting",
+        "reason": "Reporting application progress differs from managing external process lifecycles and streams."
+      }
+    ]
+  },
+  {
+    "index": 25,
+    "title": "MSSQL–Reset Identity seed",
+    "description": "DBCC CHECKIDENT resets an identity seed to a chosen value. A table example explains why the reseed value precedes the desired next identifier after test data is deleted.",
+    "reasoning": {
+      "claim": "Set the identity reseed parameter to produce the intended next identifier in the illustrated table.",
+      "carriedBy": "The DBCC CHECKIDENT command and an example resetting a table after removing test records; no sibling."
+    },
+    "tags": [
+      {
+        "slug": "sql-server",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "identity-columns",
+        "status": "new",
+        "kind": "subject"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "sql-server",
+        "label": "SQL Server",
+        "description": "Microsoft SQL Server databases, including SQL commands, storage features, administration, and application integration.",
+        "nearest": "service-locator",
+        "reason": "Dependency selection does not cover a database platform. Data Access describes application boundaries rather than database administration."
+      },
+      {
+        "slug": "identity-columns",
+        "label": "Identity Columns",
+        "description": "Database columns whose numeric values are generated from a seed and increment, including how insertion and reseeding affect subsequent values.",
+        "nearest": "context-compaction",
+        "reason": "Reducing language-model context does not cover generated database identifiers."
+      }
+    ]
+  },
+  {
+    "index": 26,
+    "title": "Linq Group By - Finding Duplicates",
+    "description": "Group lessons by AddedDate and select groups containing more than one item to find duplicates with LINQ, retaining the shared date and all matching lesson objects.",
+    "reasoning": {
+      "claim": "Find objects sharing a property value by grouping and retaining groups whose count exceeds one.",
+      "carriedBy": "Lesson test data with duplicate dates, a Group By query, and output listing the matching lessons; no sibling."
+    },
+    "tags": [
+      {
+        "slug": "linq",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "duplicate-detection",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "duplicate-detection",
+        "label": "Duplicate Detection",
+        "description": "Finding repeated values or records under an explicitly chosen comparison key, including grouping matches and retaining the records that share that key.",
+        "nearest": "template-method",
+        "reason": "A template method organizes behavior; duplicate detection identifies repeated data."
+      }
+    ]
+  },
+  {
+    "index": 27,
+    "title": "DataContractSerializer-IEnumerable<T>",
+    "description": "A JsonSerializer streams IEnumerable<T> directly to JSON, preserving DataMember names and supporting JSONP while a DbDataReader wrapper avoids building an intermediate list.",
+    "reasoning": {
+      "claim": "Serialize a sequence directly to a stream while retaining DataMember naming and optional JSONP support.",
+      "carriedBy": "The SubCategoryDrw wrapper, yielding database results, and the complete JsonSerializer implementation."
+    },
+    "tags": [
+      {
+        "slug": "serialization",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "json",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "datareaders",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "serialization",
+        "label": "Serialization",
+        "description": "Converting objects and sequences into representations that can be stored or transmitted, and reconstructing values from those representations. Contracts determine member names, data shape, and stream handling.",
+        "nearest": "verification",
+        "reason": "Verification establishes evidence; serialization transforms data representations."
+      },
+      {
+        "slug": "json",
+        "label": "JSON",
+        "description": "Representing structured data with JSON objects, arrays, and values. Applications use JSON when exchanging messages, publishing data, and serializing application objects.",
+        "nearest": "python",
+        "reason": "JSON is a data format independent of the language producing or consuming it."
+      },
+      {
+        "slug": "datareaders",
+        "label": "DataReaders",
+        "description": "Reading result sets sequentially through ADO.NET DataReaders. Typed wrappers, connection lifetime, and the choice between streaming rows and materializing objects shape their use.",
+        "nearest": "data-manager",
+        "reason": "A DataReader is a specific result-reading API; Data Manager describes an architectural responsibility."
+      }
+    ]
+  },
+  {
+    "index": 28,
+    "title": "svcTraceViewer - Debugging WCF Sevices",
+    "description": "Configure WCF tracing in Web.config and open the resulting .svclog in svcTraceViewer to find the exception hidden behind a vague service error message.",
+    "reasoning": {
+      "claim": "WCF tracing exposes the underlying exception when a service returns an unhelpful error.",
+      "carriedBy": "The system.diagnostics configuration, locating svcTraceViewer, and opening highlighted trace errors."
+    },
+    "tags": [
+      {
+        "slug": "wcf",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "debugging",
+        "status": "new",
+        "kind": "subject"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "wcf",
+        "label": "WCF",
+        "description": "Windows Communication Foundation services, including service contracts, endpoints, hosting, message processing, and diagnostics.",
+        "nearest": "mocking",
+        "reason": "WCF is a service framework; mocking concerns replacing test collaborators."
+      },
+      {
+        "slug": "debugging",
+        "label": "Debugging",
+        "description": "Investigating unexpected application behavior with diagnostic tools, traces, and observed execution to identify its cause.",
+        "nearest": "delegates",
+        "reason": "Delegates are a language mechanism. Debugging names the investigation practice, which structured logging can support but does not cover."
+      }
+    ]
+  },
+  {
+    "index": 29,
+    "title": "Fastest Website on the Planet!",
+    "description": "Matlus recorded high YSlow and PageSpeed scores after moving to Orion, with ShowSlow rankings and Google crawl charts illustrating the site's performance in 2011.",
+    "reasoning": {
+      "claim": "The author reports strong historical website performance after adopting Orion and Quartz for ASP.NET.",
+      "carriedBy": "YSlow and PageSpeed scores, the ShowSlow ranking, and Google Webmaster performance and crawl charts."
+    },
+    "tags": [
+      {
+        "slug": "web-performance",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "asp-net",
+        "status": "new",
+        "kind": "subject"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "web-performance",
+        "label": "Web Performance",
+        "description": "How quickly websites deliver responses and become usable in a browser. Server processing, transferred resources, caching, and measurement all contribute to the result.",
+        "nearest": "public-surface",
+        "reason": "Public Surface concerns component contracts. Web performance also extends beyond the concurrent-demand measurements covered by Load Testing."
+      },
+      {
+        "slug": "asp-net",
+        "label": "ASP.NET",
+        "description": "Microsoft's framework for building and hosting web applications on .NET, including request handling, page rendering, and server-side application structure.",
+        "nearest": "class-design",
+        "reason": "ASP.NET names a web framework rather than general class-design guidance."
+      }
+    ]
+  },
+  {
+    "index": 30,
+    "title": "Orion - A Blog Engine",
+    "description": "Orion powered Matlus with Quartz for ASP.NET and Windows Live Writer support. Its original release explains the Visual Studio solution and required Quartz project reference.",
+    "reasoning": {
+      "claim": "Orion is the author's blogging engine built on Quartz for ASP.NET, with its original solution available for use.",
+      "carriedBy": "The move from WordPress, Windows Live Writer integration, and the solution's Quartz project dependency."
+    },
+    "tags": [
+      {
+        "slug": "blogging",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "asp-net",
+        "status": "new",
+        "kind": "subject"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "blogging",
+        "label": "Blogging",
+        "description": "The tools and workflows for writing, editing, and publishing blog posts, including blog engines and their authoring interfaces.",
+        "nearest": "structured-logging",
+        "reason": "Blogging concerns publishing articles; structured logging records application events."
+      }
+    ]
+  },
+  {
+    "index": 31,
+    "title": "MetaWeblog API C# Library",
+    "description": "An IMetaWeblogProvider separates blog operations from XML and HTTP. MetaWeblogManager translates requests, while an IHttpHandler connects the library to a blog engine.",
+    "reasoning": {
+      "claim": "A provider interface lets a blog engine support MetaWeblog clients without implementing the wire protocol in its business operations.",
+      "carriedBy": "IMetaWeblogProvider operations, MetaWeblogManager's stream-based dispatch, and IHttpHandler integration."
+    },
+    "tags": [
+      {
+        "slug": "metaweblog-api",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "blogging",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "asp-net",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "metaweblog-api",
+        "label": "MetaWeblog API",
+        "description": "An XML-RPC interface for creating and editing blog posts, retrieving categories, and uploading media. Blog engines implement its operations so compatible authoring clients can publish to them.",
+        "nearest": "requirements-traceability",
+        "reason": "MetaWeblog is a concrete publishing protocol unrelated to requirements traceability."
+      }
+    ]
+  },
+  {
+    "index": 32,
+    "title": "Data Access Layer CodeGen",
+    "description": "Stored-procedure metadata drives ADO.NET code generation and typed DbDataReader wrappers, supporting streamed results or materialized lists according to how callers use the data.",
+    "reasoning": {
+      "claim": "Stored-procedure metadata can generate the repetitive data-access and typed-wrapper code while preserving choices about how results are consumed.",
+      "carriedBy": "Generated command and parameter code, generated DbDataReader wrappers, and the IEnumerable versus IList consumption examples."
+    },
+    "tags": [
+      {
+        "slug": "code-generation",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "ado-net",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "data-access",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "datareaders",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "stored-procedures",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "code-generation",
+        "label": "Code Generation",
+        "description": "Producing source code from metadata, models, or templates. Generators turn a repeatable structure into code while keeping the inputs and generated responsibilities explicit.",
+        "nearest": "code-review",
+        "reason": "Code Review evaluates code; code generation produces it."
+      },
+      {
+        "slug": "ado-net",
+        "label": "ADO.NET",
+        "description": ".NET data-access APIs for connections, commands, parameters, readers, adapters, and in-memory tables. Provider abstractions support working with different database engines.",
+        "nearest": "load-testing",
+        "reason": "ADO.NET is a data-access API family rather than a performance-testing practice."
+      },
+      {
+        "slug": "stored-procedures",
+        "label": "Stored Procedures",
+        "description": "Named database operations that accept parameters and execute commands close to the stored data. Their result sets and parameters provide contracts for application data access.",
+        "nearest": "try-parse",
+        "reason": "Stored procedures concern database operations, not parsing contracts."
+      }
+    ]
+  },
+  {
+    "index": 33,
+    "title": "OAuth C# Library",
+    "description": "An OAuth 1.0 C# library handles request and access tokens across providers. A web application demonstrates authorization redirects and a later request for user information.",
+    "reasoning": {
+      "claim": "The library encapsulates OAuth token requests while the application follows the provider's authorization flow.",
+      "carriedBy": "Provider setup, GetOAuthRequestToken and GetOAuthAccessToken, the redirect step, and retrieving a Google email address."
+    },
+    "tags": [
+      {
+        "slug": "oauth",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "asp-net",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "oauth",
+        "label": "OAuth",
+        "description": "Delegating access to protected resources through provider-issued credentials and tokens. Applications follow an authorization flow and use the resulting access token for permitted requests.",
+        "nearest": "load-testing",
+        "reason": "OAuth is an authorization protocol, unrelated to load testing."
+      }
+    ]
+  },
+  {
+    "index": 34,
+    "title": "C# Class Factory - High Performance",
+    "description": "A Factory decouples payment processing from concrete classes, discovers implementations, and caches constructor delegates built with DynamicMethod and ILGenerator.",
+    "reasoning": {
+      "claim": "A factory can hide concrete construction while using cached delegates to create dynamically discovered classes.",
+      "carriedBy": "The employee payment example, comparison with a simple factory and Activator.CreateInstance, and emitted constructors with zero or two parameters."
+    },
+    "tags": [
+      {
+        "slug": "delegates",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "polymorphism",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "reflection",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "factory-pattern",
+        "status": "existing",
+        "kind": "pattern"
+      },
+      {
+        "slug": "design-patterns",
+        "status": "existing",
+        "kind": "pattern"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "reflection",
+        "label": "Reflection",
+        "description": "Inspecting types and members at runtime and invoking capabilities that are not fixed in the calling code. In .NET, reflection also supports generating executable methods through Reflection.Emit.",
+        "nearest": "refactoring",
+        "reason": "Reflection is a runtime mechanism; refactoring changes code organization."
+      }
+    ]
+  },
+  {
+    "index": 35,
+    "title": "The Purpose and function of a Data Access Layer",
+    "description": "A Data Access Layer isolates business logic from the logical data model through domain-specific methods, stored procedures, and results shaped for the business layer.",
+    "reasoning": {
+      "claim": "A Data Access Layer must isolate the business layer from the logical data model, beyond merely abstracting the database engine.",
+      "carriedBy": "The critique of ORM use, the changing customer/order schema example, and domain-shaped operations backed by stored procedures."
+    },
+    "tags": [
+      {
+        "slug": "data-access",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "architecture",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "stored-procedures",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "architectural-patterns",
+        "status": "existing",
+        "kind": "pattern"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": []
+  },
+  {
+    "index": 36,
+    "title": "ASP.NET Performance-Instantiating Business Layers",
+    "description": "Create a BusinessModule in HttpApplication.Init to reuse it across requests. The proposed ASP.NET design relies on application-instance ownership and stateless business layers.",
+    "reasoning": {
+      "claim": "Construct the business layer with the HttpApplication instance and keep its behavior stateless across successive requests.",
+      "carriedBy": "The historical IIS lifecycle explanation, the statelessness requirement, and construction and lookup through Global."
+    },
+    "tags": [
+      {
+        "slug": "asp-net",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "iis",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "concurrency",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": []
+  },
+  {
+    "index": 37,
+    "title": "DataReader Wrappers - TypeSafe",
+    "description": "Typed DbDataReader wrappers centralize field access and null handling. Examples compare reusing one wrapper through IEnumerable<T> with creating objects for a List<T>.",
+    "reasoning": {
+      "claim": "Typed wrappers make DataReader consumption clearer and contain field mapping while accommodating streamed and materialized results.",
+      "carriedBy": "Named versus indexed field access, BlogItemDrw properties, and IEnumerable and List examples with connection-lifetime guidance."
+    },
+    "tags": [
+      {
+        "slug": "datareaders",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "ado-net",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "data-access",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": []
+  },
+  {
+    "index": 38,
+    "title": "ChangeType<T> - Changing the type of a variable in C#",
+    "description": "ChangeType<T> converts request strings through registered binders, handling numbers, arrays, enums, and custom DTOs while keeping conversion calls consistent across web pages.",
+    "reasoning": {
+      "claim": "An extensible binder registry centralizes conversion from web request values to the types callers need.",
+      "carriedBy": "Generic return-type limitations, IRequestBinder and RequestBinder, primitive and array binders, and the reflection-based DtoBinder."
+    },
+    "tags": [
+      {
+        "slug": "request-binding",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "type-conversion",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "asp-net",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "request-binding",
+        "label": "Request Binding",
+        "description": "Mapping HTTP form fields and query parameters into typed values or objects. Binders define conversion, defaults, and how multiple incoming fields populate a model.",
+        "nearest": "requirements-traceability",
+        "reason": "Request binding transforms incoming HTTP data; requirements traceability connects requirements to evidence."
+      },
+      {
+        "slug": "type-conversion",
+        "label": "Type Conversion",
+        "description": "Transforming a value from one representation or data type into another, including parsing text, handling numeric formats, and converting collections or custom objects.",
+        "nearest": "type-casting",
+        "reason": "Type Casting covers checks and casts based on runtime type compatibility. This subject centrally concerns parsing and constructing different value representations."
+      }
+    ]
+  },
+  {
+    "index": 39,
+    "title": "Razor Engine Host",
+    "description": "A Razor host wrapper parses templates and compiles generated C# outside ASP.NET. A custom base class supplies execution and output methods for a desktop example.",
+    "reasoning": {
+      "claim": "Razor can generate and execute template code in a non-web application through a host wrapper.",
+      "carriedBy": "RazorEngineHostWrapper, the TemplateBase execution and writing methods, and the customer-list template with its generated output."
+    },
+    "tags": [
+      {
+        "slug": "razor",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "code-generation",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "razor",
+        "label": "Razor",
+        "description": "Razor combines C# expressions and control flow with text templates. It supports ASP.NET views and layouts as well as hosted template generation outside a web application.",
+        "nearest": "refactoring",
+        "reason": "Razor is a template engine and syntax; refactoring describes restructuring code."
+      }
+    ]
+  },
+  {
+    "index": 40,
+    "title": "ASP.NET MVC Framework Design Problems",
+    "description": "ASP.NET MVC's indirect access to views spreads responsibilities across controllers and templates. ViewData, child actions, and typed view instances frame the critique.",
+    "reasoning": {
+      "claim": "The author argues that indirect view access and loosely typed communication create coupling and diffuse controller responsibilities.",
+      "carriedBy": "Contrasting MVC and Quartz controller code, ViewData limitations, and diagrams tracing child actions and request context."
+    },
+    "tags": [
+      {
+        "slug": "asp-net",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "architecture",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "model-view-controller",
+        "status": "new",
+        "kind": "pattern"
+      },
+      {
+        "slug": "architectural-patterns",
+        "status": "existing",
+        "kind": "pattern"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "asp-net",
+        "label": "ASP.NET",
+        "description": "Microsoft's framework for building and hosting web applications on .NET, including request handling, page rendering, and server-side application structure.",
+        "nearest": "class-design",
+        "reason": "Class design does not identify the ASP.NET framework or its web application facilities."
+      },
+      {
+        "slug": "model-view-controller",
+        "label": "Model-View-Controller",
+        "description": "An application structure that separates models, presentation, and the controllers coordinating interactions. Implementations determine how data and control pass between those roles.",
+        "nearest": "model-evaluation",
+        "reason": "Model evaluation concerns language-model decisions, not the MVC application structure."
+      }
+    ]
+  },
+  {
+    "index": 41,
+    "title": "ASP.NET MVC3 - Razor View Engine",
+    "description": "Razor makes C# mixed with HTML easier to read through its @ syntax, code blocks, layouts, and sections. Worked templates show the output and the limits of view responsibilities.",
+    "reasoning": {
+      "claim": "Razor improves the readability of view templates, while view code must remain concerned with presentation.",
+      "carriedBy": "Loops and conditions, complete view and layout templates with generated HTML, and a database-access example illustrating misuse."
+    },
+    "tags": [
+      {
+        "slug": "asp-net",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "razor",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "model-view-controller",
+        "status": "new",
+        "kind": "pattern"
+      },
+      {
+        "slug": "architectural-patterns",
+        "status": "existing",
+        "kind": "pattern"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "razor",
+        "label": "Razor",
+        "description": "The ASP.NET view engine and template syntax that combines C# expressions and control flow with HTML, layouts, and named sections.",
+        "nearest": "refactoring",
+        "reason": "Refactoring concerns changing existing code organization, not a view engine or template syntax."
+      }
+    ]
+  },
+  {
+    "index": 42,
+    "title": "Html5 File Upload with Progress",
+    "description": "XMLHttpRequest and FormData upload files while the page stays open. File metadata, progress events, and completion handlers build a working HTML5 example.",
+    "reasoning": {
+      "claim": "Browser file APIs and XMLHttpRequest upload events provide client-side upload progress without replacing existing multipart server handling.",
+      "carriedBy": "File metadata inspection, FormData construction, upload event handlers, and a complete minimal HTML and JavaScript implementation."
+    },
+    "tags": [
+      {
+        "slug": "file-upload",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "xmlhttprequest",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "progress-reporting",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "javascript",
+        "status": "new",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "file-upload",
+        "label": "File Upload",
+        "description": "Transferring files from clients to servers, including file selection, multipart requests, progress feedback, and completion or failure handling.",
+        "nearest": "service-locator",
+        "reason": "Service Locator is an architectural role, not a file-transfer operation."
+      },
+      {
+        "slug": "xmlhttprequest",
+        "label": "XMLHttpRequest",
+        "description": "The browser API for sending HTTP requests and receiving responses from scripts, including request bodies, upload events, and asynchronous completion.",
+        "nearest": "testing",
+        "reason": "Testing does not identify this browser HTTP API."
+      },
+      {
+        "slug": "javascript",
+        "label": "JavaScript",
+        "description": "Material specific to JavaScript, or illustrated with JavaScript examples.",
+        "nearest": "typescript",
+        "reason": "These examples use JavaScript directly, without TypeScript's language or tooling."
+      }
+    ]
+  },
+  {
+    "index": 43,
+    "title": "IE 9 Beta - What's hot and what's not",
+    "description": "IE 9 Beta improves performance and standards support, while its tabs and navigation need work. A 2010 assessment connects browser controls with everyday use.",
+    "reasoning": {
+      "claim": "The author welcomes IE 9 Beta's performance and standards work but proposes changes to its interface.",
+      "carriedBy": "Video playback observations, navigation-use statistics, and detailed suggestions for tabs, address bars, buttons, and site organization."
+    },
+    "tags": [
+      {
+        "slug": "web-browsers",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "user-interface-design",
+        "status": "new",
+        "kind": "subject"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "web-browsers",
+        "label": "Web Browsers",
+        "description": "Browser behavior, standards support, performance, and the controls people use to navigate and interact with websites.",
+        "nearest": "try-parse",
+        "reason": "Try-Parse is a parsing contract, not a browser subject."
+      },
+      {
+        "slug": "user-interface-design",
+        "label": "User Interface Design",
+        "description": "Arranging controls, content, navigation, and feedback around the tasks people need to perform.",
+        "nearest": "service-interface-layer",
+        "reason": "Service Interface Layer describes a system boundary, not the interface presented to a person."
+      }
+    ]
+  },
+  {
+    "index": 44,
+    "title": "The Future of Flash Player",
+    "description": "Flash Player needs broader codec support and HTTP Range requests to compete with HTML5 video. The 2010 argument weighs video quality, hardware decoding, and seeking.",
+    "reasoning": {
+      "claim": "The author argues that Flash must support emerging codecs and HTTP-based seeking to remain a viable online video platform.",
+      "carriedBy": "H.264 and WebM quality and hardware comparisons, browser codec choices, and the HTTP Range mechanism for seeking."
+    },
+    "tags": [
+      {
+        "slug": "flash-player",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "video-codecs",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "http-range-requests",
+        "status": "new",
+        "kind": "subject"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "flash-player",
+        "label": "Flash Player",
+        "description": "Adobe's historical runtime for browser multimedia and interactive content, including video playback, SWF execution, and desktop or mobile integration.",
+        "nearest": "factory-pattern",
+        "reason": "Factory Pattern is unrelated to the multimedia runtime."
+      },
+      {
+        "slug": "video-codecs",
+        "label": "Video Codecs",
+        "description": "Video encoding and decoding formats, including their compression, picture quality, playback support, and hardware requirements.",
+        "nearest": "service-locator",
+        "reason": "Service Locator does not cover video compression or decoding."
+      },
+      {
+        "slug": "http-range-requests",
+        "label": "HTTP Range Requests",
+        "description": "HTTP requests for selected portions of a resource, supporting partial downloads and seeking within media without transferring the entire file first.",
+        "nearest": "progress-reporting",
+        "reason": "Progress reporting describes work already performed; range requests select the bytes to transfer."
+      }
+    ]
+  },
+  {
+    "index": 45,
+    "title": "Google TV, Apple TV or just a computer",
+    "description": "Connecting a desktop computer to an HD TV keeps familiar applications and browser access. The setup covers video, audio, wireless controls, and online video quality.",
+    "reasoning": {
+      "claim": "The author prefers a conventional computer connected to a television over restricted media appliances.",
+      "carriedBy": "DVI-to-HDMI and audio connections, wireless input devices, viewing distance, video quality, and limitations of alternative devices."
+    },
+    "tags": [
+      {
+        "slug": "home-theater-pc",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "online-video",
+        "status": "new",
+        "kind": "subject"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "home-theater-pc",
+        "label": "Home Theater PC",
+        "description": "Using a general-purpose computer with a television and audio system for media playback, browsing, and applications, including display connections and remote input.",
+        "nearest": "load-testing",
+        "reason": "Load testing measures concurrent system demand, not a living-room computer setup."
+      },
+      {
+        "slug": "online-video",
+        "label": "Online Video",
+        "description": "Delivering and watching video over the Internet, including picture quality, bandwidth, playback devices, and viewing experience.",
+        "nearest": "configuration-provider",
+        "reason": "Configuration Provider is unrelated to Internet video delivery and viewing."
+      }
+    ]
+  },
+  {
+    "index": 46,
+    "title": "Html 5 Video Element Poster",
+    "description": "The HTML5 video poster should remain until playback begins. A 2010 critique explains why selected thumbnails matter more than automatically showing the first frame.",
+    "reasoning": {
+      "claim": "The author argues that replacing a chosen video poster with the first frame defeats the purpose of selecting a representative image.",
+      "carriedBy": "Thumbnail-selection workflows, often-black first frames, and the follow-up report of discussions with WHATWG and browser vendors."
+    },
+    "tags": [
+      {
+        "slug": "html5-video",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "video-posters",
+        "status": "new",
+        "kind": "subject"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "html5-video",
+        "label": "HTML5 Video",
+        "description": "Native video playback through the HTML video element, including controls, poster images, browser behavior, and supported media formats.",
+        "nearest": "class-design",
+        "reason": "Class design does not cover the HTML video element or browser playback."
+      },
+      {
+        "slug": "video-posters",
+        "label": "Video Posters",
+        "description": "Representative images shown before video playback, including frame selection, custom thumbnails, and their presentation in video players.",
+        "nearest": "idempotency",
+        "reason": "Idempotency describes repeated operations, not video preview images."
+      }
+    ]
+  },
+  {
+    "index": 47,
+    "title": "Finding links on a Web page",
+    "description": "Find links to a target domain with HtmlAgilityPack and C#. A LinkFinder downloads HTML, selects anchor elements, and returns their text and attributes.",
+    "reasoning": {
+      "claim": "A reusable LinkFinder can extract matching links from downloaded web pages.",
+      "carriedBy": "The console caller, HtmlAgilityPack anchor selection and href filtering, and an AnchorTag result carrying attributes and inner text."
+    },
+    "tags": [
+      {
+        "slug": "html-parsing",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "html-agility-pack",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "html-parsing",
+        "label": "HTML Parsing",
+        "description": "Reading HTML as a document structure to select elements and extract text, attributes, links, and other information.",
+        "nearest": "try-parse",
+        "reason": "Try-Parse defines invalid-input return behavior; HTML parsing concerns document structure and extraction."
+      },
+      {
+        "slug": "html-agility-pack",
+        "label": "HtmlAgilityPack",
+        "description": "A .NET library for loading and parsing HTML documents, navigating their nodes, and extracting information with selectors such as XPath.",
+        "nearest": "strategy-pattern",
+        "reason": "Strategy Pattern does not identify the HTML parsing library."
+      }
+    ]
+  },
+  {
+    "index": 48,
+    "title": "H.264 Free for Internet Broadcast",
+    "description": "MPEG LA's 2010 announcement extends royalty-free treatment for Internet video that is free to viewers, while leaving H.264 product and browser licensing distinct.",
+    "reasoning": {
+      "claim": "The reported licensing announcement concerns free Internet video broadcasts and does not remove licensing obligations for H.264 products.",
+      "carriedBy": "The announcement's scope and duration, implications for video hosts, and the explicit distinction for browser vendors."
+    },
+    "tags": [
+      {
+        "slug": "h264",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "html5-video",
+        "status": "new",
+        "kind": "subject"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "h264",
+        "label": "H.264",
+        "description": "The AVC video coding standard, including compression and playback characteristics, implementation support, and licensing distinctions.",
+        "nearest": "python",
+        "reason": "Python is a programming language and does not cover the video coding standard."
+      }
+    ]
+  },
+  {
+    "index": 49,
+    "title": "Expanding Code listings",
+    "description": "Expand code listings beyond fixed-width page layouts with jQuery. A wrapper supplies titles and icons, while a temporary overlay displays the full listing.",
+    "reasoning": {
+      "claim": "A small wrapper and jQuery can expand code listings beyond their page container without fixing the expanded width.",
+      "carriedBy": "The reproducible constrained layout, generated titles and icons, body-level overlay creation, and collapse event handling."
+    },
+    "tags": [
+      {
+        "slug": "jquery",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "css",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "javascript",
+        "status": "new",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "jquery",
+        "label": "jQuery",
+        "description": "The JavaScript library for selecting and modifying document elements, handling events, and implementing browser interactions.",
+        "nearest": "jev",
+        "reason": "Jev is an AI model; jQuery is a browser scripting library."
+      },
+      {
+        "slug": "css",
+        "label": "CSS",
+        "description": "Stylesheets that control web presentation, including layout, positioning, overflow, colors, typography, and visual states.",
+        "nearest": "csharp",
+        "reason": "C# does not cover stylesheet rules or web layout."
+      }
+    ]
+  },
+  {
+    "index": 50,
+    "title": "Html 5 Video and Flash",
+    "description": "HTML5 video playback varied across browsers in 2010. Tests compare HD playback, CPU use, codec support, and full-screen behavior with Flash and native players.",
+    "reasoning": {
+      "claim": "Browser video implementations differed substantially in playback quality and capabilities, and CPU use alone did not establish playback quality.",
+      "carriedBy": "Named browser versions and hardware, H.264 and WebM test encodings, playback and CPU tables, and full-screen limitations."
+    },
+    "tags": [
+      {
+        "slug": "html5-video",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "flash-player",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "benchmarking",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "video-codecs",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "web-browsers",
+        "status": "new",
+        "kind": "subject"
+      }
+    ],
+    "newTags": []
+  },
+  {
+    "index": 51,
+    "title": "Setting up IIS 7.0 - Ftp 7.5 for IIS Manager Users",
+    "description": "IIS FTP 7.5 can authenticate IIS Manager Users with isolated directories. Folder permissions, provider settings, and C# user creation complete the setup.",
+    "reasoning": {
+      "claim": "FTP access for IIS Manager Users requires correctly arranged directories, permissions, authentication providers, and user authorization.",
+      "carriedBy": "LocalUser directory structure, Network Service permission commands, and C# management APIs that create and authorize users."
+    },
+    "tags": [
+      {
+        "slug": "iis",
+        "status": "existing",
+        "kind": "subject"
+      },
+      {
+        "slug": "ftp",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "authentication",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "csharp",
+        "status": "existing",
+        "kind": "language"
+      }
+    ],
+    "newTags": [
+      {
+        "slug": "ftp",
+        "label": "FTP",
+        "description": "The File Transfer Protocol and its server configuration, including user access, directory isolation, and file-transfer permissions.",
+        "nearest": "refactoring",
+        "reason": "Refactoring does not cover file-transfer protocols or server configuration."
+      },
+      {
+        "slug": "authentication",
+        "label": "Authentication",
+        "description": "Establishing the identity of a user or client through credentials and configured identity providers before granting access.",
+        "nearest": "test-isolation",
+        "reason": "Test isolation concerns ownership of test state; authentication establishes identity."
+      }
+    ]
+  },
+  {
+    "index": 52,
+    "title": "Flash Mobile 10.1 is Slow",
+    "description": "Flash Mobile performance comparisons need equivalent workloads. A 2010 critique separates shared bandwidth, extra downloads, and execution costs from unsupported conclusions.",
+    "reasoning": {
+      "claim": "Comparisons between devices loading different content cannot isolate Flash's performance cost.",
+      "carriedBy": "Shared Wi-Fi concerns, differences between image and SWF downloads, SWF initialization work, and an explicit admission that the author has not tested Flash Mobile video."
+    },
+    "tags": [
+      {
+        "slug": "flash-player",
+        "status": "new",
+        "kind": "subject"
+      },
+      {
+        "slug": "benchmarking",
+        "status": "existing",
+        "kind": "subject"
+      }
+    ],
+    "newTags": []
+  }
+]

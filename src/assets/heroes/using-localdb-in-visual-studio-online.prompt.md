@@ -1,0 +1,7 @@
+# Using LocalDB in Visual Studio Online
+
+Hand-drawn technical editorial illustration, fine pen-and-ink linework and cross-hatching, warm ivory paper background, mostly monochrome with sparse selective blue and green accents, visible pencil construction marks, slightly retro instructional-manual character, sophisticated conceptual metaphor, clean white space, detailed but not photorealistic.
+
+Article idea: a fresh build machine needs its LocalDB instance created, started, and populated before unit tests can run reliably.
+Subject: a developer seen from the rear three-quarter angle at a modest workstation on the left watches a newly unpacked miniature server on the desk. A small database cylinder is being seated into the server's open side, with a folded blueprint and a tray of seed-data cards beside it. A neat cable leads from the prepared server to a screen showing an orderly row of small green test indicators. The open shipping carton and untouched packing foam make the fresh-machine premise tangible; the inserted database and waiting test screen carry the story.
+Composition: one wide landscape scene, slightly elevated desk-level perspective; all important objects and their connection occupy the middle horizontal third so a very wide banner crop retains the relationship. Keep the person's shoulder secondary and the prepared server and test screen prominent. Airy margins above and below. No text, code, labels, logos, or watermark.

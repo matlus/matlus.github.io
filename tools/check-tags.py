@@ -26,6 +26,10 @@ HEROES_DIR: Path = Path(__file__).resolve().parent.parent / "src" / "assets" / "
 
 SIMILARITY_THRESHOLD = 0.85
 
+# JSON is a data format; JSONP is a script-callback transport technique.
+# Their similar abbreviations do not make them interchangeable topics.
+DISTINCT_TOPICS: frozenset[frozenset[str]] = frozenset({frozenset({"json", "jsonp"})})
+
 SUFFIXES = ("ings", "ing", "ies", "es", "s", "ed")
 
 
@@ -65,6 +69,8 @@ def find_clashes(slugs: list[str]) -> list[tuple[str, str, float]]:
     clashes = []
     for index, first in enumerate(slugs):
         for second in slugs[index + 1 :]:
+            if frozenset({first, second}) in DISTINCT_TOPICS:
+                continue
             score = similarity(first, second)
             if stem_slug(first) == stem_slug(second) or score >= SIMILARITY_THRESHOLD:
                 clashes.append((first, second, score))

@@ -1,0 +1,356 @@
+{
+  "quartz-for-aspnet/figure-01": {
+    "kind": "diagram",
+    "brief": "Recreate source figure 1's topology exactly with a new pastel architectural infographic treatment. Main heading: ASP.NET MVC relationships. Request is above Controller at center, with arrow down to Controller. Four separate green View boxes form a vertical stack on the left. Controller has a single leftward branching connector with an arrow into each View; mark 1 at the controller end and 1 beside EACH view end. Model is right of Controller with arrow from Controller into Model and * at BOTH ends. A second Controller is below the main Controller inside a dashed rounded enclosure; a dashed arrow points down from main Controller to that child, with 1 at main end and * at child end. Do not replace the four views with a single stack icon. No other arrows or components. Keep labels upright and multiplicity markers readable, using fine navy outlines, softly illustrated dimensional cards and mint, amber, blue fills. Preserve all source connections, arrow directions and labels; generous whitespace.",
+    "alt": "A request reaches a Controller connected to four Views, a Model, and a subordinate Controller, retaining the original multiplicities.",
+    "caption": "Redrawn from the original relationship diagram; labels, connections, and multiplicities are retained."
+  },
+  "quartz-for-aspnet/figure-02": {
+    "kind": "diagram",
+    "brief": "Recreate source figure 2's topology and page composition exactly with a new pastel architectural infographic treatment. Main heading: Quartz page composition. Large Page enclosure on LEFT contains exactly five green View regions: full-width top, large middle-left, two smaller vertically stacked middle-right, full-width bottom. Request above center points DOWN to main Builder. The Builder at center-right has branching arrows pointing LEFT into EACH of the five Views; put 1 at the Builder end and 1 by EACH View target. Model is to the RIGHT with arrow from Builder into Model and * at BOTH ends. A second Builder in a dashed rounded enclosure sits BELOW main Builder, reached by a dashed downward arrow with 1 at main end and * at child end. The entire five-view composition belongs inside Page. Do not add a view-to-view arrow. Use fine navy outlines and softly dimensional pastel cards; upright labels Page, View, Request, Builder, Model and exact multiplicities. Give independent connectors open routing space.",
+    "alt": "A Builder receives the request and directly composes five Views within a Page, with links to a Model and a subordinate Builder.",
+    "caption": "Redrawn from the original composition diagram, retaining all five Views and the Builder's direct connections."
+  },
+  "quartz-for-aspnet/figure-03": {
+    "kind": "diagram",
+    "brief": "Recreate the supplied side-by-side control-flow comparison exactly in a pastel architectural infographic style. Two complete page layouts, each with Header at top, Menu below, large Main Content left, Sub Menu upper-right, Extra Content lower-right, Footer across bottom. LEFT layout has Controller BELOW page. One arrow Controller -> Main Content. Five separate arrows originate IN Main Content and point respectively to Header, Menu, Sub Menu, Extra Content, Footer. RIGHT layout has Builder BELOW page. Six INDEPENDENT direct arrows originate at Builder and point to Header, Menu, Main Content, Sub Menu, Extra Content, Footer. Ensure no right arrow starts at a page region or appears to chain through another. Use enough spacing and route around unrelated labels. Main heading: Page composition and control flow. Small panel labels: Controller / Builder. All exact region names remain readable. Pastel blue Main Content, pale green Menu, lavender Header/Footer, butter Sub Menu, coral Extra Content, and fine navy outlines on lightly textured pale paper. Diagrammatic cards with restrained shallow dimension; no invented components or extra connections.",
+    "alt": "Controller-driven flow starts in Main Content and reaches the other regions; the Builder connects directly to all six page regions.",
+    "caption": "Redrawn from the original comparison: the left page expands from Main Content, while the Builder on the right addresses each region directly."
+  },
+  "quartz-for-aspnet/figure-04": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: Project template folder. A new instructional illustration of a folder browser, based on the original screenshot. Show the breadcrumb ProjectTemplates > CSharp and the Quartz folder selected in the right panel. On the left show the expanded ProjectTemplates folder with child CSharp. A pale amber highlight identifies the Quartz folder; an adjacent small ZIP document icon is labeled Quartz Web Application.zip to explain the file copied into it, as specified by the article. Omit unrelated folders and Windows chrome. Preserve exact spelling and hierarchy. Use the same pastel architectural infographic style: pale textured paper, navy upright sans-serif labels, fine blue outlines, restrained shallow-dimensional panels, mint/butter/coral accents, generous whitespace.",
+    "alt": "Create the Quartz folder under ProjectTemplates/CSharp and place Quartz Web Application.zip there.",
+    "caption": "Illustrated reconstruction. Create the Quartz folder under ProjectTemplates/CSharp and place Quartz Web Application.zip there."
+  },
+  "quartz-for-aspnet/figure-05": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: Quartz project template. A new instructional illustration of the New Project dialog from the historical screenshot. Left panel: Installed Templates, Visual C#, selected Quartz. Center: selected Quartz Web Application. Top selector: .NET Framework 4. Bottom fields: Name = Quartz Web Application1; Solution name = Quartz Web Application1. Include checked Create directory for solution, unchecked Add to source control, and OK / Cancel buttons. Omit the personal filesystem Location value and nonessential neighboring templates. The exact important choices must remain readable, not a realistic screenshot. Use the same pastel architectural infographic style: pale textured paper, navy upright sans-serif labels, fine blue outlines, restrained shallow-dimensional panels, mint/butter/coral accents, generous whitespace.",
+    "alt": "The Quartz Web Application template appears under Visual C# > Quartz in the New Project dialog.",
+    "caption": "Illustrated reconstruction. The Quartz Web Application template appears under Visual C# > Quartz in the New Project dialog."
+  },
+  "quartz-for-aspnet/figure-06": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: Item template folder. A new instructional illustration of a folder browser from the historical screenshot. Breadcrumb ItemTemplates > CSharp, with Quartz selected in the right panel. On the left show expanded ItemTemplates and child CSharp. A restrained amber highlight identifies Quartz. Omit unrelated folders, modification timestamps and Windows chrome. The hierarchy distinguishes this item-template location from the project-template location in the earlier diagram. Use the same pastel architectural infographic style: pale textured paper, navy upright sans-serif labels, fine blue outlines, restrained shallow-dimensional panels, mint/butter/coral accents, generous whitespace.",
+    "alt": "Create the Quartz folder under ItemTemplates/CSharp for the item templates.",
+    "caption": "Illustrated reconstruction. Create the Quartz folder under ItemTemplates/CSharp for the item templates."
+  },
+  "quartz-for-aspnet/figure-07": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: Quartz Builder and View templates. A new instructional illustration of the Add New Item dialog from the historical screenshot. Left panel Installed Templates > Visual C# > Quartz, with Quartz selected. Center has exactly two choices Quartz Builder (selected) and Quartz View. Right panel has Type: Visual C# and the explanation A New Quartz Builder - Quartz for ASP.NET projects. Bottom Name field Builder1.cs, buttons Add and Cancel. Omit unrelated template categories and screenshot chrome. Preserve the two choices and active selection. Use the same pastel architectural infographic style: pale textured paper, navy upright sans-serif labels, fine blue outlines, restrained shallow-dimensional panels, mint/butter/coral accents, generous whitespace.",
+    "alt": "The Quartz category offers Builder and View items; the selected Builder is named Builder1.cs.",
+    "caption": "Illustrated reconstruction. The Quartz category offers Builder and View items; the selected Builder is named Builder1.cs."
+  },
+  "azure-startup-tasks-running-as-administrator/figure-01": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: Remote Desktop configuration. Create a conceptual instructional diagram based only on surviving article prose; the original screenshot is unavailable. Show a simplified Publish Windows Azure Application wizard card with a checked option Enable Remote Desktop for all roles. Beside it, show generic username and masked password fields, with no invented credentials. A thin connector relates these credentials to a separate OnStart() impersonation work card. Include a small distinct callout: Later update: elevated Runtime avoids impersonation. This reflects the article correction. Do not claim this is an exact UI screenshot or invent additional wizard fields. Use the same pastel architectural infographic style: pale textured paper, navy upright sans-serif labels, fine blue outlines, restrained shallow-dimensional panels, mint/butter/coral accents, generous whitespace.",
+    "alt": "Conceptual reconstruction of the Remote Desktop configuration described in the article, including its later Runtime correction.",
+    "caption": "Illustrated reconstruction. Conceptual reconstruction of the Remote Desktop configuration described in the article, including its later Runtime correction."
+  },
+  "installing-msmq-in-an-azure-webrole-instance/figure-01": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: Work held within the request. Create an explanatory diagram from surviving prose, because the original image was unavailable. A User sends a Large video file to WebRole. Within a large request-lifetime enclosure, show the ordered sequence 1 Receive file -> 2 Move to blob storage -> 3 Save record -> 4 Respond to user. Blob storage is a storage cylinder outside the WebRole block; Save record points to a distinct Table storage / SQL Azure database. The response arrow returns to User only after saving the record. Label the enclosure Request held until work completes. Avoid invented timings, metrics or extra services. Use the same pastel architectural infographic style: pale textured paper, navy upright sans-serif labels, fine blue outlines, restrained shallow-dimensional panels, mint/butter/coral accents, generous whitespace.",
+    "alt": "Reconstructed from the surviving text: the request remains occupied while the file and its record are stored.",
+    "caption": "Illustrated reconstruction. Reconstructed from the surviving text: the request remains occupied while the file and its record are stored."
+  },
+  "installing-msmq-in-an-azure-webrole-instance/figure-02": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: Queue the remaining work. Create an explanatory architecture diagram from surviving prose, because the original image was unavailable. User outside a bluish-grey dashed enclosure labeled Virtual machine instance. INSIDE the enclosure are WebRole, Local file, MSMQ service, and Message Processor. User -> WebRole labeled Upload video. WebRole -> Local file labeled Receive file. WebRole -> MSMQ labeled Message: local file path. WebRole -> User labeled Respond after enqueue. MSMQ -> Message Processor labeled Dequeue message. Message Processor reads Local file, then sends file to Blob storage OUTSIDE the enclosure, then saves record in a separate outside Table storage / SQL Azure block. Show all background processor actions and arrows in BLUE, explicitly matching the prose. Do not put the actual video in the queue. Clearly retain all three services in the SAME virtual machine, with User and remote storage outside. No metrics or timing claims. Use the same pastel architectural infographic style: pale textured paper, navy upright sans-serif labels, fine blue outlines, restrained shallow-dimensional panels, mint/butter/coral accents, generous whitespace.",
+    "alt": "Reconstructed from the surviving text: WebRole, MSMQ, and the Message Processor share one VM; the queue message carries the local file path.",
+    "caption": "Illustrated reconstruction. Reconstructed from the surviving text: WebRole, MSMQ, and the Message Processor share one VM; the queue message carries the local file path."
+  },
+  "installing-msmq-in-an-azure-webrole-instance/figure-03": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: Save the startup batch file. Create a conceptual instructional diagram from surviving prose; the original Advanced Save Options screenshot is unavailable and its exact encoding selection cannot be recovered. Show InstallMSMQ.cmd as a file card, a Properties panel with Build Action: Content, and a separate Advanced Save Options panel with two neutral checklist rows Review encoding and Review byte order mark. A small note reads Original encoding selection unavailable. Do not select a specific encoding or fabricate a Windows dialog value. Use a pale-blue configuration panel and a small save icon. This is an explanatory reconstruction, not a reproduced screenshot. Use the same pastel architectural infographic style: pale textured paper, navy upright sans-serif labels, fine blue outlines, restrained shallow-dimensional panels, mint/butter/coral accents, generous whitespace.",
+    "alt": "The batch file must be deployed as Content. The original image specifying the exact Advanced Save Options encoding was not recovered.",
+    "caption": "Illustrated reconstruction. The batch file must be deployed as Content. The original image specifying the exact Advanced Save Options encoding was not recovered."
+  },
+  "asp-net-web-api-with-webforms/figure-01": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: Create the empty project. Illustrate the essential New Project choices from the reference: .NET Framework 4.5 selector, Visual C# > Web category, selected ASP.NET Empty Web Application. Name and Solution name both WebApplication1. Include checked Create directory for solution, unchecked Add to source control, OK and Cancel buttons. Omit personal location path and unrelated templates. Use a coherent pastel architectural infographic style: pale textured paper, navy upright readable labels, fine blue outlines, restrained shallow-dimensional panels and mint/butter/coral accents. Generous whitespace. No unrelated source screenshot chrome.",
+    "alt": "The historical template selection is ASP.NET Empty Web Application under Visual C# > Web.",
+    "caption": "Illustrated reconstruction. The historical template selection is ASP.NET Empty Web Application under Visual C# > Web."
+  },
+  "asp-net-web-api-with-webforms/figure-02": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: Add the API controller. Illustrate Add New Item: category Visual C# > Web; selected Web API Controller Class; Name CustomersController.cs; Add and Cancel buttons. A separate small note says Controller names end in Controller. Omit all unrelated templates, preserve exact names. Use a coherent pastel architectural infographic style: pale textured paper, navy upright readable labels, fine blue outlines, restrained shallow-dimensional panels and mint/butter/coral accents. Generous whitespace. No unrelated source screenshot chrome.",
+    "alt": "Add a Web API Controller Class named CustomersController.cs.",
+    "caption": "Illustrated reconstruction. Add a Web API Controller Class named CustomersController.cs."
+  },
+  "asp-net-web-api-with-webforms/figure-03": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: The customer API controller. Replace the historical code-editor screenshot with a clear class diagram. An upper card ApiController connects with an inheritance line ending in an unfilled triangle at ApiController, from a lower larger card CustomersController. The lower card has five exact method signatures on separate lines: IEnumerable<string> Get(); string Get(int id); void Post(string value); void Put(int id, string value); void Delete(int id). A small adjacent project folder contains CustomersController.cs. Do not create pseudo-code or change identifiers. The original screenshot code will be separately transcribed below the image. Use a coherent pastel architectural infographic style: pale textured paper, navy upright readable labels, fine blue outlines, restrained shallow-dimensional panels and mint/butter/coral accents. Generous whitespace. No unrelated source screenshot chrome.",
+    "alt": "CustomersController inherits ApiController and supplies the five methods shown in the original editor capture.",
+    "caption": "Illustrated reconstruction. CustomersController inherits ApiController and supplies the five methods shown in the original editor capture."
+  },
+  "asp-net-web-api-with-webforms/figure-04": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: Add the application class. Illustrate Add New Item: category Visual C# > Web, selected Global Application Class, Name Global.asax, Add and Cancel buttons. Short right-panel description: A class for handling Web Application events. Omit unrelated templates and retain the exact filename. Use a coherent pastel architectural infographic style: pale textured paper, navy upright readable labels, fine blue outlines, restrained shallow-dimensional panels and mint/butter/coral accents. Generous whitespace. No unrelated source screenshot chrome.",
+    "alt": "Add the Global Application Class with its original Global.asax filename.",
+    "caption": "Illustrated reconstruction. Add the Global Application Class with its original Global.asax filename."
+  },
+  "rest-apis-put-and-delete-cause-http-error-404/figure-01": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: Open Handler Mappings. Illustrate the relevant IIS Manager Features View as a clean instructional panel. A server node at left has Application Pools and Sites children. Center a selected Handler Mappings tile, with a small cursor pointing to it. Show Features View selected at the bottom. Omit the personal server name and unrelated feature tiles. Use a coherent pastel architectural infographic style: pale textured paper, navy upright readable labels, fine blue outlines, restrained shallow-dimensional panels and mint/butter/coral accents. Generous whitespace. No unrelated source screenshot chrome.",
+    "alt": "In IIS Manager, open Handler Mappings from Features View.",
+    "caption": "Illustrated reconstruction. In IIS Manager, open Handler Mappings from Features View."
+  },
+  "rest-apis-put-and-delete-cause-http-error-404/figure-02": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: Select the extensionless handler. Illustrate the Handler Mappings list with two columns Name and Path. Prominently select the exact name ExtensionlessUrlHandler-Integrated-4.0, Path *.. Include the two other source rows ExtensionlessUrlHandler-ISAPI-4.0_32bit and ExtensionlessUrlHandler-ISAPI-4.0_64bit as subdued neighboring rows. A cursor indicates double-clicking the selected Integrated handler. No invented settings. Use a coherent pastel architectural infographic style: pale textured paper, navy upright readable labels, fine blue outlines, restrained shallow-dimensional panels and mint/butter/coral accents. Generous whitespace. No unrelated source screenshot chrome.",
+    "alt": "Select ExtensionlessUrlHandler-Integrated-4.0 in Handler Mappings.",
+    "caption": "Illustrated reconstruction. Select ExtensionlessUrlHandler-Integrated-4.0 in Handler Mappings."
+  },
+  "rest-apis-put-and-delete-cause-http-error-404/figure-03": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: Open request restrictions. Illustrate the essential Edit Managed Handler dialog from the reference. Fields: Request path: *.; Type: System.Web.Handlers.TransferRequestHandler; Name: ExtensionlessUrlHandler-Integrated-4.0. Prominent highlighted button Request Restrictions..., with OK and Cancel at bottom. Preserve spelling and punctuation exactly, do not truncate Type or Name. Use a coherent pastel architectural infographic style: pale textured paper, navy upright readable labels, fine blue outlines, restrained shallow-dimensional panels and mint/butter/coral accents. Generous whitespace. No unrelated source screenshot chrome.",
+    "alt": "Open Request Restrictions for the selected managed handler.",
+    "caption": "Illustrated reconstruction. Open Request Restrictions for the selected managed handler."
+  },
+  "rest-apis-put-and-delete-cause-http-error-404/figure-04": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: Allow PUT and DELETE. Illustrate Request Restrictions with tabs Mapping, Verbs (selected), Access. Show radio option All verbs unselected and One of the following verbs selected. Its field is exactly GET,HEAD,POST,DEBUG,PUT,DELETE. Highlight only PUT,DELETE in restrained amber. Include OK and Cancel. All characters in the verb list must be correct. Use a coherent pastel architectural infographic style: pale textured paper, navy upright readable labels, fine blue outlines, restrained shallow-dimensional panels and mint/butter/coral accents. Generous whitespace. No unrelated source screenshot chrome.",
+    "alt": "The original selected verb list is GET,HEAD,POST,DEBUG,PUT,DELETE.",
+    "caption": "Illustrated reconstruction. The original selected verb list is GET,HEAD,POST,DEBUG,PUT,DELETE."
+  },
+  "rest-apis-put-and-delete-cause-http-error-404/figure-05": {
+    "kind": "instructional-reconstruction",
+    "brief": "Main heading: The IIS Express handler setting. Create a readable configuration-detail illustration based on the reference, not a fake full editor screenshot. Heading applicationhost.config. Show breadcrumb system.webServer > handlers. A single large setting card has name = ExtensionlessUrl-Integrated-4.0, path = *., verb = GET,HEAD,POST,DEBUG,PUT,DELETE. Preserve this screenshot name EXACTLY: it does not contain Handler, unlike the earlier IIS Manager screenshot. Accent PUT,DELETE. Omit attributes cut off in the original and do not invent their values. Use a coherent pastel architectural infographic style: pale textured paper, navy upright readable labels, fine blue outlines, restrained shallow-dimensional panels and mint/butter/coral accents. Generous whitespace. No unrelated source screenshot chrome.",
+    "alt": "In IIS Express applicationhost.config, add PUT and DELETE to the extensionless handler verb attribute.",
+    "caption": "Illustrated reconstruction. In IIS Express applicationhost.config, add PUT and DELETE to the extensionless handler verb attribute."
+  },
+  "innovating-the-world-wide-net/figure-01": {
+    "kind": "diagram-reconstruction",
+    "brief": "TITLE TO DRAW: World Wide Web\nDRAWING INSTRUCTIONS (do not render as text): Redraw the exact conceptual relationships of the source. A top-left enclosure labeled documents/applications contains recognizable document, mail, settings and application icons. It has two outward arrows, one to a lower-left computer with two people and one to an upper-right computer with two people. A globe below center represents Internet. Each computer has its own arrow toward the globe and a separate return arrow from globe toward that computer. Preserve these two pairs of directions, the two pairs of people, the shared document/application layer, and the globe. No extra devices or direct person-to-person links. Use the approved pastel architectural infographic style with pale paper, navy upright sans-serif labels, softly dimensional platforms, fine blue ink and restrained mint/gold/coral accents. Exact labels and readable connections.",
+    "alt": "The original World Wide Web model connects two groups of computer users through Internet transport and shared documents or applications.",
+    "caption": "Redrawn from the original illustration. The original World Wide Web model connects two groups of computer users through Internet transport and shared documents or applications."
+  },
+  "innovating-the-world-wide-net/figure-02": {
+    "kind": "diagram-reconstruction",
+    "brief": "TITLE TO DRAW: World Wide Net\nDRAWING INSTRUCTIONS (do not render as text): Translate the source and article vision into a new diagram with two panels. Top panel: a desktop computer beside an operating-system sandbox enclosure containing a small globe, with two opposite-direction arrows linking it to a separate Internet globe. Text: Using the Internet to make real connections via the World Wide Net. Bottom panel: two pairs of people, one lower-left and one upper-right, each pointing toward a central shared-connection symbol. Below them retain the source device examples: a tablet, two small robots, and four circuit boards, one with an information icon. A small label Operating-system sandbox identifies the top enclosure. Do not put all physical devices inside a browser. This is a conceptual historical vision, not a claim about current products. Use the approved pastel architectural infographic style with pale paper, navy upright sans-serif labels, softly dimensional platforms, fine blue ink and restrained mint/gold/coral accents. Exact labels and readable connections.",
+    "alt": "The historical World Wide Net vision joins people with programmable physical devices through applications in an operating-system sandbox.",
+    "caption": "Redrawn from the original illustration. The historical World Wide Net vision joins people with programmable physical devices through applications in an operating-system sandbox."
+  },
+  "wcf-4-0-getting-started/figure-01": {
+    "kind": "diagram-reconstruction",
+    "brief": "TITLE TO DRAW: Metadata publishing is disabled\nDRAWING INSTRUCTIONS (do not render as text): Create an illustrated browser-state panel from the historical capture. Address http://localhost:8080/. Heading Service. Preserve the central exact status: Metadata publishing for this service is currently disabled. Below show a configuration card with the exact XML <serviceMetadata httpGetEnabled=\"true\" /> and a short neutral label Enable metadata publishing. Do not fabricate the clipped configuration from the screenshot, and omit the long stock configuration instructions. This figure communicates the disabled metadata state before the article adds ServiceMetadataBehavior; no successful WSDL download in this panel. Use the approved pastel architectural infographic style with pale paper, navy upright sans-serif labels, softly dimensional platforms, fine blue ink and restrained mint/gold/coral accents. Exact labels and readable connections.",
+    "alt": "At http://localhost:8080/, the service reports that metadata publishing is disabled.",
+    "caption": "Redrawn from the original illustration. At http://localhost:8080/, the service reports that metadata publishing is disabled."
+  },
+  "wcf-4-0-getting-started/figure-02": {
+    "kind": "diagram-reconstruction",
+    "brief": "TITLE TO DRAW: Metadata publishing is enabled\nDRAWING INSTRUCTIONS (do not render as text): Create an illustrated browser-state panel from the historical capture. Address http://localhost:8080/. Heading CustomerService Service. Text You have created a service. Prominent exact command: svcutil.exe http://localhost:8080/?wsdl. The WSDL URL appears underlined as a link. To the right, show a WSDL document leading to a generated client proxy document labeled CustomerServiceClient, then a small client application. Do not add actual generated code or invent measurements. Clearly communicate the now-available metadata link and client generation. Use the approved pastel architectural infographic style with pale paper, navy upright sans-serif labels, softly dimensional platforms, fine blue ink and restrained mint/gold/coral accents. Exact labels and readable connections.",
+    "alt": "The service page now exposes http://localhost:8080/?wsdl for generating a CustomerServiceClient proxy.",
+    "caption": "Redrawn from the original illustration. The service page now exposes http://localhost:8080/?wsdl for generating a CustomerServiceClient proxy."
+  },
+  "data-parallel-parallel-programming-in-net/figure-01": {
+    "kind": "historical-performance-illustration",
+    "brief": "TITLE TO DRAW: Non-parallel workload. Create a new refined pastel architectural infographic illustrating the historical CPU utilization screenshot supplied as content reference. Large principal CPU utilization card showing exactly 24%; a separate memory card exactly 1.51 GB. Show exactly 4 compact processor tiles in one orderly row or two equal rows, each with a fine miniature green history trace echoing the source shape. Do not invent individual percentages, timings, axes or measurements. The source history traces are schematic visual context, not newly measured data. Labels allowed: CPU utilization, Memory, 4 cores, Historical capture. Keep exact principal values. Light paper background, delicate navy outlines, pale blue and mint cards on shallow illustrated platforms, restrained amber accents, no people. Do not reproduce operating-system UI chrome or small incidental system statistics. Large readable upright text. Use source reference only for its principal data; style reference for visual treatment.",
+    "alt": "Historical non-parallel workload capture, showing 24% total CPU utilization and 1.51 GB memory on 4 cores.",
+    "caption": "Illustration of the original capture: 24% CPU utilization and 1.51 GB memory. The small history traces are schematic; these are historical measurements."
+  },
+  "data-parallel-parallel-programming-in-net/figure-03": {
+    "kind": "historical-performance-illustration",
+    "brief": "TITLE TO DRAW: PLINQ workload. Create a new refined pastel architectural infographic illustrating the historical CPU utilization screenshot supplied as content reference. Large principal CPU utilization card showing exactly 76%; a separate memory card exactly 1.47 GB. Show exactly 4 compact processor tiles in one orderly row or two equal rows, each with a fine miniature green history trace echoing the source shape. Do not invent individual percentages, timings, axes or measurements. The source history traces are schematic visual context, not newly measured data. Labels allowed: CPU utilization, Memory, 4 cores, Historical capture. Keep exact principal values. Light paper background, delicate navy outlines, pale blue and mint cards on shallow illustrated platforms, restrained amber accents, no people. Do not reproduce operating-system UI chrome or small incidental system statistics. Large readable upright text. Use source reference only for its principal data; style reference for visual treatment.",
+    "alt": "Historical plinq workload capture, showing 76% total CPU utilization and 1.47 GB memory on 4 cores.",
+    "caption": "Illustration of the original capture: 76% CPU utilization and 1.47 GB memory. The small history traces are schematic; these are historical measurements."
+  },
+  "data-parallel-parallel-programming-in-net/figure-04": {
+    "kind": "historical-performance-illustration",
+    "brief": "TITLE TO DRAW: QueueUserWorkItem workload. Create a new refined pastel architectural infographic illustrating the historical CPU utilization screenshot supplied as content reference. Large principal CPU utilization card showing exactly 79%; a separate memory card exactly 1.26 GB. Show exactly 4 compact processor tiles in one orderly row or two equal rows, each with a fine miniature green history trace echoing the source shape. Do not invent individual percentages, timings, axes or measurements. The source history traces are schematic visual context, not newly measured data. Labels allowed: CPU utilization, Memory, 4 cores, Historical capture. Keep exact principal values. Light paper background, delicate navy outlines, pale blue and mint cards on shallow illustrated platforms, restrained amber accents, no people. Do not reproduce operating-system UI chrome or small incidental system statistics. Large readable upright text. Use source reference only for its principal data; style reference for visual treatment.",
+    "alt": "Historical queueuserworkitem workload capture, showing 79% total CPU utilization and 1.26 GB memory on 4 cores.",
+    "caption": "Illustration of the original capture: 79% CPU utilization and 1.26 GB memory. The small history traces are schematic; these are historical measurements."
+  },
+  "data-parallel-parallel-programming-in-net/figure-05": {
+    "kind": "historical-performance-illustration",
+    "brief": "TITLE TO DRAW: Parallel.For workload. Create a new refined pastel architectural infographic illustrating the historical CPU utilization screenshot supplied as content reference. Large principal CPU utilization card showing exactly 100%; a separate memory card exactly 0.98 GB. Show exactly 4 compact processor tiles in one orderly row or two equal rows, each with a fine miniature green history trace echoing the source shape. Do not invent individual percentages, timings, axes or measurements. The source history traces are schematic visual context, not newly measured data. Labels allowed: CPU utilization, Memory, 4 cores, Historical capture. Keep exact principal values. Light paper background, delicate navy outlines, pale blue and mint cards on shallow illustrated platforms, restrained amber accents, no people. Do not reproduce operating-system UI chrome or small incidental system statistics. Large readable upright text. Use source reference only for its principal data; style reference for visual treatment.",
+    "alt": "Historical parallel.for workload capture, showing 100% total CPU utilization and 0.98 GB memory on 4 cores.",
+    "caption": "Illustration of the original capture: 100% CPU utilization and 0.98 GB memory. The small history traces are schematic; these are historical measurements."
+  },
+  "data-parallel-parallel-programming-in-net/figure-06": {
+    "kind": "historical-performance-illustration",
+    "brief": "TITLE TO DRAW: Randomized data: PLINQ and QueueUserWorkItem. Create a new refined pastel architectural infographic illustrating the historical CPU utilization screenshot supplied as content reference. Large principal CPU utilization card showing exactly 99%; a separate memory card exactly 1.26 GB. Show exactly 4 compact processor tiles in one orderly row or two equal rows, each with a fine miniature green history trace echoing the source shape. Do not invent individual percentages, timings, axes or measurements. The source history traces are schematic visual context, not newly measured data. Labels allowed: CPU utilization, Memory, 4 cores, Historical capture. Keep exact principal values. Light paper background, delicate navy outlines, pale blue and mint cards on shallow illustrated platforms, restrained amber accents, no people. Do not reproduce operating-system UI chrome or small incidental system statistics. Large readable upright text. Use source reference only for its principal data; style reference for visual treatment.",
+    "alt": "Historical randomized data: plinq and queueuserworkitem capture, showing 99% total CPU utilization and 1.26 GB memory on 4 cores.",
+    "caption": "Illustration of the original capture: 99% CPU utilization and 1.26 GB memory. The small history traces are schematic; these are historical measurements."
+  },
+  "data-parallel-parallel-programming-in-net/figure-07": {
+    "kind": "historical-performance-illustration",
+    "brief": "TITLE TO DRAW: Parallel workload on eight cores. Create a new refined pastel architectural infographic illustrating the historical CPU utilization screenshot supplied as content reference. Large principal CPU utilization card showing exactly 100%; a separate memory card exactly 15.7 GB. Show exactly 8 compact processor tiles in one orderly row or two equal rows, each with a fine miniature green history trace echoing the source shape. Do not invent individual percentages, timings, axes or measurements. The source history traces are schematic visual context, not newly measured data. Labels allowed: CPU utilization, Memory, 8 cores, Historical capture. Keep exact principal values. Light paper background, delicate navy outlines, pale blue and mint cards on shallow illustrated platforms, restrained amber accents, no people. Do not reproduce operating-system UI chrome or small incidental system statistics. Large readable upright text. Use source reference only for its principal data; style reference for visual treatment.",
+    "alt": "Historical parallel workload on eight cores capture, showing 100% total CPU utilization and 15.7 GB memory on 8 cores.",
+    "caption": "Illustration of the original capture: 100% CPU utilization and 15.7 GB memory. The small history traces are schematic; these are historical measurements."
+  },
+  "data-parallel-parallel-programming-in-net/figure-02": {
+    "kind": "diagram",
+    "brief": "TITLE TO DRAW: Fork and join. Recreate the exact source topology in a new pastel architectural infographic. At top one wide orange Data bar is divided into four equal parts. Below are exactly four separate Thread containers side by side labeled Thread 1, Thread 2, Thread 3, Thread 4. Each contains its corresponding cyan Partition 1, Partition 2, Partition 3 or Partition 4 card above a blue IsPrime() operation. Four arrows from respective Data parts go down into their corresponding partitions; label this stage Fork. At bottom four arrows, one from each IsPrime() operation, join into one orange TotalCount bar divided into four contributions; label stage Join. No thread-to-thread connections. All arrows point downward. Shallow dimensional pastel cards, fine navy outlines, legible upright exact labels and open routing space. Use original for topology only and second reference for style.",
+    "alt": "Data divides into four partitions processed by IsPrime() on four threads, then joins into TotalCount.",
+    "caption": "Redrawn from the original fork-and-join diagram, preserving its four partitions and four threads."
+  },
+  "iasyncresult-making-existing-methods-asnchronous/figure-01": {
+    "kind": "console-illustration",
+    "brief": "TITLE TO DRAW: The caller continues before the result. A new pastel technical illustration centered on a clean console panel. Inside it show exactly these two lines, in this exact order and spelling, in a large clear monospace font: first line \"You should see the number of primes after this message\"; second line \"1231\". No prompt path, no extra output, no timestamps. A thin subtle downward arrow OUTSIDE the console indicates output order. Small pale blue caller card at left and mint result card at lower right can reinforce the sequence without adding a code listing. Keep all output readable. Fine navy outlines, softly dimensional pastel platforms, abundant light space. Source reference supplies output; second reference supplies style.",
+    "alt": "Console output first says You should see the number of primes after this message, followed by 1231.",
+    "caption": "The original console output, redrawn with the same two lines and their order."
+  },
+  "svctraceviewer-debugging-wcf-sevices/figure-01": {
+    "kind": "diagnostic-illustration",
+    "brief": "TITLE TO DRAW: Follow the trace to the exception. Redraw the key diagnostic information from the original Service Trace Viewer as a clear three-panel guide. Left card Activities highlights Process action. Upper-right card Traces shows three rows: Replying to an operation threw an exception. / RequestContext aborted / Failed to send response message over HTTP. Mark last two Warning with amber icons. Bottom-right Exception details: System.Runtime.Serialization.InvalidDataContractException. Show type Matlus.Orion.BusinessLayer.DataReaderWrappers.SubCategoryDrw and message Cannot be serialized. A source-derived explanation below: Consider DataContractAttribute and DataMemberAttribute, or CollectionDataContractAttribute for a collection. Route one connector from selected activity to traces and another to exception details. This is a diagnostic walkthrough, not a newly captured application screenshot. Do not invent timestamps or system metrics. Use fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. The first reference supplies content; the second supplies style.",
+    "alt": "The trace viewer leads from a failed Process action through two warnings to an InvalidDataContractException for SubCategoryDrw.",
+    "caption": "Illustrated reconstruction of the captured trace, highlighting the serialization exception and its diagnostic guidance."
+  },
+  "fastest-website-on-the-planet/figure-01": {
+    "kind": "historical-performance-illustration",
+    "brief": "TITLE TO DRAW: Historical Page Speed score. Recreate the source result as one large readable measurement card. Labels and exact values: Show Slow; URL http://www.matlus.com/; Timestamp 2011-01-22 06:37:31; Page Speed score A (99). Long green score bar. Include a small calendar icon and browser-page icon. Add the label Historical capture. No new scores, measurements or dates. Use fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. The first reference supplies content; the second supplies style.",
+    "alt": "Show Slow recorded an A (99) Page Speed score for matlus.com at 2011-01-22 06:37:31.",
+    "caption": "The original Show Slow result, redrawn with its recorded score and timestamp."
+  },
+  "fastest-website-on-the-planet/figure-02": {
+    "kind": "historical-performance-illustration",
+    "brief": "TITLE TO DRAW: Historical site performance. Preserve source summary as three clear cards: Average page load 1.3 seconds; Faster than 85% of sites; Updated January 20, 2011. Add clearly visible qualification: Low accuracy: fewer than 100 data points. A small illustrative blue sparkline echoes the source curve rising from roughly 0.7 to 1.3 seconds, with a pale green background and horizontal dotted threshold at 1.5 seconds. Label sparkline Schematic trend. Include Historical capture. No new data points or current performance claim. Use fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. The first reference supplies content; the second supplies style.",
+    "alt": "Historical Webmaster Tools report: 1.3-second average load, faster than 85% of sites, with fewer than 100 data points.",
+    "caption": "Redrawn from the January 20, 2011 report. Its low-accuracy qualification is retained; the trend line is schematic."
+  },
+  "fastest-website-on-the-planet/figure-03": {
+    "kind": "historical-performance-illustration",
+    "brief": "TITLE TO DRAW: Historical page download time. Large white report card. Exact metric label Time spent downloading a page (in milliseconds). Two headline values High 2,590 and Average 990. A small schematic red line echoes the original October through January history: variable values around 700 to 1500, occasional peaks, then sharp fall approaching January. Horizontal labels Oct Nov Dec Jan; vertical labels 0 1,500 3,000. Label chart Schematic trend and footer Historical capture. Do not introduce other values or dates. Use fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. The first reference supplies content; the second supplies style.",
+    "alt": "Historical crawler report showing a high download time of 2,590 milliseconds and an average of 990 milliseconds.",
+    "caption": "The original download-time summary, redrawn with its reported values and a schematic trend."
+  },
+  "metaweblog-api-c-library/figure-01": {
+    "kind": "diagram",
+    "brief": "TITLE TO DRAW: MetaWeblog flow. Exactly three nodes across: Windows Live Writer represented by a writing pad and pen; Web Server represented by a server; ThoughtStream Blogging Engine represented by a folder, globe and idea bulb. Connect first and second with a simple line labeled XML over HTTP. Connect second and third with a simple line labeled C#. Original connections have no arrowheads, so do not impose a direction. Use fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. The first reference supplies content; the second supplies style.",
+    "alt": "Windows Live Writer connects to a Web Server through XML over HTTP, and the server connects to the ThoughtStream Blogging Engine through C#.",
+    "caption": "Redrawn from the original three-part integration diagram."
+  },
+  "metaweblog-api-c-library/figure-02": {
+    "kind": "class-diagram",
+    "brief": "TITLE TO DRAW: MetaWeblog library types. Redraw the original type overview with no added relationship arrows. Left column eight small cards: BlogInfo Class; CategoryInfo Class; Post Class; MediaObject Class; MediaObjectInfo Class; UserInfo Class; XmlRpcFaultInfo Class; XmlDocumentE... Static Class (retain the source truncated label). Center tall MetaWeblogManager Class card. Properties: MetaWeblogProvider, OutputStream, XmlDocument. Methods, each on a separate line: CreateXmlDocument, DeletePost, DeserializeStruct<T>, EditPost, GetCategories, GetLocalDateTimeFromMetaWeblogFormat, GetMethodName, GetParams, GetPost, GetRecentPosts, GetUserInfo, GetUsersBlogs, MetaWeblogManager, NewMediaObject, NewPost, ProcessMetaWeblogApiCall, WriteBooleanValueToOutputStream, WriteInt32ValueToOutputStream, WriteStringValueToOutputStream, WriteStructCollectionToOutputStream<T>, WriteStructCollectionToXmlNode<T>, WriteStructToOutputStream<T>, WriteStructToXmlNode<T>, WriteToStructNode<T>, WriteXmlRpcFault. Right card IMetaWeblogProvider Interface. Methods: DeletePost, EditPost, GetCategories, GetPost, GetRecentPosts, GetUsersBlogs, NewMediaObject, NewPost. Use a tall roomy layout so every exact identifier is readable. No invented types or method signatures. Use fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. The first reference supplies content; the second supplies style.",
+    "alt": "The original MetaWeblog library type inventory, with data classes, MetaWeblogManager properties and methods, and IMetaWeblogProvider operations.",
+    "caption": "Redrawn from the original type overview. The static-class name remains truncated as it was in the source image."
+  },
+  "oauth-c-library/figure-01": {
+    "kind": "interface-illustration",
+    "brief": "TITLE TO DRAW: Choose a provider. Draw a fresh illustrated browser card representing the original Log in page. Exact heading Log in. Exact sentence: If you already have an account with one of these sites, click the logo to log in with it here. Four equal buttons in source order labeled Google, twitter, YAHOO!, vimeo, each with small log in using text. Address localhost/oAuthWeb/Default.aspx. No extra provider or success message. Use text labels instead of copying logos. Use fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. The first reference supplies content; the second supplies style.",
+    "alt": "The original login example offers Google, Twitter, Yahoo and Vimeo as providers.",
+    "caption": "Illustrated reconstruction of the sample provider-selection screen."
+  },
+  "oauth-c-library/figure-02": {
+    "kind": "interface-illustration",
+    "brief": "TITLE TO DRAW: Authorize the requested access. An illustrated Google accounts authorization card, preserving the historical screen purpose. Exact readable text: The site is requesting access to your Google Account. Requested access: Email address. Grant access and Deny access buttons. Include these source qualifications: Grant access only if you trust the site. You can revoke access under My Account. The site will not have access to your password. Keep all personal account identifiers and site names omitted as they were obscured in source. Do not invent personal information. No password field, no modern OAuth claims. Use fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. The first reference supplies content; the second supplies style.",
+    "alt": "Historical Google authorization screen requesting access to the email address, with Grant access and Deny access choices.",
+    "caption": "Illustration of the original consent screen. Obscured account and site identifiers remain omitted."
+  },
+  "oauth-c-library/figure-03": {
+    "kind": "interface-illustration",
+    "brief": "TITLE TO DRAW: Return to the application. Recreate the illustrated login browser card with heading Log in and four provider buttons Google, twitter, YAHOO!, vimeo. Below show this original success message exactly: Congratulation, you've been Authenticated using your Google Account. Use a subtle green success accent. No other claims about authentication or permissions. Use fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. The first reference supplies content; the second supplies style.",
+    "alt": "The sample returns to its login page and displays its original Google Account authentication success message.",
+    "caption": "Illustrated reconstruction of the sample result screen, retaining its original success message."
+  },
+  "oauth-c-library/figure-04": {
+    "kind": "sequence-diagram",
+    "brief": "TITLE TO DRAW: The original OAuth token flow. Three numbered stages vertically, all main arrows downward. Stage 1 GetOAuthRequestToken() with parameters requestTokenEndpoint, Realm, consumerKey, consumerSecret, callback. Arrow to Returns RequestToken. Note Persist the RequestToken for step 3. Stage 2 Make a call to Authorize the RequestToken; Redirect to an endpoint sending the token you received. Arrow to Returns Verifier. Note The provider calls the callback URL specified in step 1. Persisted RequestToken AND Verifier feed Stage 3 Exchange RequestToken for AccessToken / GetOAuthAccessToken() with parameters accessTokenEndpoint, realm, consumerKey, consumerSecret, token, verifier, tokenSecret. Final downward arrow to Done. Preserve this source flow; do not substitute OAuth 2 authorization-code labels. Route connectors cleanly, with long parameter lists readable. Use fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. The first reference supplies content; the second supplies style.",
+    "alt": "The original three-step OAuth flow obtains a request token, authorizes it to obtain a verifier, then exchanges them for an access token.",
+    "caption": "Redrawn from the original token-flow diagram, preserving its method names, parameters, callback, and stored-token requirement."
+  },
+  "high-performance-class-factory/figure-01": {
+    "kind": "diagram",
+    "brief": "TITLE TO DRAW: Factory design pattern. Three nodes left to right Client, Factory, Product. Product is a stack of three concrete-product cards. One arrow Client to Factory, another Factory to Product. Two adjacent pale peach background panels separated at the factory emphasize decoupling. Source callout by Client: Client uses a Product Factory to get instances of product objects rather than creating products directly. Source callout by Factory: Client is decoupled from the various concrete product types. No other arrows. Fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. First reference supplies exact content and topology; second supplies style.",
+    "alt": "Client requests a product from a Factory, which separates the client from concrete product types.",
+    "caption": "Redrawn from the original factory-pattern diagram."
+  },
+  "instantiating-business-layers-asp-net-performance/figure-01": {
+    "kind": "diagram",
+    "brief": "TITLE TO DRAW: IIS and the application pool. Preserve the original diagram as historical model: IIS card at top, vertically connected to App Pool with arrowheads at BOTH ends and label Request/Response. App Pool encloses exactly one Worker Process. Worker Process encloses exactly THREE separate cards, each labeled ASP.NET Application and HttpApplication. Do not add an AppDomain label or reinterpret the source diagram. Fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. First reference supplies exact content and topology; second supplies style.",
+    "alt": "The original model shows IIS exchanging requests and responses with an App Pool containing a Worker Process and three HttpApplication cards.",
+    "caption": "Redrawn from the original article diagram, retaining its labels and containment model."
+  },
+  "instantiating-business-layers-asp-net-performance/figure-02": {
+    "kind": "diagram",
+    "brief": "TITLE TO DRAW: Application and layers. One outer container labeled ASP.NET Application and HttpApplication. Inside, Business Layer card upper-left and Data Layer card upper-right. One arrow from the HttpApplication label down into Business Layer. One arrow from Business Layer right into Data Layer. Below a stack of three Page cards, with no invented connectors to pages. Preserve this original layout. Fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. First reference supplies exact content and topology; second supplies style.",
+    "alt": "An HttpApplication contains Business Layer, Data Layer and Page instances, with a Business Layer to Data Layer arrow.",
+    "caption": "Redrawn from the original application-and-layers diagram."
+  },
+  "razor-engine-host/figure-01": {
+    "kind": "interface-illustration",
+    "brief": "TITLE TO DRAW: Run a Razor template in a desktop host. Reinterpret the original desktop tool as an illustrated input-to-output workflow. A large Template panel at left shows only the exact short tokens @functions, GetCustomerFullName(Customer customer), @foreach(var customer in Customers), and <ul>. Central Execute Template button and a single left-to-right arrow. Output panel at right has the original names as four pairs of rows: Bill Gates / Full Name: Bill Gates; Steve Jobs / Full Name: Steve Jobs; Larry Ellison / Full Name: Larry Ellison; Samuel Palmisano / Full Name: Samuel Palmisano. Label output HTML list. No invented code. Full template and exact raw HTML remain in article text so this image can focus on input and output. Fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. First reference supplies exact content and topology; second supplies style.",
+    "alt": "A desktop Razor Host executes a customer template and produces the original four customer names and full-name rows.",
+    "caption": "Illustration of the original desktop host. The complete template and generated HTML remain in the code listings."
+  },
+  "problems-with-asp-net-mvc-framework-design/figure-01": {
+    "kind": "diagram",
+    "brief": "TITLE TO DRAW: MVC design and control flow. Preserve source topology: main Request above main Controller points down to it. Main Controller points left into View, with 1 at BOTH ends. Main Controller points right into Model, with * at BOTH ends. View points left into a second dashed-outline Controller. View branches downward into exactly three Partial cards, with 1 by View end and * by the partial branch. Above the child Controller is another Request. View has a dashed connector up to that child Request with 1 at View end and * at child Request end, labeled RenderAction(). Dashed arrow from child Request points down into child Controller. A separate dashed path from leftmost Partial runs left around the diagram and then right/down into child Request. Do not add return arrows. Layout has child Controller on far left, View center-left, main Controller center-right and Model far right. Fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. First reference supplies exact content and topology; second supplies style.",
+    "alt": "MVC control flow connects the request, controller, model, view and three partials, including the RenderAction child-request path.",
+    "caption": "Redrawn from the original control-flow diagram, retaining its relationships and multiplicities."
+  },
+  "problems-with-asp-net-mvc-framework-design/figure-02": {
+    "kind": "diagram",
+    "brief": "TITLE TO DRAW: RenderAction control flow. Preserve source topology: main Request above main Controller points down to it. Main Controller points left into View, with 1 at BOTH ends. Main Controller points right into Model, with * at BOTH ends. View points left into a second dashed-outline Controller. View branches downward into exactly three Partial cards, with 1 by View end and * by the partial branch. Above the child Controller is another Request. View has a dashed connector up to that child Request with 1 at View end and * at child Request end, labeled RenderAction(). Dashed arrow from child Request points down into child Controller. A separate dashed path from leftmost Partial runs left around the diagram and then right/down into child Request. Do not add return arrows. Layout has child Controller on far left, View center-left, main Controller center-right and Model far right. Highlight the LEFT side View, child Request, child Controller and Partial region using normal mint and blue. Dim the main Request, main Controller and Model region on RIGHT with a translucent gray overlay, as in source. Keep their labels readable. Fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. First reference supplies exact content and topology; second supplies style.",
+    "alt": "The same MVC diagram highlights the View, partials and child-action path while dimming the original controller and model.",
+    "caption": "Redrawn from the original RenderAction illustration, preserving its highlighted portion of the flow."
+  },
+  "problems-with-asp-net-mvc-framework-design/figure-03": {
+    "kind": "diagram",
+    "brief": "Recreate source figure 2's topology and page composition exactly with a new pastel architectural infographic treatment. Main heading: Quartz page composition. Large Page enclosure on LEFT contains exactly five green View regions: full-width top, large middle-left, two smaller vertically stacked middle-right, full-width bottom. Request above center points DOWN to main Builder. The Builder at center-right has branching arrows pointing LEFT into EACH of the five Views; put 1 at the Builder end and 1 by EACH View target. Model is to the RIGHT with arrow from Builder into Model and * at BOTH ends. A second Builder in a dashed rounded enclosure sits BELOW main Builder, reached by a dashed downward arrow with 1 at main end and * at child end. The entire five-view composition belongs inside Page. Do not add a view-to-view arrow. Use fine navy outlines and softly dimensional pastel cards; upright labels Page, View, Request, Builder, Model and exact multiplicities. Give independent connectors open routing space.",
+    "alt": "A Builder receives the request and directly composes five Views within a Page, with links to a Model and a subordinate Builder.",
+    "caption": "Redrawn from the original Builder composition diagram, preserving all five Views and their direct connections."
+  },
+  "asp-net-mvc3-razor-view-engine/figure-01": {
+    "kind": "interface-illustration",
+    "brief": "TITLE TO DRAW: Movie listings in three columns. Create a new illustrated browser example at localhost/Home/Index2/ containing exactly a three-column by three-row gallery. Preserve the nine original visible captions in reading order: Kolcsey - by Pixel Films; The Sorcerer's Apprentice (third position top row; top-middle has no visible title); The Chronicles of Narnia: The; City of Lakes - Feature Film; City Of Lakes; Hungarian Ad; Tami and Mark; Flash Player Versus \"Native\" Pl. Use newly drawn original thumbnails representing respectively a grand cathedral, woman in a hat, mysterious traveler, person and lion in a sandy landscape, sunset with a couple, bridal portrait, cafe storefront, wedding couple, dramatic sunset sky. Exact placement: row1 cathedral / woman / traveler, row2 lion / sunset couple / bridal portrait, row3 cafe / wedding / sky. Keep images equal width; captions clipped in same places as source. Do not paste source photographs or add player controls. Fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. First reference supplies exact content and topology; second supplies style.",
+    "alt": "A recreated three-column movie gallery demonstrates the original Razor view layout, using newly illustrated thumbnails.",
+    "caption": "The original gallery layout with newly illustrated thumbnail scenes; the three-column arrangement and visible captions are retained."
+  },
+  "html5-file-upload-with-progress/figure-01": {
+    "kind": "interface-illustration",
+    "brief": "TITLE TO DRAW: Upload progress. A fresh illustrated upload form preserves the original example values. Heading Select a File to Upload. Choose File button followed by StoryOfASoftwareEngineer.mp4. Upload button below. Metadata Name: StoryOfASoftwareEngineer.mp4; Size: 565.16MB; Type: video/mp4. Green progress bar filled to exactly 8%. Under bar left speed 5.91MBps, center time 1:28, right amount 46.78MB; percentage 8% at right above amount. No new numbers or claims. Fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. First reference supplies exact content and topology; second supplies style.",
+    "alt": "Upload example at 8%, showing 46.78MB transferred at 5.91MBps with 1:28 remaining.",
+    "caption": "Illustrated reconstruction of the original upload screen, retaining its displayed filename and progress values."
+  },
+  "html5-file-upload-with-progress/figure-02": {
+    "kind": "interface-illustration",
+    "brief": "TITLE TO DRAW: Upload progress. A fresh illustrated upload form preserves the original example values. Heading Select a File to Upload. Choose File button followed by StoryOfASoftwareEngineer.mp4. Upload button below. Metadata Name: StoryOfASoftwareEngineer.mp4; Size: 565.16MB; Type: video/mp4. Green progress bar filled to exactly 100%. Under bar left speed 5.72MBps, center time 0:00, right amount 565.16MB; percentage 100% at right above amount. No new numbers or claims. Below show an amber confirmation card with exact text: Your file: StoryOfASoftwareEngineer.mp4 has been received. The size of the file is: 565.16MB. Fine navy outlines, softly dimensional pastel blue, mint and amber cards, upright readable text and generous light space. First reference supplies exact content and topology; second supplies style.",
+    "alt": "Upload example at 100%, showing 565.16MB transferred at 5.72MBps with 0:00 remaining.",
+    "caption": "Illustrated reconstruction of the original upload screen, retaining its displayed filename and progress values."
+  },
+  "google-tv-apple-tv-or-just-a-computer/figure-01": {
+    "kind": "diagram",
+    "brief": "TITLE TO DRAW: Connect the computer to the home theater. Recreate original connection diagram in the approved pastel architectural infographic style: Internet-connected Computer at right with laptop and globe; HD TV bottom-left; Home Theater/Audio System top-left with receiver and speaker. Two separate blue connection lines run from computer: one to the audio system, one through a visible cable labeled DVI-D to HDMI Cable to the HD TV. Preserve the separate audio and display paths. No invented wireless link or streaming device. Light space, delicate navy outlines, pale blue/mint equipment, restrained amber accents. No people.",
+    "alt": "An internet-connected computer connects separately to a home theater audio system and to an HD TV through a DVI-D to HDMI cable.",
+    "caption": "Redrawn from the original computer-to-TV hookup diagram, retaining the separate audio and display paths."
+  },
+  "html-5-video-element-poster/figure-01": {
+    "kind": "poster-illustration",
+    "brief": "Create a completely new cinematic editorial photograph to replace the original demonstration video-poster image. Use the source only for broad subject: an adult photographer kneels on autumn grass beside a weathered timber fence at golden hour, looking down at the camera controls. Warm orange-brown jacket, blue jeans, camera in both hands. Fence recedes into a soft tree-lined field, with a blurred fence post in right foreground. Distinct new person, pose and framing, natural light, wide landscape. No text, interface, play button or border. This is a still-image demonstration, not a video.",
+    "alt": "New poster artwork showing a photographer kneeling beside a fence and checking a camera in warm evening light.",
+    "caption": "New artwork replacing the original still used to demonstrate a video poster."
+  },
+  "expanding-code-listings/figure-01": {
+    "kind": "concept-illustration",
+    "brief": "TITLE TO DRAW: Code listings. A new pastel technical illustration with exactly five paper-like code cards across a row, labeled C#, JS, Html, CSS, cmd in that order, echoing original language cards. Abstract indented code marks in background of each card, no legible invented code. Behind them a pale circuit board and two softly dimensional gears suggest formatting machinery. Fine navy outlines, pale mint and blue, restrained amber, clear upright labels, light spacious backdrop.",
+    "alt": "Five code cards labeled C#, JS, Html, CSS and cmd illustrate the supported listing formats.",
+    "caption": "New artwork retaining the five language labels from the original illustration."
+  },
+  "expanding-code-listings/figure-02": {
+    "kind": "interface-diagram",
+    "brief": "TITLE TO DRAW: The expanding code listing. New pastel annotated interface diagram representing the original requirements sketch. A wide bounded code panel has small C# document icon in top-left, bold Code Listing heading beside it, and an expand/collapse control with outward arrows at top-right. Below show only abstract indented code lines, not fabricated code. Four callouts point accurately to their targets: Icon goes here to the C# icon; Title goes here to the heading; Code listing gets a border to the outer panel edge; Expand/Collapse icon to the top-right control. The clipped code in the old screenshot is incidental; complete code listings remain in article text. Fine navy outlines, mint panel, blue controls and amber callout badges.",
+    "alt": "Annotated code panel identifies the language icon, listing title, border and expand/collapse control.",
+    "caption": "Redrawn from the original requirements sketch, preserving its four interface callouts."
+  },
+  "html-5-video-and-flash/figure-01": {
+    "kind": "concept-illustration",
+    "brief": "Create a new wide editorial illustration for the article HTML 5 Video and Flash. The source is only conceptual reference: a thoughtful viewer beside a computer, considering video technologies. Use a refined warm amber and deep charcoal illustration, a side-profile adult at left looking at a desktop display at right; a translucent ribbon of film frames and softly rendered keyboard keys in background. On screen one generic landscape video with small play control. No brand logos, statistics, code or text. Rich but calm atmosphere, distinct new composition and person, no copied photograph.",
+    "alt": "A viewer studies a video on a desktop computer, with film frames and keyboard details suggesting the underlying playback technology.",
+    "caption": "New editorial artwork for the original discussion of browser video playback."
+  },
+  "iis-manager-users/figure-01": {
+    "kind": "concept-illustration",
+    "brief": "TITLE TO DRAW: IIS 7. A new pastel technical illustration replacing the decorative IIS7 welcome graphic. Center a polished pale-blue server beside a browser window labeled Internet Information Services, with large readable IIS 7 above. Three small user-account cards and a simple key symbol in foreground suggest the article subject IIS Manager Users. Background faint network connections and a welcoming open doorway. No metrics, commands, invented configuration values or modern IIS version. Fine navy outlines, pale mint and blue, subtle amber, generous light background, no people.",
+    "alt": "IIS 7 server and user-account cards illustrate the article about IIS Manager Users.",
+    "caption": "New artwork replacing the original IIS 7 welcome graphic."
+  },
+  "flash-mobile-10-1-is-slow/figure-01": {
+    "kind": "device-illustration",
+    "brief": "Create a new editorial device illustration representing the original early Android smartphone screenshot. One dark rounded handset circa 2010, landscape orientation, thick bezel and a round physical trackball on the left; illuminated screen shows a simple home interface with search bar, three-by-three application icon grid and modest status bar. Do not use a modern edge-to-edge smartphone. Draw original generic app icons rather than copied brand logos; no invented performance values or claims. Soft pale-blue background, fine navy outlines and refined shaded device rendering, subtle amber light. No hands or people.",
+    "alt": "An illustrated early Android handset with a thick bezel, physical trackball and home-screen application grid.",
+    "caption": "New artwork representing the kind of mobile device shown in the original article."
+  }
+}

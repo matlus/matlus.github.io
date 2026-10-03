@@ -1,0 +1,499 @@
+[
+  {
+    "slug": "localdb",
+    "label": "LocalDB",
+    "description": "SQL Server LocalDB instances for local applications and automated tests, including instance creation, connection strings, and database deployment.",
+    "nearest": "load-testing",
+    "reason": "LocalDB is a database technology; load-testing describes measuring systems under concurrent demand."
+  },
+  {
+    "slug": "continuous-integration",
+    "label": "Continuous Integration",
+    "description": "Automating builds and tests as changes enter a shared codebase, including build definitions, prerequisite setup, and repeatable execution environments.",
+    "nearest": "interface-segregation",
+    "reason": "Build automation is unrelated to separating interface roles."
+  },
+  {
+    "slug": "azure",
+    "label": "Azure",
+    "description": "Deploying and operating applications on Microsoft Azure, including service configuration, role startup, storage, and execution environments.",
+    "nearest": "architecture",
+    "reason": "Azure is a specific cloud platform; architecture describes system organization independently of platform."
+  },
+  {
+    "slug": "windows-impersonation",
+    "label": "Windows Impersonation",
+    "description": "Executing work under a different Windows identity through logon tokens and impersonation contexts, including privileges and identity lifetime.",
+    "nearest": "test-isolation",
+    "reason": "Windows identity and privilege handling is distinct from ownership of test resources."
+  },
+  {
+    "slug": "msmq",
+    "label": "MSMQ",
+    "description": "Microsoft Message Queuing for passing work between processes through local or remote queues, including installation and queue-based processing.",
+    "nearest": "llm-systems",
+    "reason": "MSMQ is a messaging service, not language-model infrastructure."
+  },
+  {
+    "slug": "background-processing",
+    "label": "Background Processing",
+    "description": "Moving work beyond the initiating request into another execution context, with explicit handoff, processing responsibilities, and completion behavior.",
+    "nearest": "library-boundaries",
+    "reason": "Process handoff and deferred execution are separate subjects from contracts around external libraries."
+  },
+  {
+    "slug": "rest",
+    "label": "REST",
+    "description": "Designing and consuming resource-oriented HTTP APIs through resource identifiers, method semantics, representations, and response status codes.",
+    "nearest": "testing",
+    "reason": "REST describes API interaction semantics rather than verification practices."
+  },
+  {
+    "slug": "cors",
+    "label": "Cross-Origin Resource Sharing",
+    "description": "The HTTP mechanism through which a server permits browser requests from another origin, including origin headers, preflight requests, and allowed methods or headers.",
+    "nearest": "refactoring",
+    "reason": "Browser origin permissions are unrelated to internal code reorganization. JSONP remains a separate subject."
+  },
+  {
+    "slug": "jquery",
+    "label": "jQuery",
+    "description": "Using jQuery to work with browser elements, events, attached data, and Ajax requests.",
+    "nearest": "jev",
+    "reason": "jQuery is a browser JavaScript library, unrelated to the Jev model."
+  },
+  {
+    "slug": "http-method-override",
+    "label": "HTTP Method Override",
+    "description": "Carrying an intended HTTP method in a header on another request method, then translating it before dispatch to an application handler.",
+    "nearest": "method-design",
+    "reason": "HTTP method transport and dispatch differ from programming-language method contracts."
+  },
+  {
+    "slug": "javascript",
+    "label": "JavaScript",
+    "description": "Material specific to JavaScript, or illustrated with JavaScript examples.",
+    "nearest": "typescript",
+    "reason": "The source contains JavaScript, without TypeScript syntax or type checking."
+  },
+  {
+    "slug": "json",
+    "label": "JSON",
+    "description": "Representing structured data with JSON and converting between JSON text and application objects, including serialization and response handling.",
+    "nearest": "python",
+    "reason": "JSON is a data representation used across languages, not a Python-specific subject."
+  },
+  {
+    "slug": "httpclient",
+    "label": "HttpClient",
+    "description": "The .NET HttpClient API for sending HTTP requests and consuming responses, including request content, headers, asynchronous calls, and typed data conversion.",
+    "nearest": "test-isolation",
+    "reason": "HttpClient is an HTTP client API, not a test ownership or cleanup practice."
+  },
+  {
+    "slug": "jsonp",
+    "label": "JSONP",
+    "description": "Returning JSON inside a JavaScript callback so browser clients can consume script responses across origins, including callback selection and endpoint exposure.",
+    "nearest": "python",
+    "reason": "JSONP is a browser response technique, not language-specific Python material; it is also distinct from JSON representation and CORS headers."
+  },
+  {
+    "slug": "self-hosting",
+    "label": "Self-Hosting",
+    "description": "Running a network service inside an application's own process, with explicit listener configuration, routing, startup, and lifetime management.",
+    "nearest": "speculative-fan-out",
+    "reason": "Service hosting and lifetime are separate from parallel model judgments."
+  },
+  {
+    "slug": "quartz-aspnet",
+    "label": "Quartz for ASP.NET",
+    "description": "Shiv Kumar's ASP.NET page-composition framework, where Builders assemble view objects and HTML templates into dynamic pages.",
+    "nearest": "transport-spy",
+    "reason": "This is a named page-composition framework, unrelated to transport observation. It must not be confused with the Quartz.NET scheduler."
+  },
+  {
+    "slug": "html-templates",
+    "label": "HTML Templates",
+    "description": "Reusable HTML structures whose placeholders receive application data or rendered views, including template selection and separation from rendering code.",
+    "nearest": "template-method",
+    "reason": "HTML rendering templates are distinct from the Template Method software design pattern."
+  },
+  {
+    "slug": "webforms",
+    "label": "ASP.NET WebForms",
+    "description": "Building and configuring ASP.NET WebForms applications, including application startup, project structure, and integration with HTTP services.",
+    "nearest": "refactoring",
+    "reason": "WebForms names a specific web framework, not behavior-preserving code reorganization."
+  },
+  {
+    "slug": "roslyn",
+    "label": "Roslyn",
+    "description": "The .NET compiler platform exposes syntax trees, symbols, and semantic information for tools that inspect, transform, or generate source code.",
+    "nearest": "transport-spy",
+    "reason": "Transport observation does not cover compiler APIs or source analysis."
+  },
+  {
+    "slug": "syntax-highlighting",
+    "label": "Syntax Highlighting",
+    "description": "Classifying source-code tokens and rendering them with distinct visual styles, including the relationship between syntactic structure and semantic information.",
+    "nearest": "async-streams",
+    "reason": "Asynchronous enumeration does not cover source-code rendering."
+  },
+  {
+    "slug": "visitor-pattern",
+    "label": "Visitor Pattern",
+    "description": "Applying operations while visiting elements of an object structure, with separate handling for the kinds of elements encountered.",
+    "nearest": "iterator-pattern",
+    "reason": "Iteration supplies traversal; Visitor separates operations according to the visited element."
+  },
+  {
+    "slug": "connected-devices",
+    "label": "Connected Devices",
+    "description": "Physical devices connected to computers or networks, with software interfaces that let applications read their state or control their behavior.",
+    "nearest": "code-review",
+    "reason": "Reviewing code does not cover networked hardware and device APIs."
+  },
+  {
+    "slug": "sandboxing",
+    "label": "Sandboxing",
+    "description": "Restricting an application's access to system resources and exposing permitted capabilities through controlled interfaces and permissions.",
+    "nearest": "error-handling",
+    "reason": "Failure handling does not cover execution permissions or resource isolation."
+  },
+  {
+    "slug": "wcf",
+    "label": "WCF",
+    "description": "Windows Communication Foundation services and clients, including contracts, transport bindings, endpoints, hosting, metadata exchange, and diagnostics.",
+    "nearest": "mocking",
+    "reason": "Test substitution does not cover the WCF communication framework."
+  },
+  {
+    "slug": "service-proxies",
+    "label": "Service Proxies",
+    "description": "Client-side objects that expose a remote service's operations and translate local calls into messages sent through a transport.",
+    "nearest": "service-locator",
+    "reason": "A service locator selects collaborators; a service proxy invokes a remote service."
+  },
+  {
+    "slug": "asp-net",
+    "label": "ASP.NET",
+    "description": "Building web applications with ASP.NET, including request processing, handlers, controllers, responses, and framework behavior.",
+    "nearest": "class-design",
+    "reason": "Class organization does not cover the ASP.NET web application framework."
+  },
+  {
+    "slug": "http",
+    "label": "HTTP",
+    "description": "HTTP request and response behavior, including methods, headers, connections, content, and client-server communication.",
+    "nearest": "testing",
+    "reason": "Testing does not cover HTTP protocol behavior or request construction."
+  },
+  {
+    "slug": "asynchronous-programming-model",
+    "label": "Asynchronous Programming Model",
+    "description": "The .NET Asynchronous Programming Model exposes Begin and End method pairs, IAsyncResult, callbacks, and state for asynchronous operations.",
+    "nearest": "asynchronous-io",
+    "reason": "The specific Begin/End API contract also applies to asynchronous computation and deserves its own subject."
+  },
+  {
+    "slug": "linq",
+    "label": "LINQ",
+    "description": "Language Integrated Query operations over data, including filtering, projection, joins, grouping, and the relationship between query and method syntax.",
+    "nearest": "class-design",
+    "reason": "Class design does not cover sequence queries and their operators."
+  },
+  {
+    "slug": "parallel-programming",
+    "label": "Parallel Programming",
+    "description": "Dividing computational work so multiple processors or cores execute it at the same time, with attention to partitioning, scheduling, synchronization, and overhead.",
+    "nearest": "levels-of-abstraction",
+    "reason": "Abstraction levels concern responsibility boundaries; parallel programming concerns simultaneous computation. Concurrency overlaps but is broader than distributing computation across cores."
+  },
+  {
+    "slug": "wmi",
+    "label": "WMI",
+    "description": "Windows Management Instrumentation exposes management information about Windows systems through queryable classes and properties.",
+    "nearest": "naming",
+    "reason": "Naming does not cover Windows management APIs."
+  },
+  {
+    "slug": "cpu-hardware",
+    "label": "CPU Hardware",
+    "description": "Processor characteristics such as physical packages, cores, logical processors, instruction-set architecture, and address width.",
+    "nearest": "csharp",
+    "reason": "A language tag does not identify processor hardware as a subject."
+  },
+  {
+    "slug": "url-encoding",
+    "label": "URL Encoding",
+    "description": "Representing data in URL components through percent encoding, with attention to reserved characters, unreserved characters, and form-encoding conventions.",
+    "nearest": "concurrency",
+    "reason": "Concurrent operations do not cover URL character representation."
+  },
+  {
+    "slug": "windows-services",
+    "label": "Windows Services",
+    "description": "Background services managed by Windows, including service discovery, lifecycle commands, status changes, and programmatic control.",
+    "nearest": "interfaces",
+    "reason": "Language interfaces do not cover operating-system service management."
+  },
+  {
+    "slug": "process-management",
+    "label": "Process Management",
+    "description": "Launching and controlling operating-system processes, collecting standard output and errors, waiting for completion, and interpreting exit status.",
+    "nearest": "progress-reporting",
+    "reason": "Reporting application progress differs from managing external process lifecycles and streams."
+  },
+  {
+    "slug": "sql-server",
+    "label": "SQL Server",
+    "description": "Microsoft SQL Server databases, including SQL commands, storage features, administration, and application integration.",
+    "nearest": "service-locator",
+    "reason": "Dependency selection does not cover a database platform. Data Access describes application boundaries rather than database administration."
+  },
+  {
+    "slug": "identity-columns",
+    "label": "Identity Columns",
+    "description": "Database columns whose numeric values are generated from a seed and increment, including how insertion and reseeding affect subsequent values.",
+    "nearest": "context-compaction",
+    "reason": "Reducing language-model context does not cover generated database identifiers."
+  },
+  {
+    "slug": "duplicate-detection",
+    "label": "Duplicate Detection",
+    "description": "Finding repeated values or records under an explicitly chosen comparison key, including grouping matches and retaining the records that share that key.",
+    "nearest": "template-method",
+    "reason": "A template method organizes behavior; duplicate detection identifies repeated data."
+  },
+  {
+    "slug": "serialization",
+    "label": "Serialization",
+    "description": "Converting objects and sequences into representations that can be stored or transmitted, and reconstructing values from those representations. Contracts determine member names, data shape, and stream handling.",
+    "nearest": "verification",
+    "reason": "Verification establishes evidence; serialization transforms data representations."
+  },
+  {
+    "slug": "datareaders",
+    "label": "DataReaders",
+    "description": "Reading result sets sequentially through ADO.NET DataReaders. Typed wrappers, connection lifetime, and the choice between streaming rows and materializing objects shape their use.",
+    "nearest": "data-manager",
+    "reason": "A DataReader is a specific result-reading API; Data Manager describes an architectural responsibility."
+  },
+  {
+    "slug": "debugging",
+    "label": "Debugging",
+    "description": "Investigating unexpected application behavior with diagnostic tools, traces, and observed execution to identify its cause.",
+    "nearest": "delegates",
+    "reason": "Delegates are a language mechanism. Debugging names the investigation practice, which structured logging can support but does not cover."
+  },
+  {
+    "slug": "web-performance",
+    "label": "Web Performance",
+    "description": "How quickly websites deliver responses and become usable in a browser. Server processing, transferred resources, caching, and measurement all contribute to the result.",
+    "nearest": "public-surface",
+    "reason": "Public Surface concerns component contracts. Web performance also extends beyond the concurrent-demand measurements covered by Load Testing."
+  },
+  {
+    "slug": "blogging",
+    "label": "Blogging",
+    "description": "The tools and workflows for writing, editing, and publishing blog posts, including blog engines and their authoring interfaces.",
+    "nearest": "structured-logging",
+    "reason": "Blogging concerns publishing articles; structured logging records application events."
+  },
+  {
+    "slug": "metaweblog-api",
+    "label": "MetaWeblog API",
+    "description": "An XML-RPC interface for creating and editing blog posts, retrieving categories, and uploading media. Blog engines implement its operations so compatible authoring clients can publish to them.",
+    "nearest": "requirements-traceability",
+    "reason": "MetaWeblog is a concrete publishing protocol unrelated to requirements traceability."
+  },
+  {
+    "slug": "code-generation",
+    "label": "Code Generation",
+    "description": "Producing source code from metadata, models, or templates. Generators turn a repeatable structure into code while keeping the inputs and generated responsibilities explicit.",
+    "nearest": "code-review",
+    "reason": "Code Review evaluates code; code generation produces it."
+  },
+  {
+    "slug": "ado-net",
+    "label": "ADO.NET",
+    "description": ".NET data-access APIs for connections, commands, parameters, readers, adapters, and in-memory tables. Provider abstractions support working with different database engines.",
+    "nearest": "load-testing",
+    "reason": "ADO.NET is a data-access API family rather than a performance-testing practice."
+  },
+  {
+    "slug": "stored-procedures",
+    "label": "Stored Procedures",
+    "description": "Named database operations that accept parameters and execute commands close to the stored data. Their result sets and parameters provide contracts for application data access.",
+    "nearest": "try-parse",
+    "reason": "Stored procedures concern database operations, not parsing contracts."
+  },
+  {
+    "slug": "oauth",
+    "label": "OAuth",
+    "description": "Delegating access to protected resources through provider-issued credentials and tokens. Applications follow an authorization flow and use the resulting access token for permitted requests.",
+    "nearest": "load-testing",
+    "reason": "OAuth is an authorization protocol, unrelated to load testing."
+  },
+  {
+    "slug": "reflection",
+    "label": "Reflection",
+    "description": "Inspecting types and members at runtime and invoking capabilities that are not fixed in the calling code. In .NET, reflection also supports generating executable methods through Reflection.Emit.",
+    "nearest": "refactoring",
+    "reason": "Reflection is a runtime mechanism; refactoring changes code organization."
+  },
+  {
+    "slug": "request-binding",
+    "label": "Request Binding",
+    "description": "Mapping HTTP form fields and query parameters into typed values or objects. Binders define conversion, defaults, and how multiple incoming fields populate a model.",
+    "nearest": "requirements-traceability",
+    "reason": "Request binding transforms incoming HTTP data; requirements traceability connects requirements to evidence."
+  },
+  {
+    "slug": "type-conversion",
+    "label": "Type Conversion",
+    "description": "Transforming a value from one representation or data type into another, including parsing text, handling numeric formats, and converting collections or custom objects.",
+    "nearest": "type-casting",
+    "reason": "Type Casting covers checks and casts based on runtime type compatibility. This subject centrally concerns parsing and constructing different value representations."
+  },
+  {
+    "slug": "razor",
+    "label": "Razor",
+    "description": "Razor combines C# expressions and control flow with text templates. It supports ASP.NET views and layouts as well as hosted template generation outside a web application.",
+    "nearest": "refactoring",
+    "reason": "Razor is a template engine and syntax; refactoring describes restructuring code."
+  },
+  {
+    "slug": "model-view-controller",
+    "label": "Model-View-Controller",
+    "description": "An application structure that separates models, presentation, and the controllers coordinating interactions. Implementations determine how data and control pass between those roles.",
+    "nearest": "model-evaluation",
+    "reason": "Model evaluation concerns language-model decisions, not the MVC application structure."
+  },
+  {
+    "slug": "file-upload",
+    "label": "File Upload",
+    "description": "Transferring files from clients to servers, including file selection, multipart requests, progress feedback, and completion or failure handling.",
+    "nearest": "service-locator",
+    "reason": "Service Locator is an architectural role, not a file-transfer operation."
+  },
+  {
+    "slug": "xmlhttprequest",
+    "label": "XMLHttpRequest",
+    "description": "The browser API for sending HTTP requests and receiving responses from scripts, including request bodies, upload events, and asynchronous completion.",
+    "nearest": "testing",
+    "reason": "Testing does not identify this browser HTTP API."
+  },
+  {
+    "slug": "web-browsers",
+    "label": "Web Browsers",
+    "description": "Browser behavior, standards support, performance, and the controls people use to navigate and interact with websites.",
+    "nearest": "try-parse",
+    "reason": "Try-Parse is a parsing contract, not a browser subject."
+  },
+  {
+    "slug": "user-interface-design",
+    "label": "User Interface Design",
+    "description": "Arranging controls, content, navigation, and feedback around the tasks people need to perform.",
+    "nearest": "service-interface-layer",
+    "reason": "Service Interface Layer describes a system boundary, not the interface presented to a person."
+  },
+  {
+    "slug": "flash-player",
+    "label": "Flash Player",
+    "description": "Adobe's historical runtime for browser multimedia and interactive content, including video playback, SWF execution, and desktop or mobile integration.",
+    "nearest": "factory-pattern",
+    "reason": "Factory Pattern is unrelated to the multimedia runtime."
+  },
+  {
+    "slug": "video-codecs",
+    "label": "Video Codecs",
+    "description": "Video encoding and decoding formats, including their compression, picture quality, playback support, and hardware requirements.",
+    "nearest": "service-locator",
+    "reason": "Service Locator does not cover video compression or decoding."
+  },
+  {
+    "slug": "http-range-requests",
+    "label": "HTTP Range Requests",
+    "description": "HTTP requests for selected portions of a resource, supporting partial downloads and seeking within media without transferring the entire file first.",
+    "nearest": "progress-reporting",
+    "reason": "Progress reporting describes work already performed; range requests select the bytes to transfer."
+  },
+  {
+    "slug": "home-theater-pc",
+    "label": "Home Theater PC",
+    "description": "Using a general-purpose computer with a television and audio system for media playback, browsing, and applications, including display connections and remote input.",
+    "nearest": "load-testing",
+    "reason": "Load testing measures concurrent system demand, not a living-room computer setup."
+  },
+  {
+    "slug": "online-video",
+    "label": "Online Video",
+    "description": "Delivering and watching video over the Internet, including picture quality, bandwidth, playback devices, and viewing experience.",
+    "nearest": "configuration-provider",
+    "reason": "Configuration Provider is unrelated to Internet video delivery and viewing."
+  },
+  {
+    "slug": "html5-video",
+    "label": "HTML5 Video",
+    "description": "Native video playback through the HTML video element, including controls, poster images, browser behavior, and supported media formats.",
+    "nearest": "class-design",
+    "reason": "Class design does not cover the HTML video element or browser playback."
+  },
+  {
+    "slug": "video-posters",
+    "label": "Video Posters",
+    "description": "Representative images shown before video playback, including frame selection, custom thumbnails, and their presentation in video players.",
+    "nearest": "idempotency",
+    "reason": "Idempotency describes repeated operations, not video preview images."
+  },
+  {
+    "slug": "html-parsing",
+    "label": "HTML Parsing",
+    "description": "Reading HTML as a document structure to select elements and extract text, attributes, links, and other information.",
+    "nearest": "try-parse",
+    "reason": "Try-Parse defines invalid-input return behavior; HTML parsing concerns document structure and extraction."
+  },
+  {
+    "slug": "html-agility-pack",
+    "label": "HtmlAgilityPack",
+    "description": "A .NET library for loading and parsing HTML documents, navigating their nodes, and extracting information with selectors such as XPath.",
+    "nearest": "strategy-pattern",
+    "reason": "Strategy Pattern does not identify the HTML parsing library."
+  },
+  {
+    "slug": "h264",
+    "label": "H.264",
+    "description": "The AVC video coding standard, including compression and playback characteristics, implementation support, and licensing distinctions.",
+    "nearest": "python",
+    "reason": "Python is a programming language and does not cover the video coding standard."
+  },
+  {
+    "slug": "css",
+    "label": "CSS",
+    "description": "Stylesheets that control web presentation, including layout, positioning, overflow, colors, typography, and visual states.",
+    "nearest": "csharp",
+    "reason": "C# does not cover stylesheet rules or web layout."
+  },
+  {
+    "slug": "ftp",
+    "label": "FTP",
+    "description": "The File Transfer Protocol and its server configuration, including user access, directory isolation, and file-transfer permissions.",
+    "nearest": "refactoring",
+    "reason": "Refactoring does not cover file-transfer protocols or server configuration."
+  },
+  {
+    "slug": "authentication",
+    "label": "Authentication",
+    "description": "Establishing the identity of a user or client through credentials and configured identity providers before granting access.",
+    "nearest": "test-isolation",
+    "reason": "Test isolation concerns ownership of test state; authentication establishes identity."
+  },
+  {
+    "slug": "asp-net-web-api",
+    "label": "ASP.NET Web API",
+    "description": "The ASP.NET Web API framework for HTTP services, including ApiController routing, hosting, message handlers, formatters, and response construction.",
+    "nearest": "async-await",
+    "reason": "A web-service framework is distinct from the asynchronous language features it may use."
+  }
+]

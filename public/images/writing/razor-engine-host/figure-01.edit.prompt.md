@@ -1,0 +1,1 @@
+Edit this diagram only to add the missing short blue right-pointing arrow from the Template panel's right edge to Execute Template card's left edge. Adjust spacing minimally if necessary. Preserve all existing text, panels, other arrow, colors and style exactly.
