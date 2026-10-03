@@ -1,0 +1,529 @@
+{
+  "body": "When I started down the path of writing the Orion engine (a high performance blogging engine written in Quartz for ASP.NET), which is what drives this website, I wanted to be able to use Windows Live Writer to write my blog posts and so that need sent be down this path and so here we are.\n\nOpen Source Project - ooMetaWeblog\n\nI've published this library as an open source project on CodePlex. The project page is at: ooMetaWeblog\n\nWindows Live Writer\n\nIf you've got a blog, you should look at using Windows Live Writer and your blog writer/editor, there is nothing like it out there. It's very much like Microsoft Word and it is complete tailor made for blog writing, and for the kind of blog writing I do, which includes a lot of images and code snippets, it's perfect since there is a plug-in available for converting code from your VS.NET editor into html including all of the color highlighting etc.\n\nWindows Live Writer supports a number of blog writing/editing APIs and so I decided to implement one of those APIs for ThoughtStream so I didn't have to write and screen for the same (at least not right off the bat). And that's where the MataWeblog API comes in.\n\nMetaWeblog API\n\nThe MetaWeblog API is a well known API for writing and editing blog posts. There are many blog writers that support this API. It's not the best (read that as most complete) API for blog writing/editing but I've chose it after a lot of thought and debate. None of the APIs have good documentation so I went with the one API that almost all other APIs are based on.\n\nPersonally I'm surprised that in this day and age there is no \"real\" blogging API. I've looked at the WordPress blogging API and even though it handles a few more things as compared to the MetaWeblog API (and Live Writer supports the WordPress API as well) it's really not a well thought out API. In fact none of the API are well thought out.\n\nSince documentation is sparse and I've seen a lot of people struggling with implementing this API, I've decided to make the library I've developed available to the public. I've use this library for my blog along with Windows Live Writer so I know it is tests and works as expected.\n\nMetaWeblog C# Library\n\nThe first thing you want to look at are all the methods that are available in the API and their signatures. Take a look at code listing 1 below. The IMetaWeblogProvider interface has a bunch of methods as you can see.\n\nThis is the interface you will need to implement in blog your blogging engine in order to make it compliant with the MetaWeblog API, so you can use a blog writer such as Window Live Writer to write your blog posts.\n\nYou'll notice that the interface is completely decoupled from any http or xml nuance that is part of the MetaWeblog API. This was by design so as to make testing your implementation of this interface a lot simpler.\n\nIMetaWeblogProvider.cs\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Web;\n\nnamespace Matlus.MetaWeblog\n{\n  public interface IMetaWeblogProvider\n  {\n    BlogInfo[] GetUserBlogs(string appkey, string userName, string password);\n    Post[] GetRecentPosts(string userName, string password, string blogid, int noOfPosts);\n    CategoryInfo[] GetCategories(string userName, string password);\n    int NewPost(string userName, string password, string blogid, Post post);\n    void EditPost(string userName, string password, Post post);\n    Post GetPost(string userName, string password, int postid);\n    void DeletePost(string userName, string password, int postid);\n    MediaObjectInfo NewMediaObject(string userName, string password, MediaObject mediaObject);\n  }\n}\n\nCode Listing 1\n\nOnce you have the implementation of this interface functioning as you expect it to, getting it to work with Windows Live Writer or any other blog writer that supports the MetaWeblog API is quite simple. I do strongly suggest implementing this interface and testing it thoroughly before using the MetaWeblogManager class.\n\nNow lets just take a brief look at the various other classes that are part of the library. Below is the class diagram of the complete MetaWeblog API library that's available for download. All of the heavy lifting is done by the MetaWeblogManager class. This class talks the MetaWeblog API language (which is essentially xml over http) and translates all of the communication into simple C# method calls. So you don't really have to mess with anything but your own implementation of the IMetaWeblogProvider interface. All of the other classes are supporting classes. The classes you see going down the left hand side are classes that will shuttle data between the MetaWeblogManager and your implementation of the IMetaWeblogProvider. They are simple DTOs and have no methods, just properties.\n\n \n\nMetaWeblogManager\n\nNow, let's take a look at the MetaWeblogManager class in code listing 2 below. Once again you'll notice that this class really only works with a System.IO.Stream. This design decouples this class from any \"web\" stuff per se. Of course the Stream must contain the correct content (the xml content as per the API specification - you don't really have to worry about the xml aspect since the library handles that for you) but you're free to decide how exactly you'll provide it with this stream. The simplest way is to use this class from within an IHttpHandler, but you're not confined to this. It could be a WCF service or a regular ASP.NET web page.\n\nI'm only listing the ProcessMetaWeblogApiCall method, which is the entry point of this class. This method calls into other methods within the class that do the translation from xml to regular C# (and back) and then call the appropriate methods in the IMetaWeblogProvider interface.\n\nMetaWeblogManager.cs\npublic void ProcessMetaWeblogApiCall(Stream inputStream, Stream outputStream)\n{\n  XmlDocument = new XmlDocument();\n  XmlDocument.Load(inputStream);\n  OutputStream = outputStream;\n\n  var methodName = GetMethodName();\n\n  try\n  {        \n    switch (methodName)\n    {\n      case \"blogger.getUsersBlogs\":\n        GetUsersBlogs();\n        break;\n      case \"metaWeblog.getCategories\":\n      case \"wp.getCategories\":\n        GetCategories();\n        break;\n      case \"metaWeblog.getRecentPosts\":\n        GetRecentPosts();\n        break;\n      case \"metaWeblog.newPost\":\n        NewPost();\n        break;\n      case \"metaWeblog.editPost\":\n        EditPost();\n        break;\n      case \"metaWeblog.getPost\":\n        GetPost();\n        break;\n      case \"blogger.deletePost\":\n        DeletePost();\n        break;\n      case \"metaWeblog.newMediaObject\":\n        NewMediaObject();\n        break;\n      case \"blogger.getUserInfo\":\n        GetUserInfo();\n        break;\n    }\n\n  }\n  catch (Exception e)\n  {\n    WriteXmlRpcFault(e, outputStream);\n  }      \n}\n\nCode Listing 2: Showing the ProcessMetaWeblogApiCall method\nThe Complete Setup\n\nOf course in order to get Window Live Writer or any other blog writer to work against your blogging engine, you'll need to go all the way out to Http and that translates to an IHttpHandler or something similar. I've use a Builder (part of the Quartz for ASP.NET framework) as my point of entry into the Orion blog engine, but I'll show an implementation of an IHttpHandler. The handler is really very simple as you can see in code listing 3 below.\n\nThe MetaWeblogManager class expects an instance of a class that implements the IMetaWeblogProvider interface. In my case, my BusinessModule class is the class that implements this interface.\n\nYou'll need to register your handler like you would any other handler in ASP.NET.\n\nAn HttpHandler using the MetaWeblogManager class\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Web;\nusing System.IO;\nusing System.Xml.Linq;\nusing System.Xml;\nusing Matlus.MetaWeblog;\n\nnamespace Orion.WebLib\n{\n  public class XmlRpcHandler : HandlerBase\n  {\n    public override bool IsReusable\n    {\n      get { return true; }\n    }\n\n    public override void ProcessRequest(HttpContext context)\n    {\n      var metaWeblogManager = new MetaWeblogManager(BusinessModule);\n      metaWeblogManager.ProcessMetaWeblogApiCall(HttpContext.Current.Request.InputStream, HttpContext.Current.Response.OutputStream);\n    }\n  }\n}\n\nCode Listing 3: The IHttpHandler that instantiates the MetaWeblogManager\n\nThis brings us to the end of this post. You can download the library from the link below.\n\nMatlus.MetaWeblog\n\nThe download contains the complete source to the library. I'm using .NET 4.0 and I don't believe I'm using any .NET 4.0 specific features so you should be able to compile the library for .NET 3.5 if need be.",
+  "bodyLinks": [
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/orion/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/quartz-for-aspnet/"
+    },
+    {
+      "text": "Windows Live Writer",
+      "url": "https://web.archive.org/web/20240414180543/http://explore.live.com/windows-live-writer?os=other"
+    },
+    {
+      "text": "CodePlex",
+      "url": "https://web.archive.org/web/20240414180543/http://www.codeplex.com/"
+    },
+    {
+      "text": "ooMetaWeblog",
+      "url": "https://web.archive.org/web/20240414180543/http://metaweblogger.codeplex.com/"
+    },
+    {
+      "text": "Windows Live Writer",
+      "url": "https://web.archive.org/web/20240414180543/http://explore.live.com/windows-live-writer?os=other"
+    },
+    {
+      "text": "MataWeblog API",
+      "url": "https://web.archive.org/web/20240414180543/http://www.xmlrpc.com/metaWeblogApi"
+    },
+    {
+      "text": "MetaWeblog API",
+      "url": "https://web.archive.org/web/20240414180543/http://www.xmlrpc.com/metaWeblogApi"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/quartz-for-aspnet/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/orion/"
+    },
+    {
+      "text": "Matlus.MetaWeblog",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/content/uploads/MetaWeblog/MatlusMetaWeblog.zip"
+    }
+  ],
+  "code": [
+    "using System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Web;\n\nnamespace Matlus.MetaWeblog\n{\n  public interface IMetaWeblogProvider\n  {\n    BlogInfo[] GetUserBlogs(string appkey, string userName, string password);\n    Post[] GetRecentPosts(string userName, string password, string blogid, int noOfPosts);\n    CategoryInfo[] GetCategories(string userName, string password);\n    int NewPost(string userName, string password, string blogid, Post post);\n    void EditPost(string userName, string password, Post post);\n    Post GetPost(string userName, string password, int postid);\n    void DeletePost(string userName, string password, int postid);\n    MediaObjectInfo NewMediaObject(string userName, string password, MediaObject mediaObject);\n  }\n}\n",
+    "public void ProcessMetaWeblogApiCall(Stream inputStream, Stream outputStream)\n{\n  XmlDocument = new XmlDocument();\n  XmlDocument.Load(inputStream);\n  OutputStream = outputStream;\n\n  var methodName = GetMethodName();\n\n  try\n  {        \n    switch (methodName)\n    {\n      case \"blogger.getUsersBlogs\":\n        GetUsersBlogs();\n        break;\n      case \"metaWeblog.getCategories\":\n      case \"wp.getCategories\":\n        GetCategories();\n        break;\n      case \"metaWeblog.getRecentPosts\":\n        GetRecentPosts();\n        break;\n      case \"metaWeblog.newPost\":\n        NewPost();\n        break;\n      case \"metaWeblog.editPost\":\n        EditPost();\n        break;\n      case \"metaWeblog.getPost\":\n        GetPost();\n        break;\n      case \"blogger.deletePost\":\n        DeletePost();\n        break;\n      case \"metaWeblog.newMediaObject\":\n        NewMediaObject();\n        break;\n      case \"blogger.getUserInfo\":\n        GetUserInfo();\n        break;\n    }\n\n  }\n  catch (Exception e)\n  {\n    WriteXmlRpcFault(e, outputStream);\n  }      \n}\n",
+    "using System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Web;\nusing System.IO;\nusing System.Xml.Linq;\nusing System.Xml;\nusing Matlus.MetaWeblog;\n\nnamespace Orion.WebLib\n{\n  public class XmlRpcHandler : HandlerBase\n  {\n    public override bool IsReusable\n    {\n      get { return true; }\n    }\n\n    public override void ProcessRequest(HttpContext context)\n    {\n      var metaWeblogManager = new MetaWeblogManager(BusinessModule);\n      metaWeblogManager.ProcessMetaWeblogApiCall(HttpContext.Current.Request.InputStream, HttpContext.Current.Response.OutputStream);\n    }\n  }\n}\n"
+  ],
+  "header": "MetaWeblog API C# Library\nPosted by Shiv Kumar on 12th January, 2011\nCategorized Under: Programming ASP.NET\nTagged With: Orion Quartz for ASP.NET \nLicensing:MIT License \n  ",
+  "html": "<div class=\"articleText\">\n        <p>When I started down the path of writing the <a title=\"Orion  - A Blogging Engine\" href=\"/web/20240414180543/http://www.matlus.com/orion/\">Orion</a> engine (a high performance blogging engine written in <a title=\"Quartz - A High Performance ASP.NET Framework\" href=\"/web/20240414180543/http://www.matlus.com/quartz-for-aspnet/\" target=\"_blank\">Quartz for ASP.NET</a>), which is what drives this website, I wanted to be able to use <a href=\"https://web.archive.org/web/20240414180543/http://explore.live.com/windows-live-writer?os=other\" target=\"_blank\">Windows Live Writer</a> to write my blog posts and so that need sent be down this path and so here we are. </p> <div class=\"panel\"> <h3 class=\"note\">Open Source Project - ooMetaWeblog</h3> <p>I've published this library as an open source project on <a title=\"CodePlex.com\" href=\"https://web.archive.org/web/20240414180543/http://www.codeplex.com/\" target=\"_blank\">CodePlex</a>. The project page is at: <a title=\"MetaWeblog API Open source project\" href=\"https://web.archive.org/web/20240414180543/http://metaweblogger.codeplex.com/\" target=\"_blank\">ooMetaWeblog</a> </p></div> <h2>Windows Live Writer</h2> <p>If you've got a blog, you should look at using <a title=\"Windows Live Writer 2011\" href=\"https://web.archive.org/web/20240414180543/http://explore.live.com/windows-live-writer?os=other\" target=\"_blank\">Windows Live Writer</a> and your blog writer/editor, there is nothing like it out there. It's very much like Microsoft Word and it is complete tailor made for blog writing, and for the kind of blog writing I do, which includes a lot of images and code snippets, it's perfect since there is a plug-in available for converting code from your VS.NET editor into html including all of the color highlighting etc.</p> <p>Windows Live Writer supports a number of blog writing/editing APIs and so I decided to implement one of those APIs for ThoughtStream so I didn't have to write and screen for the same (at least not right off the bat). And that's where the <a href=\"https://web.archive.org/web/20240414180543/http://www.xmlrpc.com/metaWeblogApi\" target=\"_blank\">MataWeblog API</a> comes in.</p> <h2>MetaWeblog API</h2> <p>The <a title=\"XML-RPC.com\" href=\"https://web.archive.org/web/20240414180543/http://www.xmlrpc.com/metaWeblogApi\" target=\"_blank\">MetaWeblog API</a> is a well known API for writing and editing blog posts. There are many blog writers that support this API. It's not the best (read that as most complete) API for blog writing/editing but I've chose it after a lot of thought and debate. None of the APIs have good documentation so I went with the one API that almost all other APIs are based on.</p> <p>Personally I'm surprised that in this day and age there is no \"real\" blogging API. I've looked at the WordPress blogging API and even though it handles a few more things as compared to the MetaWeblog API (and Live Writer supports the WordPress API as well) it's really not a well thought out API. In fact none of the API are well thought out.</p><img alt=\"MetaWebLog API Flow\" src=\"/web/20240414180543im_/http://www.matlus.com/content/uploads/2011/01/MetaWeblogFlow.jpg\" width=\"640\" height=\"243\">  <p>Since documentation is sparse and I've seen a lot of people struggling with implementing this API, I've decided to make the library I've developed available to the public. I've use this library for my blog along with Windows Live Writer so I know it is tests and works as expected.</p> <h2>MetaWeblog C# Library</h2> <p>The first thing you want to look at are all the methods that are available in the API and their signatures. Take a look at code listing 1 below. The <code>IMetaWeblogProvider</code> interface has a bunch of methods as you can see.</p> <p>This is the interface you will need to implement in blog your blogging engine in order to make it compliant with the MetaWeblog API, so you can use a blog writer such as Window Live Writer to write your blog posts.</p> <p>You'll notice that the interface is completely decoupled from any http or xml nuance that is part of the MetaWeblog API. This was by design so as to make testing your implementation of this interface a lot simpler.</p> <div class=\"panel code content/images/csharp.png\" title=\"IMetaWeblogProvider.cs\" id=\"code_70419\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414180543/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">IMetaWeblogProvider.cs</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre><span style=\"color: blue\">using </span>System;\n<span style=\"color: blue\">using </span>System.Collections.Generic;\n<span style=\"color: blue\">using </span>System.Linq;\n<span style=\"color: blue\">using </span>System.Web;\n\n<span style=\"color: blue\">namespace </span>Matlus.MetaWeblog\n{\n  <span style=\"color: blue\">public interface </span><span style=\"color: #2b91af\">IMetaWeblogProvider\n  </span>{\n    <span style=\"color: #2b91af\">BlogInfo</span>[] GetUserBlogs(<span style=\"color: blue\">string </span>appkey, <span style=\"color: blue\">string </span>userName, <span style=\"color: blue\">string </span>password);\n    <span style=\"color: #2b91af\">Post</span>[] GetRecentPosts(<span style=\"color: blue\">string </span>userName, <span style=\"color: blue\">string </span>password, <span style=\"color: blue\">string </span>blogid, <span style=\"color: blue\">int </span>noOfPosts);\n    <span style=\"color: #2b91af\">CategoryInfo</span>[] GetCategories(<span style=\"color: blue\">string </span>userName, <span style=\"color: blue\">string </span>password);\n    <span style=\"color: blue\">int </span>NewPost(<span style=\"color: blue\">string </span>userName, <span style=\"color: blue\">string </span>password, <span style=\"color: blue\">string </span>blogid, <span style=\"color: #2b91af\">Post </span>post);\n    <span style=\"color: blue\">void </span>EditPost(<span style=\"color: blue\">string </span>userName, <span style=\"color: blue\">string </span>password, <span style=\"color: #2b91af\">Post </span>post);\n    <span style=\"color: #2b91af\">Post </span>GetPost(<span style=\"color: blue\">string </span>userName, <span style=\"color: blue\">string </span>password, <span style=\"color: blue\">int </span>postid);\n    <span style=\"color: blue\">void </span>DeletePost(<span style=\"color: blue\">string </span>userName, <span style=\"color: blue\">string </span>password, <span style=\"color: blue\">int </span>postid);\n    <span style=\"color: #2b91af\">MediaObjectInfo </span>NewMediaObject(<span style=\"color: blue\">string </span>userName, <span style=\"color: blue\">string </span>password, <span style=\"color: #2b91af\">MediaObject </span>mediaObject);\n  }\n}\n</pre>\n<h3 style=\"margin-top: 0px\">Code Listing 1</h3></div>\n<p>Once you have the implementation of this interface functioning as you expect it to, getting it to work with Windows Live Writer or any other blog writer that supports the MetaWeblog API is quite simple. I do strongly suggest implementing this interface and testing it thoroughly before using the MetaWeblogManager class. </p>\n<p>Now lets just take a brief look at the various other classes that are part of the library. Below is the class diagram of the complete MetaWeblog API library that's available for download. All of the heavy lifting is done by the <code>MetaWeblogManager</code> class. This class talks the MetaWeblog API language (which is essentially xml over http) and translates all of the communication into simple C# method calls. So you don't really have to mess with anything but your own implementation of the <code>IMetaWeblogProvider</code> interface. All of the other classes are supporting classes. The classes you see going down the left hand side are classes that will shuttle data between the MetaWeblogManager and your implementation of the IMetaWeblogProvider. They are simple DTOs and have no methods, just properties.</p>\n<p>&nbsp;</p><img alt=\"Class Diagram of the MeataWeblog C# Library\" src=\"/web/20240414180543im_/http://www.matlus.com/content/uploads/2011/01/MatlusMetaWeblogClassDiagram.jpg\" width=\"634\" height=\"643\"> \n<h2>MetaWeblogManager</h2>\n<p>Now, let's take a look at the <code>MetaWeblogManager</code> class in code listing 2 below. Once again you'll notice that this class really only works with a <code>System.IO.Stream</code>. This design decouples this class from any \"web\" stuff per se. Of course the Stream must contain the correct content (the xml content as per the API specification - you don't really have to worry about the xml aspect since the library handles that for you) but you're free to decide how exactly you'll provide it with this stream. The simplest way is to use this class from within an <code>IHttpHandler</code>, but you're not confined to this. It could be a WCF service or a regular ASP.NET web page.</p>\n<p>I'm only listing the <code>ProcessMetaWeblogApiCall</code> method, which is the entry point of this class. This method calls into other methods within the class that do the translation from xml to regular C# (and back) and then call the appropriate methods in the <code>IMetaWeblogProvider</code> interface.</p>\n<div class=\"panel code content/images/csharp.png\" title=\"MetaWeblogManager.cs\" id=\"code_2432\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414180543/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">MetaWeblogManager.cs</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre><span style=\"color: blue\">public void </span>ProcessMetaWeblogApiCall(<span style=\"color: #2b91af\">Stream </span>inputStream, <span style=\"color: #2b91af\">Stream </span>outputStream)\n{\n  XmlDocument = <span style=\"color: blue\">new </span><span style=\"color: #2b91af\">XmlDocument</span>();\n  XmlDocument.Load(inputStream);\n  OutputStream = outputStream;\n\n  <span style=\"color: blue\">var </span>methodName = GetMethodName();\n\n  <span style=\"color: blue\">try\n  </span>{        \n    <span style=\"color: blue\">switch </span>(methodName)\n    {\n      <span style=\"color: blue\">case </span><span style=\"color: #a31515\">\"blogger.getUsersBlogs\"</span>:\n        GetUsersBlogs();\n        <span style=\"color: blue\">break</span>;\n      <span style=\"color: blue\">case </span><span style=\"color: #a31515\">\"metaWeblog.getCategories\"</span>:\n      <span style=\"color: blue\">case </span><span style=\"color: #a31515\">\"wp.getCategories\"</span>:\n        GetCategories();\n        <span style=\"color: blue\">break</span>;\n      <span style=\"color: blue\">case </span><span style=\"color: #a31515\">\"metaWeblog.getRecentPosts\"</span>:\n        GetRecentPosts();\n        <span style=\"color: blue\">break</span>;\n      <span style=\"color: blue\">case </span><span style=\"color: #a31515\">\"metaWeblog.newPost\"</span>:\n        NewPost();\n        <span style=\"color: blue\">break</span>;\n      <span style=\"color: blue\">case </span><span style=\"color: #a31515\">\"metaWeblog.editPost\"</span>:\n        EditPost();\n        <span style=\"color: blue\">break</span>;\n      <span style=\"color: blue\">case </span><span style=\"color: #a31515\">\"metaWeblog.getPost\"</span>:\n        GetPost();\n        <span style=\"color: blue\">break</span>;\n      <span style=\"color: blue\">case </span><span style=\"color: #a31515\">\"blogger.deletePost\"</span>:\n        DeletePost();\n        <span style=\"color: blue\">break</span>;\n      <span style=\"color: blue\">case </span><span style=\"color: #a31515\">\"metaWeblog.newMediaObject\"</span>:\n        NewMediaObject();\n        <span style=\"color: blue\">break</span>;\n      <span style=\"color: blue\">case </span><span style=\"color: #a31515\">\"blogger.getUserInfo\"</span>:\n        GetUserInfo();\n        <span style=\"color: blue\">break</span>;\n    }\n\n  }\n  <span style=\"color: blue\">catch </span>(<span style=\"color: #2b91af\">Exception </span>e)\n  {\n    WriteXmlRpcFault(e, outputStream);\n  }      \n}\n</pre>\n<h3 class=\"imgFooter\">Code Listing 2: Showing the ProcessMetaWeblogApiCall method</h3></div>\n<h2>The Complete Setup</h2>\n<p>Of course in order to get Window Live Writer or any other blog writer to work against your blogging engine, you'll need to go all the way out to Http and that translates to an <code>IHttpHandler</code> or something similar. I've use a <code>Builder</code> (part of the <a title=\"Builder for ASP.NET Framework\" href=\"/web/20240414180543/http://www.matlus.com/quartz-for-aspnet/\" target=\"_blank\">Quartz for ASP.NET</a> framework) as my point of entry into the <a href=\"/web/20240414180543/http://www.matlus.com/orion/\">Orion</a> blog engine, but I'll show an implementation of an <code>IHttpHandler</code>. The handler is really very simple as you can see in code listing 3 below.</p>\n<p>The <code>MetaWeblogManager</code> class expects an instance of a class that implements the <code>IMetaWeblogProvider</code> interface. In my case, my <code>BusinessModule</code> class is the class that implements this interface.</p>\n<p>You'll need to register your handler like you would any other handler in ASP.NET.</p>\n<div class=\"panel code content/images/csharp.png\" title=\"An HttpHandler using the MetaWeblogManager class\" id=\"code_43677\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414180543/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">An HttpHandler using the MetaWeblogManager class</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre><span style=\"color: blue\">using </span>System;\n<span style=\"color: blue\">using </span>System.Collections.Generic;\n<span style=\"color: blue\">using </span>System.Linq;\n<span style=\"color: blue\">using </span>System.Web;\n<span style=\"color: blue\">using </span>System.IO;\n<span style=\"color: blue\">using </span>System.Xml.Linq;\n<span style=\"color: blue\">using </span>System.Xml;\n<span style=\"color: blue\">using </span>Matlus.MetaWeblog;\n\n<span style=\"color: blue\">namespace </span>Orion.WebLib\n{\n  <span style=\"color: blue\">public class </span><span style=\"color: #2b91af\">XmlRpcHandler </span>: <span style=\"color: #2b91af\">HandlerBase\n  </span>{\n    <span style=\"color: blue\">public override bool </span>IsReusable\n    {\n      <span style=\"color: blue\">get </span>{ <span style=\"color: blue\">return true</span>; }\n    }\n\n    <span style=\"color: blue\">public override void </span>ProcessRequest(<span style=\"color: #2b91af\">HttpContext </span>context)\n    {\n      <span style=\"color: blue\">var </span>metaWeblogManager = <span style=\"color: blue\">new </span><span style=\"color: #2b91af\">MetaWeblogManager</span>(BusinessModule);\n      metaWeblogManager.ProcessMetaWeblogApiCall(<span style=\"color: #2b91af\">HttpContext</span>.Current.Request.InputStream, <span style=\"color: #2b91af\">HttpContext</span>.Current.Response.OutputStream);\n    }\n  }\n}\n</pre>\n<h3 class=\"imgFooter\">Code Listing 3: The IHttpHandler that instantiates the MetaWeblogManager</h3></div>\n<p>This brings us to the end of this post. You can download the library from the link below.</p>\n<p><a href=\"https://web.archive.org/web/20240414180543/http://www.matlus.com/content/uploads/MetaWeblog/MatlusMetaWeblog.zip\">Matlus.MetaWeblog</a></p>\n<p>The download contains the complete source to the library. I'm using .NET 4.0 and I don't believe I'm using any .NET 4.0 specific features so you should be able to compile the library for .NET 3.5 if need be.</p>  \n        </div>",
+  "images": [
+    {
+      "alt": "MetaWebLog API Flow",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240414180543im_/http://www.matlus.com/content/uploads/2011/01/MetaWeblogFlow.jpg"
+    },
+    {
+      "alt": "Class Diagram of the MeataWeblog C# Library",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240414180543im_/http://www.matlus.com/content/uploads/2011/01/MatlusMetaWeblogClassDiagram.jpg"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "ASP.NET",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/category/programming/asp-net/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414180543/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2fmetaweblog-api-c-library%2f&text=MetaWeblog+API+C%23+Library"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414180543/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2fmetaweblog-api-c-library%2f&t=MetaWeblog+API+C%23+Library"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414180543/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2fmetaweblog-api-c-library%2f&text=MetaWeblog+API+C%23+Library"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/orion/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/quartz-for-aspnet/"
+    },
+    {
+      "text": "Windows Live Writer",
+      "url": "https://web.archive.org/web/20240414180543/http://explore.live.com/windows-live-writer?os=other"
+    },
+    {
+      "text": "CodePlex",
+      "url": "https://web.archive.org/web/20240414180543/http://www.codeplex.com/"
+    },
+    {
+      "text": "ooMetaWeblog",
+      "url": "https://web.archive.org/web/20240414180543/http://metaweblogger.codeplex.com/"
+    },
+    {
+      "text": "Windows Live Writer",
+      "url": "https://web.archive.org/web/20240414180543/http://explore.live.com/windows-live-writer?os=other"
+    },
+    {
+      "text": "MataWeblog API",
+      "url": "https://web.archive.org/web/20240414180543/http://www.xmlrpc.com/metaWeblogApi"
+    },
+    {
+      "text": "MetaWeblog API",
+      "url": "https://web.archive.org/web/20240414180543/http://www.xmlrpc.com/metaWeblogApi"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/quartz-for-aspnet/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/orion/"
+    },
+    {
+      "text": "Matlus.MetaWeblog",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/content/uploads/MetaWeblog/MatlusMetaWeblog.zip"
+    },
+    {
+      "text": "Hayne Thet",
+      "url": "https://web.archive.org/web/20240414180543/http://www.myopenware.co.uk/"
+    },
+    {
+      "text": "James VanDyne",
+      "url": "https://web.archive.org/web/20240414180543/http://jamesvandyne.me/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/"
+    },
+    {
+      "text": "Ricardo Peres",
+      "url": "https://web.archive.org/web/20240414180543/http://weblogs.asp.net/ricardoperes"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/"
+    },
+    {
+      "text": "Dean Lunz",
+      "url": "https://web.archive.org/web/20240414180543/http://www.createdbyx.com/"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "MetaWeblog API C# Library",
+  "url": "https://web.archive.org/web/20240414180543/http://www.matlus.com/metaweblog-api-c-library/"
+}

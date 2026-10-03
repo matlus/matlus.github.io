@@ -1,0 +1,194 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Azure Startup Tasks – Running as Administrator</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>Azure Startup Tasks – Running as Administrator</h1><p class="recovery">Azure Startup Tasks – Running as Administrator<br>Posted by Shiv Kumar on 1st May, 2012<br>Categorized Under: Azure StartUp<br>Tagged With: StartUp Tasks <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20240915034619/http://www.matlus.com/azure-startup-tasks-running-as-administrator/">this Wayback capture</a>.</p><div class="articleText">
+        <p>There are many ways in which to implement Startup tasks for your Web and Worker Roles in Azure. However, contrary to what is commonly understood, none of them runs as Administrator or administrative privileges. Yup, that’s right, none of them.</p> <p>The misunderstanding stems from the word “elevated”. People assume this means “As Administrator”. However, it should be noted that in Azure, Startup Tasks run as the local SYSTEM account. The SYSTEM account is a much more “powerful” account but is not “Administrator”.</p> <p>Now there are times when you need actual administrative privileges when you run your startup tasks. For example, if you need to configure IIS using either <a href="https://web.archive.org/web/20240915034619/http://learn.iis.net/page.aspx/114/getting-started-with-appcmdexe/" target="_blank">appcmd</a> or <a href="https://web.archive.org/web/20240915034619/http://msdn.microsoft.com/en-us/library/microsoft.web.administration.servermanager(v=vs.90).aspx" target="_blank">ServerManager</a>, you’ll need administrative privileges. It seems that (For some reason) the SYSTEM user is not good enough for appcmd.</p> <p>&nbsp;</p> <div class="panel"> <h3 class="note">Update: You don't need to use the Impersonation class presented here</h3>Since writing this post, I've learned that one can modify the ServiceDefinition.csdef file to include <pre class="csharpcode"><span class="kwrd">&lt;</span><span class="html">Runtime</span> <span class="attr">executionContext</span><span class="kwrd">="elevated"</span><span class="kwrd">&gt;</span></pre>The <code>Runtime</code> element is a child element of the <code>WebRole</code> element. I've tested this out and it works. So it appears that “elevated” in is in fact “Administrative privileges”, however, when I check the user, it says “SYSTEM”. 
+<p>&nbsp;</p>
+<p>So you don’t need to set up your project to Enable Remote Desktop either. I’ve not tested this, but it would work, since I’ve tested it without impersonation.</p>
+<p>Note, that running AppCmd jobs in Startup&gt;Task still does not work.</p></div>
+<h2>AppCmd Anomalies</h2>
+<p>There are some operations that do work with elevated privileges (and don’t require administrative privileges). For example you can create Application Pools and configure them, but you can’t list all Websites (quite weird really) . What actually happens is that the list of website’s is empty. That is there are no websites defined (which obviously is not the case here, since this is a WebRole). So this whole this is just a mystery to me!</p>
+<p>In one of my projects I needed to set up an Azure WebRole instance to run ISAPI applications and this entailed modifying IIS settings including:</p>
+<p>1. Getting a list of existing websites (so as to get at the physical path of the configured website. The one and only website configured for the WebRole)</p>
+<p>2. Creating a specialized application pool for ISAPI applications</p>
+<p>3. Creating an IIS “Application” (and physical folder) under the default website</p>
+<p>4. Modifying the CgiIsapiRestrictions for the website</p>
+<p>5. Giving the IIS “Application” “Execeute” permission</p>
+<p>Some of these steps would work and some would not. I struggled with this for a whole day and a half, trying various combinations of things, including impersonating the administrator (after I confirmed that the user executing the start up tasks is in fact the local SYSTEM user and Not Administrator).</p>
+<h2>Executing Startup Tasks as Administrator</h2>
+<p>If you’re reading this, you’ve probably struggled with this for a bit so I’ll keep this as short as possible.</p>
+<p>You MUST use the <code>OnStart() </code>method of the class that descends from <code>RoleEntryPoint</code>. This class is typically created for you when you add a new WebRole or WorkerRole to your Azure project. If you’ve added an existing Web project to your Azure project, you can simply add a new class to your Web site project and call it <code>WebRole.cs </code>(The name is not important) and have the class descend from <code>RoleEntryPoint</code> and override the <code>OnStart()</code> method as shown in the listing below.</p>
+<p>The point is that you <strong>can not</strong> use (for some reason) batch files or executable files (and configure your Startup&gt;Tasks section in your ServiceDefinition.csdef to execute them. Attempting to impersonate an administrator in these tasks does not throw exceptions, but if your task requires administrative privileges, it will not work. This is a complete mystery to me. However, <em><strong>using the OnStart() method along with impersonation works!</strong></em></p>
+<p>&nbsp;</p>
+<div title="WebRole.cs" class="panel code content/images/csharp.png" id="code_11896"><div class="codeHeading" style="background-image: url(/web/20240915034619/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">WebRole.cs</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre><span class="Keyword">using</span> Microsoft.WindowsAzure.ServiceRuntime;
+
+<span class="Keyword">namespace</span> AzureWebRole.EntryPoint
+{
+    <span class="Keyword">public</span> <span class="Keyword">class</span> <span class="Identifier">WebRole</span> : <span class="Identifier">RoleEntryPoint</span>
+    {
+        <span class="Keyword">public</span> <span class="Keyword">override</span> <span class="Keyword">bool</span> OnStart()
+        {
+            <span class="Keyword">using</span> (<span class="Keyword">var</span> impersonation = <span class="Keyword">new</span> <span class="Identifier">MsImpersonation</span>(<span class="StringLiteral">""</span>, <span class="StringLiteral">"adminUser"</span>, <span class="StringLiteral">"adminPassword"</span>, <span class="Identifier">LogonSessionType</span>.LOGON32_LOGON_BATCH))
+            {
+                <span class="Comment">// Do your impersonated work here</span>
+            }
+            <span class="Keyword">return</span> <span class="Keyword">base</span>.OnStart();
+        }
+    }
+}
+</pre>
+<h3>The RoleEntryPoint descendant class</h3></div>
+<p>The code listing above shows such a class. In the overridden <code>OnStart() </code>method, you’ll see that I’m impersonating an administrator and then doing some work that needs administrative privileges.</p>
+<h2>Impersonating Administrator in a WebRole EntryPoint</h2>
+<p>The class presented below helps with impersonating a Windows user. You can see it in use in the code listing above.</p>
+<p>But the question is, how do you get the name and password of an administrator in a Azure built Virtual Machine? Well, we use a little trick here. When you publish your project to Azure, you’ll need to “Enable Remote Desktop” for all roles in the <strong>Publish Windows Azure Application</strong> wizard (screen shot show after the code listing below).</p>
+<div title="MsImpersonation.cs" class="panel code content/images/csharp.png" id="code_73846"><div class="codeHeading" style="background-image: url(/web/20240915034619/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">MsImpersonation.cs</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre><span class="Keyword">using</span> System;
+<span class="Keyword">using</span> System.Runtime.InteropServices;
+<span class="Keyword">using</span> System.Security.Principal;
+<span class="Keyword">using</span> System.Security.Permissions;
+<span class="Keyword">using</span> System.ComponentModel;
+
+<span class="Keyword">namespace</span> Matlus.Security
+{
+    <span class="Keyword">public</span> <span class="Keyword">enum</span> <span class="Identifier">LogonSessionType</span>
+    {
+        LOGON32_LOGON_INTERACTIVE = 2,
+        LOGON32_LOGON_NETWORK = 3,
+        LOGON32_LOGON_BATCH = 4,
+        LOGON32_LOGON_SERVICE = 5,
+        LOGON32_LOGON_UNLOCK = 7,
+        <span class="Comment"> <summary>
+        /// Only valid in Windows 2000 and higher
+        /// </summary>
+</span>        LOGON32_LOGON_NETWORK_CLEARTEXT = 8,
+        <span class="Comment"> <summary>
+        /// Only valid in Windows 2000 and higher
+        /// </summary>
+</span>        LOGON32_LOGON_NEW_CREDENTIALS = 9
+    }
+
+    <span class="Keyword">public</span> <span class="Keyword">enum</span> <span class="Identifier">LogonProvider</span>
+    {
+        LOGON32_PROVIDER_DEFAULT = 0,
+        LOGON32_PROVIDER_WINNT35 = 1,
+        LOGON32_PROVIDER_WINNT40 = 2,
+        LOGON32_PROVIDER_WINNT50 = 3
+    }
+
+    <span class="Keyword">public</span> <span class="Keyword">enum</span> <span class="Identifier">ImpersonationLevel</span>
+    {
+        SecurityAnonymous = 0,
+        SecurityIdentification = 1,
+        SecurityImpersonation = 2,
+        SecurityDelegation = 3
+    }
+
+    <span class="Comment"> <summary>
+    /// This class enables Loggin On and impersonating a specific user.
+    /// Assembly level attributes are required in order to use this class. These attributes
+    /// are typically added in the AssemblyInfo.cs file
+    /// [assembly:SecurityPermissionAttribute(SecurityAction.RequestMinimum, UnmanagedCode=true)]
+    /// [assembly:PermissionSetAttribute(SecurityAction.RequestMinimum, Name = "FullTrust")]
+    /// </summary>
+</span>    <span class="Keyword">public</span> <span class="Keyword">class</span> <span class="Identifier">MsImpersonation</span> : <span class="Identifier">IDisposable</span>
+    {
+        <span class="Keyword">private</span> <span class="Identifier">IntPtr</span> tokenHandle = <span class="Keyword">new</span> <span class="Identifier">IntPtr</span>(0);
+        <span class="Keyword">private</span> <span class="Identifier">IntPtr</span> dupeTokenHandle = <span class="Keyword">new</span> <span class="Identifier">IntPtr</span>(0);
+        <span class="Keyword">private</span> <span class="Identifier">WindowsImpersonationContext</span> windowsImpersonationContext;
+
+        <span class="Keyword">private</span> <span class="Keyword">bool</span> disposed;
+
+        [<span class="Identifier">DllImport</span>(<span class="StringLiteral">"advapi32.dll"</span>, SetLastError = <span class="Keyword">true</span>)]
+        <span class="Keyword">public</span> <span class="Keyword">static</span> <span class="Keyword">extern</span> <span class="Keyword">bool</span> LogonUser(<span class="Identifier">String</span> lpszUsername, <span class="Identifier">String</span> lpszDomain, <span class="Identifier">String</span> lpszPassword,
+          <span class="Keyword">int</span> dwLogonType, <span class="Keyword">int</span> dwLogonProvider, <span class="Keyword">ref</span> <span class="Identifier">IntPtr</span> phToken);
+
+        [<span class="Identifier">DllImport</span>(<span class="StringLiteral">"kernel32.dll"</span>, CharSet = <span class="Identifier">CharSet</span>.Auto)]
+        <span class="Keyword">public</span> <span class="Keyword">static</span> <span class="Keyword">extern</span> <span class="Keyword">bool</span> CloseHandle(<span class="Identifier">IntPtr</span> handle);
+
+        [<span class="Identifier">DllImport</span>(<span class="StringLiteral">"advapi32.dll"</span>, CharSet = <span class="Identifier">CharSet</span>.Auto, SetLastError = <span class="Keyword">true</span>)]
+        <span class="Keyword">public</span> <span class="Keyword">static</span> <span class="Keyword">extern</span> <span class="Keyword">bool</span> DuplicateToken(<span class="Identifier">IntPtr</span> ExistingTokenHandle,
+          <span class="Keyword">int</span> SECURITY_IMPERSONATION_LEVEL, <span class="Keyword">ref</span> <span class="Identifier">IntPtr</span> DuplicateTokenHandle);
+
+        <span class="Keyword">public</span> MsImpersonation(<span class="Keyword">string</span> domain, <span class="Keyword">string</span> userName, <span class="Keyword">string</span> password, <span class="Identifier">LogonSessionType</span> logOnSessionType)
+        {
+            LogOnAndImpersonateUser(domain, userName, password, logOnSessionType);
+        }
+
+        <span class="Keyword">public</span> MsImpersonation(<span class="Keyword">string</span> domain, <span class="Keyword">string</span> userName, <span class="Keyword">string</span> password, <span class="Identifier">LogonSessionType</span> logOnSessionType, <span class="Identifier">LogonProvider</span> logonProvider)
+        {
+            LogOnAndImpersonateUser(domain, userName, password, logOnSessionType, logonProvider);
+        }
+
+        [<span class="Identifier">PermissionSetAttribute</span>(<span class="Identifier">SecurityAction</span>.Demand, Name = <span class="StringLiteral">"FullTrust"</span>)]
+        <span class="Keyword">private</span> <span class="Keyword">void</span> LogOnAndImpersonateUser(<span class="Keyword">string</span> domain, <span class="Keyword">string</span> userName, <span class="Keyword">string</span> password, <span class="Identifier">LogonSessionType</span> logOnSessionType)
+        {
+            LogOnAndImpersonateUser(domain, userName, password, logOnSessionType, <span class="Identifier">LogonProvider</span>.LOGON32_PROVIDER_DEFAULT);
+        }
+
+        [<span class="Identifier">PermissionSetAttribute</span>(<span class="Identifier">SecurityAction</span>.Demand, Name = <span class="StringLiteral">"FullTrust"</span>)]
+        <span class="Keyword">private</span> <span class="Keyword">void</span> LogOnAndImpersonateUser(<span class="Keyword">string</span> domain, <span class="Keyword">string</span> userName, <span class="Keyword">string</span> password, <span class="Identifier">LogonSessionType</span> logOnSessionType, <span class="Identifier">LogonProvider</span> logonProvider)
+        {
+            tokenHandle = <span class="Identifier">IntPtr</span>.Zero;
+            dupeTokenHandle = <span class="Identifier">IntPtr</span>.Zero;
+
+            RevertToSelf();
+
+            <span class="Keyword">bool</span> returnValue = LogonUser(userName, domain, password, (<span class="Keyword">int</span>)logOnSessionType, (<span class="Keyword">int</span>)logonProvider, <span class="Keyword">ref</span> tokenHandle);
+            <span class="Keyword">if</span> (!returnValue)
+                <span class="Keyword">throw</span> <span class="Keyword">new</span> <span class="Identifier">Win32Exception</span>(<span class="Identifier">Marshal</span>.GetLastWin32Error());
+            <span class="Keyword">try</span>
+            {
+                <span class="Keyword">bool</span> retVal = DuplicateToken(tokenHandle, (<span class="Keyword">int</span>)<span class="Identifier">ImpersonationLevel</span>.SecurityImpersonation, <span class="Keyword">ref</span> dupeTokenHandle);
+                <span class="Keyword">if</span> (!retVal)
+                {
+                    CloseHandle(tokenHandle);
+                    <span class="Keyword">throw</span> <span class="Keyword">new</span> <span class="Identifier">Win32Exception</span>(<span class="Identifier">Marshal</span>.GetLastWin32Error());
+                }
+                <span class="Identifier">WindowsIdentity</span> windowsIdentity = <span class="Keyword">new</span> <span class="Identifier">WindowsIdentity</span>(dupeTokenHandle);
+                windowsImpersonationContext = windowsIdentity.Impersonate();
+            }
+            <span class="Keyword">catch</span>
+            {
+                <span class="Keyword">if</span> (tokenHandle != <span class="Identifier">IntPtr</span>.Zero)
+                    CloseHandle(tokenHandle);
+            }
+            <span class="Keyword">finally</span>
+            {
+                <span class="Keyword">if</span> (tokenHandle != <span class="Identifier">IntPtr</span>.Zero)
+                    CloseHandle(tokenHandle);
+                <span class="Keyword">if</span> (dupeTokenHandle != <span class="Identifier">IntPtr</span>.Zero)
+                    CloseHandle(dupeTokenHandle);
+            }
+        }
+
+        [<span class="Identifier">PermissionSetAttribute</span>(<span class="Identifier">SecurityAction</span>.Demand, Name = <span class="StringLiteral">"FullTrust"</span>)]
+        <span class="Keyword">private</span> <span class="Keyword">void</span> RevertToSelf()
+        {
+            <span class="Keyword">if</span> (windowsImpersonationContext != <span class="Keyword">null</span>)
+            {
+                windowsImpersonationContext.Undo();
+                windowsImpersonationContext.Dispose();
+            }
+        }
+
+        <span class="Keyword">public</span> <span class="Keyword">void</span> Dispose()
+        {
+            Dispose(<span class="Keyword">true</span>);
+            <span class="Identifier">GC</span>.SuppressFinalize(<span class="Keyword">this</span>);
+        }
+
+        <span class="Keyword">private</span> <span class="Keyword">void</span> Dispose(<span class="Keyword">bool</span> disposing)
+        {
+            <span class="Keyword">if</span> (!disposed &amp;&amp; disposing)
+            {
+                RevertToSelf();
+                disposed = <span class="Keyword">true</span>;
+            }
+        }
+    }
+}
+</pre>
+<h3>The Impersonation class</h3></div>
+<p>&nbsp;</p>
+<p>Make sure you check the checkbox highlighted in the image below and click on the “Settings…” link. You will be presented with a dialog wherein you can provide a username and password for an administrator. This is the same username and password you will use to logon and impersonate in your WebRole EntryPoint code listing above.</p>
+<p><img title="Publish-Windows-Azure-Application" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="Publish-Windows-Azure-Application" src="https://web.archive.org/web/20240915034619im_/http://www.matlus.com/content/uploads/2014/02/Publish-Windows-Azure-Application_3.png" width="620" height="421"></p>
+<p>Just to be clear, remote desktop users are administrators and enabling remote desktop for your Azure application tells Azure to create a new Windows user with the username and password you provided and add the user to the Administrator’s group. So once a Virtual Machine spins up, a user with the provided credentials will be created for you. So by the time your OnStart() method executes, the admin user is valid.</p>  
+        </div></body></html>

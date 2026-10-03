@@ -1,0 +1,288 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>C# to Html Syntax Highlighter using Roslyn</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>C# to Html Syntax Highlighter using Roslyn</h1><p class="recovery">C# to Html Syntax Highlighter using Roslyn<br>Posted by Shiv Kumar on 27th November, 2011<br>Categorized Under: Programming C#<br>Tagged With: CodeGen Roslyn <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20240415164648/http://matlus.com/c-to-html-syntax-highlighter-using-roslyn/">this Wayback capture</a>.</p><div class="articleText">
+        <p>Ever since Roslyn was announced I’ve had a few ideas about what I’d want to do with Roslyn. Primarily there are two things I’d love to use Roslyn for:  </p><ol> <li>Code generation – Generating code in such a way that I would have more semantic information about the existing code and thus be able to generate code in a “smarter” way.  </li><li>C# to Html syntax highlighting – There are a few solutions out there but for one reason or another, I’m just not happy with them.</li></ol> <p>At the time of this writing the Roslyn project does not support attributes or partial methods. For my code generation ideas, I need support for both these C# language features. The syntax highlighting “project” is more a way for getting my feet wet with Roslyn, since I’ve never really worked with a parser/ lexical scanner/compiler.  </p><p>Here is a <em><strong>live online demo version</strong></em> you can use to colorize your C# code:  </p><p><a href="https://web.archive.org/web/20240415164648/http://matlus.com/syntaxhighlighter">C# to Html Syntax Highlighter</a>  </p><p>In this post I’ll present a C# to Html syntax highlighter that I’ll publish online as a service so anyone can use it independent of an IDE. The primary point of focus (in terms of highlighting) in this project is the ability to highlight types that are unknown. This area is the biggest problem I have with other syntax highlighters.  </p><p>The Roslyn Syntax APIs give you information about the syntactic structure of the code you provide it with. However, that’s not enough to do a good job of colorizing code the way we’d expect it to. The reason is that there are many cases in which names of types have no meaning unless the appropriate assemblies and namespaces are “in-scope” in order to glean more semantic information about the code. So for example, lets take a look at the snippet of code below. </p> <div class="panel code content/images/csharp.png" title="Sample snippet of code" id="code_26466"><div class="codeHeading" style="background-image: url(/web/20240415164648/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Sample snippet of code</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre><span class="Keyword">using</span> System;<br><span class="Keyword">using</span> System.Collections.Generic;<br><span class="Keyword">using</span> System.Linq;<br><span class="Keyword">using</span> System.Text;<br><br><span class="Keyword">namespace</span> ConsoleApplication27<br>{<br>&nbsp; <span class="Keyword">class</span> <span class="Identifier">Program</span><br>&nbsp; {<br>&nbsp;&nbsp;&nbsp; <span class="Keyword">static</span> <span class="Keyword">void</span> Main(<span class="Keyword">string</span>[] args)<br>&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="Identifier">Customer</span> customer = <span class="Keyword">new</span> <span class="Identifier">Customer</span>();<br>&nbsp;&nbsp;&nbsp; }<br>&nbsp; }<br>}</pre><br>
+<h3>Code Listing 1: Sample Code</h3></div>The line: <pre><span class="Identifier">Customer</span> customer = <span class="Keyword">new</span> <span class="Identifier">Customer</span>();
+</pre>
+<p>Is syntactically legal C# code. However, without any semantic information about the rest of the code, the type <code>Customer</code> is unknown and as as result won’t get colored as an identifier (in teal) as we see above. In fact in VS the compiler will issue an error and put squiggles under the text <code>Customer</code>. The error would be: The type or namespace name 'Customer' could not be found (are you missing a using directive or an assembly reference?)</p>
+<p>There are many such cases that present difficulties in proper colorizing when attempting to do this outside of the IDE, as we are since the project presented here is for online use or as a plug-in to other tools such as Windows Live Writer that won’t be able to provide the additional semantic information needed for this job.</p>
+<div class="panel">
+<h3 class="note">Bare minimum</h3>
+<p>The code presented here requires a certain bare minimum in order to syntax highlight correctly. Code needs to be in a method body at a minimum. So if you have a few lines of code without the rest of the method the code will not highlight correctly. This is intentional as I didn’t want to hardcode a bunch of C# keywords and a bunch of “well known” identifiers etc. I wanted to see how far I could take this method too much work and with no hard coded list of keywords or identifiers. </p>
+<p>The single line above will get highlighted correctly. But that's the odd case. Snippets of code that include the entire method, or entire class get correctly highlighted (in all my tests so far). </p></div>
+<p>When I initially started down this road I thought this would be a fairly simple matter because I found <code><span class="identifier"><code>SyntaxFacts</code></span></code> (as static class in the <font size="2" face="Consolas"><font size="2" face="Consolas">Roslyn.Compilers.CSharp namespace</font></font>) that had methods such as:</p>
+<ul>
+<li>IsKeyword 
+</li><li>IsContextualKeyword 
+</li><li>IsTypeDecleration 
+</li><li>IsPredefinedType</li></ul>
+<p>So it would be a simple matter of iterating over all of the tokens in the syntax tree and processing each token differently. Instead of iterating over all of the tokens, we could Visit each token (Visitor Pattern).</p>
+<p>As part of the Roslyn project we get a class called <code>SyntaxWalker</code> that descends an entire <code>SyntaxNode</code> graph visiting each <code>SyntaxNode</code> and its children nodes and <code>SyntaxTokens</code> in depth-first order. For our purposes this is perfect since the depth-first order will allow us to write out html as we’re walking the tree.</p>
+<p>Thanks go out to <a href="https://web.archive.org/web/20240415164648/http://social.msdn.microsoft.com/profile/shyam%20namboodiripad/?ws=usercard-mini" target="_blank">Shyam Namboodiripad</a> who is on the Roslyn team and without whose help this project would have take a heck of a lot longer and probably never have completed. So Thank you Shyam!</p>
+<h2>C# to Html Syntax Highlighter</h2>
+<p>The way you would use the classes presented in this post is really very simple.</p><pre><span class="Keyword">var</span> html = <span class="Identifier">CSharpToHtmlSyntaxHighlighter</span>.GetHtml(<span class="StringLiteral">"SomeCode"</span>));
+</pre>Where "SomeCode" is the entire code you want highlighted. What you get back is html that you can insert into a blog post or html page, etc. The html generated uses CSS classes to color code the generated Html. So you'll need the following styles declared in your stylesheet or page: <pre>  .Keyword { color: #0000ff; }
+  .StringLiteral { color: #a31515; }
+  .CharacterLiteral { color: #d202fe; }
+  .Identifier { color: #2b91af; }
+  .Comment { color: #008000; }
+  .Region { color: #e0e0e0; }
+</pre>
+<h2>Introducing the CSharpToHtmlSyntaxHighlighter</h2>This class is a static class and you'd use it like shown above. The code listing below shows the entire class. 
+<div class="panel code content/images/csharp.png" title="CSharpToHtmlSyntaxHighlighter.cs" id="code_89830"><div class="codeHeading" style="background-image: url(/web/20240415164648/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle">CSharpToHtmlSyntaxHighlighter.cs</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre><span class="Keyword">using</span> System.Text;
+<span class="Keyword">using</span> System.Web;
+<span class="Keyword">using</span> Roslyn.Compilers;
+<span class="Keyword">using</span> Roslyn.Compilers.CSharp;
+
+<span class="Keyword">namespace</span> Matlus.SyntaxHighlighter
+{
+  <span class="Keyword">public</span> <span class="Keyword">static</span> <span class="Keyword">class</span> <span class="Identifier">CSharpToHtmlSyntaxHighlighter</span>
+  {
+    <span class="Keyword">private</span> <span class="Keyword">static</span> <span class="Keyword">readonly</span> <span class="Identifier">AssemblyFileReference</span> mscorlib = <span class="Keyword">new</span> <span class="Identifier">AssemblyFileReference</span>(<span class="Keyword">typeof</span>(<span class="Keyword">object</span>).Assembly.Location);
+
+    <span class="Keyword">private</span> <span class="Keyword">static</span> <span class="Identifier">SemanticModel</span> GetSemanticModelForSyntaxTree(<span class="Identifier">SyntaxTree</span> syntaxTree)
+    {      
+      <span class="Keyword">var</span> compilation = <span class="Identifier">Compilation</span>.Create(
+        outputName: <span class="StringLiteral">"CSharpToHtmlSyntaxHighlighterCompilation"</span>,
+        syntaxTrees: <span class="Keyword">new</span>[] { syntaxTree },
+        references: <span class="Keyword">new</span>[] { mscorlib });
+
+      <span class="Keyword">return</span> compilation.GetSemanticModel(syntaxTree);
+    }
+
+    <span class="Keyword">public</span> <span class="Keyword">static</span> <span class="Keyword">string</span> GetHtml(<span class="Keyword">string</span> snippetOfCode)
+    {
+      <span class="Keyword">var</span> syntaxTree = <span class="Identifier">SyntaxTree</span>.ParseCompilationUnit(snippetOfCode);
+      <span class="Keyword">var</span> semanticModel = GetSemanticModelForSyntaxTree(syntaxTree);
+      <span class="Keyword">var</span> htmlColorizerSyntaxWalker = <span class="Keyword">new</span> <span class="Identifier">HtmlColorizerSyntaxWalker</span>();
+
+      <span class="Keyword">var</span> htmlBuilder = <span class="Keyword">new</span> <span class="Identifier">StringBuilder</span>();
+      htmlColorizerSyntaxWalker.DoVisit(syntaxTree.Root, semanticModel, (tk, text) =&gt;
+        {
+          <span class="Keyword">switch</span> (tk)
+          {
+            <span class="Keyword">case</span> <span class="Identifier">TokenKind</span>.None:
+              htmlBuilder.Append(text);
+              <span class="Keyword">break</span>;
+            <span class="Keyword">case</span> <span class="Identifier">TokenKind</span>.Keyword:
+            <span class="Keyword">case</span> <span class="Identifier">TokenKind</span>.Identifier:
+            <span class="Keyword">case</span> <span class="Identifier">TokenKind</span>.StringLiteral:
+            <span class="Keyword">case</span> <span class="Identifier">TokenKind</span>.CharacterLiteral:
+            <span class="Keyword">case</span> <span class="Identifier">TokenKind</span>.Comment:
+            <span class="Keyword">case</span> <span class="Identifier">TokenKind</span>.DisabledText:
+            <span class="Keyword">case</span> <span class="Identifier">TokenKind</span>.Region:
+              htmlBuilder.Append(<span class="StringLiteral">"&lt;span class=\""</span> + tk.ToString() + <span class="StringLiteral">"\"&gt;"</span> + <span class="Identifier">HttpUtility</span>.HtmlEncode(text) + <span class="StringLiteral">"&lt;/span&gt;"</span>);
+              <span class="Keyword">break</span>;
+            <span class="Keyword">default</span>:
+              <span class="Keyword">break</span>;
+          }
+        });
+      <span class="Keyword">return</span> htmlBuilder.ToString();
+    }
+  }
+}
+
+</pre>
+<h3>Code Listing 2: Showing the entire CSharpToHtmlSyntaxHighlighter class</h3></div>
+<p>Let's take a look at the GetHtml() static method. This is the method that kicks off the whole process. </p>
+<ul>
+<li>Given a snippet of code, we create a <code class="Identifier">SyntaxTree</code> using a helper method of the <code class="Identifier">SyntaxTree</code> class. 
+</li><li>Next, using the syntax tree we create a <code class="Identifier">SemanticModel</code> using the code in the <code>GetSemanticModelForSyntaxTree</code> method. 
+</li><li>And finally, we call the <code>DoVisit()</code> method of the <code class="Identifier">HtmlColorizerSyntaxWalker</code> class.</li></ul>
+<p>When we call the <code>DoVisit()</code> method we pass it an <code class="Identifier">Action</code> delegate that we implement as a lambda expression as shown above. Each time the <code class="Identifier">HtmlColorizerSyntaxWalker</code> class finds a token of "interest" while walking the tree it calls us back in this Action delegate (the lambda above) and it is in this method that we generate the html and colorize each of the tokens in the way we desire. </p>
+<h2>Introducing the HtmlColorizerSyntaxWalker</h2>
+<p>The code listing below shows the entire HtmlColorizerSyntaxWalker class. The primary method in this class is the DoVisit() method. This method initiates the “Visit” process, providing the SyntaxWalker with the root of the syntax tree that we want it to walk along with a couple of other parameters.</p>
+<div class="panel code content/images/csharp.png" title="HtmlColorizerSyntaxWalker.cs" id="code_44219"><div class="codeHeading" style="background-image: url(/web/20240415164648/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle">HtmlColorizerSyntaxWalker.cs</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre><span class="Keyword">using</span> System;
+<span class="Keyword">using</span> Roslyn.Compilers.CSharp;
+
+<span class="Keyword">namespace</span> Matlus.SyntaxHighlighter
+{
+  <span class="Keyword">internal</span> <span class="Keyword">class</span> <span class="Identifier">HtmlColorizerSyntaxWalker</span> : <span class="Identifier">SyntaxWalker</span>
+  {
+    <span class="Keyword">private</span> <span class="Identifier">SemanticModel</span> semanticModel;
+    <span class="Keyword">private</span> <span class="Identifier">Action</span>&lt;<span class="Identifier">TokenKind</span>, <span class="Keyword">string</span>&gt; writeDelegate;
+
+    <span class="Keyword">internal</span> <span class="Keyword">void</span> DoVisit(<span class="Identifier">SyntaxNode</span> token, <span class="Identifier">SemanticModel</span> semanticModel, <span class="Identifier">Action</span>&lt;<span class="Identifier">TokenKind</span>, <span class="Keyword">string</span>&gt; writeDelegate)
+    {
+      <span class="Keyword">this</span>.semanticModel = semanticModel;
+      <span class="Keyword">this</span>.writeDelegate = writeDelegate;
+      Visit(token);
+    }
+
+    <span class="Comment">// Handle SyntaxTokens</span>
+    <span class="Keyword">protected</span> <span class="Keyword">override</span> <span class="Keyword">void</span> VisitToken(<span class="Identifier">SyntaxToken</span> token)
+    {
+      <span class="Keyword">base</span>.VisitLeadingTrivia(token);
+
+      <span class="Keyword">var</span> isProcessed = <span class="Keyword">false</span>;
+      <span class="Keyword">if</span> (token.IsKeyword())
+      {
+        writeDelegate(<span class="Identifier">TokenKind</span>.Keyword, token.GetText());
+        isProcessed = <span class="Keyword">true</span>;
+      }
+      <span class="Keyword">else</span>
+      {
+        <span class="Keyword">switch</span> (token.Kind)
+        {
+          <span class="Keyword">case</span> <span class="Identifier">SyntaxKind</span>.StringLiteralToken:
+            writeDelegate(<span class="Identifier">TokenKind</span>.StringLiteral, token.GetText());
+            isProcessed = <span class="Keyword">true</span>;
+            <span class="Keyword">break</span>;
+          <span class="Keyword">case</span> <span class="Identifier">SyntaxKind</span>.CharacterLiteralToken:
+            writeDelegate(<span class="Identifier">TokenKind</span>.CharacterLiteral, token.GetText());
+            isProcessed = <span class="Keyword">true</span>;
+            <span class="Keyword">break</span>;
+          <span class="Keyword">case</span> <span class="Identifier">SyntaxKind</span>.IdentifierToken:
+            <span class="Keyword">if</span> (token.Parent <span class="Keyword">is</span> SimpleNameSyntax)
+            {
+              <span class="Comment">// SimpleName is the base type of IdentifierNameSyntax, GenericNameSyntax etc.</span>
+              <span class="Comment">// This handles type names that appear in variable declarations etc.</span>
+              <span class="Comment">// e.g. "TypeName x = a + b;"</span>
+              <span class="Keyword">var</span> name = (<span class="Identifier">SimpleNameSyntax</span>)token.Parent;
+              <span class="Keyword">var</span> semanticInfo = semanticModel.GetSemanticInfo(name);
+              <span class="Keyword">if</span> (semanticInfo.Symbol != <span class="Keyword">null</span> &amp;&amp; semanticInfo.Symbol.Kind != <span class="Identifier">SymbolKind</span>.ErrorType)
+              {
+                <span class="Keyword">switch</span> (semanticInfo.Symbol.Kind)
+                {
+                  <span class="Keyword">case</span> <span class="Identifier">SymbolKind</span>.NamedType:
+                    writeDelegate(<span class="Identifier">TokenKind</span>.Identifier, token.GetText());
+                    isProcessed = <span class="Keyword">true</span>;
+                    <span class="Keyword">break</span>;
+                  <span class="Keyword">case</span> <span class="Identifier">SymbolKind</span>.Namespace:
+                  <span class="Keyword">case</span> <span class="Identifier">SymbolKind</span>.Parameter:
+                  <span class="Keyword">case</span> <span class="Identifier">SymbolKind</span>.Local:
+                  <span class="Keyword">case</span> <span class="Identifier">SymbolKind</span>.Field:
+                  <span class="Keyword">case</span> <span class="Identifier">SymbolKind</span>.Property:
+                    writeDelegate(<span class="Identifier">TokenKind</span>.None, token.GetText());
+                    isProcessed = <span class="Keyword">true</span>;
+                    <span class="Keyword">break</span>;
+                  <span class="Keyword">default</span>:
+                    <span class="Keyword">break</span>;
+                }
+              }
+            }
+            <span class="Keyword">else</span> <span class="Keyword">if</span> (token.Parent <span class="Keyword">is</span> TypeDeclarationSyntax)
+            {
+              <span class="Comment">// TypeDeclarationSyntax is the base type of ClassDeclarationSyntax etc.</span>
+              <span class="Comment">// This handles type names that appear in type declarations</span>
+              <span class="Comment">// e.g. "class TypeName { }"</span>
+              <span class="Keyword">var</span> name = (<span class="Identifier">TypeDeclarationSyntax</span>)token.Parent;
+              <span class="Keyword">var</span> symbol = semanticModel.GetDeclaredSymbol(name);
+              <span class="Keyword">if</span> (symbol != <span class="Keyword">null</span> &amp;&amp; symbol.Kind != <span class="Identifier">SymbolKind</span>.ErrorType)
+              {
+                <span class="Keyword">switch</span> (symbol.Kind)
+                {
+                  <span class="Keyword">case</span> <span class="Identifier">SymbolKind</span>.NamedType:
+                    writeDelegate(<span class="Identifier">TokenKind</span>.Identifier, token.GetText());
+                    isProcessed = <span class="Keyword">true</span>;
+                    <span class="Keyword">break</span>;
+                }
+              }
+            }
+            <span class="Keyword">break</span>;
+        }
+      }
+
+      <span class="Keyword">if</span> (!isProcessed)
+        HandleSpecialCaseIdentifiers(token);
+
+      <span class="Keyword">base</span>.VisitTrailingTrivia(token);
+    }
+
+    <span class="Keyword">private</span> <span class="Keyword">void</span> HandleSpecialCaseIdentifiers(<span class="Identifier">SyntaxToken</span> token)
+    {
+      <span class="Keyword">switch</span> (token.Kind)
+      {
+        <span class="Comment">// Special cases that are not handled because there is no semantic context/model that can truely identify identifiers.</span>
+        <span class="Keyword">case</span> <span class="Identifier">SyntaxKind</span>.IdentifierToken:
+          <span class="Keyword">if</span> ((token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.IdentifierName &amp;&amp; token.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.Parameter)
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.EnumDeclaration)
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.IdentifierName &amp;&amp; token.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.Attribute)
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.IdentifierName &amp;&amp; token.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.CatchDeclaration)
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.IdentifierName &amp;&amp; token.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.ObjectCreationExpression)
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.IdentifierName &amp;&amp; token.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.ForEachStatement &amp;&amp; !(token.GetNextToken().Kind == <span class="Identifier">SyntaxKind</span>.CloseParenToken))
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.IdentifierName &amp;&amp; token.Parent.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.CaseSwitchLabel &amp;&amp; !(token.GetPreviousToken().Kind == <span class="Identifier">SyntaxKind</span>.DotToken))
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.IdentifierName &amp;&amp; token.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.MethodDeclaration)
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.IdentifierName &amp;&amp; token.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.CastExpression)
+            <span class="Comment">//e.g. "private static readonly HashSet<string> patternHashSet = new HashSet<string>();" the first HashSet in this case</string></string></span>
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.GenericName &amp;&amp; token.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.VariableDeclaration)
+            <span class="Comment">//e.g. "private static readonly HashSet<string> patternHashSet = new HashSet<string>();" the second HashSet in this case</string></string></span>
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.GenericName &amp;&amp; token.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.ObjectCreationExpression)
+            <span class="Comment">//e.g. "public sealed class BuilderRouteHandler : IRouteHandler" IRouteHandler in this case</span>
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.IdentifierName &amp;&amp; token.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.BaseList)
+            <span class="Comment">//e.g. "Type baseBuilderType = typeof(BaseBuilder);" BaseBuilder in this case</span>
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.IdentifierName &amp;&amp; token.Parent.Parent.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.TypeOfExpression)
+            <span class="Comment">// e.g. "private DbProviderFactory dbProviderFactory;" OR "DbConnection connection = dbProviderFactory.CreateConnection();"</span>
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.IdentifierName &amp;&amp; token.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.VariableDeclaration)
+            <span class="Comment">// e.g. "DbTypes = new Dictionary<string dbtype="" ,="">();" DbType in this case</string></span>
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.IdentifierName &amp;&amp; token.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.TypeArgumentList)
+            <span class="Comment">// e.g. "DbTypes.Add("int", DbType.Int32);" DbType in this case</span>
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.IdentifierName &amp;&amp; token.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.MemberAccessExpression &amp;&amp; token.Parent.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.Argument &amp;&amp; !(token.GetPreviousToken().Kind == <span class="Identifier">SyntaxKind</span>.DotToken || <span class="Identifier">Char</span>.IsLower(token.GetText()[0])))
+            <span class="Comment">// e.g. "schemaCommand.CommandType = CommandType.Text;" CommandType in this case</span>
+            || (token.Parent.Kind == <span class="Identifier">SyntaxKind</span>.IdentifierName &amp;&amp; token.Parent.Parent.Kind == <span class="Identifier">SyntaxKind</span>.MemberAccessExpression &amp;&amp; !(token.GetPreviousToken().Kind == <span class="Identifier">SyntaxKind</span>.DotToken || <span class="Identifier">Char</span>.IsLower(token.GetText()[0])))
+            )
+          {
+            writeDelegate(<span class="Identifier">TokenKind</span>.Identifier, token.GetText());
+          }
+          <span class="Keyword">else</span>
+          {
+            <span class="Keyword">if</span> (token.GetText() == <span class="StringLiteral">"HashSet"</span>)
+            {
+            }
+            writeDelegate(<span class="Identifier">TokenKind</span>.None, token.GetText());
+          }
+          <span class="Keyword">break</span>;
+        <span class="Keyword">default</span>:
+          writeDelegate(<span class="Identifier">TokenKind</span>.None, token.GetText());
+          <span class="Keyword">break</span>;
+      }
+    }
+
+    <span class="Comment">// Handle SyntaxTrivia</span>
+    <span class="Keyword">protected</span> <span class="Keyword">override</span> <span class="Keyword">void</span> VisitTrivia(<span class="Identifier">SyntaxTrivia</span> trivia)
+    {
+      <span class="Keyword">switch</span> (trivia.Kind)
+      {
+        <span class="Keyword">case</span> <span class="Identifier">SyntaxKind</span>.MultiLineCommentTrivia:
+        <span class="Keyword">case</span> <span class="Identifier">SyntaxKind</span>.SingleLineCommentTrivia:
+          writeDelegate(<span class="Identifier">TokenKind</span>.Comment, trivia.GetText());
+          <span class="Keyword">break</span>;
+        <span class="Keyword">case</span> <span class="Identifier">SyntaxKind</span>.DisabledTextTrivia:
+          writeDelegate(<span class="Identifier">TokenKind</span>.DisabledText, trivia.GetText());
+          <span class="Keyword">break</span>;
+        <span class="Keyword">case</span> <span class="Identifier">SyntaxKind</span>.DocumentationComment:
+          writeDelegate(<span class="Identifier">TokenKind</span>.Comment, trivia.GetText());
+          <span class="Keyword">break</span>;
+        <span class="Keyword">case</span> <span class="Identifier">SyntaxKind</span>.RegionDirective:
+        <span class="Keyword">case</span> <span class="Identifier">SyntaxKind</span>.EndRegionDirective:
+          writeDelegate(<span class="Identifier">TokenKind</span>.Region, trivia.GetText());
+          <span class="Keyword">break</span>;
+        <span class="Keyword">default</span>:
+          writeDelegate(<span class="Identifier">TokenKind</span>.None, trivia.GetText());
+          <span class="Keyword">break</span>;
+      }
+      <span class="Keyword">base</span>.VisitTrivia(trivia);
+    }
+  }
+}
+</pre>
+<h3>Code Listing 3: Showing the entire HtmlColorizerSyntaxWalker class</h3></div>
+<p>The 3rd parameter to the <code>DoVisit()</code> method is an <code>Action</code> delegate or a callback that gets called each time the SyntaxWalker has determined that the token it is currently on is one we would be <strong><em>interested</em></strong> in. When it calls us back on this delegate it also lets us know the kind of token is has found using the <code>TokenKind</code> enum. The <code>TokenKind</code> enum is not a built in type. I couldn’t find a suitable type so I had to define one that worked best for this purpose (syntax highlighting). The definition of this enum is shown below:</p>
+<div class="panel code content/images/csharp.png" title="TokenKind.cs" id="code_9693"><div class="codeHeading" style="background-image: url(/web/20240415164648/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle">TokenKind.cs</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre><span class="Keyword">namespace</span> Matlus.SyntaxHighlighter
+{
+  <span class="Keyword">internal</span> <span class="Keyword">enum</span> <span class="Identifier">TokenKind</span>
+  {
+    None,
+    Keyword,
+    Identifier,
+    StringLiteral,
+    CharacterLiteral,
+    Comment,
+    DisabledText,
+    Region    
+  }
+}
+</pre>
+<h3>Code Listing 4: Showing the TokenKind enum</h3></div>
+<p>The rest of the code looks quite complicated but really isn't. It is basically a bunch of conditional statements.</p>
+<p>The method that handles all of the (special) cases where *we* know the token is an identifier but Roslyn can't (because it lacks semantic information) is, <code>HandleSpecialCaseIdentifiers</code>. If you come across any token that falls through the cracks, you’ll need to add a conditional statement here to handle that case.</p>  
+        </div></body></html>

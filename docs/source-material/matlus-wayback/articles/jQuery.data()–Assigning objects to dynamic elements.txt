@@ -1,0 +1,140 @@
+jQuery.data()–Assigning objects to dynamic elements
+===================================================
+
+jQuery.data()–Assigning objects to dynamic elements
+Posted by Shiv Kumar on 29th March, 2012
+Categorized Under: jQuery Snippet
+Tagged With: JSON Snippet 
+Code Gem: Snippets 
+  
+
+Original URL: http://matlus.com/jquery-data-assigning-objects-to-dynamic-elements/
+Wayback capture: https://web.archive.org/web/20240915032819/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/
+
+The jQuery documentation for the data() method explains how to use this method to stuff arbitrary “data” (simple data types or objects) into DOM elements. In the examples, these elements pre-exist or once they’ve been created you select the element in question and then stuff your data into DOM element using the jQuery.data() method. So far so good.
+
+However, most times I find I need to stuff an object into a DOM element while I’m creating the element, usually as a string. That is, I’m constructing the html of the element and that’s when I want to assign an object to the same DOM element (Which is not really a DOM element yet!).
+
+As an example, let’s say we had person object that had the following properties:
+
+firstName
+lastName
+username
+email
+
+Let’s also assume we had an array of such objects and that we were dynamically creating an html list of these persons showing the first and last names, while “storing” the additional information with the element in question.
+
+Html 5 custom data attributes
+
+One way to do this is to use the Html 5 custom data attributes, so you create elements that have data-* attributes for each of the properties of the person object. So for example the html of the constructed list would look like this:
+
+List of Presidents
+  <ul>
+    <li data-firstName="George" data-lastName="Washington" data-username="gwashington" data-email="gwashington@whitehouse.us.gov">George Washington</li>
+    <li data-firstName="John" data-lastName="Adams" data-username="jadams" data-email="jadams@whitehouse.us.gov">John Adams</li>
+    <li data-firstName="Thomas" data-lastName="Jefferson" data-username="tjefferson" data-email="tjefferson@whitehouse.us.gov">Thomas Jefferson</li>
+    <li data-firstName="James" data-lastName="Madison" data-username="jmadison" data-email="jmadison@whitehouse.us.gov">James Madison</li>
+    <li data-firstName="James" data-lastName="Monroe" data-username="jmonroe" data-email="jmonroe@whitehouse.us.gov">James Monroe</li>
+    <li data-firstName="John Quincy" data-lastName="Adams" data-username="jqadams" data-email="jqadams@whitehouse.us.gov">John Quincy Adams</li>
+    <li data-firstName="Andrew" data-lastName="Jackson" data-username="ajackson" data-email="ajackson@whitehouse.us.gov">Andrew Jackson</li>
+  </ul>
+
+Showing the html where each element has additional data-* attributes
+
+That’s easy enough to do since at the time of constructing your html since it is just string concatenation. The problems with this approach are:
+
+If you add/remove properties to the person object, you’ll need to modify the code that constructs the html to either include or remove the additional properties.
+In places where you want to use the additional information, you have to extract each property from specific attributes. Again, not only is this a pain, but if you add or remove properties, you’ll need to modify this code as well.
+
+Stuffing objects in data-* attributes of dynamic elements
+
+The simple answer to this is we assign the JSON object to the data-* attribute. So let’s say we wanted to call our attribute data-person, we’d like to assign a JSON object to this attribute at the time of creating each element (As strings). So it boils down to string concatenation really, but you’ll very likely stumble a few times before you get it right if you don’t give up before you get there.
+
+Of course you’ll need to “stringify” (Thanks a lots Douglas) your object. That part is obvious. What’s not obvious is that which quotes you use matter!
+
+Anyway, the below html/JavaScript shows you how to stuff objects into dynamically created elements as well as how to extract those objects.
+
+Html Page containg complete code
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>US Presidents</title>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+</head>
+<body>
+  <div id="presidents"></div>
+  <form id="presidentForm">
+  <fieldset>
+    <legend>President</legend>
+    <ul>
+      <li>
+        <label for="firstName" title="First Name">First Name</label>
+        <input type="text" id="firstName" name="firstName" />
+      </li>
+      <li>
+        <label for="lastName" title="Last Name">Last Name</label>
+        <input type="text" id="lastName" name="lastName" />
+      </li>
+      <li>
+        <label for="username" title="Username">Username</label>
+        <input type="text" id="username" name="username" />
+      </li>
+      <li>
+        <label for="email" title="Email Address">Email</label>
+        <input type="text" id="email" name="email" />
+      </li>
+    </ul>
+  </fieldset>
+  </form>
+  
+  <script type="text/javascript">
+    var people =
+    [
+      { "email": "gwashington@whitehouse.us.gov", "firstName": "George", "id": 1, "lastName": "Washington", "username": "gwashington" },
+      { "email": "jadams@whitehouse.us.gov", "firstName": "John", "id": 2, "lastName": "Adams", "username": "jadams" },
+      { "email": "tjefferson@whitehouse.us.gov", "firstName": "Thomas", "id": 3, "lastName": "Jefferson", "username": "tjefferson" },
+      { "email": "jmadison@whitehouse.us.gov", "firstName": "James", "id": 4, "lastName": "Madison", "username": "jmadison" },
+      { "email": "jmonroe@whitehouse.us.gov", "firstName": "James", "id": 5, "lastName": "Monroe", "username": "jmonroe" },
+      { "email": "jqadams@whitehouse.us.gov", "firstName": "John Quincy", "id": 6, "lastName": "Adams", "username": "jqadams" },
+      { "email": "ajackson@whitehouse.us.gov", "firstName": "Andrew", "id": 7, "lastName": "Jackson", "username": "ajackson" }
+    ];
+
+    $(function () {
+      //construct an unordered list of presedents
+      var items = [];
+      $.each(people, function (index, value) {
+        items.push('<li data-person=\'' + JSON.stringify(value) + '\'>' + value.firstName + ' ' + value.lastName + '</i>');
+      });
+
+      //add all <li> items to a <ul> element
+      $("<ul />", {
+        "id": "presidentsList",
+        "class": "list",
+        html: items.join("")
+      }).appendTo("#presidents");
+
+      //assign a click event to the ul element
+      $("#presidentsList").click(function (e) {
+        var person = $(e.target).data("person");
+        assignFormFieldValues("presidentForm", person);
+      });
+    });
+
+    function assignFormFieldValues(formId, obj) {
+      var fields = $("#" + formId).serializeArray();
+      $.each(fields, function (index, field) {
+        var f = $("[name=" + field.name + "]").val(obj[field.name]);
+      });
+    }
+  </script>
+</body>
+</html>
+The Html and JavaScript showing the solution
+
+--- Links in the article ---
+jQuery documentation for the data() method
+https://web.archive.org/web/20240915032819/http://api.jquery.com/jQuery.data/
+
+--- Images referenced in the article ---
+

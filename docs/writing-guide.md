@@ -1,5 +1,17 @@
 # Writing guide
 
+## Blog voice and teaching flow
+
+Use the [blog-writing skill](../.agents/skills/blog-writing/SKILL.md) for new posts
+and article edits in Shiv's voice. It combines clarity principles with guidance
+on introducing ideas, developing examples, explaining code, and preserving his
+opinions and purposeful questions. Pronouns follow the context.
+
+The [recovered Matlus archive](source-material/matlus-wayback/README.md) contains
+53 original articles as writing samples and source material. Read a relevant
+sample when preparing a substantial draft. Preserve the archive and make
+editorial changes in publication copies.
+
 ## Idea and note callouts
 
 Use a callout for a short point the reader should notice while reading an article.

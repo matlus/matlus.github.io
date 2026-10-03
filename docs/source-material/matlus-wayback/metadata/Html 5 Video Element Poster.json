@@ -1,0 +1,408 @@
+{
+  "body": "During the source of developing an html 5 video player I came across the really stupid specification and that is the poster attribute of the video element (new to Html 5). It seems that the poster is only shown till the browser has been able to download the first frame of the video in question. Which in most cases is a split second or so. After that it shows the first frame. That is really stupid considering that every video hosting website gives people the ability to choose between one or more frames of the video for which they've created thumbnail images, or in some cases allow you to upload an image that best represents the video and yet in some cases (unique to ExposureRoom only so far) go as far as providing all of the above options plus two more:\n\nAllow you to provide a time code for the frame you'd like to use as the thumbnail\nAllow you to play your video and create a thumbnail at any frame of your choosing\nSo just to re-iterate, typically you have between 2 to 4 ways in which to determine the poster fame of your video on these sites. That tells me, that picking a poster frame is really important for content producers. So don't people who come up with the specs know this? Do they think that all of the videos they see on the Internet magically have the first frame to be these spectacular images that best represent the video in question? I mean in most cases the first frame is black, for Pete's sake! And what would it really have taken for them to leave the poster in place till someone clicks the play button? Maybe we should all look forward to seeing videos across the Internet that have black images instead of interesting images that not only tell something about what you're going to see, but also the production quality and picture quality of the video.\nEdit -September 25, 2010\nSince writing this post, I've been working with WHATWG and a few browser vendors and it looks like this is going to change.",
+  "bodyLinks": [
+    {
+      "text": "ExposureRoom",
+      "url": "https://web.archive.org/web/20240415154330/http://exposureroom.com/"
+    }
+  ],
+  "code": [],
+  "header": "Html 5 Video Element Poster\nPosted by Shiv Kumar on 1st September, 2010\nCategorized Under: Html 5 Video Tag\nTagged With: Poster Video \n  ",
+  "html": "<div class=\"articleText\">\n        <p><img style=\"background-image: none; border-right-width: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"Html5VideoPosterFrame1\" border=\"0\" alt=\"Html5VideoPosterFrame1\" src=\"https://web.archive.org/web/20240415154330im_/http://www.matlus.com/content/uploads/2011/01/Html5VideoPosterFrame1_90b56724-b87d-4b57-b246-d214fe715d05.jpg\" width=\"641\" height=\"361\"></p> <p>During the source of developing an html 5 video player I came across the really stupid specification and that is the <code>poster</code> attribute of the <code>video</code> element (new to Html 5). It seems that the poster is only shown till the browser has been able to download the first frame of the video in question. Which in most cases is a split second or so. After that it shows the first frame. That is really stupid considering that every video hosting website gives people the ability to choose between one or more frames of the video for which they've created thumbnail images, or in some cases allow you to upload an image that best represents the video and yet in some cases (unique to <a href=\"https://web.archive.org/web/20240415154330/http://exposureroom.com/\" target=\"_blank\">ExposureRoom</a> only so far) go as far as providing all of the above options plus two more: </p> <ol> <li>Allow you to provide a time code for the frame you'd like to use as the thumbnail  </li><li>Allow you to play your video and create a thumbnail at any frame of your choosing </li></ol>So just to re-iterate, typically you have between 2 to 4 ways in which to determine the poster fame of your video on these sites. That tells me, that picking a poster frame is really important for content producers. So don't people who come up with the specs know this? Do they think that all of the videos they see on the Internet magically have the first frame to be these spectacular images that best represent the video in question? I mean in most cases the first frame is black, for Pete's sake! And what would it really have taken for them to leave the poster in place till someone clicks the play button? Maybe we should all look forward to seeing videos across the Internet that have black images instead of interesting images that not only tell something about what you're going to see, but also the production quality and picture quality of the video.  <h4>Edit -September 25, 2010</h4>Since writing this post, I've been working with WHATWG and a few browser vendors and it looks like this is going to change.    \n        </div>",
+  "images": [
+    {
+      "alt": "Html5VideoPosterFrame1",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240415154330im_/http://www.matlus.com/content/uploads/2011/01/Html5VideoPosterFrame1_90b56724-b87d-4b57-b246-d214fe715d05.jpg"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240415154330/http://www.matlus.com/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "Video Tag",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/category/html-5/video-tag/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/poster/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/video/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415154330/https://twitter.com/share?url=http%3a%2f%2fmatlus.com%2fhtml-5-video-element-poster%2f&text=Html+5+Video+Element+Poster"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415154330/http://www.facebook.com/sharer.php?u=http%3a%2f%2fmatlus.com%2fhtml-5-video-element-poster%2f&t=Html+5+Video+Element+Poster"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415154330/https://plus.google.com/share?url=http%3a%2f%2fmatlus.com%2fhtml-5-video-element-poster%2f&text=Html+5+Video+Element+Poster"
+    },
+    {
+      "text": "ExposureRoom",
+      "url": "https://web.archive.org/web/20240415154330/http://exposureroom.com/"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240415154330/http://matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415154330/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "Html 5 Video Element Poster",
+  "url": "https://web.archive.org/web/20240415154330/http://matlus.com/html-5-video-element-poster/"
+}

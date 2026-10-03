@@ -1,0 +1,427 @@
+{
+  "body": "This tutorial is about setting up IIS Ftp 7.5 using IIS Manger Users under Window 7 or Windows 2008. I also assume you want to use User Isolation of \"User name directory\" or similar. The documentation I have found has been scarce or incomplete. Note that this tutorial is not about showing you how to use the IIS Management UI for IIS 7.0. I assume you know how to use the IIS Management UI for IIS 7.0\n\nSetting up an Ftp Site\nMake sure you've installed Ftp 7.5 for your operating system (32bit or 64 bit). Then set up an Ftp site. you can find step by step instructions here Creating a New FTP Site. It's not the greatest tutorial but it should work.\nUser Isolation\nBesides, actually setting up user isolation using the UI in IIS Manager, you also need to create a few folders and then give the user NetworkService the proper rights to these folders and to the IIS config files. You need to create the following folders as sub folder of your Ftp site's root folder. First create a folder called LocalUser. Then under LocalUser, create a folder called public Under LocalUser again, create a folder with the name of the username of a windows user on the machine. You'll use this to test the ftp site. In order to test with a windows user, you also need to have Basic Authentication turned on for your ftp site. Do this using the Ftp Authentication icon for the Ftp site you created.\nSetting up the correct permissions\nTo grant Special permissions to the user NetworkService to the Ftp Root folder (using a command prompt):\nCommand line\nCACLS \"%SystemDrive%\\inetpub\\ftproot\" /G \"Network Service\":C /T /E\n\nNext the user NetworkService needs to be given permission to the config\nfolder and two config files.\n\nCACLS \"%SystemDrive%\\Windows\\System32\\inetsrv\\config\" /G \"Network Service\":R /E\n\nCACLS \"%SystemDrive%\\Windows\\System32\\inetsrv\\config\\administration.config\" /G \"Network Service\":R /E\n\nCACLS \"%SystemDrive%\\Windows\\System32\\inetsrv\\config\\redirection.config\" /G \"Network Service\":R /E\n\nNow you should be able to log on to the ftp site you created using the credentials of a windows user.\nIIS Manager Authentication\nFor Windows Server 2008 you can follow this tutorial in order to configure Ftp with IIS Manager Authentication Configure FTP with IIS 7.0 Manager Authentication Windows 7 does not have the IIS Manager Users UI that is available in Windows Server 2008. The other issue is that you can't simply modify the administration.config file because the password is normally saved in a hashed format. But you can create IIS Manager Users using Managed Code. Below is a simple method you can add to your class of choice. In order for this code to work a few references need to be added to your project. Add the following Reference Path to your project C:\\Windows\\System32\\inetsrv\\ Then added the following References: Microsoft.Web.Administration Microsoft.Web.Management Next, add the following namespaces using Microsoft.Web.Management.Server; using Microsoft.Web.Administration;\nCode Listing\n    /// <summary>\n    /// This method creates an Ftp User under IIS 7.0 & Ftp 7.5\n    /// </summary>\n    /// <param name=\"configurationPath\">This is the name of the Ftp site.\n    /// So you if called your Ftp site \"Default Ftp Site\", then pass in this string as the first parameter</param>\n    /// <param name=\"username\">The username of the new user you want to create</param>\n    /// <param name=\"password\">The password for the new user </param>\n    private static void CreateFtpUser(string configurationPath, string username, string password)\n    {\n      /* Step 1 */\n      /*  We only need to create a user with password if the Intent is to use IisManagerUser Authentication provider */\n      /*  If we want to use our own Custom Authentication Provider we skip this step and only do the next step */\n      /*  Create the User for the ftp site */\n      ManagementUserInfo userInfo = ManagementAuthentication.CreateUser(username, password);\n      ManagementAuthorization.Grant(userInfo.Name, configurationPath, false);\n\n      /* Step 2 */\n      /* Set up the permissions for this user (Read/Write) */\n      using (ServerManager serverManager = new ServerManager())\n      {\n        Configuration config = serverManager.GetApplicationHostConfiguration();\n        ConfigurationSection authorizationSection = config.GetSection(\"system.ftpServer/security/authorization\", configurationPath);\n\n        ConfigurationElementCollection authorizationCollection = authorizationSection.GetCollection();\n        ConfigurationElement addElement = authorizationCollection.CreateElement(\"add\");\n        addElement[\"accessType\"] = @\"Allow\";\n        addElement[\"users\"] = username;\n        addElement[\"permissions\"] = @\"Read, Write\";\n        authorizationCollection.Add(addElement);\n        serverManager.CommitChanges();\n      }\n    }\nBe sure to create a sub folder under the LocalUser folder (under your ftp site's root folder)for the users you create using the code above. The username of the user and the folder name should be the same. In order to be able to use IIS Manager Users with your Ftp site, you need to have the IISManagerAuth provider enabled for your Ftp site. Do this using the Ftp Authentication icon for your Ftp site and choose Custom Providers... from the actions pane. At this point, you should be able to log in to your Ftp site using the users you've created using either IIS Manager Users UI or the managed code provided above.",
+  "bodyLinks": [
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240415161506/http://learn.iis.net/page.aspx/310/what-is-new-for-microsoft-and-ftp-75/"
+    },
+    {
+      "text": "Creating a New FTP Site",
+      "url": "https://web.archive.org/web/20240415161506/http://learn.iis.net/page.aspx/301/creating-a-new-ftp-site/"
+    },
+    {
+      "text": "Configure FTP with IIS 7.0 Manager Authentication",
+      "url": "https://web.archive.org/web/20240415161506/http://learn.iis.net/page.aspx/321/configure-ftp-with-iis-7-manager-authentication/"
+    }
+  ],
+  "code": [
+    "CACLS \"%SystemDrive%\\inetpub\\ftproot\" /G \"Network Service\":C /T /E\n\nNext the user NetworkService needs to be given permission to the config\nfolder and two config files.\n\nCACLS \"%SystemDrive%\\Windows\\System32\\inetsrv\\config\" /G \"Network Service\":R /E\n\nCACLS \"%SystemDrive%\\Windows\\System32\\inetsrv\\config\\administration.config\" /G \"Network Service\":R /E\n\nCACLS \"%SystemDrive%\\Windows\\System32\\inetsrv\\config\\redirection.config\" /G \"Network Service\":R /E\n",
+    "    /// <summary>\n    /// This method creates an Ftp User under IIS 7.0 & Ftp 7.5\n    /// </summary>\n    /// <param name=\"configurationPath\">This is the name of the Ftp site.\n    /// So you if called your Ftp site \"Default Ftp Site\", then pass in this string as the first parameter</param>\n    /// <param name=\"username\">The username of the new user you want to create</param>\n    /// <param name=\"password\">The password for the new user </param>\n    private static void CreateFtpUser(string configurationPath, string username, string password)\n    {\n      /* Step 1 */\n      /*  We only need to create a user with password if the Intent is to use IisManagerUser Authentication provider */\n      /*  If we want to use our own Custom Authentication Provider we skip this step and only do the next step */\n      /*  Create the User for the ftp site */\n      ManagementUserInfo userInfo = ManagementAuthentication.CreateUser(username, password);\n      ManagementAuthorization.Grant(userInfo.Name, configurationPath, false);\n\n      /* Step 2 */\n      /* Set up the permissions for this user (Read/Write) */\n      using (ServerManager serverManager = new ServerManager())\n      {\n        Configuration config = serverManager.GetApplicationHostConfiguration();\n        ConfigurationSection authorizationSection = config.GetSection(\"system.ftpServer/security/authorization\", configurationPath);\n\n        ConfigurationElementCollection authorizationCollection = authorizationSection.GetCollection();\n        ConfigurationElement addElement = authorizationCollection.CreateElement(\"add\");\n        addElement[\"accessType\"] = @\"Allow\";\n        addElement[\"users\"] = username;\n        addElement[\"permissions\"] = @\"Read, Write\";\n        authorizationCollection.Add(addElement);\n        serverManager.CommitChanges();\n      }\n    }"
+  ],
+  "header": "Setting up IIS 7.0 - Ftp 7.5 for IIS Manager Users\nPosted by Shiv Kumar on 29th August, 2010\nCategorized Under: IIS IIS Manager Users\nTagged With: Ftp 7.5 IIS 7.0 \n  ",
+  "html": "<div class=\"articleText\">\n        <p><img style=\"background-image: none; border-right-width: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"IISManagerUsers\" border=\"0\" alt=\"IISManagerUsers\" src=\"https://web.archive.org/web/20240415161506im_/http://www.matlus.com/content/uploads/2011/01/IISManagerUsers_3.png\" width=\"571\" height=\"411\"></p> <p>This tutorial is about setting up IIS Ftp 7.5 using IIS Manger Users under Window 7 or Windows 2008. I also assume you want to use User Isolation of \"User name directory\" or similar. The documentation I have found has been scarce or incomplete. Note that this tutorial is not about showing you how to use the IIS Management UI for IIS 7.0. I assume you know how to use the IIS Management UI for IIS 7.0 </p> <h2>Setting up an Ftp Site</h2>Make sure you've installed <a href=\"https://web.archive.org/web/20240415161506/http://learn.iis.net/page.aspx/310/what-is-new-for-microsoft-and-ftp-75/\" target=\"_blank\">Ftp 7.5</a> for your operating system (32bit or 64 bit). Then set up an Ftp site. you can find step by step instructions here <a href=\"https://web.archive.org/web/20240415161506/http://learn.iis.net/page.aspx/301/creating-a-new-ftp-site/\" target=\"_blank\">Creating a New FTP Site</a>. It's not the greatest tutorial but it should work.  <h2>User Isolation</h2>Besides, actually setting up user isolation using the UI in IIS Manager, you also need to create a few folders and then give the user NetworkService the proper rights to these folders and to the IIS config files. You need to create the following folders as sub folder of your Ftp site's root folder. First create a folder called <code><strong>LocalUser</strong></code>. Then under <code><strong>LocalUser</strong></code>, create a folder called <code><strong>public</strong></code> Under <code><strong>LocalUser</strong></code> again, create a folder with the name of the username of a windows user on the machine. You'll use this to test the ftp site. In order to test with a windows user, you also need to have Basic Authentication turned on for your ftp site. Do this using the Ftp Authentication icon for the Ftp site you created.  <h2>Setting up the correct permissions</h2>To grant Special permissions to the user NetworkService to the Ftp Root folder (using a command prompt):  <div class=\"panel code /images/commandline.png\" title=\"Command line\" id=\"code_36453\"><div class=\"codeHeading\" style=\"background-image: url(https://web.archive.org/web/20240415161506///images/commandline.png);\"><h3 class=\"codeTitle\">Command line</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre>CACLS \"%SystemDrive%\\inetpub\\ftproot\" /G \"Network Service\":C /T /E\n\nNext the user NetworkService needs to be given permission to the config\nfolder and two config files.\n\nCACLS \"%SystemDrive%\\Windows\\System32\\inetsrv\\config\" /G \"Network Service\":R /E\n\nCACLS \"%SystemDrive%\\Windows\\System32\\inetsrv\\config\\administration.config\" /G \"Network Service\":R /E\n\nCACLS \"%SystemDrive%\\Windows\\System32\\inetsrv\\config\\redirection.config\" /G \"Network Service\":R /E\n</pre></div>Now you should be able to log on to the ftp site you created using the credentials of a windows user. \n<h2>IIS Manager Authentication</h2>For Windows Server 2008 you can follow this tutorial in order to configure Ftp with IIS Manager Authentication <a href=\"https://web.archive.org/web/20240415161506/http://learn.iis.net/page.aspx/321/configure-ftp-with-iis-7-manager-authentication/\" target=\"_blank\">Configure FTP with IIS 7.0 Manager Authentication</a> Windows 7 does not have the IIS Manager Users UI that is available in Windows Server 2008. The other issue is that you can't simply modify the administration.config file because the password is normally saved in a hashed format. But you can create IIS Manager Users using Managed Code. Below is a simple method you can add to your class of choice. In order for this code to work a few references need to be added to your project. Add the following Reference Path to your project C:\\Windows\\System32\\inetsrv\\ Then added the following References: Microsoft.Web.Administration Microsoft.Web.Management Next, add the following namespaces using Microsoft.Web.Management.Server; using Microsoft.Web.Administration; \n<div class=\"panel code /image/csharp.png\" title=\"Code Listing\" id=\"code_80219\"><div class=\"codeHeading\" style=\"background-image: url(https://web.archive.org/web/20240415161506///image/csharp.png);\"><h3 class=\"codeTitle\">Code Listing</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">    <span class=\"rem\">/// &lt;summary&gt;</span>\n    <span class=\"rem\">/// This method creates an Ftp User under IIS 7.0 &amp; Ftp 7.5</span>\n    <span class=\"rem\">/// &lt;/summary&gt;</span>\n    <span class=\"rem\">/// &lt;param name=\"configurationPath\"&gt;This is the name of the Ftp site.</span>\n    <span class=\"rem\">/// So you if called your Ftp site \"Default Ftp Site\", then pass in this string as the first parameter&lt;/param&gt;</span>\n    <span class=\"rem\">/// &lt;param name=\"username\"&gt;The username of the new user you want to create&lt;/param&gt;</span>\n    <span class=\"rem\">/// &lt;param name=\"password\"&gt;The password for the new user &lt;/param&gt;</span>\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> CreateFtpUser(<span class=\"kwrd\">string</span> configurationPath, <span class=\"kwrd\">string</span> username, <span class=\"kwrd\">string</span> password)\n    {\n      <span class=\"rem\">/* Step 1 */</span>\n      <span class=\"rem\">/*  We only need to create a user with password if the Intent is to use IisManagerUser Authentication provider */</span>\n      <span class=\"rem\">/*  If we want to use our own Custom Authentication Provider we skip this step and only do the next step */</span>\n      <span class=\"rem\">/*  Create the User for the ftp site */</span>\n      ManagementUserInfo userInfo = ManagementAuthentication.CreateUser(username, password);\n      ManagementAuthorization.Grant(userInfo.Name, configurationPath, <span class=\"kwrd\">false</span>);\n\n      <span class=\"rem\">/* Step 2 */</span>\n      <span class=\"rem\">/* Set up the permissions for this user (Read/Write) */</span>\n      <span class=\"kwrd\">using</span> (ServerManager serverManager = <span class=\"kwrd\">new</span> ServerManager())\n      {\n        Configuration config = serverManager.GetApplicationHostConfiguration();\n        ConfigurationSection authorizationSection = config.GetSection(<span class=\"str\">\"system.ftpServer/security/authorization\"</span>, configurationPath);\n\n        ConfigurationElementCollection authorizationCollection = authorizationSection.GetCollection();\n        ConfigurationElement addElement = authorizationCollection.CreateElement(<span class=\"str\">\"add\"</span>);\n        addElement[<span class=\"str\">\"accessType\"</span>] = <span class=\"str\">@\"Allow\"</span>;\n        addElement[<span class=\"str\">\"users\"</span>] = username;\n        addElement[<span class=\"str\">\"permissions\"</span>] = <span class=\"str\">@\"Read, Write\"</span>;\n        authorizationCollection.Add(addElement);\n        serverManager.CommitChanges();\n      }\n    }</pre></div>Be sure to create a sub folder under the <code>LocalUser</code> folder (under your ftp site's root folder)for the users you create using the code above. The username of the user and the folder name should be the same. In order to be able to use IIS Manager Users with your Ftp site, you need to have the IISManagerAuth provider enabled for your Ftp site. Do this using the Ftp Authentication icon for your Ftp site and choose Custom Providers... from the actions pane. At this point, you should be able to log in to your Ftp site using the users you've created using either IIS Manager Users UI or the managed code provided above.\n  \n        </div>",
+  "images": [
+    {
+      "alt": "IISManagerUsers",
+      "loaded": false,
+      "url": "https://web.archive.org/web/20240415161506im_/http://www.matlus.com/content/uploads/2011/01/IISManagerUsers_3.png"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240415161506/http://www.matlus.com/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/category/iis/"
+    },
+    {
+      "text": "IIS Manager Users",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/category/iis/iis-manager-users/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415161506/https://twitter.com/share?url=http%3a%2f%2fmatlus.com%2fiis-manager-users%2f&text=Setting+up+IIS+7.0+-+Ftp+7.5+for+IIS+Manager+Users"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415161506/http://www.facebook.com/sharer.php?u=http%3a%2f%2fmatlus.com%2fiis-manager-users%2f&t=Setting+up+IIS+7.0+-+Ftp+7.5+for+IIS+Manager+Users"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415161506/https://plus.google.com/share?url=http%3a%2f%2fmatlus.com%2fiis-manager-users%2f&text=Setting+up+IIS+7.0+-+Ftp+7.5+for+IIS+Manager+Users"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240415161506/http://learn.iis.net/page.aspx/310/what-is-new-for-microsoft-and-ftp-75/"
+    },
+    {
+      "text": "Creating a New FTP Site",
+      "url": "https://web.archive.org/web/20240415161506/http://learn.iis.net/page.aspx/301/creating-a-new-ftp-site/"
+    },
+    {
+      "text": "Configure FTP with IIS 7.0 Manager Authentication",
+      "url": "https://web.archive.org/web/20240415161506/http://learn.iis.net/page.aspx/321/configure-ftp-with-iis-7-manager-authentication/"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240415161506/http://matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415161506/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "Setting up IIS 7.0 - Ftp 7.5 for IIS Manager Users",
+  "url": "https://web.archive.org/web/20240415161506/http://matlus.com/iis-manager-users/"
+}

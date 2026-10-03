@@ -1,0 +1,521 @@
+{
+  "body": "ASP.NET Web API is an ideal platform for building RESTful applications on the .NET Framework, However for some reason there are no samples or documentation (as of this writing) of using the new Web API framework with ASP.NET WebForms. So I thought I’d write a brief post on how to do this.\n\nIn order to get started, you’ll need to install, at minimum the AspNetWebApi package from the NuGet Gallery. Instructions for installing the package using the Package Manager Console are provided in that page as well.\n\nIf I were you, I’d install two other package that you’ll need eventually. The Core package should get installed automatically when you install the AspNetWebApi package.\n\nAspNetWebApi.Core -This package contains the core runtime assemblies for ASP.NET Web API. This package is used by hosts of the ASP.NET Web API runtime.\n\nAspNetWebApi.SelfHost - This package contains everything you need to host ASP.NET Web API within your own process (outside of IIS). ASP.NET Web API is a framework that makes it easy to build HTTP services that reach a broad range of clients, including browsers and mobile devices.\n\nAfter working your way through this post, if you’re ready for the slightly more complete (production ready) RESTful Web API service, check out this post: ASP.NET Web API Supporting RESTful CRUD Operations. If you’d like to build a RESTful client application, be sure to check out this post: A Generic RESTFul CRUD HttpClient\n\nFirst ASP.NET WebForms Web API Project\n\nYou can do this using VS.NET 2010 or VS.NET 11 Beta (at this time). The process is identical after you’ve installed the perquisites mentioned above.\n\nStart with a brand new ASP.NET Empty Website project\n\nNext, add a Web API Controller to your project.\n\nAnd name the class CustomersController.cs.\n\nThe name of the class is important here, because of the way we’ll set up our routing, and the conventions involved.\n\nIf you’re building a Web Site project instead of a Web Application project, you’ll need to add the app_code folder to your project and then add the Web API Controller in this folder.\n\nYour controller class should look like this:\n\nNotice that the controller descends from ApiController. This is the base class for all WebAPI controllers because the built-in HttpControllerRouteHandler expects this. If you’re familiar with RouteHandlers, you can very easily plug into the pipeline and change all of this. In this post, we’ll keep it really simple and change nothing.\n\nAdding the correct Route to the RouteTable\n\nYou’ll need to add Global Application Class, to your project. So add a new item to your project and select Global Application Class as shown below. Don’t rename it!\n\nOpen the Global.asax.cs file by first expanding the Global.asax node in Solution Explorer and then double clicking on the Global.asa.cs node.\n\nTo the using section at the very top of the file, you’ll need to add, two namespaces:\n\nSystem.Web.Routing, and System.Web.Http as shown in the code listing below\n\nGlobal.asax.cs\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Web;\nusing System.Web.Routing;\nusing System.Web.Http;\nusing System.Web.Security;\nusing System.Web.SessionState;\n\nnamespace WebApplication1\n{\n    public class Global : System.Web.HttpApplication\n    {\n\n        protected void Application_Start(object sender, EventArgs e)\n        {\n            RouteTable.Routes.MapHttpRoute(\n                name: \"CustomersApi\",\n                routeTemplate: \"api/{controller}/{id}\",\n                defaults: new { id = RouteParameter.Optional }\n            );\n        }\n\n        protected void Session_Start(object sender, EventArgs e)\n        {\n\n        }\n\n        protected void Application_BeginRequest(object sender, EventArgs e)\n        {\n\n        }\n\n        protected void Application_AuthenticateRequest(object sender, EventArgs e)\n        {\n\n        }\n\n        protected void Application_Error(object sender, EventArgs e)\n        {\n\n        }\n\n        protected void Session_End(object sender, EventArgs e)\n        {\n\n        }\n\n        protected void Application_End(object sender, EventArgs e)\n        {\n\n        }\n    }\n}\n\nThe Global Application Class file\n\nThat’s it! You’ve built your first Web API application with ASP.NET WebForms.\n\nIn order to test your application, simply run it and then navigate to to the following url\n\napi/customers/\n\nThat is, simply add the above to the url you see in your browser. You’ll see an error page when you run your application, because there is no default page in your application, so don’t worry about the error page. Simply navigate to the url above and you’ll see your result.\n\nIf you’re using IE, the response will be sent as JSON, but since IE does not show JSON directly in the browser window, you’ll need to “open” the file and open it in Notepad in order to see the response. In Chrome, you’ll see the response as Xml.\n\nAs I mentioned earlier in this post, for a more complete implementation of a RESTFul service and a corresponding RESTful client, check out these two posts:\n\nASP.NET Web API Supporting RESTful CRUD Operations\n\nA Generic RESTFul CRUD HttpClient",
+  "bodyLinks": [
+    {
+      "text": "AspNetWebApi",
+      "url": "https://web.archive.org/web/20240414174833/http://nuget.org/packages/aspnetwebapi"
+    },
+    {
+      "text": "AspNetWebApi.Core",
+      "url": "https://web.archive.org/web/20240414174833/http://nuget.org/packages/AspNetWebApi.Core"
+    },
+    {
+      "text": "AspNetWebApi.SelfHost",
+      "url": "https://web.archive.org/web/20240414174833/https://nuget.org/packages/AspNetWebApi.SelfHost"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "A Generic RESTFul CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/content/uploads/2012/03/WebAPIProject1_2.png"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/content/uploads/2012/03/WebAPIProject2_2.png"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/content/uploads/2012/03/WebAPIProject3_4.png"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/content/uploads/2012/03/WebAPIProject4_2.png"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "A Generic RESTFul CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    }
+  ],
+  "code": [
+    "using System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Web;\nusing System.Web.Routing;\nusing System.Web.Http;\nusing System.Web.Security;\nusing System.Web.SessionState;\n\nnamespace WebApplication1\n{\n    public class Global : System.Web.HttpApplication\n    {\n\n        protected void Application_Start(object sender, EventArgs e)\n        {\n            RouteTable.Routes.MapHttpRoute(\n                name: \"CustomersApi\",\n                routeTemplate: \"api/{controller}/{id}\",\n                defaults: new { id = RouteParameter.Optional }\n            );\n        }\n\n        protected void Session_Start(object sender, EventArgs e)\n        {\n\n        }\n\n        protected void Application_BeginRequest(object sender, EventArgs e)\n        {\n\n        }\n\n        protected void Application_AuthenticateRequest(object sender, EventArgs e)\n        {\n\n        }\n\n        protected void Application_Error(object sender, EventArgs e)\n        {\n\n        }\n\n        protected void Session_End(object sender, EventArgs e)\n        {\n\n        }\n\n        protected void Application_End(object sender, EventArgs e)\n        {\n\n        }\n    }\n}\n"
+  ],
+  "header": "ASP.NET Web API with WebForms\nPosted by Shiv Kumar on 17th February, 2012\nCategorized Under: Programming ASP.NET\nTagged With: Http JSON REST Web API WebForms \n  ",
+  "html": "<div class=\"articleText\">\n        <p><span style=\"widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; display: inline !important; font: 14px/20px 'Segoe UI', 'Trebuchet MS', verdana, helvetica, sans-serif; white-space: normal; orphans: 2; float: none; color: rgb(51,51,51); word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\">ASP.NET Web API is an ideal platform for building RESTful applications on the .NET Framework, However f</span>or some reason there are no samples or documentation (as of this writing) of using the new Web API framework with ASP.NET WebForms. So I thought I’d write a brief post on how to do this.</p> <p>In order to get started, you’ll need to install, at minimum the <a href=\"https://web.archive.org/web/20240414174833/http://nuget.org/packages/aspnetwebapi\" target=\"_blank\">AspNetWebApi</a> package from the NuGet Gallery. Instructions for installing the package using the Package Manager Console are provided in that page as well.</p> <p>If I were you, I’d install two other package that you’ll need eventually. The Core package should get installed automatically when you install the AspNetWebApi package.</p> <p><a href=\"https://web.archive.org/web/20240414174833/http://nuget.org/packages/AspNetWebApi.Core\" target=\"_blank\">AspNetWebApi.Core</a> -<span style=\"widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; display: inline !important; font: 14px/20px 'Segoe UI', 'Trebuchet MS', verdana, helvetica, sans-serif; white-space: normal; orphans: 2; float: none; color: rgb(51,51,51); word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\">This package contains the core runtime assemblies for ASP.NET Web API. This package is used by hosts of the ASP.NET Web API runtime.</span></p> <p><a href=\"https://web.archive.org/web/20240414174833/https://nuget.org/packages/AspNetWebApi.SelfHost\" target=\"_blank\">AspNetWebApi.SelfHost</a> - <span style=\"widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; display: inline !important; font: 14px/20px 'Segoe UI', 'Trebuchet MS', verdana, helvetica, sans-serif; white-space: normal; orphans: 2; float: none; color: rgb(51,51,51); word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\">This package contains everything you need to host ASP.NET Web API within your own process (outside of IIS). ASP.NET Web API is a framework that makes it easy to build HTTP services that reach a broad range of clients, including browsers and mobile devices.</span></p> <p><span style=\"widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; display: inline !important; font: 14px/20px 'Segoe UI', 'Trebuchet MS', verdana, helvetica, sans-serif; white-space: normal; orphans: 2; float: none; color: rgb(51,51,51); word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\">After working your way through this post, if you’re ready for the slightly more complete (production ready) RESTful Web API service, check out this post: <a href=\"https://web.archive.org/web/20240414174833/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/\" target=\"_blank\">ASP.NET Web API Supporting RESTful CRUD Operations</a>. If you’d like to build a RESTful client application, be sure to check out this post: <a href=\"https://web.archive.org/web/20240414174833/http://www.matlus.com/a-generic-restful-crud-httpclient/\" target=\"_blank\">A Generic RESTFul CRUD HttpClient</a></span></p> <h2>First ASP.NET WebForms Web API Project</h2> <p><span style=\"widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; display: inline !important; font: 14px/20px 'Segoe UI', 'Trebuchet MS', verdana, helvetica, sans-serif; white-space: normal; orphans: 2; float: none; color: rgb(51,51,51); word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\">You can do this using VS.NET 2010 or VS.NET 11 Beta (at this time). The process is identical after you’ve installed the </span><span style=\"widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; display: inline !important; font: 14px/20px 'Segoe UI', 'Trebuchet MS', verdana, helvetica, sans-serif; white-space: normal; orphans: 2; float: none; color: rgb(51,51,51); word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\">perquisites mentioned above.</span></p> <p><span style=\"widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; display: inline !important; font: 14px/20px 'Segoe UI', 'Trebuchet MS', verdana, helvetica, sans-serif; white-space: normal; orphans: 2; float: none; color: rgb(51,51,51); word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\">Start with a brand new ASP.NET Empty Website project</span></p> <p><span style=\"widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; display: inline !important; font: 14px/20px 'Segoe UI', 'Trebuchet MS', verdana, helvetica, sans-serif; white-space: normal; orphans: 2; float: none; color: rgb(51,51,51); word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\"><a href=\"https://web.archive.org/web/20240414174833/http://www.matlus.com/content/uploads/2012/03/WebAPIProject1_2.png\"><img style=\"background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"WebAPIProject1\" border=\"0\" alt=\"WebAPIProject1\" src=\"https://web.archive.org/web/20240414174833im_/http://www.matlus.com/content/uploads/2012/03/WebAPIProject1_thumb.png\" width=\"644\" height=\"480\"></a></span></p> <p><span style=\"widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; display: inline !important; font: 14px/20px 'Segoe UI', 'Trebuchet MS', verdana, helvetica, sans-serif; white-space: normal; orphans: 2; float: none; color: rgb(51,51,51); word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\">Next, add a Web API Controller to your project.</span></p> <p><span style=\"widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; display: inline !important; font: 14px/20px 'Segoe UI', 'Trebuchet MS', verdana, helvetica, sans-serif; white-space: normal; orphans: 2; float: none; color: rgb(51,51,51); word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\"><a href=\"https://web.archive.org/web/20240414174833/http://www.matlus.com/content/uploads/2012/03/WebAPIProject2_2.png\"><img style=\"background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"WebAPIProject2\" border=\"0\" alt=\"WebAPIProject2\" src=\"https://web.archive.org/web/20240414174833im_/http://www.matlus.com/content/uploads/2012/03/WebAPIProject2_thumb.png\" width=\"586\" height=\"484\"></a></span></p> <p><span style=\"widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; display: inline !important; font: 14px/20px 'Segoe UI', 'Trebuchet MS', verdana, helvetica, sans-serif; white-space: normal; orphans: 2; float: none; color: rgb(51,51,51); word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\">And name the class <strong>CustomersController.cs.</strong></span></p> <p><span style=\"widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; display: inline !important; font: 14px/20px 'Segoe UI', 'Trebuchet MS', verdana, helvetica, sans-serif; white-space: normal; orphans: 2; float: none; color: rgb(51,51,51); word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\">The name of the class is important here, because of the way we’ll set up our routing, and the conventions involved.</span></p> <p><span style=\"widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; display: inline !important; font: 14px/20px 'Segoe UI', 'Trebuchet MS', verdana, helvetica, sans-serif; white-space: normal; orphans: 2; float: none; color: rgb(51,51,51); word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\">If you’re building a Web Site project instead of a Web Application project, you’ll need to add the app_code folder to your project and then add the Web API Controller in this folder.</span></p> <p><span style=\"widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; display: inline !important; font: 14px/20px 'Segoe UI', 'Trebuchet MS', verdana, helvetica, sans-serif; white-space: normal; orphans: 2; float: none; color: rgb(51,51,51); word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\">Your controller class should look like this:</span></p> <p><a href=\"https://web.archive.org/web/20240414174833/http://www.matlus.com/content/uploads/2012/03/WebAPIProject3_4.png\"><img style=\"background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"WebAPIProject3\" border=\"0\" alt=\"WebAPIProject3\" src=\"https://web.archive.org/web/20240414174833im_/http://www.matlus.com/content/uploads/2012/03/WebAPIProject3_thumb_1.png\" width=\"580\" height=\"772\"></a></p> <p>Notice that the controller descends from ApiController. This is the base class for all WebAPI controllers because the built-in HttpControllerRouteHandler expects this. If you’re familiar with RouteHandlers, you can very easily plug into the pipeline and change all of this. In this post, we’ll keep it really simple and change nothing.</p> <h2>Adding the correct Route to the RouteTable</h2> <p>You’ll need to add Global Application Class, to your project. So add a new item to your project and select Global Application Class as shown below. Don’t rename it!</p> <p><a href=\"https://web.archive.org/web/20240414174833/http://www.matlus.com/content/uploads/2012/03/WebAPIProject4_2.png\"><img style=\"background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"WebAPIProject4\" border=\"0\" alt=\"WebAPIProject4\" src=\"https://web.archive.org/web/20240414174833im_/http://www.matlus.com/content/uploads/2012/03/WebAPIProject4_thumb.png\" width=\"586\" height=\"484\"></a></p> <p>Open the Global.asax.cs file by first expanding the Global.asax node in Solution Explorer and then double clicking on the Global.asa.cs node.</p> <p>To the using section at the very top of the file, you’ll need to add, two namespaces:</p> <p><strong>System.Web.Routing</strong>, and <strong>System.Web.Http</strong> as shown in the code listing below</p> <div class=\"panel code content/images/csharp.png\" title=\"Global.asax.cs\" id=\"code_71727\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414174833/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Global.asax.cs</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre><span class=\"Keyword\">using</span> System;\n<span class=\"Keyword\">using</span> System.Collections.Generic;\n<span class=\"Keyword\">using</span> System.Linq;\n<span class=\"Keyword\">using</span> System.Web;\n<span class=\"Keyword\">using</span> System.Web.Routing;\n<span class=\"Keyword\">using</span> System.Web.Http;\n<span class=\"Keyword\">using</span> System.Web.Security;\n<span class=\"Keyword\">using</span> System.Web.SessionState;\n\n<span class=\"Keyword\">namespace</span> WebApplication1\n{\n    <span class=\"Keyword\">public</span> <span class=\"Keyword\">class</span> <span class=\"Identifier\">Global</span> : System.Web.HttpApplication\n    {\n\n        <span class=\"Keyword\">protected</span> <span class=\"Keyword\">void</span> Application_Start(<span class=\"Keyword\">object</span> sender, <span class=\"Identifier\">EventArgs</span> e)\n        {\n            <span class=\"Identifier\">RouteTable</span>.Routes.MapHttpRoute(\n                name: <span class=\"StringLiteral\">\"CustomersApi\"</span>,\n                routeTemplate: <span class=\"StringLiteral\">\"api/{controller}/{id}\"</span>,\n                defaults: <span class=\"Keyword\">new</span> { id = <span class=\"Identifier\">RouteParameter</span>.Optional }\n            );\n        }\n\n        <span class=\"Keyword\">protected</span> <span class=\"Keyword\">void</span> Session_Start(<span class=\"Keyword\">object</span> sender, <span class=\"Identifier\">EventArgs</span> e)\n        {\n\n        }\n\n        <span class=\"Keyword\">protected</span> <span class=\"Keyword\">void</span> Application_BeginRequest(<span class=\"Keyword\">object</span> sender, <span class=\"Identifier\">EventArgs</span> e)\n        {\n\n        }\n\n        <span class=\"Keyword\">protected</span> <span class=\"Keyword\">void</span> Application_AuthenticateRequest(<span class=\"Keyword\">object</span> sender, <span class=\"Identifier\">EventArgs</span> e)\n        {\n\n        }\n\n        <span class=\"Keyword\">protected</span> <span class=\"Keyword\">void</span> Application_Error(<span class=\"Keyword\">object</span> sender, <span class=\"Identifier\">EventArgs</span> e)\n        {\n\n        }\n\n        <span class=\"Keyword\">protected</span> <span class=\"Keyword\">void</span> Session_End(<span class=\"Keyword\">object</span> sender, <span class=\"Identifier\">EventArgs</span> e)\n        {\n\n        }\n\n        <span class=\"Keyword\">protected</span> <span class=\"Keyword\">void</span> Application_End(<span class=\"Keyword\">object</span> sender, <span class=\"Identifier\">EventArgs</span> e)\n        {\n\n        }\n    }\n}\n</pre>\n<h3>The Global Application Class file</h3></div>\n<p>That’s it! You’ve built your first Web API application with ASP.NET WebForms.</p>\n<p>In order to test your application, simply run it and then navigate to to the following url</p>\n<p><code>api/customers/</code></p>\n<p>That is, simply add the above to the url you see in your browser. You’ll see an error page when you run your application, because there is no default page in your application, so don’t worry about the error page. Simply navigate to the url above and you’ll see your result.</p>\n<p>If you’re using IE, the response will be sent as JSON, but since IE does not show JSON directly in the browser window, you’ll need to “open” the file and open it in Notepad in order to see the response. In Chrome, you’ll see the response as Xml.</p>\n<p>As I mentioned earlier in this post, for a more complete implementation of a RESTFul service and a corresponding RESTful client, check out these two posts:</p>\n<p><a href=\"https://web.archive.org/web/20240414174833/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/\" target=\"_blank\">ASP.NET Web API Supporting RESTful CRUD Operations</a></p>\n<p><a href=\"https://web.archive.org/web/20240414174833/http://www.matlus.com/a-generic-restful-crud-httpclient/\" target=\"_blank\">A Generic RESTFul CRUD HttpClient</a></p>  \n        </div>",
+  "images": [
+    {
+      "alt": "WebAPIProject1",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240414174833im_/http://www.matlus.com/content/uploads/2012/03/WebAPIProject1_thumb.png"
+    },
+    {
+      "alt": "WebAPIProject2",
+      "loaded": false,
+      "url": "https://web.archive.org/web/20240414174833im_/http://www.matlus.com/content/uploads/2012/03/WebAPIProject2_thumb.png"
+    },
+    {
+      "alt": "WebAPIProject3",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240414174833im_/http://www.matlus.com/content/uploads/2012/03/WebAPIProject3_thumb_1.png"
+    },
+    {
+      "alt": "WebAPIProject4",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240414174833im_/http://www.matlus.com/content/uploads/2012/03/WebAPIProject4_thumb.png"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "ASP.NET",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/category/programming/asp-net/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414174833/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2fasp-net-web-api-with-webforms%2f&text=ASP.NET+Web+API+with+WebForms"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414174833/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2fasp-net-web-api-with-webforms%2f&t=ASP.NET+Web+API+with+WebForms"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414174833/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2fasp-net-web-api-with-webforms%2f&text=ASP.NET+Web+API+with+WebForms"
+    },
+    {
+      "text": "AspNetWebApi",
+      "url": "https://web.archive.org/web/20240414174833/http://nuget.org/packages/aspnetwebapi"
+    },
+    {
+      "text": "AspNetWebApi.Core",
+      "url": "https://web.archive.org/web/20240414174833/http://nuget.org/packages/AspNetWebApi.Core"
+    },
+    {
+      "text": "AspNetWebApi.SelfHost",
+      "url": "https://web.archive.org/web/20240414174833/https://nuget.org/packages/AspNetWebApi.SelfHost"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "A Generic RESTFul CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/content/uploads/2012/03/WebAPIProject1_2.png"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/content/uploads/2012/03/WebAPIProject2_2.png"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/content/uploads/2012/03/WebAPIProject3_4.png"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/content/uploads/2012/03/WebAPIProject4_2.png"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "A Generic RESTFul CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "ASP.NET Web API with WebForms",
+  "url": "https://web.archive.org/web/20240414174833/http://www.matlus.com/asp-net-web-api-with-webforms/"
+}

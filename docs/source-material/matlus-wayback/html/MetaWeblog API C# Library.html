@@ -1,0 +1,114 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>MetaWeblog API C# Library</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>MetaWeblog API C# Library</h1><p class="recovery">MetaWeblog API C# Library<br>Posted by Shiv Kumar on 12th January, 2011<br>Categorized Under: Programming ASP.NET<br>Tagged With: Orion Quartz for ASP.NET <br>Licensing:MIT License <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20240414180543/http://www.matlus.com/metaweblog-api-c-library/">this Wayback capture</a>.</p><div class="articleText">
+        <p>When I started down the path of writing the <a title="Orion  - A Blogging Engine" href="https://web.archive.org/web/20240414180543/http://www.matlus.com/orion/">Orion</a> engine (a high performance blogging engine written in <a title="Quartz - A High Performance ASP.NET Framework" href="https://web.archive.org/web/20240414180543/http://www.matlus.com/quartz-for-aspnet/" target="_blank">Quartz for ASP.NET</a>), which is what drives this website, I wanted to be able to use <a href="https://web.archive.org/web/20240414180543/http://explore.live.com/windows-live-writer?os=other" target="_blank">Windows Live Writer</a> to write my blog posts and so that need sent be down this path and so here we are. </p> <div class="panel"> <h3 class="note">Open Source Project - ooMetaWeblog</h3> <p>I've published this library as an open source project on <a title="CodePlex.com" href="https://web.archive.org/web/20240414180543/http://www.codeplex.com/" target="_blank">CodePlex</a>. The project page is at: <a title="MetaWeblog API Open source project" href="https://web.archive.org/web/20240414180543/http://metaweblogger.codeplex.com/" target="_blank">ooMetaWeblog</a> </p></div> <h2>Windows Live Writer</h2> <p>If you've got a blog, you should look at using <a title="Windows Live Writer 2011" href="https://web.archive.org/web/20240414180543/http://explore.live.com/windows-live-writer?os=other" target="_blank">Windows Live Writer</a> and your blog writer/editor, there is nothing like it out there. It's very much like Microsoft Word and it is complete tailor made for blog writing, and for the kind of blog writing I do, which includes a lot of images and code snippets, it's perfect since there is a plug-in available for converting code from your VS.NET editor into html including all of the color highlighting etc.</p> <p>Windows Live Writer supports a number of blog writing/editing APIs and so I decided to implement one of those APIs for ThoughtStream so I didn't have to write and screen for the same (at least not right off the bat). And that's where the <a href="https://web.archive.org/web/20240414180543/http://www.xmlrpc.com/metaWeblogApi" target="_blank">MataWeblog API</a> comes in.</p> <h2>MetaWeblog API</h2> <p>The <a title="XML-RPC.com" href="https://web.archive.org/web/20240414180543/http://www.xmlrpc.com/metaWeblogApi" target="_blank">MetaWeblog API</a> is a well known API for writing and editing blog posts. There are many blog writers that support this API. It's not the best (read that as most complete) API for blog writing/editing but I've chose it after a lot of thought and debate. None of the APIs have good documentation so I went with the one API that almost all other APIs are based on.</p> <p>Personally I'm surprised that in this day and age there is no "real" blogging API. I've looked at the WordPress blogging API and even though it handles a few more things as compared to the MetaWeblog API (and Live Writer supports the WordPress API as well) it's really not a well thought out API. In fact none of the API are well thought out.</p><img alt="MetaWebLog API Flow" src="../images/3aaa5c0e3cc5ed16-MetaWeblogFlow.jpg" width="640" height="243">  <p>Since documentation is sparse and I've seen a lot of people struggling with implementing this API, I've decided to make the library I've developed available to the public. I've use this library for my blog along with Windows Live Writer so I know it is tests and works as expected.</p> <h2>MetaWeblog C# Library</h2> <p>The first thing you want to look at are all the methods that are available in the API and their signatures. Take a look at code listing 1 below. The <code>IMetaWeblogProvider</code> interface has a bunch of methods as you can see.</p> <p>This is the interface you will need to implement in blog your blogging engine in order to make it compliant with the MetaWeblog API, so you can use a blog writer such as Window Live Writer to write your blog posts.</p> <p>You'll notice that the interface is completely decoupled from any http or xml nuance that is part of the MetaWeblog API. This was by design so as to make testing your implementation of this interface a lot simpler.</p> <div class="panel code content/images/csharp.png" title="IMetaWeblogProvider.cs" id="code_70419"><div class="codeHeading" style="background-image: url(/web/20240414180543/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">IMetaWeblogProvider.cs</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre><span style="color: blue">using </span>System;
+<span style="color: blue">using </span>System.Collections.Generic;
+<span style="color: blue">using </span>System.Linq;
+<span style="color: blue">using </span>System.Web;
+
+<span style="color: blue">namespace </span>Matlus.MetaWeblog
+{
+  <span style="color: blue">public interface </span><span style="color: #2b91af">IMetaWeblogProvider
+  </span>{
+    <span style="color: #2b91af">BlogInfo</span>[] GetUserBlogs(<span style="color: blue">string </span>appkey, <span style="color: blue">string </span>userName, <span style="color: blue">string </span>password);
+    <span style="color: #2b91af">Post</span>[] GetRecentPosts(<span style="color: blue">string </span>userName, <span style="color: blue">string </span>password, <span style="color: blue">string </span>blogid, <span style="color: blue">int </span>noOfPosts);
+    <span style="color: #2b91af">CategoryInfo</span>[] GetCategories(<span style="color: blue">string </span>userName, <span style="color: blue">string </span>password);
+    <span style="color: blue">int </span>NewPost(<span style="color: blue">string </span>userName, <span style="color: blue">string </span>password, <span style="color: blue">string </span>blogid, <span style="color: #2b91af">Post </span>post);
+    <span style="color: blue">void </span>EditPost(<span style="color: blue">string </span>userName, <span style="color: blue">string </span>password, <span style="color: #2b91af">Post </span>post);
+    <span style="color: #2b91af">Post </span>GetPost(<span style="color: blue">string </span>userName, <span style="color: blue">string </span>password, <span style="color: blue">int </span>postid);
+    <span style="color: blue">void </span>DeletePost(<span style="color: blue">string </span>userName, <span style="color: blue">string </span>password, <span style="color: blue">int </span>postid);
+    <span style="color: #2b91af">MediaObjectInfo </span>NewMediaObject(<span style="color: blue">string </span>userName, <span style="color: blue">string </span>password, <span style="color: #2b91af">MediaObject </span>mediaObject);
+  }
+}
+</pre>
+<h3 style="margin-top: 0px">Code Listing 1</h3></div>
+<p>Once you have the implementation of this interface functioning as you expect it to, getting it to work with Windows Live Writer or any other blog writer that supports the MetaWeblog API is quite simple. I do strongly suggest implementing this interface and testing it thoroughly before using the MetaWeblogManager class. </p>
+<p>Now lets just take a brief look at the various other classes that are part of the library. Below is the class diagram of the complete MetaWeblog API library that's available for download. All of the heavy lifting is done by the <code>MetaWeblogManager</code> class. This class talks the MetaWeblog API language (which is essentially xml over http) and translates all of the communication into simple C# method calls. So you don't really have to mess with anything but your own implementation of the <code>IMetaWeblogProvider</code> interface. All of the other classes are supporting classes. The classes you see going down the left hand side are classes that will shuttle data between the MetaWeblogManager and your implementation of the IMetaWeblogProvider. They are simple DTOs and have no methods, just properties.</p>
+<p>&nbsp;</p><img alt="Class Diagram of the MeataWeblog C# Library" src="../images/6fc65a3e67ad036a-MatlusMetaWeblogClassDiagram.jpg" width="634" height="643"> 
+<h2>MetaWeblogManager</h2>
+<p>Now, let's take a look at the <code>MetaWeblogManager</code> class in code listing 2 below. Once again you'll notice that this class really only works with a <code>System.IO.Stream</code>. This design decouples this class from any "web" stuff per se. Of course the Stream must contain the correct content (the xml content as per the API specification - you don't really have to worry about the xml aspect since the library handles that for you) but you're free to decide how exactly you'll provide it with this stream. The simplest way is to use this class from within an <code>IHttpHandler</code>, but you're not confined to this. It could be a WCF service or a regular ASP.NET web page.</p>
+<p>I'm only listing the <code>ProcessMetaWeblogApiCall</code> method, which is the entry point of this class. This method calls into other methods within the class that do the translation from xml to regular C# (and back) and then call the appropriate methods in the <code>IMetaWeblogProvider</code> interface.</p>
+<div class="panel code content/images/csharp.png" title="MetaWeblogManager.cs" id="code_2432"><div class="codeHeading" style="background-image: url(/web/20240414180543/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">MetaWeblogManager.cs</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre><span style="color: blue">public void </span>ProcessMetaWeblogApiCall(<span style="color: #2b91af">Stream </span>inputStream, <span style="color: #2b91af">Stream </span>outputStream)
+{
+  XmlDocument = <span style="color: blue">new </span><span style="color: #2b91af">XmlDocument</span>();
+  XmlDocument.Load(inputStream);
+  OutputStream = outputStream;
+
+  <span style="color: blue">var </span>methodName = GetMethodName();
+
+  <span style="color: blue">try
+  </span>{        
+    <span style="color: blue">switch </span>(methodName)
+    {
+      <span style="color: blue">case </span><span style="color: #a31515">"blogger.getUsersBlogs"</span>:
+        GetUsersBlogs();
+        <span style="color: blue">break</span>;
+      <span style="color: blue">case </span><span style="color: #a31515">"metaWeblog.getCategories"</span>:
+      <span style="color: blue">case </span><span style="color: #a31515">"wp.getCategories"</span>:
+        GetCategories();
+        <span style="color: blue">break</span>;
+      <span style="color: blue">case </span><span style="color: #a31515">"metaWeblog.getRecentPosts"</span>:
+        GetRecentPosts();
+        <span style="color: blue">break</span>;
+      <span style="color: blue">case </span><span style="color: #a31515">"metaWeblog.newPost"</span>:
+        NewPost();
+        <span style="color: blue">break</span>;
+      <span style="color: blue">case </span><span style="color: #a31515">"metaWeblog.editPost"</span>:
+        EditPost();
+        <span style="color: blue">break</span>;
+      <span style="color: blue">case </span><span style="color: #a31515">"metaWeblog.getPost"</span>:
+        GetPost();
+        <span style="color: blue">break</span>;
+      <span style="color: blue">case </span><span style="color: #a31515">"blogger.deletePost"</span>:
+        DeletePost();
+        <span style="color: blue">break</span>;
+      <span style="color: blue">case </span><span style="color: #a31515">"metaWeblog.newMediaObject"</span>:
+        NewMediaObject();
+        <span style="color: blue">break</span>;
+      <span style="color: blue">case </span><span style="color: #a31515">"blogger.getUserInfo"</span>:
+        GetUserInfo();
+        <span style="color: blue">break</span>;
+    }
+
+  }
+  <span style="color: blue">catch </span>(<span style="color: #2b91af">Exception </span>e)
+  {
+    WriteXmlRpcFault(e, outputStream);
+  }      
+}
+</pre>
+<h3 class="imgFooter">Code Listing 2: Showing the ProcessMetaWeblogApiCall method</h3></div>
+<h2>The Complete Setup</h2>
+<p>Of course in order to get Window Live Writer or any other blog writer to work against your blogging engine, you'll need to go all the way out to Http and that translates to an <code>IHttpHandler</code> or something similar. I've use a <code>Builder</code> (part of the <a title="Builder for ASP.NET Framework" href="https://web.archive.org/web/20240414180543/http://www.matlus.com/quartz-for-aspnet/" target="_blank">Quartz for ASP.NET</a> framework) as my point of entry into the <a href="https://web.archive.org/web/20240414180543/http://www.matlus.com/orion/">Orion</a> blog engine, but I'll show an implementation of an <code>IHttpHandler</code>. The handler is really very simple as you can see in code listing 3 below.</p>
+<p>The <code>MetaWeblogManager</code> class expects an instance of a class that implements the <code>IMetaWeblogProvider</code> interface. In my case, my <code>BusinessModule</code> class is the class that implements this interface.</p>
+<p>You'll need to register your handler like you would any other handler in ASP.NET.</p>
+<div class="panel code content/images/csharp.png" title="An HttpHandler using the MetaWeblogManager class" id="code_43677"><div class="codeHeading" style="background-image: url(/web/20240414180543/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">An HttpHandler using the MetaWeblogManager class</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre><span style="color: blue">using </span>System;
+<span style="color: blue">using </span>System.Collections.Generic;
+<span style="color: blue">using </span>System.Linq;
+<span style="color: blue">using </span>System.Web;
+<span style="color: blue">using </span>System.IO;
+<span style="color: blue">using </span>System.Xml.Linq;
+<span style="color: blue">using </span>System.Xml;
+<span style="color: blue">using </span>Matlus.MetaWeblog;
+
+<span style="color: blue">namespace </span>Orion.WebLib
+{
+  <span style="color: blue">public class </span><span style="color: #2b91af">XmlRpcHandler </span>: <span style="color: #2b91af">HandlerBase
+  </span>{
+    <span style="color: blue">public override bool </span>IsReusable
+    {
+      <span style="color: blue">get </span>{ <span style="color: blue">return true</span>; }
+    }
+
+    <span style="color: blue">public override void </span>ProcessRequest(<span style="color: #2b91af">HttpContext </span>context)
+    {
+      <span style="color: blue">var </span>metaWeblogManager = <span style="color: blue">new </span><span style="color: #2b91af">MetaWeblogManager</span>(BusinessModule);
+      metaWeblogManager.ProcessMetaWeblogApiCall(<span style="color: #2b91af">HttpContext</span>.Current.Request.InputStream, <span style="color: #2b91af">HttpContext</span>.Current.Response.OutputStream);
+    }
+  }
+}
+</pre>
+<h3 class="imgFooter">Code Listing 3: The IHttpHandler that instantiates the MetaWeblogManager</h3></div>
+<p>This brings us to the end of this post. You can download the library from the link below.</p>
+<p><a href="https://web.archive.org/web/20240414180543/http://www.matlus.com/content/uploads/MetaWeblog/MatlusMetaWeblog.zip">Matlus.MetaWeblog</a></p>
+<p>The download contains the complete source to the library. I'm using .NET 4.0 and I don't believe I'm using any .NET 4.0 specific features so you should be able to compile the library for .NET 3.5 if need be.</p>  
+        </div></body></html>

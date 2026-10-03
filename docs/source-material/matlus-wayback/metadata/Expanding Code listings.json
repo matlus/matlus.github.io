@@ -1,0 +1,476 @@
+{
+  "body": " \n\nHaving just converted my website to use WordPress, and having written my first blog that contains a code listing I immediately ran into the trouble of not being able to see the complete code listing due to the constraints imposed upon by the theme I'm using. It's not the theme that's at fault really since any good website design implies the site has a fixed width (for the most part). Since the \"content\" area is future constrained (like in a 2 or 3 column layout), it becomes almost impossible to have code listings appear, such that they are completely visible.\n\nFormatting code\nIn order to format code, you can continue to use what you're using today. The solution presented here is independent of how the code is actually formatted. I personally use the online (free) services of http://manoli.net/csharpformat/. It's not perfect, but it is the best one I've found so far and it's really simple to use. Its easy to modify the colors using CSS. The only issue I have with it is that it does not color highlight Types. They make a style sheet available, so you'll need to include the style sheet or the styles on your website. Then once you've got the formatted code you simply paste it into the blog editor and you have a great looking code listing. But as you can see, by default (depending on how wide your code is) the code gets cut off. The funny thing is, I've seen this on so many websites, and I wondered why people don't fix it. I mean if you're going to have code available on your website for people to see, learn from and/or copy, at least make it easy to ready and simple to copy. Well, soon after I published my first blog post with code in it,.... boom! So I immediately set out to fix this problem with a little bit of help from JavaScript/jQuery. Some people use a JavaScript syntax highlighters. Here is a list of options:\nSyntaxHighlighter\nGoogle-code-prettify\nSyntax Highlighting in JavaScript\njquery-chili-js\nHIGHLIGHT.JS\nLighter.js - Syntax highlighting with MooTools\nThe Requirements\nSo I'm my own client, and my client says it should be really simple for him (the user) to do this. Further, he wants a few things to happen magically too:\nHe wants to see an icon to the top left of the code listing\nHe wants to have a title to the code listing\nHe wants to see an expand icon to the top right and when someone clicks on it, the the code listing should expand, in place.\nOnce the code listing has expanded, he wants the expand icon to change to a collapse or close icon.\nAnd finally, when the use clicks on the close icon, things should get back to the way they were.\n\n\"Now, I don't mind having to wrap my formatted code with a div and set some attributes, but that's it..\", he says. And I said, \"Ok, I think I understand your requirements, let me see what I can do\". In my mind, I picture something like:\n\nAs is usual when you get a set of requirements from a client, there is bound to be feature creep. So right in the middle of my thought process... \"I've been thinking\", he says, \"uh oh - why are you thinking?\", I mutter mutedly. Anyway, to cut a long story short, here are the additional requirements: Code listings could be of various types of code, such as C#, JavaScript, Html, CSS and even DOS command line stuff, somehow magically this icon needs to change to reflect the type of code listing So I said, \"You could just put an image tag to...\", he cut me off. \"I'm not doing anything more than adding that wrapper div, remember?\". Yes, of course. And just when I thought he was done....\"Oh, and those icons...,I'll need those too\". (Fanta-bloody-tastic), Sure, no problem, is there anything else? For the moment, no. Whew! At this point I lock the door to my office and pull the phone off the hook, and close out Outlook. My cell phone? I quietly dropped it into his coat pocket. Hopefully, I'll have some peace and can think for a change. So I get cracking on a prototype html page that has bare bones markup, but keeping in mind that most websites have a fixed width and that invariably, the content area's overflow CSS property is set to hidden. Once I had that and pasted some pre-formatted code in there I saw the same issue with the code listing not showing completely. Great!, I now have a reproducible case.\n\nTest Html Page\n<!DOCTYPE html>\n<html>\n<head>\n    <title>Widen Code Listing</title>\n    <script type=\"text/javascript\" src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js\"></script>\n    <script type=\"text/javascript\" src=\"jquery/javascripts/matlus_custom.js\"></script>\n    <style type=\"text/css\">\n      body { font-family: Verdana; font-size: 90%; }\n      #outer { width: 1000px; padding: 10px; border: 1px solid #cccccc; }\n      #inner { width: 600px; float: left; margin-right: 10px; padding: 10px; border: 1px solid #cccccc; overflow: hidden; }\n      #right { width: 336px; float: left; border: 1px solid #cccccc; }\n\n      div.panel\n        {\n          padding: 10px; margin-bottom: 10px; border: 1px solid #eeeeee; border-top-left-radius: 10px 10px; border-top-right-radius: 10px 10px; border-bottom-left-radius: 10px 10px; border-bottom-right-radius: 10px 10px;\n          -moz-border-radius-topleft: 10px; -moz-border-radius-topright: 10px; -moz-border-radius-bottomleft: 10px; -moz-border-radius-bottomright: 10px;\n          -webkit-border-top-left-radius: 10px 10px; -webkit-border-top-right-radius: 10px 10px; -webkit-border-bottom-left-radius: 10px 10px; -webkit-border-bottom-right-radius: 10px 10px;\n        }\n      div.panel { background-color: #eeeeee; }\n      div.code { background-color: #fdfdd8; }\n      .clear { clear: both; }\n      .codeHeading { margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; margin-top: 10px; padding-left: 50px; }\n      .codeWrapper { margin: 10px 0px 10px 0px; overflow: hidden; }\n      .codeTitle { float:left; margin-top: 0px; }\n      .expand { float: right; cursor: pointer; margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; width: 48px; }\n    </style>\n</head>\n<body>\n  <div id=\"outer\">\n    <div id=\"inner\">\n      <!-- This is the div that wraps the code listing -->\n      <div class=\"panel code /images/csharp.png\" title=\"Code Listing\">        \n\n      <pre class=\"csharpcode\">\n<span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> CreateFtpUser(<span class=\"kwrd\">string</span> configurationPath, <span class=\"kwrd\">string</span> username, <span class=\"kwrd\">string</span> password)\n{\n}\n      </pre>\n      </div>\n    </div>\n    <div id=\"right\">\n    </div>\n    <div style=\"clear: both;\"></div>\n  </div>\n</body>\n</html>\nThe important part of the html above\n<div class=\"panel code /images/csharp.png\" title=\"Code Listing\">\n\nyour formatted code listing goes here\n\n</div>\nWe'll examine this later, but I thought it was important to point it out so you can see that's all we really need.\nThe Concept\nThis is how I think I'm going to go about solving this problem: What if I:\nCopy the contents of the containing div (the div my client said he'd put around the formatted code), and insert it into a div I create on the fly.\nThen add the div to the DOM but I absolutely position it right over the original div.\nWhen I add this new div to the DOM I add it as a child of the body element, so as to eliminate any CSS constraints that may be applied to the actual content area container. I know that in most WordPress themes and pretty much any well designed website, the content area is constrained, so adding the new div as a child of anything but the body element would automatically constrain this new div as well.\nThen when the visitor closes or collapses the code, I simply remove it from the DOM and what you see is the original code listing.\nBeing that this new div is not constrained, it should expand to the size of the content within it, and all of the code should be visible, without the need to know what height and especially what width to make the div\nPerfect! Looks like this will do the job nicely. So lets get cracking on the real code. There are CSS styles I use here to help with styling as well as positioning (top-left icon, top-right icon and stuff) and background images (the icons) etc. You may not need all these styles but I've listed them here anyway:\nCSS Styles\ndiv.panel\n  {\n    padding: 10px; margin-bottom: 10px; border: 1px solid #eeeeee; border-top-left-radius: 10px 10px; border-top-right-radius: 10px 10px; border-bottom-left-radius: 10px 10px; border-bottom-right-radius: 10px 10px;\n    -moz-border-radius-topleft: 10px; -moz-border-radius-topright: 10px; -moz-border-radius-bottomleft: 10px; -moz-border-radius-bottomright: 10px;\n    -webkit-border-top-left-radius: 10px 10px; -webkit-border-top-right-radius: 10px 10px; -webkit-border-bottom-left-radius: 10px 10px; -webkit-border-bottom-right-radius: 10px 10px;\n  }\n\ndiv.panel { background-color: #eeeeee; }\ndiv.code { background-color: #fdfdd8; }\n\n.clear { clear: both; }\n.codeHeading { margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; margin-top: 10px; padding-left: 50px; }\n.codeWrapper { margin: 10px 0px 10px 0px; }\n.codeTitle { float:left; margin-top: 0px; }\n.expand { float: right; cursor: pointer; margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; width: 48px; }\nA note about CSS background images\nThe icons you see are CSS background images. However, you'll notice that the CSS above does not specify any background images pre-se. If it did, then these images would have to be in a path relative to the css file and I personally don't like to have non-theme specific images in multiple places on the server. The accompanying JavaScript code assigns the background images as part of the style attribute.\nThe JavaScript for Expanding code listings\nI've used JQuery to help with the JavaScript required to get the job done. The key aspect (I think) to get here is that this div that the client is willing to insert, that wraps the code listing, has it's class attribute set with multiple CSS classes. However, one of those classes, is not really a CSS class. It's the path to the icon image to use. In my case my images are in a folder called images, which is a sub folder of the root folder of my website. Initially, I used a custom attribute and value pair to indicate the url to the icon image to use, such as:\n  <div class=\"panel code\" icon=\"/images/javascript.png\" title=\"Some title\">\n\n  Code listing goes here.\n\n  </div>\nNotice, the icon attribute? Well that would have worked, and it did in my test html page. But when I tried it on my blog (I mean I was testing, it on WordPress because I knew the client wanted to use it on his WordPress blog) something funky was going on. You see in WordPress, when you're writing a blog you use their editor. The editor has two tabs, \"Visual\" and \"Html\". So you can switch to the Html tab and write straight html if you know what you're doing. Well it so happens that when you switch from tab to tab, the editor cleans up your html and when it finds an attribute that is not \"standard\", it wipes it out (without warning). So once I figured out what was going on. I had to come up with another solution. The panel class (look at the CSS listing above) essentially produces the rounded border and the faint gray background. The code CSS class overwrites the gray background to a faint yellow background.\nJavaScript that makes code listings expand\n$(document).ready(function (e) {\n  $('div[class~=code]').each(function () {\n    var uniqueId = Math.floor(Math.random() * 99999).toString();\n    var icon = getIconUrlFromElement(this);\n    $(this).attr('id', 'code_' + uniqueId);\n    $(this).prepend('<div class=\"codeHeading\" style=\"background-image: url(' + icon + ');\"><h3 class=\"codeTitle\">' + $(this).attr('title') +\n                    '</h3><div class=\"expand\" style=\"background-image: url(/images/expand.png);\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div>');\n\n    $(this).find('.expand').click(function () {\n      var $codeDiv = $(this).parents('div[class~=code]');\n      var codeDivPosition = $codeDiv.position();\n      $(document.body).append('<div id=\"expandedCode_' + uniqueId + '\" class=\"panel code\" style=\"position: absolute; top: ' +\n                              codeDivPosition.top + 'px; left: ' + codeDivPosition.left + 'px;\">' + $codeDiv.html() + '</div');\n      $('#expandedCode_' + uniqueId + ' div[class=expand]').click(function (e) {\n        $('#expandedCode_' + uniqueId).remove();\n      }).css('background-image', \"url('/images/collapse.png')\");\n    });\n  });\n\n  /* Assumption: the element's class attribute has one or more classes assigned.\n     Further, one of these classes is the url to the icon image to use and the\n     image is a .png image.\n  */\n  function getIconUrlFromElement(element) {\n    var styleClasses = $(element).attr('class');\n    var classes = styleClasses.split(' ');\n    for (var i = 0; i < classes.length; i++) {\n      if (classes[i].indexOf('.png') > 1)\n        return classes[i];\n    }\n    return null;\n  }\n});\nI'll try and explain the main aspects of the JQuery code listed above. All the magic happens in the $(document).ready event. First we select all div elements whose class attribute's value is \"code\". Remember that the class attribute can contain one or more space delimited calls names (or words). We use that to our benefit here. The ~= syntax tells JQuery to match the test string (code in our case) against each word (the space delimited set of \"words\") in the attribute value. Then for each such element found we dynamically construct the following html. The html that is not color coded is the original div tag that wraps the code listing. So what we've done is we've added our dynamic html as the \"first child\" of the exiting div element, using the JQuery .prepend() method.\nThe Dynamically created html\n<div class=\"panel code /images/csharp.png\" title=\"Code Listing\">\n  <div class=\"codeHeading\" style=\"background-image: url(/images/csharp.png);\">\n    <h3 class=\"codeTitle\">Code Listing</h3>\n    <div class=\"expand\" style=\"background-image: url(/images/expand.png);\" title=\"Expand Code Listing\">\n    </div>\n    <div class=\"clear\"></div>\n\n  Code listing goes here\n</div>\n\nThe rest of the JQuery code does all of the plumbing required for user interaction. The additional JavaScript method getIconUrlFromElement is a helper function that extracts the url to the path of the icon from the class attribute's value. I found someone else who's done something similar, here jquery-solution-to-a-simple-problem/. It seems to get the job done for the most part, however, I don't like the fact that the width the code expands to is fixed irrespective of whether the codes requires it to be that wide or if the code is wider you have the same issue you started with. The other aspect is that, I personally like to read the author's description while examining the code listing and the mouseenter/mouseleave thing doesn't work for me personally. Besides, my client was very clear about how he wanted this to work.",
+  "bodyLinks": [
+    {
+      "text": "WordPress",
+      "url": "https://web.archive.org/web/20240222150539/http://wordpress.org/"
+    },
+    {
+      "text": "http://manoli.net/csharpformat/",
+      "url": "https://web.archive.org/web/20240222150539/http://manoli.net/csharpformat/"
+    },
+    {
+      "text": "SyntaxHighlighter",
+      "url": "https://web.archive.org/web/20240222150539/http://alexgorbatchev.com/SyntaxHighlighter/"
+    },
+    {
+      "text": "Google-code-prettify",
+      "url": "https://web.archive.org/web/20240222150539/http://code.google.com/p/google-code-prettify/"
+    },
+    {
+      "text": "Syntax Highlighting in JavaScript",
+      "url": "https://web.archive.org/web/20240222150539/http://shjs.sourceforge.net/"
+    },
+    {
+      "text": "jquery-chili-js",
+      "url": "https://web.archive.org/web/20240222150539/http://code.google.com/p/jquery-chili-js/"
+    },
+    {
+      "text": "HIGHLIGHT.JS",
+      "url": "https://web.archive.org/web/20240222150539/http://softwaremaniacs.org/soft/highlight/en/"
+    },
+    {
+      "text": "Lighter.js - Syntax highlighting with MooTools",
+      "url": "https://web.archive.org/web/20240222150539/http://pradador.com/code/lighterjs/"
+    },
+    {
+      "text": "jquery-solution-to-a-simple-problem/",
+      "url": "https://web.archive.org/web/20240222150539/http://www.viget.com/inspire/simple-jquery-solution-to-a-simple-problem/"
+    }
+  ],
+  "code": [
+    "<!DOCTYPE html>\n<html>\n<head>\n    <title>Widen Code Listing</title>\n    <script type=\"text/javascript\" src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js\"></script>\n    <script type=\"text/javascript\" src=\"jquery/javascripts/matlus_custom.js\"></script>\n    <style type=\"text/css\">\n      body { font-family: Verdana; font-size: 90%; }\n      #outer { width: 1000px; padding: 10px; border: 1px solid #cccccc; }\n      #inner { width: 600px; float: left; margin-right: 10px; padding: 10px; border: 1px solid #cccccc; overflow: hidden; }\n      #right { width: 336px; float: left; border: 1px solid #cccccc; }\n\n      div.panel\n        {\n          padding: 10px; margin-bottom: 10px; border: 1px solid #eeeeee; border-top-left-radius: 10px 10px; border-top-right-radius: 10px 10px; border-bottom-left-radius: 10px 10px; border-bottom-right-radius: 10px 10px;\n          -moz-border-radius-topleft: 10px; -moz-border-radius-topright: 10px; -moz-border-radius-bottomleft: 10px; -moz-border-radius-bottomright: 10px;\n          -webkit-border-top-left-radius: 10px 10px; -webkit-border-top-right-radius: 10px 10px; -webkit-border-bottom-left-radius: 10px 10px; -webkit-border-bottom-right-radius: 10px 10px;\n        }\n      div.panel { background-color: #eeeeee; }\n      div.code { background-color: #fdfdd8; }\n      .clear { clear: both; }\n      .codeHeading { margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; margin-top: 10px; padding-left: 50px; }\n      .codeWrapper { margin: 10px 0px 10px 0px; overflow: hidden; }\n      .codeTitle { float:left; margin-top: 0px; }\n      .expand { float: right; cursor: pointer; margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; width: 48px; }\n    </style>\n</head>\n<body>\n  <div id=\"outer\">\n    <div id=\"inner\">\n      <!-- This is the div that wraps the code listing -->\n      <div class=\"panel code /images/csharp.png\" title=\"Code Listing\">        \n\n      <pre class=\"csharpcode\">\n<span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> CreateFtpUser(<span class=\"kwrd\">string</span> configurationPath, <span class=\"kwrd\">string</span> username, <span class=\"kwrd\">string</span> password)\n{\n}\n      </pre>\n      </div>\n    </div>\n    <div id=\"right\">\n    </div>\n    <div style=\"clear: both;\"></div>\n  </div>\n</body>\n</html>",
+    "<div class=\"panel code /images/csharp.png\" title=\"Code Listing\">\n\nyour formatted code listing goes here\n\n</div>",
+    "div.panel\n  {\n    padding: 10px; margin-bottom: 10px; border: 1px solid #eeeeee; border-top-left-radius: 10px 10px; border-top-right-radius: 10px 10px; border-bottom-left-radius: 10px 10px; border-bottom-right-radius: 10px 10px;\n    -moz-border-radius-topleft: 10px; -moz-border-radius-topright: 10px; -moz-border-radius-bottomleft: 10px; -moz-border-radius-bottomright: 10px;\n    -webkit-border-top-left-radius: 10px 10px; -webkit-border-top-right-radius: 10px 10px; -webkit-border-bottom-left-radius: 10px 10px; -webkit-border-bottom-right-radius: 10px 10px;\n  }\n\ndiv.panel { background-color: #eeeeee; }\ndiv.code { background-color: #fdfdd8; }\n\n.clear { clear: both; }\n.codeHeading { margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; margin-top: 10px; padding-left: 50px; }\n.codeWrapper { margin: 10px 0px 10px 0px; }\n.codeTitle { float:left; margin-top: 0px; }\n.expand { float: right; cursor: pointer; margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; width: 48px; }",
+    "  <div class=\"panel code\" icon=\"/images/javascript.png\" title=\"Some title\">\n\n  Code listing goes here.\n\n  </div>",
+    "$(document).ready(function (e) {\n  $('div[class~=code]').each(function () {\n    var uniqueId = Math.floor(Math.random() * 99999).toString();\n    var icon = getIconUrlFromElement(this);\n    $(this).attr('id', 'code_' + uniqueId);\n    $(this).prepend('<div class=\"codeHeading\" style=\"background-image: url(' + icon + ');\"><h3 class=\"codeTitle\">' + $(this).attr('title') +\n                    '</h3><div class=\"expand\" style=\"background-image: url(/images/expand.png);\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div>');\n\n    $(this).find('.expand').click(function () {\n      var $codeDiv = $(this).parents('div[class~=code]');\n      var codeDivPosition = $codeDiv.position();\n      $(document.body).append('<div id=\"expandedCode_' + uniqueId + '\" class=\"panel code\" style=\"position: absolute; top: ' +\n                              codeDivPosition.top + 'px; left: ' + codeDivPosition.left + 'px;\">' + $codeDiv.html() + '</div');\n      $('#expandedCode_' + uniqueId + ' div[class=expand]').click(function (e) {\n        $('#expandedCode_' + uniqueId).remove();\n      }).css('background-image', \"url('/images/collapse.png')\");\n    });\n  });\n\n  /* Assumption: the element's class attribute has one or more classes assigned.\n     Further, one of these classes is the url to the icon image to use and the\n     image is a .png image.\n  */\n  function getIconUrlFromElement(element) {\n    var styleClasses = $(element).attr('class');\n    var classes = styleClasses.split(' ');\n    for (var i = 0; i < classes.length; i++) {\n      if (classes[i].indexOf('.png') > 1)\n        return classes[i];\n    }\n    return null;\n  }\n});",
+    "<div class=\"panel code /images/csharp.png\" title=\"Code Listing\">\n  <div class=\"codeHeading\" style=\"background-image: url(/images/csharp.png);\">\n    <h3 class=\"codeTitle\">Code Listing</h3>\n    <div class=\"expand\" style=\"background-image: url(/images/expand.png);\" title=\"Expand Code Listing\">\n    </div>\n    <div class=\"clear\"></div>\n\n  Code listing goes here\n</div>\n"
+  ],
+  "header": "Expanding Code listings\nPosted by Shiv Kumar on 30th August, 2010\nCategorized Under: jQuery Code Listings\nTagged With:\n  ",
+  "html": "<div class=\"articleText\">\n        <p><img style=\"background-image: none; border-bottom: 0px; border-left: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px\" title=\"WidenCodeListing\" border=\"0\" alt=\"WidenCodeListing\" src=\"https://web.archive.org/web/20240222150539im_/http://www.matlus.com/content/uploads/2011/01/WidenCodeListing_fb34ddd0-68bd-4628-9075-52c0e39fc7f9.jpg\" width=\"600\" height=\"300\">&nbsp;</p> <p>Having just converted my website to use <a title=\"WordPress website\" href=\"https://web.archive.org/web/20240222150539/http://wordpress.org/\" target=\"_blank\">WordPress</a>, and having written my first blog that contains a code listing I immediately ran into the trouble of not being able to see the complete code listing due to the constraints imposed upon by the theme I'm using. It's not the theme that's at fault really since any good website design implies the site has a fixed width (for the most part). Since the \"content\" area is future constrained (like in a 2 or 3 column layout), it becomes almost impossible to have code listings appear, such that they are completely visible. </p> <h2>Formatting code</h2>In order to format code, you can continue to use what you're using today. The solution presented here is independent of how the code is actually formatted. I personally use the online (free) services of <a href=\"https://web.archive.org/web/20240222150539/http://manoli.net/csharpformat/\" target=\"_blank\">http://manoli.net/csharpformat/</a>. It's not perfect, but it is the best one I've found so far and it's really simple to use. Its easy to modify the colors using CSS. The only issue I have with it is that it does not color highlight Types. They make a style sheet available, so you'll need to include the style sheet or the styles on your website. Then once you've got the formatted code you simply paste it into the blog editor and you have a great looking code listing. But as you can see, by default (depending on how wide your code is) the code gets cut off. The funny thing is, I've seen this on so many websites, and I wondered why people don't fix it. I mean if you're going to have code available on your website for people to see, learn from and/or copy, at least make it easy to ready and simple to copy. Well, soon after I published my first blog post with code in it,.... boom! So I immediately set out to fix this problem with a little bit of help from JavaScript/jQuery. Some people use a JavaScript syntax highlighters. Here is a list of options:  <ul> <li><a href=\"https://web.archive.org/web/20240222150539/http://alexgorbatchev.com/SyntaxHighlighter/\" target=\"_blank\">SyntaxHighlighter</a>  </li><li><a href=\"https://web.archive.org/web/20240222150539/http://code.google.com/p/google-code-prettify/\" target=\"_blank\">Google-code-prettify</a>  </li><li><a href=\"https://web.archive.org/web/20240222150539/http://shjs.sourceforge.net/\" target=\"_blank\">Syntax Highlighting in JavaScript</a>  </li><li><a href=\"https://web.archive.org/web/20240222150539/http://code.google.com/p/jquery-chili-js/\" target=\"_blank\">jquery-chili-js</a>  </li><li><a href=\"https://web.archive.org/web/20240222150539/http://softwaremaniacs.org/soft/highlight/en/\" target=\"_blank\">HIGHLIGHT.JS</a>  </li><li><a href=\"https://web.archive.org/web/20240222150539/http://pradador.com/code/lighterjs/\" target=\"_blank\">Lighter.js - Syntax highlighting with MooTools</a> </li></ul> <h2>The Requirements</h2>So I'm my own client, and my client says it should be really simple for him (the user) to do this. Further, he wants a few things to happen magically too:  <ul> <li>He wants to see an icon to the top left of the code listing  </li><li>He wants to have a title to the code listing  </li><li>He wants to see an expand icon to the top right and when someone clicks on it, the the code listing should expand, in place.  </li><li>Once the code listing has expanded, he wants the expand icon to change to a collapse or close icon.  </li><li>And finally, when the use clicks on the close icon, things should get back to the way they were. </li></ul> <p>\"Now, I don't mind having to wrap my formatted code with a div and set some attributes, but that's it..\", he says. And I said, \"Ok, I think I understand your requirements, let me see what I can do\". In my mind, I picture something like: </p> <p><img style=\"background-image: none; border-bottom: 0px; border-left: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px\" title=\"VisonOfCodelistingRequirements\" border=\"0\" alt=\"VisonOfCodelistingRequirements\" src=\"https://web.archive.org/web/20240222150539im_/http://www.matlus.com/content/uploads/2011/01/VisonOfCodelistingRequirements_fe333471-a490-45ee-ab9c-163d564b5dcd.jpg\" width=\"611\" height=\"327\"></p> <p>As is usual when you get a set of requirements from a client, there is bound to be <strong>feature creep</strong>. So right in the middle of my thought process... \"I've been thinking\", he says, \"uh oh - why are you thinking?\", I mutter mutedly. Anyway, to cut a long story short, here are the additional requirements: Code listings could be of various types of code, such as C#, JavaScript, Html, CSS and even DOS command line stuff, somehow magically this icon needs to change to reflect the type of code listing So I said, \"You could just put an image tag to...\", he cut me off. \"I'm not doing anything more than adding that wrapper <code>div</code>, remember?\". Yes, of course. And just when I thought he was done....\"Oh, and those icons...,I'll need those too\". (Fanta-bloody-tastic), Sure, no problem, is there anything else? For the moment, no. Whew! At this point I lock the door to my office and pull the phone off the hook, and close out Outlook. My cell phone? I quietly dropped it into his coat pocket. Hopefully, I'll have some peace and can think for a change. So I get cracking on a prototype html page that has bare bones markup, but keeping in mind that most websites have a fixed width and that invariably, the content area's overflow CSS property is set to <code>hidden</code>. Once I had that and pasted some pre-formatted code in there I saw the same issue with the code listing not showing completely. Great!, I now have a reproducible case. </p> <div class=\"panel code content/images/html.png\" title=\"Test Html Page\" id=\"code_72167\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240222150539/http://matlus.com/content/images/html.png);\"><h3 class=\"codeTitle\">Test Html Page</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">&lt;!</span><span class=\"html\">DOCTYPE</span> <span class=\"attr\">html</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;</span><span class=\"html\">html</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;</span><span class=\"html\">head</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">title</span><span class=\"kwrd\">&gt;</span>Widen Code Listing<span class=\"kwrd\">&lt;/</span><span class=\"html\">title</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">script</span> <span class=\"attr\">type</span><span class=\"kwrd\">=\"text/javascript\"</span> <span class=\"attr\">src</span><span class=\"kwrd\">=\"http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js\"</span><span class=\"kwrd\">&gt;&lt;/</span><span class=\"html\">script</span><span class=\"kwrd\">&gt;</span>\n    &lt;script type=<span class=\"str\">\"text/javascript\"</span> src=<span class=\"str\">\"jquery/javascripts/matlus_custom.js\"</span>&gt;<span class=\"kwrd\">&lt;/</span><span class=\"html\">script</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">style</span> <span class=\"attr\">type</span><span class=\"kwrd\">=\"text/css\"</span><span class=\"kwrd\">&gt;</span>\n      body { font-family: Verdana; font-size: 90%; }\n      #outer { width: 1000px; padding: 10px; border: 1px solid #cccccc; }\n      #inner { width: 600px; float: left; margin-right: 10px; padding: 10px; border: 1px solid #cccccc; overflow: hidden; }\n      #right { width: 336px; float: left; border: 1px solid #cccccc; }\n\n      div.panel\n        {\n          padding: 10px; margin-bottom: 10px; border: 1px solid #eeeeee; border-top-left-radius: 10px 10px; border-top-right-radius: 10px 10px; border-bottom-left-radius: 10px 10px; border-bottom-right-radius: 10px 10px;\n          -moz-border-radius-topleft: 10px; -moz-border-radius-topright: 10px; -moz-border-radius-bottomleft: 10px; -moz-border-radius-bottomright: 10px;\n          -webkit-border-top-left-radius: 10px 10px; -webkit-border-top-right-radius: 10px 10px; -webkit-border-bottom-left-radius: 10px 10px; -webkit-border-bottom-right-radius: 10px 10px;\n        }\n      div.panel { background-color: #eeeeee; }\n      div.code { background-color: #fdfdd8; }\n      .clear { clear: both; }\n      .codeHeading { margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; margin-top: 10px; padding-left: 50px; }\n      .codeWrapper { margin: 10px 0px 10px 0px; overflow: hidden; }\n      .codeTitle { float:left; margin-top: 0px; }\n      .expand { float: right; cursor: pointer; margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; width: 48px; }\n    <span class=\"kwrd\">&lt;/</span><span class=\"html\">style</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">head</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;</span><span class=\"html\">body</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">id</span><span class=\"kwrd\">=\"outer\"</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">id</span><span class=\"kwrd\">=\"inner\"</span><span class=\"kwrd\">&gt;</span>\n      <span class=\"rem\">&lt;!-- This is the div that wraps the code listing --&gt;</span>\n      <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">class</span><span class=\"kwrd\">=\"panel code /images/csharp.png\"</span> <span class=\"attr\">title</span><span class=\"kwrd\">=\"Code Listing\"</span><span class=\"kwrd\">&gt;</span>        \n\n      <span class=\"kwrd\">&lt;</span><span class=\"html\">pre</span> <span class=\"attr\">class</span><span class=\"kwrd\">=\"csharpcode\"</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;</span><span class=\"html\">span</span> <span class=\"attr\">class</span><span class=\"kwrd\">=\"kwrd\"</span><span class=\"kwrd\">&gt;</span>private<span class=\"kwrd\">&lt;/</span><span class=\"html\">span</span><span class=\"kwrd\">&gt;</span> <span class=\"kwrd\">&lt;</span><span class=\"html\">span</span> <span class=\"attr\">class</span><span class=\"kwrd\">=\"kwrd\"</span><span class=\"kwrd\">&gt;</span>static<span class=\"kwrd\">&lt;/</span><span class=\"html\">span</span><span class=\"kwrd\">&gt;</span> <span class=\"kwrd\">&lt;</span><span class=\"html\">span</span> <span class=\"attr\">class</span><span class=\"kwrd\">=\"kwrd\"</span><span class=\"kwrd\">&gt;</span>void<span class=\"kwrd\">&lt;/</span><span class=\"html\">span</span><span class=\"kwrd\">&gt;</span> CreateFtpUser(<span class=\"kwrd\">&lt;</span><span class=\"html\">span</span> <span class=\"attr\">class</span><span class=\"kwrd\">=\"kwrd\"</span><span class=\"kwrd\">&gt;</span>string<span class=\"kwrd\">&lt;/</span><span class=\"html\">span</span><span class=\"kwrd\">&gt;</span> configurationPath, <span class=\"kwrd\">&lt;</span><span class=\"html\">span</span> <span class=\"attr\">class</span><span class=\"kwrd\">=\"kwrd\"</span><span class=\"kwrd\">&gt;</span>string<span class=\"kwrd\">&lt;/</span><span class=\"html\">span</span><span class=\"kwrd\">&gt;</span> username, <span class=\"kwrd\">&lt;</span><span class=\"html\">span</span> <span class=\"attr\">class</span><span class=\"kwrd\">=\"kwrd\"</span><span class=\"kwrd\">&gt;</span>string<span class=\"kwrd\">&lt;/</span><span class=\"html\">span</span><span class=\"kwrd\">&gt;</span> password)\n{\n}\n      <span class=\"kwrd\">&lt;/</span><span class=\"html\">pre</span><span class=\"kwrd\">&gt;</span>\n      <span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">id</span><span class=\"kwrd\">=\"right\"</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"clear: both;\"</span><span class=\"kwrd\">&gt;&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">body</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">html</span><span class=\"kwrd\">&gt;</span></pre></div>\n<div class=\"panel\">\n<h3 class=\"note\">The important part of the html above</h3><pre><span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">class</span><span class=\"kwrd\">=\"panel code /images/csharp.png\"</span> <span class=\"attr\">title</span><span class=\"kwrd\">=\"Code Listing\"</span><span class=\"kwrd\">&gt;</span>\n\nyour formatted code listing goes here\n\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">div&gt;</span></pre>We'll examine this later, but I thought it was important to point it out so you can see that's all we really need. </div>\n<h2>The Concept</h2>This is how I think I'm going to go about solving this problem: What if I: \n<ul>\n<li>Copy the contents of the containing <code>div</code> (the <code>div</code> my client said he'd put around the formatted code), and insert it into a <code>div</code> I create on the fly. \n</li><li>Then add the <code>div</code> to the DOM but I absolutely position it right over the original <code>div</code>. \n</li><li>When I add this new div to the DOM I add it as a child of the <code>body</code> element, so as to eliminate any CSS constraints that may be applied to the actual content area container. I know that in most WordPress themes and pretty much any well designed website, the content area is constrained, so adding the new div as a child of anything but the body element would automatically constrain this new div as well. \n</li><li>Then when the visitor closes or collapses the code, I simply remove it from the DOM and what you see is the original code listing. \n</li><li>Being that this new <code>div</code> is not constrained, it should expand to the size of the content within it, and all of the code should be visible, without the need to know what height and especially what width to make the <code>div</code> </li></ul>Perfect! Looks like this will do the job nicely. So lets get cracking on the real code. There are CSS styles I use here to help with styling as well as positioning (top-left icon, top-right icon and stuff) and background images (the icons) etc. You may not need all these styles but I've listed them here anyway: \n<div class=\"panel code content/images/css.png\" title=\"CSS Styles\" id=\"code_53664\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240222150539/http://matlus.com/content/images/css.png);\"><h3 class=\"codeTitle\">CSS Styles</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre>div.panel\n  {\n    padding: 10px; margin-bottom: 10px; border: 1px solid #eeeeee; border-top-left-radius: 10px 10px; border-top-right-radius: 10px 10px; border-bottom-left-radius: 10px 10px; border-bottom-right-radius: 10px 10px;\n    -moz-border-radius-topleft: 10px; -moz-border-radius-topright: 10px; -moz-border-radius-bottomleft: 10px; -moz-border-radius-bottomright: 10px;\n    -webkit-border-top-left-radius: 10px 10px; -webkit-border-top-right-radius: 10px 10px; -webkit-border-bottom-left-radius: 10px 10px; -webkit-border-bottom-right-radius: 10px 10px;\n  }\n\ndiv.panel { background-color: #eeeeee; }\ndiv.code { background-color: #fdfdd8; }\n\n.clear { clear: both; }\n.codeHeading { margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; margin-top: 10px; padding-left: 50px; }\n.codeWrapper { margin: 10px 0px 10px 0px; }\n.codeTitle { float:left; margin-top: 0px; }\n.expand { float: right; cursor: pointer; margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; width: 48px; }</pre></div>\n<div class=\"panel\">\n<h3 class=\"note\">A note about CSS background images</h3>The icons you see are CSS background images. However, you'll notice that the CSS above does not specify any background images pre-se. If it did, then these images would have to be in a path relative to the css file and I personally don't like to have non-theme specific images in multiple places on the server. The accompanying JavaScript code assigns the background images as part of the <code><strong>style</strong></code> attribute. </div>\n<h2></h2>\n<h2>The JavaScript for Expanding code listings</h2>I've used JQuery to help with the JavaScript required to get the job done. The key aspect (I think) to get here is that this <code>div</code> that the client is willing to insert, that wraps the code listing, has it's class attribute set with multiple CSS classes. However, one of those classes, is not really a CSS class. It's the path to the icon image to use. In my case my images are in a folder called <code>images</code>, which is a sub folder of the root folder of my website. Initially, I used a custom attribute and value pair to indicate the url to the icon image to use, such as: <pre>  &lt;div class=\"panel code\" icon=\"/images/javascript.png\" title=\"Some title\"&gt;\n\n  Code listing goes here.\n\n  &lt;/div&gt;</pre>Notice, the <code>icon</code> attribute? Well that would have worked, and it did in my test html page. But when I tried it on my blog (I mean I was testing, it on WordPress because I knew the client wanted to use it on his WordPress blog) something funky was going on. You see in WordPress, when you're writing a blog you use their editor. The editor has two tabs, \"Visual\" and \"Html\". So you can switch to the Html tab and write straight html if you know what you're doing. Well it so happens that when you switch from tab to tab, the editor cleans up your html and when it finds an attribute that is not \"standard\", it wipes it out (without warning). So once I figured out what was going on. I had to come up with another solution. The <code>panel</code> class (look at the CSS listing above) essentially produces the rounded border and the faint gray background. The <code>code</code> CSS class overwrites the gray background to a faint yellow background. \n<div class=\"panel code content/images/javascript.png\" title=\"JavaScript that makes code listings expand\" id=\"code_60444\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240222150539/http://matlus.com/content/images/javascript.png);\"><h3 class=\"codeTitle\">JavaScript that makes code listings expand</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">$(document).ready(function (e) {\n  $(<span class=\"str\">'div[class~=code]'</span>).each(function () {\n    var uniqueId = Math.floor(Math.random() * 99999).toString();\n    var icon = getIconUrlFromElement(<span class=\"kwrd\">this</span>);\n    $(<span class=\"kwrd\">this</span>).attr(<span class=\"str\">'id'</span>, <span class=\"str\">'code_'</span> + uniqueId);\n    $(<span class=\"kwrd\">this</span>).prepend(<span class=\"str\">'&lt;div class=\"codeHeading\" style=\"background-image: url('</span> + icon + <span class=\"str\">');\"&gt;&lt;h3 class=\"codeTitle\"&gt;'</span> + $(<span class=\"kwrd\">this</span>).attr(<span class=\"str\">'title'</span>) +\n                    <span class=\"str\">'&lt;/h3&gt;&lt;div class=\"expand\" style=\"background-image: url(/images/expand.png);\" title=\"Expand Code Listing\"&gt;&lt;/div&gt;&lt;div class=\"clear\"&gt;&lt;/div&gt;&lt;/div&gt;'</span>);\n\n    $(<span class=\"kwrd\">this</span>).find(<span class=\"str\">'.expand'</span>).click(function () {\n      var $codeDiv = $(<span class=\"kwrd\">this</span>).parents(<span class=\"str\">'div[class~=code]'</span>);\n      var codeDivPosition = $codeDiv.position();\n      $(document.body).append(<span class=\"str\">'&lt;div id=\"expandedCode_'</span> + uniqueId + <span class=\"str\">'\" class=\"panel code\" style=\"position: absolute; top: '</span> +\n                              codeDivPosition.top + <span class=\"str\">'px; left: '</span> + codeDivPosition.left + <span class=\"str\">'px;\"&gt;'</span> + $codeDiv.html() + <span class=\"str\">'&lt;/div'</span>);\n      $(<span class=\"str\">'#expandedCode_'</span> + uniqueId + <span class=\"str\">' div[class=expand]'</span>).click(function (e) {\n        $(<span class=\"str\">'#expandedCode_'</span> + uniqueId).remove();\n      }).css(<span class=\"str\">'background-image'</span>, <span class=\"str\">\"url('/images/collapse.png')\"</span>);\n    });\n  });\n\n  <span class=\"rem\">/* Assumption: the element's class attribute has one or more classes assigned.</span>\n<span class=\"rem\">     Further, one of these classes is the url to the icon image to use and the</span>\n<span class=\"rem\">     image is a .png image.</span>\n<span class=\"rem\">  */</span>\n  function getIconUrlFromElement(element) {\n    var styleClasses = $(element).attr(<span class=\"str\">'class'</span>);\n    var classes = styleClasses.split(<span class=\"str\">' '</span>);\n    <span class=\"kwrd\">for</span> (var i = 0; i &lt; classes.length; i++) {\n      <span class=\"kwrd\">if</span> (classes[i].indexOf(<span class=\"str\">'.png'</span>) &gt; 1)\n        <span class=\"kwrd\">return</span> classes[i];\n    }\n    <span class=\"kwrd\">return</span> <span class=\"kwrd\">null</span>;\n  }\n});</pre></div>I'll try and explain the main aspects of the JQuery code listed above. All the magic happens in the <code>$(document).ready</code> event. First we select all <code>div</code> elements whose <code>class</code> attribute's value is \"code\". Remember that the <code>class</code> attribute can contain one or more space delimited calls names (or words). We use that to our benefit here. The <code>~=</code> syntax tells JQuery to match the test string (<code>code</code> in our case) against each word (the space delimited set of \"words\") in the attribute value. Then for each such element found we dynamically construct the following html. The html that is not color coded is the original <code>div</code> tag that wraps the code listing. So what we've done is we've added our dynamic html as the \"first child\" of the exiting <code>div</code> element, using the JQuery <code>.prepend()</code> method. \n<div class=\"panel code content/images/html.png\" title=\"The Dynamically created html\" id=\"code_23681\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240222150539/http://matlus.com/content/images/html.png);\"><h3 class=\"codeTitle\">The Dynamically created html</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">&lt;div class=\"panel code /images/csharp.png\" title=\"Code Listing\"&gt;\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">class</span><span class=\"kwrd\">=\"codeHeading\"</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"background-image: url(/images/csharp.png);\"</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">h3</span> <span class=\"attr\">class</span><span class=\"kwrd\">=\"codeTitle\"</span><span class=\"kwrd\">&gt;</span>Code Listing<span class=\"kwrd\">&lt;/</span><span class=\"html\">h3</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">class</span><span class=\"kwrd\">=\"expand\"</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"background-image: url(/images/expand.png);\"</span> <span class=\"attr\">title</span><span class=\"kwrd\">=\"Expand Code Listing\"</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">class</span><span class=\"kwrd\">=\"clear\"</span><span class=\"kwrd\">&gt;&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n\n  Code listing goes here\n&lt;/div&gt;\n</pre></div>The rest of the JQuery code does all of the plumbing required for user interaction. The additional JavaScript method <code>getIconUrlFromElement</code> is a helper function that extracts the url to the path of the icon from the class attribute's value. I found someone else who's done something similar, here <a href=\"https://web.archive.org/web/20240222150539/http://www.viget.com/inspire/simple-jquery-solution-to-a-simple-problem/\" target+_blank?=\"\">jquery-solution-to-a-simple-problem/</a>. It seems to get the job done for the most part, however, I don't like the fact that the width the code expands to is fixed irrespective of whether the codes requires it to be that wide or if the code is wider you have the same issue you started with. The other aspect is that, I personally like to read the author's description while examining the code listing and the mouseenter/mouseleave thing doesn't work for me personally. Besides, my client was very clear about how he wanted this to work.\n\n\n  \n        </div>",
+  "images": [
+    {
+      "alt": "WidenCodeListing",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240222150539im_/http://www.matlus.com/content/uploads/2011/01/WidenCodeListing_fb34ddd0-68bd-4628-9075-52c0e39fc7f9.jpg"
+    },
+    {
+      "alt": "VisonOfCodelistingRequirements",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240222150539im_/http://www.matlus.com/content/uploads/2011/01/VisonOfCodelistingRequirements_fe333471-a490-45ee-ab9c-163d564b5dcd.jpg"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240222150539/http://www.matlus.com/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/category/jquery/"
+    },
+    {
+      "text": "Code Listings",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/category/jquery/code-listings/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240222150539/https://twitter.com/share?url=http%3a%2f%2fmatlus.com%2fexpanding-code-listings%2f&text=Expanding+Code+listings"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240222150539/http://www.facebook.com/sharer.php?u=http%3a%2f%2fmatlus.com%2fexpanding-code-listings%2f&t=Expanding+Code+listings"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240222150539/https://plus.google.com/share?url=http%3a%2f%2fmatlus.com%2fexpanding-code-listings%2f&text=Expanding+Code+listings"
+    },
+    {
+      "text": "WordPress",
+      "url": "https://web.archive.org/web/20240222150539/http://wordpress.org/"
+    },
+    {
+      "text": "http://manoli.net/csharpformat/",
+      "url": "https://web.archive.org/web/20240222150539/http://manoli.net/csharpformat/"
+    },
+    {
+      "text": "SyntaxHighlighter",
+      "url": "https://web.archive.org/web/20240222150539/http://alexgorbatchev.com/SyntaxHighlighter/"
+    },
+    {
+      "text": "Google-code-prettify",
+      "url": "https://web.archive.org/web/20240222150539/http://code.google.com/p/google-code-prettify/"
+    },
+    {
+      "text": "Syntax Highlighting in JavaScript",
+      "url": "https://web.archive.org/web/20240222150539/http://shjs.sourceforge.net/"
+    },
+    {
+      "text": "jquery-chili-js",
+      "url": "https://web.archive.org/web/20240222150539/http://code.google.com/p/jquery-chili-js/"
+    },
+    {
+      "text": "HIGHLIGHT.JS",
+      "url": "https://web.archive.org/web/20240222150539/http://softwaremaniacs.org/soft/highlight/en/"
+    },
+    {
+      "text": "Lighter.js - Syntax highlighting with MooTools",
+      "url": "https://web.archive.org/web/20240222150539/http://pradador.com/code/lighterjs/"
+    },
+    {
+      "text": "jquery-solution-to-a-simple-problem/",
+      "url": "https://web.archive.org/web/20240222150539/http://www.viget.com/inspire/simple-jquery-solution-to-a-simple-problem/"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240222150539/http://matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240222150539/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "Expanding Code listings",
+  "url": "https://web.archive.org/web/20240222150539/http://matlus.com/expanding-code-listings/"
+}

@@ -1,0 +1,520 @@
+{
+  "body": "As part of ASP.NET MVC3, we get a brand spanking new View Engine. In MVC2 the view engine we have access to by default is the ASP.NET Webforms view engine that uses Master file templates along with .aspx view templates and .ascx partial view templates.\nView Engines\n\nIn ASP.NET MVC, the view engine is responsible for parsing and compiling your views and partial views into C# or other .NET languages so as to be able to render the view into an html page. As it stands today in ASP.NET MVC, we have other options for view engines, such as Spark, NHmal, NDjango and a few others. My main problem with those is that you have to learn another language in order to get the job done. Some of these alternatives do make code and markup interspersed more readable though.\n\nAlternative to ASP.NET MVC\nIf you're looking for an alternative to ASP.NET MVC but want to continue to follow the MVC design paradigm and have templates that have no code in them with mind-bendingly fast performance, take a look at Quartz for ASP.NET . This blog is powered by Quartz\nRazor View Engine\nThe Razor view engine is new to ASP.NET MVC3 and I have to say that I really love the syntax it uses. One of the primary things that's kept me from using ASP.NET MVC in a production environment is that I never liked how C# code had to be interspersed with html mark up. Mind you, I'm not against having code interspersed with mark up. In fact I can't imagine real data driven web pages without some ability to iterate over data and such within markup, but I'm a stickler for maintainable and readable code and syntax that WebForms View Engine uses is a complete mess. With each new version, I'd try a few complex/real world views and when I'd look back at the code-markup combination it would be extremely difficult to read and therefore maintain. Using ASP.NET WebForms correctly still provided all of the benefits of ASP.NET MVC and then some. The story changes quite a bit with Razor.\nASP.NET MVC Preview 1 Requirements\nMVC3 is compatible with the released version of MVC (or MVC2). In fact they can run side by side on the same machine. However, ASP.NET MVC3 does require the .NET 4.0 framework and VS.NET 2010. An ASP.NET MVC3 project supports multiple view engines, which means you can migrate your existing MVC projects to MVC3 and start using the Razor view engine for new views or convert some of your existing views to use the Razor view engine.\nRazor Syntax\nCode Listing 1 shows a simple view, that when rendered results in what you see in code listing 2.\nSimple View using Razor syntax\n@inherits System.Web.Mvc.WebViewPage<IEnumerable<BusinessLayer.Dto.ThumbnailDto>>\n\n<!DOCTYPE html>\n<html>\n  <head>\n    <title>Index2</title>\n  </head>\n<body>\n@foreach(var thumb in Model) {\n  <img src=\"@Url.Content(\"~/content/images/\")@thumb.FileName\" alt=\"@thumb.Title\"/>\n}\n</body>\n</html>\nCode Listing 1: A simple View using Razor syntax\nSyntax Highlighting and intellisense\nThe code highlighting tool I use does not highlight the Razor syntax and as a result you don't see (proper) syntax highlighting of code listings you see here. Note also, that MVC3 Preview1 does not have syntax highlighting or Intellisense. This will probably be provided in Preview 2, but as it stands today, your view pages show as black on white in VS.NET 2010.\nYou'll notice that the @ symbol is the new delimiter. You'll also notice that there is no closing delimiter. The Razor engine is extremely smart at figuring out the end of any code you write in your markup. Blocks of code however do need the standard C# open-close curly braces ({ and }), but do NOT need a closing delimiter. Also if you're calling a method that does not return a string you'll need to use the open/close curly like so @{SomeCall(param1, param2);}. Let's examine Code listing 1. At the very top you'll notice a line that starts with the Razor delimiter. This line essentially says that this view inherits from the base class System.Web.Mvc.WebViewPage and that it is a strongly typed view whose model is a type of IEnmerable<BusinessLayer.Dto.ThumbnailDto>. Next, you'll notice that we have a foreach loop that iterates over the Model and while it iterates over this collection it produces an <img> tag for each item in the collection. The interesting bit here is the way we can set up the src and alt attributes from properties of the ThumbnailDto class.\nHtml Output of Code Listing 1\n<!DOCTYPE html>\n<html>\n  <head>\n    <title>Index2</title>\n  </head>\n<body>\n  <img src=\"/content/images/Sorcerer.jpg\" alt=\"The Sorcerer&#39;s Apprentice\"/>\n  <img src=\"/content/images/Narnia.jpg\" alt=\"The Chronicles of Narnia: The Voyage of the Dawn Treader\"/>\n</body>\n</html>\nCode Listing 2: Showing the Html output of code listing 1\nConditional Blocks\nIn ASP.NET MVC (with the current WebForms View Engine syntax), writing conditional statements interspersed with markup was a reading nightmare (and sometimes even a nightmare to write). People have come up with all kinds of solutions (I don't believe they are solutions really) to take out the conditional statements from the view and delegate them to Html helpers, partial views and what have you, because it just wasn't a pretty sight. With Razor, that's not the case anymore. Code listing 3 shows what a conditional statement embedded in markup looks like with Razor syntax.\nConditional Statements in Razor\n@if (Model.Count() == 0) {\n  <p>Sorry, there are no movies as this time</p>\n}\nelse {\n  <p>We have @Model.Count() movies to show you.</p>\n}\nCode Listing 3: Showing Conditional Statements in Razor\n\n \n\nNotice how readable the code is and how simple it is to insert values of properties (of your model) into html. What if the count was the last thing in the sentence? That is what if you wanted a period right after the count is displayed, such as We have @Model.Count()., No problem, just put that period where you want it. The Razor parser is smart enough to figure out that the period is not part of code but rather mark up. Similarly, it is smart enough to figure out if the @ symbol is part of say and email address literal or if it is used to delimit code. In case the content you want displayed is valid code (but you want it displayed as content), then simply escape the @ in your content with @@.\n\nView Template and Layout/Master Page\n\nRather than show you bits of code snippets, I'm going to show you a View Template and a Layout Template (MaterPage) using the Razor syntax and highlight some key aspects of both. The image below shows you a screen shot of what the output looks like, while Code Listing 4 shows the view template that was used to render the html along with a LayoutPage (or Master Page) shown in Code Listing 5 and the generated Html is shown in Code Listing 6. The first thing you'll notice (on line 3) is that there is a code block. Code blocks have the syntax you see there and you can have simple regular code in thse code blocks. You can't declare methods and properties in code blocks, so don't try it.\n\n \n\nBeware! Code Blocks\nAs great as code blocks are, be very careful about what you do in these code blocks. Just like with WebForms View engine and ASP.NET WebForms, it is quite easy to break the MVC paradigm, where Views are only views and should not do or contain anything more than presentation related code. Take a look at this section Breaking the MVC paradigm later in this article for a functional view template that does exactly this.\n\n \n\nWhat we're doing inside the code block is adding an item to the ViewData property called \"Title\" and settings its value to \"Movie Listing\". In other words: ViewData[\"Title\"] = \"Movie Listings\"; View is an alias for ViewModel or ViewData. I don't particularly care for aliasing such things, especially in this case, since View() happens to be a method in Controller and you are writing code in the View so when you reference something called View in a view it almost feels like this. The ViewData is the mechanism by which a View can exchange data with Layout Pages or Master Pages. So in this case the view determines the html title of the page and the Layout Page will use this value to insert it into the correct place. In this way all Views can control what the html title of the rendered page needs to be. In the next line we associate this view with a Layout View Page or Master Page. LayoutPage = \"~/Views/Shared/SiteLayout.cshtml\"; Pretty simple. Next, you'll notice also, that in the code block I've declared and initialized a couple of variables, that I use in the foreach loop later on. In the foreach loop what we're trying to do is this: We're generating a bunch of floating <div> tags that contain images and depending on the number of columns we want, we need to clear the float and then continue on doing what was being done. So the condition within the loop checks for this and if true, inserts and additional <div> tag that clears the float. At the end, to ensure that content that follows does not end up floating we insert another <div> tag that clears the float but only if that condition is met. \n\nView Template\n@inherits System.Web.Mvc.WebViewPage<IEnumerable<BusinessLayer.Dto.ThumbnailDto>>\n\n@{\n    View.Title = \"Movie Listings\";\n    LayoutPage = \"~/Views/Shared/SiteLayout.cshtml\";\n    var columnsPerRow = 3;\n    var colCount = -1;\n}\n\n@foreach(var thumbnail in Model) {\n  if(++colCount % columnsPerRow == 0) {\n    <div style=\"clear: both\"></div>\n  }\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\">@thumbnail.Title</div>\n    <img src=\"@Url.Content(\"~/thumbnails/asset/get/\")@thumbnail.FileName/ty/\" alt=\"\" width=\"200\" />\n  </div>\n}\n\n@if (colCount % columnsPerRow != 0){\n<div style=\"clear: both;\"></div>\n}\nCode Listing 4: Showing the View Template\n\nThe Layout page template has a couple of interesting things going on. First, you'll notice that the html title has been set to View.Title. Next you'll notice @RenderSection(\"Header\", optional:true) Sections are equivalent to ContentPlaceHolder controls in WebForm/MVC2 parlance. The first parameter is the name of the section (\"Header\" in this case) and the second parameter is a Boolean type parameter called optional. In this case the parameter named optional has been set to true (This syntax in use here is C# 4.0 optional parameter syntax). An optional section means that Views are not required to provide an html output for the section, and you'll notice that our view template (Code Listing 4 does not in fact do anything for this section. If our view did in fact want to render html for this section we could modify our view template to include the following @section header { <h1>This is the Header</h1> } This bit of code could be anywhere in your template and sections can contain any amount or kind of code and markup like you've seen already. Notice that the name of the header is not case sensitive. That is in the Layout page we named the section \"Header\", while in the view we've named the section \"header\". This seems to work currently. Since in the Layout page template the \"Header\" section comes before the \"body\", I'd recommended that you place the section template above the body's template but under the code block you see in Code Listing 4. The @RenderBody() is a special method that is replaced by the html generated by your View. I bet you've noticed by now that the html for the body (in your view) is not specifically called out like sections are. I think this is really neat, since at a bear minimum if your view is using a Layout page template then the html it generates should be the default. Meaning that it is obviously rendering the body part of the page, while the Layout template is doing the rest. And if you have other sections in your Layout page, then you call them out specifically and views can do the same. It just saves a little bit of typing.\n\nLayout Page Template\n@inherits System.Web.Mvc.WebViewPage\n\n<!DOCTYPE html>\n<html>\n  <head>\n    <title>@View.Title</title>    \n    <link href=\"@Url.Content(\"~/Content/Site.css\")\" rel=\"stylesheet\" type=\"text/css\" />\n  </head>\n  <body>\n  @RenderSection(\"Header\", optional:true)\n  @RenderBody()\n  </body>\n</html>\nCode Listing 5: Showing the Layout Page (or Master Page) Template\n \nHtml Helpers and other methods\nRazor View templates and Layout templates have full access to Html helpers just like MVC WebForms Views and Master Pages. Further, Razor View templates and Layout pages can also call methods that you might have defined in your base View or Layout classes. All of this works exactly like in the WebForms View engine. The syntax you'll use is the Razor syntax obviously. So if you're calling Html.RenderAction for example then the syntax is like so: @{Html.RenderAction(\"BoxTop\", \"AdvertBox\", new { Name = View.AdvertBoxTopName, Visible = View.AdvertBoxTopVisible });} Notice that, in this case because Html.RenderAction does not return a string but in fact writes directly to the output stream, you wrap the call in curly braces. Methods that return a string will have syntax similar to Url.Content(), @RenderSection() and @RenderBody() etc.\n \nThe Html that is generated\n<!DOCTYPE html>\n<html>\n  <head>\n    <title>Movie Listings</title>\n    <link href=\"/Content/Site.css\" rel=\"stylesheet\" type=\"text/css\" />\n  </head>\n  <body>\n  <div style=\"clear: both\"></div>\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\">Kolcsey - by Pixel Films</div>\n    <img src=\"/thumbnails/asset/get/a41a9f30e323497982f49f8536060410/ty/\" alt=\"\" width=\"200\" />\n  </div>\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\"></div>\n    <img src=\"/thumbnails/asset/get/5133b848e0e24bcf962710ff2e6e02a3/ty/\" alt=\"\" width=\"200\" />\n  </div>\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\">The Sorcerer&#39;s Apprentice</div>\n    <img src=\"/thumbnails/asset/get/9d0dd5309e1f48ec9daa9b8a86e4b9d4/ty/\" alt=\"\" width=\"200\" />\n  </div>\n  <div style=\"clear: both\"></div>\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\">The Chronicles of Narnia: The Voyage of the Dawn Treader</div>\n    <img src=\"/thumbnails/asset/get/bb505b89ba4e40b7a03e8c9c4f2de4a1/ty/\" alt=\"\" width=\"200\" />\n  </div>\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\">City of Lakes - Feature Film</div>\n    <img src=\"/thumbnails/asset/get/0fc60348078040838593443114bcf768/ty/\" alt=\"\" width=\"200\" />\n  </div>\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\">City Of Lakes</div>\n    <img src=\"/thumbnails/asset/get/e2cab72852ae4a6e966281f99b0343e6/ty/\" alt=\"\" width=\"200\" />\n  </div>\n  <div style=\"clear: both\"></div>\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\">Hungarian Ad</div>\n    <img src=\"/thumbnails/asset/get/83dd07c0811a4ee29c9f52a3ef5bf53c/ty/\" alt=\"\" width=\"200\" />\n  </div>\n  <div style=\"clear: both;\"></div>\n  </body>\n</html>\nCode Listing 6: Showing the generated Html\nBreaking the MVC paradigm\nAs mentioned earlier, code blocks have the potential of breaking the MVC paradigm and sending us right back to the classic ASP era, where the \"page\" contains the database connection and access code, business logic and presentation. But maybe there are times, when you do need to do something quick and dirty. Below I show you a view template that essentially has all of the logic in the view itself. But remember, stay away from this sort of thing! Below is a template that works!\nView Template breaking the MVC paradigm\n@inherits System.Web.Mvc.WebViewPage\n@using System.Configuration;\n@using System.Data;\n@using System.Data.Common;\n\n@{\n    View.Title = \"Movie Listings\";\n    LayoutPage = \"~/Views/Shared/SiteLayout.cshtml\";\n    var columnsPerRow = 3;\n    var colCount = -1;\n\n    var connectionStringSettings = ConfigurationManager.ConnectionStrings[\"MoviewsDB\"];\n    var dbProviderFactory = DbProviderFactories.GetFactory(connectionStringSettings.ProviderName);\n    var dbConnection = dbProviderFactory.CreateConnection();\n    dbConnection.ConnectionString = connectionStringSettings.ConnectionString;\n    var command = dbConnection.CreateCommand();\n    command.CommandText = \"SELECT * FROM MOVIE\";    \n}\n\n<ul>\n@{dbConnection.Open();}\n@using(var dr = command.ExecuteReader(CommandBehavior.CloseConnection)) {\n  while(dr.Read()) {\n    <li>@dr[0]</li>\n  }\n}\n</ul>\nCode Listing 7: Showing a function Razor View Template breaking the MVC paradigm",
+  "bodyLinks": [
+    {
+      "text": "Spark",
+      "url": "https://web.archive.org/web/20240415162151/http://sparkviewengine.com/"
+    },
+    {
+      "text": "NHmal",
+      "url": "https://web.archive.org/web/20240415162151/http://code.google.com/p/nhaml/"
+    },
+    {
+      "text": "NDjango",
+      "url": "https://web.archive.org/web/20240415162151/http://ndjango.org/index.php?title=NDjango_Home"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/quartz-for-aspnet/"
+    },
+    {
+      "text": "Code Listing 1",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing1"
+    },
+    {
+      "text": "code listing 2",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing2"
+    },
+    {
+      "text": "Code listing 1",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeList1"
+    },
+    {
+      "text": "Code listing 3",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing3"
+    },
+    {
+      "text": "Code Listing 4",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing4"
+    },
+    {
+      "text": "Code Listing 5",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing5"
+    },
+    {
+      "text": "Code Listing 6",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing6"
+    },
+    {
+      "text": "Breaking the MVC paradigm",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#breakingmvcparadigm"
+    },
+    {
+      "text": "Code Listing 4",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing4"
+    },
+    {
+      "text": "Code Listing 4",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing4"
+    }
+  ],
+  "code": [
+    "@inherits System.Web.Mvc.WebViewPage<IEnumerable<BusinessLayer.Dto.ThumbnailDto>>\n\n<!DOCTYPE html>\n<html>\n  <head>\n    <title>Index2</title>\n  </head>\n<body>\n@foreach(var thumb in Model) {\n  <img src=\"@Url.Content(\"~/content/images/\")@thumb.FileName\" alt=\"@thumb.Title\"/>\n}\n</body>\n</html>",
+    "<!DOCTYPE html>\n<html>\n  <head>\n    <title>Index2</title>\n  </head>\n<body>\n  <img src=\"/content/images/Sorcerer.jpg\" alt=\"The Sorcerer&#39;s Apprentice\"/>\n  <img src=\"/content/images/Narnia.jpg\" alt=\"The Chronicles of Narnia: The Voyage of the Dawn Treader\"/>\n</body>\n</html>",
+    "@if (Model.Count() == 0) {\n  <p>Sorry, there are no movies as this time</p>\n}\nelse {\n  <p>We have @Model.Count() movies to show you.</p>\n}",
+    "@inherits System.Web.Mvc.WebViewPage<IEnumerable<BusinessLayer.Dto.ThumbnailDto>>\n\n@{\n    View.Title = \"Movie Listings\";\n    LayoutPage = \"~/Views/Shared/SiteLayout.cshtml\";\n    var columnsPerRow = 3;\n    var colCount = -1;\n}\n\n@foreach(var thumbnail in Model) {\n  if(++colCount % columnsPerRow == 0) {\n    <div style=\"clear: both\"></div>\n  }\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\">@thumbnail.Title</div>\n    <img src=\"@Url.Content(\"~/thumbnails/asset/get/\")@thumbnail.FileName/ty/\" alt=\"\" width=\"200\" />\n  </div>\n}\n\n@if (colCount % columnsPerRow != 0){\n<div style=\"clear: both;\"></div>\n}",
+    "@inherits System.Web.Mvc.WebViewPage\n\n<!DOCTYPE html>\n<html>\n  <head>\n    <title>@View.Title</title>    \n    <link href=\"@Url.Content(\"~/Content/Site.css\")\" rel=\"stylesheet\" type=\"text/css\" />\n  </head>\n  <body>\n  @RenderSection(\"Header\", optional:true)\n  @RenderBody()\n  </body>\n</html>",
+    "<!DOCTYPE html>\n<html>\n  <head>\n    <title>Movie Listings</title>\n    <link href=\"/Content/Site.css\" rel=\"stylesheet\" type=\"text/css\" />\n  </head>\n  <body>\n  <div style=\"clear: both\"></div>\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\">Kolcsey - by Pixel Films</div>\n    <img src=\"/thumbnails/asset/get/a41a9f30e323497982f49f8536060410/ty/\" alt=\"\" width=\"200\" />\n  </div>\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\"></div>\n    <img src=\"/thumbnails/asset/get/5133b848e0e24bcf962710ff2e6e02a3/ty/\" alt=\"\" width=\"200\" />\n  </div>\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\">The Sorcerer&#39;s Apprentice</div>\n    <img src=\"/thumbnails/asset/get/9d0dd5309e1f48ec9daa9b8a86e4b9d4/ty/\" alt=\"\" width=\"200\" />\n  </div>\n  <div style=\"clear: both\"></div>\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\">The Chronicles of Narnia: The Voyage of the Dawn Treader</div>\n    <img src=\"/thumbnails/asset/get/bb505b89ba4e40b7a03e8c9c4f2de4a1/ty/\" alt=\"\" width=\"200\" />\n  </div>\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\">City of Lakes - Feature Film</div>\n    <img src=\"/thumbnails/asset/get/0fc60348078040838593443114bcf768/ty/\" alt=\"\" width=\"200\" />\n  </div>\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\">City Of Lakes</div>\n    <img src=\"/thumbnails/asset/get/e2cab72852ae4a6e966281f99b0343e6/ty/\" alt=\"\" width=\"200\" />\n  </div>\n  <div style=\"clear: both\"></div>\n  <div style=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\">\n    <div style=\"white-space: nowrap; height: 15px;\">Hungarian Ad</div>\n    <img src=\"/thumbnails/asset/get/83dd07c0811a4ee29c9f52a3ef5bf53c/ty/\" alt=\"\" width=\"200\" />\n  </div>\n  <div style=\"clear: both;\"></div>\n  </body>\n</html>",
+    "@inherits System.Web.Mvc.WebViewPage\n@using System.Configuration;\n@using System.Data;\n@using System.Data.Common;\n\n@{\n    View.Title = \"Movie Listings\";\n    LayoutPage = \"~/Views/Shared/SiteLayout.cshtml\";\n    var columnsPerRow = 3;\n    var colCount = -1;\n\n    var connectionStringSettings = ConfigurationManager.ConnectionStrings[\"MoviewsDB\"];\n    var dbProviderFactory = DbProviderFactories.GetFactory(connectionStringSettings.ProviderName);\n    var dbConnection = dbProviderFactory.CreateConnection();\n    dbConnection.ConnectionString = connectionStringSettings.ConnectionString;\n    var command = dbConnection.CreateCommand();\n    command.CommandText = \"SELECT * FROM MOVIE\";    \n}\n\n<ul>\n@{dbConnection.Open();}\n@using(var dr = command.ExecuteReader(CommandBehavior.CloseConnection)) {\n  while(dr.Read()) {\n    <li>@dr[0]</li>\n  }\n}\n</ul>"
+  ],
+  "header": "ASP.NET MVC3 - Razor View Engine\nPosted by Shiv Kumar on 4th October, 2010\nCategorized Under: Programming ASP.NET\nTagged With: MVC3 Razor \n  ",
+  "html": "<div class=\"articleText\">\n        As part of ASP.NET MVC3, we get a brand spanking new <strong>View Engine.</strong> In MVC2 the view engine we have access to by default is the ASP.NET Webforms view engine that uses Master file templates along with .aspx view templates and .ascx partial view templates.  <h2>View Engines</h2> <p>In ASP.NET MVC, the view engine is responsible for parsing and compiling your views and partial views into C# or other .NET languages so as to be able to render the view into an html page. As it stands today in ASP.NET MVC, we have other options for view engines, such as <a href=\"https://web.archive.org/web/20240415162151/http://sparkviewengine.com/\" target=\"_blank\">Spark</a>, <a href=\"https://web.archive.org/web/20240415162151/http://code.google.com/p/nhaml/\" target=\"_blank\">NHmal</a>, <a href=\"https://web.archive.org/web/20240415162151/http://ndjango.org/index.php?title=NDjango_Home\" target=\"_blank\">NDjango</a> and a few others. My main problem with those is that you have to learn another language in order to get the job done. Some of these alternatives do make code and markup interspersed more readable though.</p> <div class=\"panel\"> <h3 class=\"note\">Alternative to ASP.NET MVC</h3>If you're looking for an alternative to ASP.NET MVC but want to continue to follow the MVC design paradigm and have templates that have no code in them with <b>mind-bendingly fast performance</b>, take a look at <a href=\"/web/20240415162151/http://matlus.com/quartz-for-aspnet/\">Quartz for ASP.NET</a> . This blog is powered by Quartz </div> <h2>Razor View Engine</h2>The Razor view engine is new to ASP.NET MVC3 and I have to say that I really love the syntax it uses. One of the primary things that's kept me from using ASP.NET MVC in a production environment is that I never liked how C# code had to be interspersed with html mark up. Mind you, I'm not against having code interspersed with mark up. In fact I can't imagine real data driven web pages without some ability to iterate over data and such within markup, but I'm a stickler for maintainable and readable code and syntax that WebForms View Engine uses is a complete mess. With each new version, I'd try a few complex/real world views and when I'd look back at the code-markup combination it would be extremely difficult to read and therefore maintain. Using ASP.NET WebForms correctly still provided all of the benefits of ASP.NET MVC and then some. The story changes quite a bit with Razor.  <div class=\"panel\"> <h3 class=\"note\">ASP.NET MVC Preview 1 Requirements</h3>MVC3 is compatible with the released version of MVC (or MVC2). In fact they can run side by side on the same machine. However, ASP.NET MVC3 does require the .NET 4.0 framework and VS.NET 2010. An ASP.NET MVC3 project supports multiple view engines, which means you can migrate your existing MVC projects to MVC3 and start using the Razor view engine for new views or convert some of your existing views to use the Razor view engine. </div> <h2>Razor Syntax</h2><a href=\"#codeListing1\">Code Listing 1</a> shows a simple view, that when rendered results in what you see in <a href=\"#codeListing2\">code listing 2</a>. <a name=\"codeListing1\"></a> <div class=\"panel code content/images/html.png\" title=\"Simple View using Razor syntax\" id=\"code_90793\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415162151/http://matlus.com/content/images/html.png);\"><h3 class=\"codeTitle\">Simple View using Razor syntax</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">@inherits System.Web.Mvc.WebViewPage<span class=\"kwrd\">&lt;</span><span class=\"html\">IEnumerable</span><span class=\"kwrd\">&lt;</span><span class=\"html\">BusinessLayer.Dto.ThumbnailDto</span><span class=\"kwrd\">&gt;&gt;</span>\n\n<span class=\"kwrd\">&lt;!</span><span class=\"html\">DOCTYPE</span> <span class=\"attr\">html</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;</span><span class=\"html\">html</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">head</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">title</span><span class=\"kwrd\">&gt;</span>Index2<span class=\"kwrd\">&lt;/</span><span class=\"html\">title</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">head</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;</span><span class=\"html\">body</span><span class=\"kwrd\">&gt;</span>\n@foreach(var thumb in Model) {\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">img</span> <span class=\"attr\">src</span><span class=\"kwrd\">=\"@Url.Content(\"</span>~/<span class=\"attr\">content</span>/<span class=\"attr\">images</span>/<span class=\"kwrd\">\")@thumb.FileName\"</span> <span class=\"attr\">alt</span><span class=\"kwrd\">=\"@thumb.Title\"</span><span class=\"kwrd\">/&gt;</span>\n}\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">body</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">html</span><span class=\"kwrd\">&gt;</span></pre></div>\n<h3>Code Listing 1: A simple View using Razor syntax</h3>\n<div class=\"panel\">\n<h2>Syntax Highlighting and intellisense</h2>The code highlighting tool I use does not highlight the Razor syntax and as a result you don't see (proper) syntax highlighting of code listings you see here. Note also, that MVC3 Preview1 does not have syntax highlighting or Intellisense. This will probably be provided in Preview 2, but as it stands today, your view pages show as black on white in VS.NET 2010. </div>You'll notice that the <code><strong>@</strong></code> symbol is the new delimiter. You'll also notice that there is no closing delimiter. The Razor engine is extremely smart at figuring out the end of any code you write in your markup. Blocks of code however do need the standard C# open-close curly braces (<code>{ and }</code>), <strong>but do NOT need a closing delimiter</strong>. Also if you're calling a method that does not return a string you'll need to use the open/close curly like so <code>@{SomeCall(param1, param2);}</code>. Let's examine <a href=\"#codeList1\">Code listing 1</a>. At the very top you'll notice a line that starts with the Razor delimiter. This line essentially says that this view inherits from the base class <code class=\"type\">System.Web.Mvc.WebViewPage</code> and that it is a strongly typed view whose model is a type of <code class=\"type\">IEnmerable&lt;BusinessLayer.Dto.ThumbnailDto&gt;</code>. Next, you'll notice that we have a <code class=\"keyword\">foreach</code> loop that iterates over the <code>Model</code> and while it iterates over this collection it produces an <code>&lt;img&gt;</code> tag for each item in the collection. The interesting bit here is the way we can set up the <code>src</code> and <code>alt</code> attributes from properties of the <code class=\"type\">ThumbnailDto</code> class. <a name=\"codeListing2\"></a>\n<div class=\"panel code content/images/html.png\" title=\"Html Output of Code Listing 1\" id=\"code_99142\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415162151/http://matlus.com/content/images/html.png);\"><h3 class=\"codeTitle\">Html Output of Code Listing 1</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">&lt;!</span><span class=\"html\">DOCTYPE</span> <span class=\"attr\">html</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;</span><span class=\"html\">html</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">head</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">title</span><span class=\"kwrd\">&gt;</span>Index2<span class=\"kwrd\">&lt;/</span><span class=\"html\">title</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">head</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;</span><span class=\"html\">body</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">img</span> <span class=\"attr\">src</span><span class=\"kwrd\">=\"/content/images/Sorcerer.jpg\"</span> <span class=\"attr\">alt</span><span class=\"kwrd\">=\"The Sorcerer&amp;#39;s Apprentice\"</span><span class=\"kwrd\">/&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">img</span> <span class=\"attr\">src</span><span class=\"kwrd\">=\"/content/images/Narnia.jpg\"</span> <span class=\"attr\">alt</span><span class=\"kwrd\">=\"The Chronicles of Narnia: The Voyage of the Dawn Treader\"</span><span class=\"kwrd\">/&gt;</span>\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">body</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">html</span><span class=\"kwrd\">&gt;</span></pre></div>\n<h3>Code Listing 2: Showing the Html output of code listing 1</h3>\n<h2>Conditional Blocks</h2>In ASP.NET MVC (with the current WebForms View Engine syntax), writing conditional statements interspersed with markup was a reading nightmare (and sometimes even a nightmare to write). People have come up with all kinds of solutions (I don't believe they are solutions really) to take out the conditional statements from the view and delegate them to Html helpers, partial views and what have you, because it just wasn't a pretty sight. With Razor, that's not the case anymore. <a href=\"#codeListing3\">Code listing 3</a> shows what a conditional statement embedded in markup looks like with Razor syntax. <a name=\"codeListing3\"></a>\n<div class=\"panel code content/images/html.png\" title=\"Conditional Statements in Razor\" id=\"code_54997\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415162151/http://matlus.com/content/images/html.png);\"><h3 class=\"codeTitle\">Conditional Statements in Razor</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">@if (Model.Count() == 0) {\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">p</span><span class=\"kwrd\">&gt;</span>Sorry, there are no movies as this time<span class=\"kwrd\">&lt;/</span><span class=\"html\">p</span><span class=\"kwrd\">&gt;</span>\n}\nelse {\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">p</span><span class=\"kwrd\">&gt;</span>We have @Model.Count() movies to show you.<span class=\"kwrd\">&lt;/</span><span class=\"html\">p</span><span class=\"kwrd\">&gt;</span>\n}</pre></div>\n<h3>Code Listing 3: Showing Conditional Statements in Razor</h3>\n<p>&nbsp;</p>\n<p>Notice how readable the code is and how simple it is to insert values of properties (of your model) into html. What if the count was the last thing in the sentence? That is what if you wanted a period right after the count is displayed, such as <code>We have @Model.Count().</code>, No problem, just put that period where you want it. The Razor parser is smart enough to figure out that the period is not part of code but rather mark up. Similarly, it is smart enough to figure out if the <code>@</code> symbol is part of say and email address literal or if it is used to delimit code. In case the content you want displayed is valid code (but you want it displayed as content), then simply escape the <code>@</code> in your content with <code>@@</code>. </p>\n<h2>View Template and Layout/Master Page</h2>\n<p>Rather than show you bits of code snippets, I'm going to show you a View Template and a Layout Template (MaterPage) using the Razor syntax and highlight some key aspects of both. The image below shows you a screen shot of what the output looks like, while <a href=\"#codeListing4\">Code Listing 4</a> shows the view template that was used to render the html along with a LayoutPage (or Master Page) shown in <a href=\"#codeListing5\">Code Listing 5</a> and the generated Html is shown in <a href=\"#codeListing6\">Code Listing 6</a>. The first thing you'll notice (on line 3) is that there is a code block. Code blocks have the syntax you see there and you can have simple regular code in thse code blocks. You can't declare methods and properties in code blocks, so don't try it. </p>\n<p>&nbsp;</p>\n<div class=\"panel\">\n<h3 class=\"note\">Beware! Code Blocks</h3>As great as code blocks are, be very careful about what you do in these code blocks. Just like with WebForms View engine and ASP.NET WebForms, it is quite easy to break the MVC paradigm, where Views are only views and should not do or contain anything more than presentation related code. Take a look at this section <a href=\"#breakingmvcparadigm\">Breaking the MVC paradigm</a> later in this article for a functional view template that does exactly this. </div>\n<p>&nbsp;</p>\n<p>What we're doing inside the code block is adding an item to the <code type=\"class\">ViewData</code> property called \"Title\" and settings its value to \"Movie Listing\". In other words: <code>ViewData[\"Title\"] = \"Movie Listings\"; </code><code>View</code> is an alias for <code>ViewModel</code> or <code>ViewData</code>. I don't particularly care for aliasing such things, especially in this case, since <code>View()</code> happens to be a method in <code>Controller</code> and you are writing code in the <code>View</code> so when you reference something called <code>View</code> in a view it almost feels like <code class=\"keyword\">this</code>. The <code type=\"class\">ViewData</code> is the mechanism by which a View can exchange data with Layout Pages or Master Pages. So in this case the view determines the html title of the page and the Layout Page will use this value to insert it into the correct place. In this way all Views can control what the html title of the rendered page needs to be. In the next line we associate this view with a Layout View Page or Master Page. <code>LayoutPage = \"~/Views/Shared/SiteLayout.cshtml\"; </code>Pretty simple. Next, you'll notice also, that in the code block I've declared and initialized a couple of variables, that I use in the <code class=\"keyword\">foreach</code> loop later on. In the <code>foreach</code> loop what we're trying to do is this: We're generating a bunch of floating <code>&lt;div&gt;</code> tags that contain images and depending on the number of columns we want, we need to clear the float and then continue on doing what was being done. So the condition within the loop checks for this and if true, inserts and additional <code>&lt;div&gt;</code> tag that clears the float. At the end, to ensure that content that follows does not end up floating we insert another <code>&lt;div&gt;</code> tag that clears the float but only if that condition is met.&nbsp; </p>\n<h2><img style=\"background-image: none; border-right-width: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"MovieListingsScreenshot\" border=\"0\" alt=\"MovieListingsScreenshot\" src=\"https://web.archive.org/web/20240415162151im_/http://www.matlus.com/content/uploads/2011/01/MovieListingsScreenshot_458300b4-22b2-4bab-bed6-eb1955b55185.jpg\" width=\"669\" height=\"488\"></h2><a name=\"codeListing4\"></a>\n<div class=\"panel code content/images/html.png\" title=\"View Template\" id=\"code_56196\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415162151/http://matlus.com/content/images/html.png);\"><h3 class=\"codeTitle\">View Template</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">@inherits System.Web.Mvc.WebViewPage<span class=\"kwrd\">&lt;</span><span class=\"html\">IEnumerable</span><span class=\"kwrd\">&lt;</span><span class=\"html\">BusinessLayer.Dto.ThumbnailDto</span><span class=\"kwrd\">&gt;&gt;</span>\n\n@{\n    View.Title = \"Movie Listings\";\n    LayoutPage = \"~/Views/Shared/SiteLayout.cshtml\";\n    var columnsPerRow = 3;\n    var colCount = -1;\n}\n\n@foreach(var thumbnail in Model) {\n  if(++colCount % columnsPerRow == 0) {\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"clear: both\"</span><span class=\"kwrd\">&gt;&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n  }\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\"</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"white-space: nowrap; height: 15px;\"</span><span class=\"kwrd\">&gt;</span>@thumbnail.Title<span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">img</span> <span class=\"attr\">src</span><span class=\"kwrd\">=\"@Url.Content(\"</span>~/<span class=\"attr\">thumbnails</span>/<span class=\"attr\">asset</span>/<span class=\"attr\">get</span>/<span class=\"kwrd\">\")@thumbnail.FileName/ty/\"</span> <span class=\"attr\">alt</span><span class=\"kwrd\">=\"\"</span> <span class=\"attr\">width</span><span class=\"kwrd\">=\"200\"</span> <span class=\"kwrd\">/&gt;</span>\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n}\n\n@if (colCount % columnsPerRow != 0){\n<span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"clear: both;\"</span><span class=\"kwrd\">&gt;&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n}</pre></div>\n<h3>Code Listing 4: Showing the View Template</h3>\n<p>The Layout page template has a couple of interesting things going on. First, you'll notice that the html title has been set to <code>View.Title</code>. Next you'll notice <code>@RenderSection(\"Header\", optional:true) </code>Sections are equivalent to <code>ContentPlaceHolder</code> controls in WebForm/MVC2 parlance. The first parameter is the name of the section (\"Header\" in this case) and the second parameter is a <code class=\"keyword\">Boolean</code> type parameter called <code>optional</code>. In this case the parameter named <code>optional</code> has been set to <code class=\"keyword\">true</code> (This syntax in use here is C# 4.0 optional parameter syntax). An optional section means that Views are not required to provide an html output for the section, and you'll notice that our view template (<a href=\"#codeListing4\">Code Listing 4</a> does not in fact do anything for this section. If our view did in fact want to render html for this section we could modify our view template to include the following <code>@section header { &lt;h1&gt;This is the Header&lt;/h1&gt; } </code>This bit of code could be anywhere in your template and sections can contain any amount or kind of code and markup like you've seen already. Notice that the name of the header is not case sensitive. That is in the Layout page we named the section \"Header\", while in the view we've named the section \"header\". This seems to work currently. Since in the Layout page template the \"Header\" section comes before the \"body\", I'd recommended that you place the section template above the body's template but under the code block you see in <a href=\"#codeListing4\">Code Listing 4</a>. The <code>@RenderBody()</code> is a special method that is replaced by the html generated by your View. I bet you've noticed by now that the html for the body (in your view) is not specifically called out like <code>sections</code> are. I think this is really neat, since at a bear minimum if your view is using a Layout page template then the html it generates should be the default. Meaning that it is obviously rendering the body part of the page, while the Layout template is doing the rest. And if you have other sections in your Layout page, then you call them out specifically and views can do the same. It just saves a little bit of typing. <a name=\"codeListing5\"></a></p>\n<div class=\"panel code content/images/html.png\" title=\"Layout Page Template\" id=\"code_7987\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415162151/http://matlus.com/content/images/html.png);\"><h3 class=\"codeTitle\">Layout Page Template</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">@inherits System.Web.Mvc.WebViewPage\n\n<span class=\"kwrd\">&lt;!</span><span class=\"html\">DOCTYPE</span> <span class=\"attr\">html</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;</span><span class=\"html\">html</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">head</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">title</span><span class=\"kwrd\">&gt;</span>@View.Title<span class=\"kwrd\">&lt;/</span><span class=\"html\">title</span><span class=\"kwrd\">&gt;</span>    \n    <span class=\"kwrd\">&lt;</span><span class=\"html\">link</span> <span class=\"attr\">href</span><span class=\"kwrd\">=\"@Url.Content(\"</span>~/<span class=\"attr\">Content</span>/<span class=\"attr\">Site</span>.<span class=\"attr\">css</span><span class=\"kwrd\">\")\"</span> <span class=\"attr\">rel</span><span class=\"kwrd\">=\"stylesheet\"</span> <span class=\"attr\">type</span><span class=\"kwrd\">=\"text/css\"</span> <span class=\"kwrd\">/&gt;</span>\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">head</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">body</span><span class=\"kwrd\">&gt;</span>\n  @RenderSection(\"Header\", optional:true)\n  @RenderBody()\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">body</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">html</span><span class=\"kwrd\">&gt;</span></pre></div>\n<h3>Code Listing 5: Showing the Layout Page (or Master Page) Template</h3>\n<h2>&nbsp;</h2>\n<div class=\"panel\">\n<h3 class=\"note\">Html Helpers and other methods</h3>Razor View templates and Layout templates have full access to Html helpers just like MVC WebForms Views and Master Pages. Further, Razor View templates and Layout pages can also call methods that you might have defined in your base View or Layout classes. All of this works exactly like in the WebForms View engine. The syntax you'll use is the Razor syntax obviously. So if you're calling <code>Html.RenderAction</code> for example then the syntax is like so: <code>@{Html.RenderAction(\"BoxTop\", \"AdvertBox\", new { Name = View.AdvertBoxTopName, Visible = View.AdvertBoxTopVisible });} </code>Notice that, in this case because <code>Html.RenderAction</code> does not return a string but in fact writes directly to the output stream, you wrap the call in curly braces. Methods that return a string will have syntax similar to <code>Url.Content()</code>, <code>@RenderSection()</code> and <code>@RenderBody()</code> etc. </div>\n<h2>&nbsp;</h2><a name=\"codeListing6\"></a>\n<div class=\"panel code content/images/html.png\" title=\"The Html that is generated\" id=\"code_11912\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415162151/http://matlus.com/content/images/html.png);\"><h3 class=\"codeTitle\">The Html that is generated</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">&lt;!</span><span class=\"html\">DOCTYPE</span> <span class=\"attr\">html</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;</span><span class=\"html\">html</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">head</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">title</span><span class=\"kwrd\">&gt;</span>Movie Listings<span class=\"kwrd\">&lt;/</span><span class=\"html\">title</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">link</span> <span class=\"attr\">href</span><span class=\"kwrd\">=\"/Content/Site.css\"</span> <span class=\"attr\">rel</span><span class=\"kwrd\">=\"stylesheet\"</span> <span class=\"attr\">type</span><span class=\"kwrd\">=\"text/css\"</span> <span class=\"kwrd\">/&gt;</span>\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">head</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">body</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"clear: both\"</span><span class=\"kwrd\">&gt;&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\"</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"white-space: nowrap; height: 15px;\"</span><span class=\"kwrd\">&gt;</span>Kolcsey - by Pixel Films<span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">img</span> <span class=\"attr\">src</span><span class=\"kwrd\">=\"/thumbnails/asset/get/a41a9f30e323497982f49f8536060410/ty/\"</span> <span class=\"attr\">alt</span><span class=\"kwrd\">=\"\"</span> <span class=\"attr\">width</span><span class=\"kwrd\">=\"200\"</span> <span class=\"kwrd\">/&gt;</span>\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\"</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"white-space: nowrap; height: 15px;\"</span><span class=\"kwrd\">&gt;&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">img</span> <span class=\"attr\">src</span><span class=\"kwrd\">=\"/thumbnails/asset/get/5133b848e0e24bcf962710ff2e6e02a3/ty/\"</span> <span class=\"attr\">alt</span><span class=\"kwrd\">=\"\"</span> <span class=\"attr\">width</span><span class=\"kwrd\">=\"200\"</span> <span class=\"kwrd\">/&gt;</span>\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\"</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"white-space: nowrap; height: 15px;\"</span><span class=\"kwrd\">&gt;</span>The Sorcerer&amp;#39;s Apprentice<span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">img</span> <span class=\"attr\">src</span><span class=\"kwrd\">=\"/thumbnails/asset/get/9d0dd5309e1f48ec9daa9b8a86e4b9d4/ty/\"</span> <span class=\"attr\">alt</span><span class=\"kwrd\">=\"\"</span> <span class=\"attr\">width</span><span class=\"kwrd\">=\"200\"</span> <span class=\"kwrd\">/&gt;</span>\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"clear: both\"</span><span class=\"kwrd\">&gt;&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\"</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"white-space: nowrap; height: 15px;\"</span><span class=\"kwrd\">&gt;</span>The Chronicles of Narnia: The Voyage of the Dawn Treader<span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">img</span> <span class=\"attr\">src</span><span class=\"kwrd\">=\"/thumbnails/asset/get/bb505b89ba4e40b7a03e8c9c4f2de4a1/ty/\"</span> <span class=\"attr\">alt</span><span class=\"kwrd\">=\"\"</span> <span class=\"attr\">width</span><span class=\"kwrd\">=\"200\"</span> <span class=\"kwrd\">/&gt;</span>\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\"</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"white-space: nowrap; height: 15px;\"</span><span class=\"kwrd\">&gt;</span>City of Lakes - Feature Film<span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">img</span> <span class=\"attr\">src</span><span class=\"kwrd\">=\"/thumbnails/asset/get/0fc60348078040838593443114bcf768/ty/\"</span> <span class=\"attr\">alt</span><span class=\"kwrd\">=\"\"</span> <span class=\"attr\">width</span><span class=\"kwrd\">=\"200\"</span> <span class=\"kwrd\">/&gt;</span>\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\"</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"white-space: nowrap; height: 15px;\"</span><span class=\"kwrd\">&gt;</span>City Of Lakes<span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">img</span> <span class=\"attr\">src</span><span class=\"kwrd\">=\"/thumbnails/asset/get/e2cab72852ae4a6e966281f99b0343e6/ty/\"</span> <span class=\"attr\">alt</span><span class=\"kwrd\">=\"\"</span> <span class=\"attr\">width</span><span class=\"kwrd\">=\"200\"</span> <span class=\"kwrd\">/&gt;</span>\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"clear: both\"</span><span class=\"kwrd\">&gt;&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"float: left; width: 200px; overflow: hidden; margin: 0px 10px 10px 0px;\"</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"white-space: nowrap; height: 15px;\"</span><span class=\"kwrd\">&gt;</span>Hungarian Ad<span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">img</span> <span class=\"attr\">src</span><span class=\"kwrd\">=\"/thumbnails/asset/get/83dd07c0811a4ee29c9f52a3ef5bf53c/ty/\"</span> <span class=\"attr\">alt</span><span class=\"kwrd\">=\"\"</span> <span class=\"attr\">width</span><span class=\"kwrd\">=\"200\"</span> <span class=\"kwrd\">/&gt;</span>\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">div</span> <span class=\"attr\">style</span><span class=\"kwrd\">=\"clear: both;\"</span><span class=\"kwrd\">&gt;&lt;/</span><span class=\"html\">div</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">body</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">html</span><span class=\"kwrd\">&gt;</span></pre></div>\n<h3>Code Listing 6: Showing the generated Html</h3>\n<h2>Breaking the MVC paradigm</h2>As mentioned earlier, code blocks have the potential of breaking the MVC paradigm and sending us right back to the classic ASP era, where the \"page\" contains the database connection and access code, business logic and presentation. But maybe there are times, when you do need to do something quick and dirty. Below I show you a view template that essentially has all of the logic in the view itself. But remember, stay away from this sort of thing! Below is a template that works! <a name=\"codeListing7\"></a>\n<div class=\"panel code content/images/html.png\" title=\"View Template breaking the MVC paradigm\" id=\"code_21367\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415162151/http://matlus.com/content/images/html.png);\"><h3 class=\"codeTitle\">View Template breaking the MVC paradigm</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">@inherits System.Web.Mvc.WebViewPage\n@using System.Configuration;\n@using System.Data;\n@using System.Data.Common;\n\n@{\n    View.Title = \"Movie Listings\";\n    LayoutPage = \"~/Views/Shared/SiteLayout.cshtml\";\n    var columnsPerRow = 3;\n    var colCount = -1;\n\n    var connectionStringSettings = ConfigurationManager.ConnectionStrings[\"MoviewsDB\"];\n    var dbProviderFactory = DbProviderFactories.GetFactory(connectionStringSettings.ProviderName);\n    var dbConnection = dbProviderFactory.CreateConnection();\n    dbConnection.ConnectionString = connectionStringSettings.ConnectionString;\n    var command = dbConnection.CreateCommand();\n    command.CommandText = \"SELECT * FROM MOVIE\";    \n}\n\n<span class=\"kwrd\">&lt;</span><span class=\"html\">ul</span><span class=\"kwrd\">&gt;</span>\n@{dbConnection.Open();}\n@using(var dr = command.ExecuteReader(CommandBehavior.CloseConnection)) {\n  while(dr.Read()) {\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>@dr[0]<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n  }\n}\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">ul</span><span class=\"kwrd\">&gt;</span></pre></div>\n<h3>Code Listing 7: Showing a function Razor View Template breaking the MVC paradigm</h3>  \n        </div>",
+  "images": [
+    {
+      "alt": "MovieListingsScreenshot",
+      "loaded": false,
+      "url": "https://web.archive.org/web/20240415162151im_/http://www.matlus.com/content/uploads/2011/01/MovieListingsScreenshot_458300b4-22b2-4bab-bed6-eb1955b55185.jpg"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240415162151/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "ASP.NET",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/category/programming/asp-net/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/razor/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415162151/https://twitter.com/share?url=http%3a%2f%2fmatlus.com%2fasp-net-mvc3-razor-view-engine%2f&text=ASP.NET+MVC3+-+Razor+View+Engine"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415162151/http://www.facebook.com/sharer.php?u=http%3a%2f%2fmatlus.com%2fasp-net-mvc3-razor-view-engine%2f&t=ASP.NET+MVC3+-+Razor+View+Engine"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415162151/https://plus.google.com/share?url=http%3a%2f%2fmatlus.com%2fasp-net-mvc3-razor-view-engine%2f&text=ASP.NET+MVC3+-+Razor+View+Engine"
+    },
+    {
+      "text": "Spark",
+      "url": "https://web.archive.org/web/20240415162151/http://sparkviewengine.com/"
+    },
+    {
+      "text": "NHmal",
+      "url": "https://web.archive.org/web/20240415162151/http://code.google.com/p/nhaml/"
+    },
+    {
+      "text": "NDjango",
+      "url": "https://web.archive.org/web/20240415162151/http://ndjango.org/index.php?title=NDjango_Home"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/quartz-for-aspnet/"
+    },
+    {
+      "text": "Code Listing 1",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing1"
+    },
+    {
+      "text": "code listing 2",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing2"
+    },
+    {
+      "text": "Code listing 1",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeList1"
+    },
+    {
+      "text": "Code listing 3",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing3"
+    },
+    {
+      "text": "Code Listing 4",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing4"
+    },
+    {
+      "text": "Code Listing 5",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing5"
+    },
+    {
+      "text": "Code Listing 6",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing6"
+    },
+    {
+      "text": "Breaking the MVC paradigm",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#breakingmvcparadigm"
+    },
+    {
+      "text": "Code Listing 4",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing4"
+    },
+    {
+      "text": "Code Listing 4",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/#codeListing4"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240415162151/http://matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415162151/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "ASP.NET MVC3 - Razor View Engine",
+  "url": "https://web.archive.org/web/20240415162151/http://matlus.com/asp-net-mvc3-razor-view-engine/"
+}

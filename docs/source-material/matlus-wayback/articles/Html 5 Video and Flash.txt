@@ -1,0 +1,110 @@
+Html 5 Video and Flash
+======================
+
+Html 5 Video and Flash
+Posted by Shiv Kumar on 27th August, 2010
+Categorized Under: Html 5 Video Tag
+Tagged With: Flash Html 5 Performance 
+  
+
+Original URL: http://matlus.com/html-5-video-and-flash/
+Wayback capture: https://web.archive.org/web/20240415144145/http://matlus.com/html-5-video-and-flash/
+
+ 
+
+I see so much confusion and BS about Html 5 and Flash on the Internet. Most of it seems from people who know almost nothing about it in the first place. Don’t these people know that they don’t know? Getting to the subject at hand… Having been recently involved in building an Html 5 video player that will work across all major browsers and will be used in the mainstream (by major browsers, I mean IE, Firefox, Chrome, Safari and Opera). In doing so, I have acquired a deep insight into the capabilities and nuances of each browser's built in video player. Further, having built a Flash based video player that is used in the mainstream for a few years now gives me the ability to truly compare developing a video player that has the set of prerequisite features and performance metrics.
+
+Single Codebase
+It was imperative that I can use a single codebase for the html 5 video player across all browsers, without the need to do any browser sniffing and or conditional code paths for different browsers. However, since the video element does not function or behave the same across browsers (either due to their understanding of the html 5 or limited support at this time), I have accounted for these nuances in the implementation of the video player to the extent possible.
+Html 5 Video Comparison
+As browser makers continue to improve support for various Html 5 specifications it becomes important to compare browsers in this regard. In this comparison I’m interested in the implementation of the video element across browsers since there are no standards tests for this element, each browser’s implementation differs quite a bit and the result is that websites intending to support the html 5 video element have a really tough time developing a video player that has all of the functionality that their current Flash based video players have. I’ll compare the following aspects of each browser’s implementation of the video element as compared to a Flash based video player and Native video players (Native players being Windows Media Player on Windows and Quick time/QTX on MAC).
+Playback Performance
+Feature Capability
+Feature Performance
+The following browsers were used in the tests:
+IE 9 Platform Preview 4
+Firefox 4.0 Beta
+Chrome 6.0.472.41
+Safari 5.0.1
+Opera 10.61.3484
+Playback Performance
+This is the ability of the browser’s built in player to playback high quality video at the frame rate the video is encoded at (that is extremely smooth without stutter, jerks or sticky frames). Videos encoded at a video bit rate of between 4000kbps – 7000kbps at dimensions of 720p and 1080p are considered high quality (for the purposes of this test). At the moment only IE 9 and Safari 5 are comparable in playback performance to the native players on their respective platforms. All other browsers lag far behind. They’ll probably catch up in time but as things stand today, IE 9 and Safari 5 are the winners. We know that Flash based video players are unable to come close to the playback performance of native players. On Windows, Flash player has direct access to hardware acceleration. On a MAC, Flash player 10.1.82.76 in combination with OS X v10.4 and above can use hardware acceleration. So most MAC users are unable to watch high quality videos when played back using Flash based video players. According to Adobe, hardware acceleration is supported on the following MACs
+MacBooks shipped after January 21st, 2009
+Mac Minis shipped after March 3rd, 2009
+MacBook Pros shipped after October 14th, 2008
+iMacs which shipped after the first quarter of 2009
+This doesn’t mean that all of the above hardware can playback high quality HD video, but only that they have a hardware decoder for H.264 when using Flash player and not other players.
+The MAC user's plight
+Currently, however, 480p video, running on a 1.8GHz Mac mini, uses 34 percent of the CPU in Mac OS X and just 16 percent in Windows (running in BootCamp on same hardware). Flash 10.1 is expected to cut CPU consumption in half. So Html 5 video is truly a benefit for MAC users, at least those who don't have newer hardware and/or OS
+Video Codecs
+Since the Html 5 specification does not specify a specific video codec, browser makers are free to support one or more of the common codecs. For the purposes of this test we have used the following codecs:
+H.264
+WebM
+Further, there are multiple versions and these versions differ in dimensions and quality so as to support visitors with varying bandwidth and computer hardware capabilities. The following versions have been used for this test
+270p@500kbps
+360p@2000kbps
+480p@2600kbps
+720p@4000kbps
+1080p@7000kbps
+So there are 10 actual videos files available on the server, 5 encoded using the H.264 codec and 5 encoded using the WebM codec.
+Html 5 Video Full Screen
+At the time of this writing, only Safari provides a built-in way to go to full screen. However as per the Html 5 video element specification, browser vendors should not provide a programmatic way to go to full screen. Only an actual user gesture, such as a physical mouse click can activate full screen. As a result this is what happens:
+Only the default controls could provide a way to go to full screen or browser vendors could provide a context menu (right click over the video and choose full screen). At this time only safari provides a full screen button on its default skin.
+Most websites will have their own skin and will want to programmatically control the built-in video players. So this poses a problem because we’ll then need programmatic access to go to full screen.
+So for the moment I’ve implemented my own full screen feature in the player that works in every browser regardless of whether the browser provides one or not since we can’t access that feature anyway. All browsers except Safari provide a way to set the browser in full screen mode using the F11 key. Note that this just puts the browser is full screen mode and has nothing to do with video. So the best user experience for full screen mode at the time is to hit the F11 key (to put the browser in full screen mode) and then to get the video to go to full screen so it fills the entire screen.
+Html 5 Video Comparison Results
+For those of you only interested in knowing the results, I’ve tabulated them here. All tests were performed on a 4 core 2.66GHz, 64bit hardware with 4GB RAM and Window 7.
+Test
+	IE 9 PP4	Firefox 4 Beta 4	Chrome 6.0.4	Safari 5.0.1	Opera 10.61
+Playback Performance	1st	3rd	2nd	1st	4th
+Codec Support	1st	2nd	1st	3rd	2nd
+Feature Capability	2nd	2nd	1st	1st	3rd
+Feature Performance	1st	1st	1st	3rd	2nd
+Playback Performance
+IE 9 and Safari 5 are the winners. Both these browsers do a fantastic job of playing back high quality HD video, really impressive indeed.
+Playback Performance
+	IE 9 PP4	Firefox 4 Beta 4	Chrome 6.0.4	Safari 5.0.1	Opera 10.61
+480p	6%	10%	12%	16%	21%
+720p	9%	19%	18%	25%	42%
+1080p	17%	25%	32%	40%	56%
+Note
+As you can see from the results above CPU utilization is not an indication of how well a player can perform. From the looks of it however, it would seem that vendors who have experience with video players, know what the heck they’re doing. Playing the 1080p (H.264) version using Windows Media Player on the same computer utilized 12% CPU as against 17% compared to IE 9. The 1080p version using a Flash based video player was completely unwatchable and the CPU utilization was at 70%. For the 720p version, It’s give the Flash based player “good” and not excellent and the CPU utilization was at 60%. For the 480p version I’d give it an Excellent and the CPU utilization was 40%.
+
+--- Links in the article ---
+IE 9 Platform Preview 4
+https://web.archive.org/web/20240415144145/http://ie.microsoft.com/testdrive/
+
+Firefox 4.0 Beta
+https://web.archive.org/web/20240415144145/http://www.mozilla.com/en-US/firefox/beta/
+
+Chrome 6.0.472.41
+https://web.archive.org/web/20240415144145/http://www.google.com/chrome
+
+Safari 5.0.1
+https://web.archive.org/web/20240415144145/http://www.apple.com/safari/
+
+Opera 10.61.3484
+https://web.archive.org/web/20240415144145/http://www.techspot.com/downloads/40-opera-for-windows.html
+
+unable to come close to the playback performance of native players
+https://web.archive.org/web/20240415144145/http://exposureroom.com/news/view.aspx/371/
+
+WebM
+https://web.archive.org/web/20240415144145/http://www.webmproject.org/
+
+Playback Performance
+https://web.archive.org/web/20240415144145/http://matlus.com/html-5-video-and-flash/#playbackperformance
+
+Codec Support
+https://web.archive.org/web/20240415144145/http://matlus.com/html-5-video-and-flash/#codecsupport
+
+Feature Capability
+https://web.archive.org/web/20240415144145/http://matlus.com/html-5-video-and-flash/#featurecapability
+
+Feature Performance
+https://web.archive.org/web/20240415144145/http://matlus.com/html-5-video-and-flash/#featureperformance
+
+--- Images referenced in the article ---
+Html5Video
+https://web.archive.org/web/20240415144145im_/http://matlus.com/content/uploads/2011/01/Html5Video.jpg
+Local file: images/8c8c431f3ca2fbd5-Html5Video.jpg

@@ -1,0 +1,98 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>jQuery.data()–Assigning objects to dynamic elements</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>jQuery.data()–Assigning objects to dynamic elements</h1><p class="recovery">jQuery.data()–Assigning objects to dynamic elements<br>Posted by Shiv Kumar on 29th March, 2012<br>Categorized Under: jQuery Snippet<br>Tagged With: JSON Snippet <br>Code Gem: Snippets <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20240915032819/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/">this Wayback capture</a>.</p><div class="articleText">
+        <p>The <a href="https://web.archive.org/web/20240915032819/http://api.jquery.com/jQuery.data/" target="_blank">jQuery documentation for the data() method</a> explains how to use this method to stuff arbitrary “data” (simple data types or objects) into DOM elements. In the examples, these elements pre-exist or once they’ve been created you select the element in question and then stuff your data into DOM element using the jQuery.data() method. So far so good.</p> <p>However, most times I find I need to stuff an object into a DOM element while I’m creating the element, usually as a string. That is, I’m constructing the html of the element and that’s when I want to assign an object to the same DOM element (Which is not really a DOM element yet!).</p> <p>As an example, let’s say we had person object that had the following properties:</p> <ul> <li>firstName  </li><li>lastName  </li><li>username  </li><li>email</li></ul> <p>Let’s also assume we had an array of such objects and that we were dynamically creating an html list of these persons showing the first and last names, while “storing” the additional information with the element in question.</p> <h2>Html 5 custom data attributes</h2> <p>One way to do this is to use the Html 5 custom data attributes, so you create elements that have data-* attributes for each of the properties of the person object. So for example the html of the constructed list would look like this:</p> <div class="panel code content/images/csharp.png" title="List of Presidents" id="code_33655"><div class="codeHeading" style="background-image: url(/web/20240915032819/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">List of Presidents</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">  <span class="kwrd">&lt;</span><span class="html">ul</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">li</span> <span class="attr">data-firstName</span><span class="kwrd">="George"</span> <span class="attr">data-lastName</span><span class="kwrd">="Washington"</span> <span class="attr">data-username</span><span class="kwrd">="gwashington"</span> <span class="attr">data-email</span><span class="kwrd">="gwashington@whitehouse.us.gov"</span><span class="kwrd">&gt;</span>George Washington<span class="kwrd">&lt;/</span><span class="html">li</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">li</span> <span class="attr">data-firstName</span><span class="kwrd">="John"</span> <span class="attr">data-lastName</span><span class="kwrd">="Adams"</span> <span class="attr">data-username</span><span class="kwrd">="jadams"</span> <span class="attr">data-email</span><span class="kwrd">="jadams@whitehouse.us.gov"</span><span class="kwrd">&gt;</span>John Adams<span class="kwrd">&lt;/</span><span class="html">li</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">li</span> <span class="attr">data-firstName</span><span class="kwrd">="Thomas"</span> <span class="attr">data-lastName</span><span class="kwrd">="Jefferson"</span> <span class="attr">data-username</span><span class="kwrd">="tjefferson"</span> <span class="attr">data-email</span><span class="kwrd">="tjefferson@whitehouse.us.gov"</span><span class="kwrd">&gt;</span>Thomas Jefferson<span class="kwrd">&lt;/</span><span class="html">li</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">li</span> <span class="attr">data-firstName</span><span class="kwrd">="James"</span> <span class="attr">data-lastName</span><span class="kwrd">="Madison"</span> <span class="attr">data-username</span><span class="kwrd">="jmadison"</span> <span class="attr">data-email</span><span class="kwrd">="jmadison@whitehouse.us.gov"</span><span class="kwrd">&gt;</span>James Madison<span class="kwrd">&lt;/</span><span class="html">li</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">li</span> <span class="attr">data-firstName</span><span class="kwrd">="James"</span> <span class="attr">data-lastName</span><span class="kwrd">="Monroe"</span> <span class="attr">data-username</span><span class="kwrd">="jmonroe"</span> <span class="attr">data-email</span><span class="kwrd">="jmonroe@whitehouse.us.gov"</span><span class="kwrd">&gt;</span>James Monroe<span class="kwrd">&lt;/</span><span class="html">li</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">li</span> <span class="attr">data-firstName</span><span class="kwrd">="John Quincy"</span> <span class="attr">data-lastName</span><span class="kwrd">="Adams"</span> <span class="attr">data-username</span><span class="kwrd">="jqadams"</span> <span class="attr">data-email</span><span class="kwrd">="jqadams@whitehouse.us.gov"</span><span class="kwrd">&gt;</span>John Quincy Adams<span class="kwrd">&lt;/</span><span class="html">li</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">li</span> <span class="attr">data-firstName</span><span class="kwrd">="Andrew"</span> <span class="attr">data-lastName</span><span class="kwrd">="Jackson"</span> <span class="attr">data-username</span><span class="kwrd">="ajackson"</span> <span class="attr">data-email</span><span class="kwrd">="ajackson@whitehouse.us.gov"</span><span class="kwrd">&gt;</span>Andrew Jackson<span class="kwrd">&lt;/</span><span class="html">li</span><span class="kwrd">&gt;</span>
+  <span class="kwrd">&lt;/</span><span class="html">ul</span><span class="kwrd">&gt;</span>
+</pre>
+<h3>Showing the html where each element has additional data-* attributes</h3></div>
+<p>That’s easy enough to do since at the time of constructing your html since it is just string concatenation. The problems with this approach are:</p>
+<ul>
+<li>If you add/remove properties to the person object, you’ll need to modify the code that constructs the html to either include or remove the additional properties. 
+</li><li>In places where you want to use the additional information, you have to extract each property from specific attributes. Again, not only is this a pain, but if you add or remove properties, you’ll need to modify this code as well.</li></ul>
+<p>Stuffing objects in data-* attributes of dynamic elements</p>
+<p>The simple answer to this is we assign the JSON object to the data-* attribute. So let’s say we wanted to call our attribute data-person, we’d like to assign a JSON object to this attribute at the time of creating each element (As strings). So it boils down to string concatenation really, but you’ll very likely stumble a few times before you get it right if you don’t give up before you get there.</p>
+<p>Of course you’ll need to “stringify” (Thanks a lots Douglas) your object. That part is obvious. What’s not obvious is that which quotes you use matter!</p>
+<p>Anyway, the below html/JavaScript shows you how to stuff objects into dynamically created elements as well as how to extract those objects.</p>
+<div class="panel code content/images/csharp.png" title="Html Page containg complete code" id="code_56716"><div class="codeHeading" style="background-image: url(/web/20240915032819/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Html Page containg complete code</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode"><span class="kwrd">&lt;!</span><span class="html">DOCTYPE</span> <span class="attr">html</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;</span><span class="html">html</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;</span><span class="html">head</span><span class="kwrd">&gt;</span>
+  <span class="kwrd">&lt;</span><span class="html">meta</span> <span class="attr">charset</span><span class="kwrd">="utf-8"</span> <span class="kwrd">/&gt;</span>
+  <span class="kwrd">&lt;</span><span class="html">title</span><span class="kwrd">&gt;</span>US Presidents<span class="kwrd">&lt;/</span><span class="html">title</span><span class="kwrd">&gt;</span>
+  <span class="kwrd">&lt;</span><span class="html">script</span> <span class="attr">type</span><span class="kwrd">="text/javascript"</span> <span class="attr">src</span><span class="kwrd">="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"</span><span class="kwrd">&gt;&lt;/</span><span class="html">script</span><span class="kwrd">&gt;</span>
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div id=<span class="str">"presidents"</span>&gt;&lt;/div&gt;
+  &lt;form id=<span class="str">"presidentForm"</span>&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;President&lt;/legend&gt;
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;label <span class="kwrd">for</span>=<span class="str">"firstName"</span> title=<span class="str">"First Name"</span>&gt;First Name&lt;/label&gt;
+        &lt;input type=<span class="str">"text"</span> id=<span class="str">"firstName"</span> name=<span class="str">"firstName"</span> /&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;label <span class="kwrd">for</span>=<span class="str">"lastName"</span> title=<span class="str">"Last Name"</span>&gt;Last Name&lt;/label&gt;
+        &lt;input type=<span class="str">"text"</span> id=<span class="str">"lastName"</span> name=<span class="str">"lastName"</span> /&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;label <span class="kwrd">for</span>=<span class="str">"username"</span> title=<span class="str">"Username"</span>&gt;Username&lt;/label&gt;
+        &lt;input type=<span class="str">"text"</span> id=<span class="str">"username"</span> name=<span class="str">"username"</span> /&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;label <span class="kwrd">for</span>=<span class="str">"email"</span> title=<span class="str">"Email Address"</span>&gt;Email&lt;/label&gt;
+        &lt;input type=<span class="str">"text"</span> id=<span class="str">"email"</span> name=<span class="str">"email"</span> /&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/fieldset&gt;
+  &lt;/form&gt;
+  
+  &lt;script type=<span class="str">"text/javascript"</span>&gt;
+    <span class="kwrd">var</span> people =
+    [
+      { <span class="str">"email"</span>: <span class="str">"gwashington@whitehouse.us.gov"</span>, <span class="str">"firstName"</span>: <span class="str">"George"</span>, <span class="str">"id"</span>: 1, <span class="str">"lastName"</span>: <span class="str">"Washington"</span>, <span class="str">"username"</span>: <span class="str">"gwashington"</span> },
+      { <span class="str">"email"</span>: <span class="str">"jadams@whitehouse.us.gov"</span>, <span class="str">"firstName"</span>: <span class="str">"John"</span>, <span class="str">"id"</span>: 2, <span class="str">"lastName"</span>: <span class="str">"Adams"</span>, <span class="str">"username"</span>: <span class="str">"jadams"</span> },
+      { <span class="str">"email"</span>: <span class="str">"tjefferson@whitehouse.us.gov"</span>, <span class="str">"firstName"</span>: <span class="str">"Thomas"</span>, <span class="str">"id"</span>: 3, <span class="str">"lastName"</span>: <span class="str">"Jefferson"</span>, <span class="str">"username"</span>: <span class="str">"tjefferson"</span> },
+      { <span class="str">"email"</span>: <span class="str">"jmadison@whitehouse.us.gov"</span>, <span class="str">"firstName"</span>: <span class="str">"James"</span>, <span class="str">"id"</span>: 4, <span class="str">"lastName"</span>: <span class="str">"Madison"</span>, <span class="str">"username"</span>: <span class="str">"jmadison"</span> },
+      { <span class="str">"email"</span>: <span class="str">"jmonroe@whitehouse.us.gov"</span>, <span class="str">"firstName"</span>: <span class="str">"James"</span>, <span class="str">"id"</span>: 5, <span class="str">"lastName"</span>: <span class="str">"Monroe"</span>, <span class="str">"username"</span>: <span class="str">"jmonroe"</span> },
+      { <span class="str">"email"</span>: <span class="str">"jqadams@whitehouse.us.gov"</span>, <span class="str">"firstName"</span>: <span class="str">"John Quincy"</span>, <span class="str">"id"</span>: 6, <span class="str">"lastName"</span>: <span class="str">"Adams"</span>, <span class="str">"username"</span>: <span class="str">"jqadams"</span> },
+      { <span class="str">"email"</span>: <span class="str">"ajackson@whitehouse.us.gov"</span>, <span class="str">"firstName"</span>: <span class="str">"Andrew"</span>, <span class="str">"id"</span>: 7, <span class="str">"lastName"</span>: <span class="str">"Jackson"</span>, <span class="str">"username"</span>: <span class="str">"ajackson"</span> }
+    ];
+
+    $(<span class="kwrd">function</span> () {
+      <span class="rem">//construct an unordered list of presedents</span>
+      <span class="kwrd">var</span> items = [];
+      $.each(people, <span class="kwrd">function</span> (index, value) {
+        items.push(<span class="str">'&lt;li data-person=\''</span> + JSON.stringify(value) + <span class="str">'\'&gt;'</span> + value.firstName + <span class="str">' '</span> + value.lastName + <span class="str">'&lt;/i&gt;'</span>);
+      });
+
+      <span class="rem">//add all &lt;li&gt; items to a &lt;ul&gt; element</span>
+      $(<span class="str">"&lt;ul /&gt;"</span>, {
+        <span class="str">"id"</span>: <span class="str">"presidentsList"</span>,
+        <span class="str">"class"</span>: <span class="str">"list"</span>,
+        html: items.join(<span class="str">""</span>)
+      }).appendTo(<span class="str">"#presidents"</span>);
+
+      <span class="rem">//assign a click event to the ul element</span>
+      $(<span class="str">"#presidentsList"</span>).click(<span class="kwrd">function</span> (e) {
+        <span class="kwrd">var</span> person = $(e.target).data(<span class="str">"person"</span>);
+        assignFormFieldValues(<span class="str">"presidentForm"</span>, person);
+      });
+    });
+
+    <span class="kwrd">function</span> assignFormFieldValues(formId, obj) {
+      <span class="kwrd">var</span> fields = $(<span class="str">"#"</span> + formId).serializeArray();
+      $.each(fields, <span class="kwrd">function</span> (index, field) {
+        <span class="kwrd">var</span> f = $(<span class="str">"[name="</span> + field.name + <span class="str">"]"</span>).val(obj[field.name]);
+      });
+    }
+  <span class="kwrd">&lt;/</span><span class="html">script</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;/</span><span class="html">body</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;/</span><span class="html">html</span><span class="kwrd">&gt;</span></pre>
+<h3>The Html and JavaScript showing the solution</h3></div>  
+        </div></body></html>

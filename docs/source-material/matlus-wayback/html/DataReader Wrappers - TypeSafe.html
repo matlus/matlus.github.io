@@ -1,0 +1,179 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>DataReader Wrappers - TypeSafe</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>DataReader Wrappers - TypeSafe</h1><p class="recovery">DataReader Wrappers - TypeSafe<br>Posted by Shiv Kumar on 18th November, 2010<br>Categorized Under: Programming C#<br>Tagged With: ADO.NET CodeGen Data Access DbDataReader Performance <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20240414171920/http://www.matlus.com/datareader-wrappers-typesafe/">this Wayback capture</a>.</p><div class="articleText">
+        DataReaders (<code>DbDataReader</code>), in .NET give you the fastest access to your data. There is nothing that beats the speed of DataReaders. However, there are a few drawbacks to using them <ol> 	<li>No Type Checking</li> 	<li>If field ordering or field name changes in your stored procedures or queries will likely break your code</li> 	<li>Code that uses DataReaders tends to be not so clear to read</li> </ol> Here is a example of what the typical code looks like: Lets say we have a blog item record that has the following fields: <ol> 	<li>ItemId</li> 	<li>MemberId</li> 	<li>ItemTitle</li> 	<li>ItemDesc</li> 	<li>ItemPubdate</li> 	<li>ItemCommentCnt</li> 	<li>ItemAllowComment</li> </ol> In order to use a DataReader your code might look like the following: <div class="panel code content/images/csharp.png" title="DataReader - using field names" id="code_36768"><div class="codeHeading" style="background-image: url(/web/20240414171920/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">DataReader - using field names</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div> <pre class="csharpcode"><span class="kwrd">using</span> (DbDataReader dr = GetBlog(42))
+{
+  var blogs = <span class="kwrd">new</span> List&lt;BlogItem&gt;();
+  <span class="kwrd">while</span> (dr.Read())
+  {
+    var blogItem = <span class="kwrd">new</span> BlogItem();
+
+    blogItem.ItemId = (<span class="kwrd">long</span>)dr[<span class="str">"ItemId"</span>];
+    blogItem.MemberId = (<span class="kwrd">long</span>)dr[<span class="str">"MemberId"</span>];
+    blogItem.ItemTitle = (<span class="kwrd">string</span>)dr[<span class="str">"Itemtitle"</span>];
+    blogItem.ItemDesc = dr[<span class="str">"ItemDesc"</span>] != DBNull.Value ? (<span class="kwrd">string</span>)dr[<span class="str">"ItemDesc"</span>] : <span class="kwrd">null</span>;
+    blogItem.ItemPubdate = (DateTime)dr[<span class="str">"ItemPubdate"</span>];
+    blogItem.ItemCommentCnt = (<span class="kwrd">int</span>)dr[<span class="str">"ItemCommentCnt"</span>];
+    blogItem.ItemAllowComment = (<span class="kwrd">bool</span>)dr[<span class="str">"ItemAllowComment"</span>];
+
+    blogs.Add(blogItem);
+
+  }
+  <span class="kwrd">return</span> blogs;
+}</pre>
+</div>
+In the code above, I'm using field names to get at the fields, but it is faster if you index into the fields as shown below.
+<div class="panel code content/images/csharp.png" title="DataReader using Field index" id="code_6717"><div class="codeHeading" style="background-image: url(/web/20240414171920/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">DataReader using Field index</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div>
+<pre class="csharpcode"><span class="kwrd">using</span> (DbDataReader dr = GetBlog(42))
+{
+  var blogs = <span class="kwrd">new</span> List&lt;BlogItem&gt;();
+  <span class="kwrd">while</span> (dr.Read())
+  {
+    var blogItem = <span class="kwrd">new</span> BlogItem();
+
+    blogItem.ItemId = (<span class="kwrd">long</span>)dr[0];
+    blogItem.MemberId = (<span class="kwrd">long</span>)dr[1];
+    blogItem.ItemTitle = (<span class="kwrd">string</span>)dr[2];
+    blogItem.ItemDesc = dr[3] != DBNull.Value ? (<span class="kwrd">string</span>)dr[3] : <span class="kwrd">null</span>;
+    blogItem.ItemPubdate = (DateTime)dr[4];
+    blogItem.ItemCommentCnt = (<span class="kwrd">int</span>)dr[5];
+    blogItem.ItemAllowComment = (<span class="kwrd">bool</span>)dr[6];
+
+    blogs.Add(blogItem);
+
+  }
+  <span class="kwrd">return</span> blogs;
+}</pre>
+</div>
+In both these code snippets there are a few problems.
+<ol>
+	<li>No compile type type checking</li>
+	<li>Readability isn't too good</li>
+	<li>If a field is null-able (like ItemDesc above) then the code to access the field's value is even more cumbersome</li>
+</ol>
+Here is what I use in order to be able to use DataReaders but no have the issues cited above.
+<div class="panel code content/images/csharp.png" title="DataReader Wrapper" id="code_2258"><div class="codeHeading" style="background-image: url(/web/20240414171920/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">DataReader Wrapper</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div>
+<pre class="csharpcode"><span class="rem">/// &lt;summary&gt;</span>
+<span class="rem">///This is the Base Class for all DbDataReader Wrappers</span>
+<span class="rem">/// &lt;/summary&gt;</span>
+<span class="kwrd">public</span> <span class="kwrd">class</span> <span class="identifier">BaseDbDataReaderWrapper</span>
+{
+    <span class="kwrd">public</span> <span class="identifier">DbDataReader</span> DbDataReader { get; set; }
+
+    <span class="kwrd">public</span> BaseDbDataReaderWrapper()
+    {
+    }
+
+    <span class="kwrd">public</span> BaseDbDataReaderWrapper(DbDataReader dbDataReader)
+      :<span class="kwrd">this</span>()
+    {
+        DbDataReader = dbDataReader;
+    }
+}
+
+<span class="rem">/// &lt;summary&gt;</span>
+<span class="rem">///This class is a wrapper around a DbDataReader,</span>
+<span class="rem">///Associated with the stored procedure - usp_GET_BLOG_ITEM</span>
+<span class="rem">///This class provides a strongly typed interface to access data from the DbDataReader.</span>
+<span class="rem">///containing the result of the given stored procedure.</span>
+<span class="rem">/// &lt;/summary&gt;</span>
+<span class="kwrd">public</span> <span class="kwrd">sealed</span> <span class="kwrd">class</span> <span class="identifier">BlogItemDrw</span> : <span class="identifier">BaseDbDataReaderWrapper</span>
+{
+    <span class="kwrd">public</span> <span class="identifier">Int64</span> ItemId { get { <span class="kwrd">return</span> (<span class="identifier">Int64</span>)DbDataReader[0]; } }
+    <span class="kwrd">public</span> <span class="identifier">Int64</span> MemberId { get { <span class="kwrd">return</span> (<span class="identifier">Int64</span>)DbDataReader[1]; } }
+    <span class="kwrd">public</span> <span class="identifier">String</span> ItemTitle { get { <span class="kwrd">return</span> (<span class="identifier">String</span>)DbDataReader[2]; } }
+    <span class="kwrd">public</span> <span class="identifier">String</span> ItemDesc { get { <span class="kwrd">if</span> (DbDataReader[3] != <span class="identifier">DBNull</span>.Value) <span class="kwrd">return</span> (<span class="identifier">String</span>)DbDataReader[3]; <span class="kwrd">else</span> <span class="kwrd">return</span> <span class="kwrd">default</span>(<span class="identifier">String</span>); } }
+    <span class="kwrd">public</span> <span class="identifier">DateTime</span> ItemPubdate { get { <span class="kwrd">return</span> (<span class="identifier">DateTime</span>)DbDataReader[4]; } }
+    <span class="kwrd">public</span> <span class="identifier">Int32</span> ItemCommentCnt { get { <span class="kwrd">return</span> (<span class="identifier">Int32</span>)DbDataReader[5]; } }
+    <span class="kwrd">public</span> <span class="identifier">Boolean</span> ItemAllowComment { get { <span class="kwrd">return</span> (<span class="identifier">Boolean</span>)DbDataReader[6]; } }
+    <span class="kwrd">public</span> BlogItemDrw()
+      :<span class="kwrd">base</span>()
+    {
+    }
+
+    <span class="kwrd">public</span> BlogItemDrw(DbDataReader dbDataReader)
+      :<span class="kwrd">base</span>(dbDataReader)
+    {
+    }
+}</pre>
+</div>
+The class above is designed in such as way as to require only one instance of the class while you're iterating over the DataReader. This technique also has a postivate impact on performance, since you're not creating a new instance of this class for each record in your DataReader.
+<h2>IEnumerable&lt;T&gt; - DbDataReader</h2>
+The way you'd use this class is really in a method that returns an <code>IEnumerable&lt;T&gt;</code>.
+<div class="panel code content/images/csharp.png" title="IEnumerable&lt;T&gt; DataReader Wrapper" id="code_24933"><div class="codeHeading" style="background-image: url(/web/20240414171920/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">IEnumerable<t> DataReader Wrapper</t></h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div>
+<pre class="csharpcode"><span class="kwrd">public</span> IEnumerable&lt;BlogItem&gt; GetBlogs()
+{
+  <span class="kwrd">using</span> (DbDataReader dr = GetBlogsDataReader())
+  {
+    var blogItem = <span class="kwrd">new</span> BlogItem(dr);
+    <span class="kwrd">while</span> (dr.Read())
+    {
+      <span class="kwrd">yield</span> <span class="kwrd">return</span> blogItem;
+    }
+  }
+}</pre>
+</div>
+When you use a DataReader like this (<code>IEnumerable&lt;T&gt;</code>) you have to be careful in that you need to be aware that each time you iterate over the <code>IEnumerable</code>, you're really querying the database again. Further, the code that returns the DataReader (<code>GetBlogsDataReader()</code> in this case) should make sure the connection is closed when the DataReader is disposed by using the <code>CommandBehavior.CloseConnection</code> behavior at the time of calling the <code>ExecuteReader()</code> method on a command instance like so:
+<pre><span class="kwrd">return</span> command.ExecuteReader(<span class="identifier">CommandBehavior</span>.CloseConnection);</pre>
+<h2>List&lt;T&gt; - DbDataReader</h2>
+There may be times when you need to use a List&lt;T&gt; instead of an IEnumerable&lt;T&gt; because you either have multiple result sets being returned in the DataReader or you need to fire another query and you can't have a DbDataReader open and fire another query using the same connection. In such situations your class could look like this:
+
+<div class="panel code content/images/csharp.png" title="List&lt;T&gt; DataReader" id="code_28138"><div class="codeHeading" style="background-image: url(/web/20240414171920/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">List<t> DataReader</t></h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div>
+<pre class="csharpcode">  <span class="kwrd">public</span> <span class="kwrd">sealed</span> <span class="kwrd">class</span> BlogItem
+  {
+    <span class="kwrd">public</span> Int64 ItemId { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> Int64 MemberId { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> String ItemTitle { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> String ItemDesc { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> DateTime ItemPubdate { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> DateTime ItemPubtime { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> Decimal ItemRatingAvg { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> Int32 ItemViewCnt { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> Int32 ItemCommentCnt { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> Int32 ItemRatingCnt { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> Int32 ItemFavoriteCnt { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> Boolean ItemIsPrivate { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> Boolean ItemAllowComment { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> Boolean ItemIsPublished { get; <span class="kwrd">private</span> set; }
+
+    <span class="kwrd">public</span> BlogItem(DbDataReader dbDataReader)
+      : <span class="kwrd">base</span>()
+    {
+      ItemId = (Int64)dbDataReader[0];
+      MemberId = (Int64)dbDataReader[1];
+      ItemTitle = (String)dbDataReader[2];
+      ItemDesc = dbDataReader[3] != DBNull.Value ? (String)dbDataReader[3] : <span class="kwrd">default</span>(String);
+      ItemPubdate = (DateTime)dbDataReader[4];
+      ItemRatingAvg = (Decimal)dbDataReader[5];
+      ItemViewCnt = (Int32)dbDataReader[6];
+      ItemCommentCnt = (Int32)dbDataReader[7];
+      ItemRatingCnt = (Int32)dbDataReader[8];
+      ItemFavoriteCnt = (Int32)dbDataReader[9];
+      ItemIsPrivate = (Boolean)dbDataReader[10];
+      ItemAllowComment = (Boolean)dbDataReader[11];
+      ItemIsPublished = (Boolean)dbDataReader[12];
+    }
+  }</pre>
+</div>
+
+And the way you'd use this class to return a <code>List&lt;<span class="identifier">BlogItem</span>&gt;</code> is
+
+<div class="panel code content/images/csharp.png" title="Using List&lt;T&gt; DataReader Wrapper class" id="code_39342"><div class="codeHeading" style="background-image: url(/web/20240414171920/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Using List<t> DataReader Wrapper class</t></h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div>
+<pre style="margin:0em;">     <span style="color:#0000ff">internal</span><span style="color:#000000">  <span style="color:#2b91af">List</span><span style="color:#000000"> &lt;<span style="color:#2b91af">BlogItem</span><span style="color:#000000"> &gt; GetMemberBlogsList(<span style="color:#0000ff">long</span><span style="color:#000000">  memberId)</span></span></span></span></pre>
+<pre style="margin:0em;">     <span style="color:#000000">{</span></pre>
+<pre style="margin:0em;">       <span style="color:#0000ff">using</span><span style="color:#000000">  (<span style="color:#0000ff">var</span><span style="color:#000000">  dr = DataAccessModule.GetMemberBlogs(memberId))</span></span></pre>
+<pre style="margin:0em;">       <span style="color:#000000">{</span></pre>
+<pre style="margin:0em;">         <span style="color:#0000ff">var</span><span style="color:#000000">  blogItems = <span style="color:#0000ff">new</span><span style="color:#000000">  <span style="color:#2b91af">List</span><span style="color:#000000"> &lt;<span style="color:#2b91af">BlogItem</span><span style="color:#000000"> &gt;();</span></span></span></span></pre>
+<pre style="margin:0em;">         <span style="color:#0000ff">while</span><span style="color:#000000">  (dr.Read())</span></pre>
+<pre style="margin:0em;">           blogItems.Add(<span style="color:#0000ff">new</span><span style="color:#000000">  <span style="color:#2b91af">BlogItem</span><span style="color:#000000"> (dr));</span></span></pre>
+<pre style="margin:0em;">         <span style="color:#0000ff">return</span><span style="color:#000000">  blogItems;</span></pre>
+<pre style="margin:0em;">       <span style="color:#000000">}</span></pre>
+<pre style="margin:0em;">     <span style="color:#000000">}</span></pre>
+<pre style="margin:0em;"> </pre>
+<pre style="margin:0em;"> </pre>
+</div>
+
+<h2>Code Generation</h2>
+Ideally, you'd want these wrapper classes to be automatically generated for you as per the stored procedure's metadata. That way, if you change the number of fields or field ordering in your stored procedures the class definition changes and of course if there is a breaking change, you'll know that as soon as you compile your project.
+
+I'll be posting another blog about the code generation aspect and I'll make the source code and a sample project available for download as well.  
+        </div></body></html>

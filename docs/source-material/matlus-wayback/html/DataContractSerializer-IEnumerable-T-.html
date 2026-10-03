@@ -1,0 +1,150 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>DataContractSerializer-IEnumerable&lt;T&gt;</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>DataContractSerializer-IEnumerable&lt;T&gt;</h1><p class="recovery">DataContractSerializer-IEnumerable&lt;T&gt;<br>Posted by Shiv Kumar on 25th January, 2011<br>Categorized Under: Programming WCF<br>Tagged With: DbDataReader JSON <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20240415161635/http://matlus.com/ienumerablet-datacontractserializer/">this Wayback capture</a>.</p><div class="articleText">
+        <p>The <a title="Serializes and deserializes an instance of a type into an XML stream or document using a supplied data contract." href="https://web.archive.org/web/20240415161635/http://msdn.microsoft.com/en-us/library/system.runtime.serialization.datacontractserializer.aspx"><code>DataContractSerializer</code></a> class is mainly used in WCF services but you can use it in any kind of project including ASP.NET based applications.</p> <p>There are some nice features this class offers in contrast to <a title="Provides serialization and deserialization functionality for AJAX-enabled applications." href="https://web.archive.org/web/20240415161635/http://msdn.microsoft.com/en-us/library/system.web.script.serialization.javascriptserializer.aspx"><code>JavaScriptSerializer</code></a> like the ability to control how property names get serialized using the DataMember attribute. One problem with this class is that it does not support serializing <code>IEnumerable&lt;T&gt;</code>. It supports generic collections such as <code>List&lt;T&gt;</code> but that's not what I need since there is a reason I'm using an <code>IEnumerable&lt;T&gt;</code> to serialize to JSON.</p> <p>In this post I'll present a <code><a href="#jsonserializer">JsonSerlizer</a></code> class that supports <code>IEnumerable&lt;T&gt;.</code> Some of the features of this class are as follows:</p> <ol> <li>Supports serializing IEnumberable&lt;T&gt; in addition to other collections types as well as non-collection types  </li><li>Serializes directly to System.IO.Stream (in contrast to JavaScriptSerializer)  </li><li>Supports JSONP, so you can publish your JSON feeds to the public</li></ol> <p>First let me begin by showing how I get the data and why I need to serialize and IEnumerable&lt;T&gt; in the first place.</p> <p>In <a href="#codelisting1">code listing 1</a> below, you can see the class <code>SubCategoryDrw</code> that will be serialized. It looks a bit complex but it's really just a POCO. It's what I call a <a title="DataReader Wrappers - TypeSafe" href="https://web.archive.org/web/20240415161635/http://www.matlus.com/datareader-wrappers-typesafe/">DataReader Wrapper</a>. Anyway, I've decorated the class with the required <code>DataContract</code> attribute and its properties with the <code>DataMember</code> attribute while also modifying the property names and/or case that I'd like each property to be serialized as. This feature (the ability to change the name and /or case of property name) is the reason why I prefer using the <code>DataContractSerializer</code> class over the <code>JavaScriptSerializer</code> class.</p> <p>&nbsp;</p><a name="codelisting1"></a> <div class="panel code content/images/csharp.png" title="The SubCategoryDrw class" id="code_76049"><div class="codeHeading" style="background-image: url(/web/20240415161635/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle">The SubCategoryDrw class</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">  [DataContract]
+  <span class="kwrd">public</span> <span class="kwrd">sealed</span> <span class="kwrd">class</span> SubCategoryDrw : BaseDbDataReaderWrapper
+  {
+    <span class="preproc">#region</span> Properties
+
+    <span class="kwrd">private</span> Int32 categoryId;
+    [DataMember(Name=<span class="str">"categoryId"</span>)]
+    <span class="kwrd">public</span> Int32 CategoryId { get { <span class="kwrd">switch</span> (Mode) { <span class="kwrd">case</span> WrapperMode.Wrapper: <span class="kwrd">return</span> (Int32)DbDataReader[0]; <span class="kwrd">case</span> WrapperMode.Dto: <span class="kwrd">return</span> categoryId; <span class="kwrd">default</span>: <span class="kwrd">return</span> <span class="kwrd">default</span>(Int32); } } set { categoryId = <span class="kwrd">value</span>; } }
+    <span class="kwrd">private</span> Int32 subCategoryId;
+    [DataMember(Name = <span class="str">"subCategoryId"</span>)]
+    <span class="kwrd">public</span> Int32 SubCategoryId { get { <span class="kwrd">switch</span> (Mode) { <span class="kwrd">case</span> WrapperMode.Wrapper: <span class="kwrd">return</span> (Int32)DbDataReader[1]; <span class="kwrd">case</span> WrapperMode.Dto: <span class="kwrd">return</span> subCategoryId; <span class="kwrd">default</span>: <span class="kwrd">return</span> <span class="kwrd">default</span>(Int32); } } set { subCategoryId = <span class="kwrd">value</span>; } }
+    <span class="kwrd">private</span> String categoryDescription;
+    [DataMember(Name = <span class="str">"categoryDesc"</span>)]
+    <span class="kwrd">public</span> String CategoryDescription { get { <span class="kwrd">switch</span> (Mode) { <span class="kwrd">case</span> WrapperMode.Wrapper: <span class="kwrd">return</span> (String)DbDataReader[2]; <span class="kwrd">case</span> WrapperMode.Dto: <span class="kwrd">return</span> categoryDescription; <span class="kwrd">default</span>: <span class="kwrd">return</span> <span class="kwrd">default</span>(String); } } set { categoryDescription = <span class="kwrd">value</span>; } }
+    <span class="kwrd">private</span> String subCategoryDescription;
+    [DataMember(Name = <span class="str">"subCategoryDesc"</span>)]
+    <span class="kwrd">public</span> String SubCategoryDescription { get { <span class="kwrd">switch</span> (Mode) { <span class="kwrd">case</span> WrapperMode.Wrapper: <span class="kwrd">return</span> (String)DbDataReader[3]; <span class="kwrd">case</span> WrapperMode.Dto: <span class="kwrd">return</span> subCategoryDescription; <span class="kwrd">default</span>: <span class="kwrd">return</span> <span class="kwrd">default</span>(String); } } set { subCategoryDescription = <span class="kwrd">value</span>; } }
+
+    <span class="preproc">#endregion</span> Properties
+
+    <span class="kwrd">public</span> SubCategoryDrw(DbDataReader dbDataReader, WrapperMode mode)
+      : <span class="kwrd">base</span>(dbDataReader, mode)
+    {
+      <span class="kwrd">switch</span> (Mode)
+      {
+        <span class="kwrd">case</span> WrapperMode.Wrapper:
+          <span class="kwrd">break</span>;
+        <span class="kwrd">case</span> WrapperMode.Dto:
+          categoryId = (Int32)DbDataReader[0];
+          subCategoryId = (Int32)DbDataReader[1];
+          categoryDescription = (String)DbDataReader[2];
+          subCategoryDescription = (String)DbDataReader[3];
+          <span class="kwrd">break</span>;
+      }
+    }
+  }
+</pre>
+<h3>Code Listing 1: Showing the POCO SubCategory class that will be serlized</h3></div>
+<p>&nbsp;</p>
+<p>In <a href="#codelisting2">code listing 2</a>, you see a method I have in my business layer, that returns an <code>IEnumerable&lt;SubCategoryDrw&gt;</code>. Because the intent is to go from data stream, straight out to the Http Response Stream in order to get the best performance possible, not only do I use a <code>DbDataReader</code> directly (along with a <a title="DataReader Wrappers - TypeSafe" href="https://web.archive.org/web/20240415161635/http://www.matlus.com/datareader-wrappers-typesafe/">DataReader wrapper class</a> so I get type safety) and return an <code>IEnumerable&lt;T&gt;</code>, which basically means the data that comes out of the database is streamed directly to the Http Response stream in one single iteration.</p>
+<p>&nbsp;</p><a name="codelisting2"></a>
+<div class="panel code content/images/csharp.png" title="Business Layer Method - GetSubCategories()" id="code_60427"><div class="codeHeading" style="background-image: url(/web/20240415161635/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Business Layer Method - GetSubCategories()</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">    <span class="kwrd">public</span> IEnumerable&lt;<span class="identifier">SubCategoryDrw</span>&gt; GetSubCategories()
+    {
+      <span class="kwrd">using</span> (var dr = DataModule.GetSubCategories())
+      {
+        var subCategoryDrw = <span class="kwrd">new</span> <span class="identifier">SubCategoryDrw</span>(dr, <span class="identifier">WrapperMode</span>.Wrapper);
+        <span class="kwrd">while</span> (dr.Read())
+          <span class="kwrd">yield</span> <span class="kwrd">return</span> subCategoryDrw;
+      }
+    }
+</pre>
+<h3>Code Listing 2: Showing the Business layer method returning an IEnumerable&lt;SubCategoryDrw&gt;</h3></div><a name="codelisting3"></a>
+<p>&nbsp;</p>
+<p>In <a href="#codelisting3">code listing 3</a> below you can see a WCF method wherein I use the JsonSerializer presented in this post to serialize a sequence of SubCategories. Note that I'm showing you a WCF method implementation, but you'll most likely use the JsonSerializer presented in this post in non-WCF applications since WCF 4.0 does handle serializing IEnumerable&lt;T&gt;.</p><a name="codelisting3"></a>
+<div class="panel code content/images/csharp.png" title="WCF Operation Contract" id="code_60211"><div class="codeHeading" style="background-image: url(/web/20240415161635/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle">WCF Operation Contract</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">    [WebGet(UriTemplate = <span class="str">"/subcategories/"</span>)]
+    <span class="kwrd">public</span> <span class="kwrd">void</span> GetSubCategories()
+    {
+      var categories = BusinessModule.GetSubCategories();
+      <span class="identifier">JsonSerializer</span>.Serialize(categories, Response.OutputStream, Request.QueryString[<span class="str">"callback"</span>]);
+    }
+</pre>
+<h3>Code Listing 3: The WCF method that uses the JsonSerlizer to serialize an IEnumerable&lt;SubCategoryDrw&gt;</h3></div>
+<p>&nbsp;</p>
+<div class="panel">
+<h3 class="note">WCF 4.0 Supports Serializing IEnumerable&lt;T&gt; via <code>CreateJsonResponse</code></h3><pre class="csharpcode">    [WebGet(UriTemplate = <span class="str">"/subcategories/"</span>)]
+    <span class="kwrd">public</span> Message GetSubCategories()
+    {
+      var categories = BusinessModule.GetSubCategories();
+      <span class="kwrd">return</span> <span class="identifier">WebOperationContext</span>.Current
+        .CreateJsonResponse&lt;IEnumerable&lt;<span class="identifier">SubCategoryDrw</span>&gt;&gt;(categories);
+    }
+
+</pre></div>
+<p>&nbsp;</p><a name="jsonserializer"></a>
+<h2>JsonSerializer</h2>
+<p>As I mentioned earlier, some of the features of this class are as follows: </p>
+<ol>
+<li>Supports serializing IEnumberable&lt;T&gt; in addition to other collections types as well as non-collection types 
+</li><li>Serializes directly to System.IO.Stream (in contrast to JavaScriptSerializer) 
+</li><li>Supports JSONP, so you can publish your JSON feeds to the public </li></ol>
+<p>There are just 2 public methods in this class. One that expects and IEnumerable&lt;T&gt; as the object to serialize and another where the object is not an IEnumerable&lt;T&gt; either a List&lt;T&gt; or a non collection type object.</p>
+<p>&nbsp;</p><a name="codelisting4"></a>
+<div class="panel code content/images/csharp.png" title="JsonSerializer class" id="code_54723"><div class="codeHeading" style="background-image: url(/web/20240415161635/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle">JsonSerializer class</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode"><span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">class</span> <span class="identifier">JsonSerializer</span>
+{
+  <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">byte</span>[] lBracketBytes = <span class="identifier">Encoding</span>.UTF8.GetBytes(<span class="kwrd">new</span> <span class="kwrd">char</span>[] { <span class="str">'['</span> });
+  <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">byte</span>[] rBracketBytes = <span class="identifier">Encoding</span>.UTF8.GetBytes(<span class="kwrd">new</span> <span class="kwrd">char</span>[] { <span class="str">']'</span> });
+  <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">byte</span>[] commaBytes = <span class="identifier">Encoding</span>.UTF8.GetBytes(<span class="kwrd">new</span> <span class="kwrd">char</span>[] { <span class="str">','</span> });
+  <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">byte</span>[] rparenBytes = <span class="identifier">Encoding</span>.UTF8.GetBytes(<span class="kwrd">new</span> <span class="kwrd">char</span>[] { <span class="str">')'</span> });
+
+  <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> Serialize&lt;T&gt;(T obj, <span class="identifier">Stream</span> stream, <span class="kwrd">string</span> jsonpCallback = <span class="kwrd">null</span>)
+  {
+    <span class="kwrd">if</span> (jsonpCallback == <span class="kwrd">null</span>)
+      WriteObject(obj, stream);
+    <span class="kwrd">else</span>
+    {
+      WriteJsonPCallbackStart(stream, jsonpCallback);
+      WriteObject(obj, stream);
+      WriteJsonPCallbackEnd(stream);
+    }
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> Serialize&lt;T&gt;(IEnumerable&lt;T&gt; sequence, <span class="identifier">Stream</span> stream, <span class="kwrd">string</span> jsonpCallback = <span class="kwrd">null</span>)
+  {
+    <span class="kwrd">if</span> (jsonpCallback == <span class="kwrd">null</span>)
+      WriteSequence(sequence, stream);
+    <span class="kwrd">else</span>
+    {
+      WriteJsonPCallbackStart(stream, jsonpCallback);
+      WriteSequence(sequence, stream);
+      WriteJsonPCallbackEnd(stream);
+    }
+  }
+
+  <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">void</span> WriteJsonPCallbackStart(<span class="identifier">Stream</span> stream, <span class="kwrd">string</span> jsonpCallback)
+  {
+    <span class="kwrd">byte</span>[] callbackStartBytes = <span class="identifier">UTF8Encoding</span>.UTF8.GetBytes(jsonpCallback + <span class="str">"("</span>);
+    stream.Write(callbackStartBytes, 0, callbackStartBytes.Length);
+  }
+
+  <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">void</span> WriteJsonPCallbackEnd(<span class="identifier">Stream</span> stream)
+  {
+    stream.Write(rparenBytes, 0, rparenBytes.Length);
+  }
+
+  <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">void</span> WriteObject&lt;T&gt;(T obj, <span class="identifier">Stream</span> stream)
+  {
+    var serializer = <span class="kwrd">new</span> <span class="identifier">DataContractJsonSerializer</span>(<span class="kwrd">typeof</span>(T));
+    serializer.WriteObject(stream, obj);
+  }
+
+  <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">void</span> WriteSequence&lt;T&gt;(IEnumerable&lt;T&gt; sequence, <span class="identifier">Stream</span> stream)
+  {
+    var serializer = <span class="kwrd">new</span> <span class="identifier">DataContractJsonSerializer</span>(<span class="kwrd">typeof</span>(T));
+    stream.Write(lBracketBytes, 0, lBracketBytes.Length);
+    <span class="kwrd">int</span> i = 0;
+    <span class="kwrd">foreach</span> (var item <span class="kwrd">in</span> sequence)
+    {
+      <span class="kwrd">if</span> (i != 0)
+        stream.Write(commaBytes, 0, commaBytes.Length);
+      serializer.WriteObject(stream, item);
+      i++;
+    }
+    stream.Write(rBracketBytes, 0, rBracketBytes.Length);
+  }
+}</pre>
+<h3>Code Listing 4: Listing of the entire JsonSerializer class</h3></div>
+<p>That brings us to the end of this post.</p>  
+        </div></body></html>

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blog Writing"
+  short_description: "Shiv's blog voice and deliberate teaching flow"
+  default_prompt: "Use $blog-writing to draft or edit this article in my voice, preserving my opinions and developing the explanation in the order readers need."

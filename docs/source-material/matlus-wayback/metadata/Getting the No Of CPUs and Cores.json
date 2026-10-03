@@ -1,0 +1,417 @@
+{
+  "body": "Using WMI (Windows Management Instrumentation) it is really simple to get the all kinds of weird and useful information about the hardware of a computer. Here I use ManagementObjectSearcher from the System.Management assembly/namespace to get at information on the CPU. In particular:\n\nNo of Cores\nNo of Logical Processors\nNo of Physical Processors\nHardware Bitness (32/64 bit etc.)\nCPU Architecture (x86, x64, Itanium etc.)\nWMI Code to Extract information in the CPU\n    private static void GetCpuInformation()\n    {\n      var noOfCores = 0;\n      foreach (var item in new System.Management.ManagementObjectSearcher(\"Select * from Win32_Processor\").Get())\n      {\n        noOfCores += int.Parse(item[\"NumberOfCores\"].ToString());\n        Console.WriteLine(\"Bitness: {0}\", item[\"AddressWidth\"]);\n        Console.WriteLine(\"Architecture: {0}\", GetArchitectureDiscription(int.Parse(item[\"Architecture\"].ToString())));\n      }\n\n      Console.WriteLine(\"Number Of Cores: {0}\", noOfCores);\n\n      foreach (var item in new System.Management.ManagementObjectSearcher(\"Select * from Win32_ComputerSystem\").Get())\n      {\n        Console.WriteLine(\"Number Of Logical Processors: {0} \", item[\"NumberOfLogicalProcessors\"]);\n        Console.WriteLine(\"Number Of Physical Processors: {0} \", item[\"NumberOfProcessors\"]);\n      }      \n    }\n\n    private static string GetArchitectureDiscription(int architectureNo)\n    {\n      switch (architectureNo)\n      {\n        case 0: return \"x86\";\n        case 1: return \"MIPS\";\n        case 2: return \"Alpha\";\n        case 3: return \"PowerPC\";\n        case 6: return \"Itanium-based systems\";\n        case 9: return \"x64\";\n        default:\n          return \"Unkown\";\n      }\n    }\n\n \n\nThere is quite a bit more information available from both the Win32_Processor WMI class as well as the Win32_ComputerSystem, so you may want to check out the other properties/information these object provide.\n\nI use the number of cores information to (naïvely) determine how many threads I can/should spawn when I'm doing some multi-threaded work. Of course nowadays with availability of Tasks in .NET and Parallel.For etc. one should probably use facilities built into the .NET framework where possible.\n\nYou can optimize the queries if you need to. For example, we're doing a select * from for each of queries you see in the code listing above. You could change that to return only the properties you're interested in. For example the seconds query above could be rewritten as\n\n\"Select NumberOfLogicalProcessors, NumberOfProcessors from Win32_ComputerSystem\"\n\n\n \n\nThe rest of the code will remain the same, including the way in which the properties are extracted from the result.",
+  "bodyLinks": [
+    {
+      "text": "Win32_Processor",
+      "url": "https://web.archive.org/web/20230605173454/http://msdn.microsoft.com/en-us/library/aa394373(v=vs.85).aspx"
+    },
+    {
+      "text": "Win32_ComputerSystem",
+      "url": "https://web.archive.org/web/20230605173454/http://msdn.microsoft.com/en-us/library/aa394102(v=vs.85).aspx"
+    }
+  ],
+  "code": [
+    "    private static void GetCpuInformation()\n    {\n      var noOfCores = 0;\n      foreach (var item in new System.Management.ManagementObjectSearcher(\"Select * from Win32_Processor\").Get())\n      {\n        noOfCores += int.Parse(item[\"NumberOfCores\"].ToString());\n        Console.WriteLine(\"Bitness: {0}\", item[\"AddressWidth\"]);\n        Console.WriteLine(\"Architecture: {0}\", GetArchitectureDiscription(int.Parse(item[\"Architecture\"].ToString())));\n      }\n\n      Console.WriteLine(\"Number Of Cores: {0}\", noOfCores);\n\n      foreach (var item in new System.Management.ManagementObjectSearcher(\"Select * from Win32_ComputerSystem\").Get())\n      {\n        Console.WriteLine(\"Number Of Logical Processors: {0} \", item[\"NumberOfLogicalProcessors\"]);\n        Console.WriteLine(\"Number Of Physical Processors: {0} \", item[\"NumberOfProcessors\"]);\n      }      \n    }\n\n    private static string GetArchitectureDiscription(int architectureNo)\n    {\n      switch (architectureNo)\n      {\n        case 0: return \"x86\";\n        case 1: return \"MIPS\";\n        case 2: return \"Alpha\";\n        case 3: return \"PowerPC\";\n        case 6: return \"Itanium-based systems\";\n        case 9: return \"x64\";\n        default:\n          return \"Unkown\";\n      }\n    }\n",
+    "\"Select NumberOfLogicalProcessors, NumberOfProcessors from Win32_ComputerSystem\""
+  ],
+  "header": "Getting the No Of CPUs and Cores\nPosted by Shiv Kumar on 7th February, 2011\nCategorized Under: Programming C#\nTagged With: Asynchronous WMI \nCode Gem: Snippets \n  ",
+  "html": "<div class=\"articleText\">\n        <p>Using WMI (Windows Management Instrumentation) it is really simple to get the all kinds of weird and useful information about the hardware of a computer. Here I use <code>ManagementObjectSearcher</code> from the <code>System.Management</code> assembly/namespace to get at information on the CPU. In particular: </p> <ul> <li>No of Cores  </li><li>No of Logical Processors  </li><li>No of Physical Processors  </li><li>Hardware Bitness (32/64 bit etc.)  </li><li>CPU Architecture (x86, x64, Itanium etc.) </li></ul> <div class=\"panel code content/images/csharp.png\" title=\"WMI Code to Extract information in the CPU\" id=\"code_3321\"><div class=\"codeHeading\" style=\"background-image: url(/web/20230605173454/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">WMI Code to Extract information in the CPU</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> GetCpuInformation()\n    {\n      var noOfCores = 0;\n      <span class=\"kwrd\">foreach</span> (var item <span class=\"kwrd\">in</span> <span class=\"kwrd\">new</span> System.Management.ManagementObjectSearcher(<span class=\"str\">\"Select * from Win32_Processor\"</span>).Get())\n      {\n        noOfCores += <span class=\"kwrd\">int</span>.Parse(item[<span class=\"str\">\"NumberOfCores\"</span>].ToString());\n        Console.WriteLine(<span class=\"str\">\"Bitness: {0}\"</span>, item[<span class=\"str\">\"AddressWidth\"</span>]);\n        Console.WriteLine(<span class=\"str\">\"Architecture: {0}\"</span>, GetArchitectureDiscription(<span class=\"kwrd\">int</span>.Parse(item[<span class=\"str\">\"Architecture\"</span>].ToString())));\n      }\n\n      Console.WriteLine(<span class=\"str\">\"Number Of Cores: {0}\"</span>, noOfCores);\n\n      <span class=\"kwrd\">foreach</span> (var item <span class=\"kwrd\">in</span> <span class=\"kwrd\">new</span> System.Management.ManagementObjectSearcher(<span class=\"str\">\"Select * from Win32_ComputerSystem\"</span>).Get())\n      {\n        Console.WriteLine(<span class=\"str\">\"Number Of Logical Processors: {0} \"</span>, item[<span class=\"str\">\"NumberOfLogicalProcessors\"</span>]);\n        Console.WriteLine(<span class=\"str\">\"Number Of Physical Processors: {0} \"</span>, item[<span class=\"str\">\"NumberOfProcessors\"</span>]);\n      }      \n    }\n\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">string</span> GetArchitectureDiscription(<span class=\"kwrd\">int</span> architectureNo)\n    {\n      <span class=\"kwrd\">switch</span> (architectureNo)\n      {\n        <span class=\"kwrd\">case</span> 0: <span class=\"kwrd\">return</span> <span class=\"str\">\"x86\"</span>;\n        <span class=\"kwrd\">case</span> 1: <span class=\"kwrd\">return</span> <span class=\"str\">\"MIPS\"</span>;\n        <span class=\"kwrd\">case</span> 2: <span class=\"kwrd\">return</span> <span class=\"str\">\"Alpha\"</span>;\n        <span class=\"kwrd\">case</span> 3: <span class=\"kwrd\">return</span> <span class=\"str\">\"PowerPC\"</span>;\n        <span class=\"kwrd\">case</span> 6: <span class=\"kwrd\">return</span> <span class=\"str\">\"Itanium-based systems\"</span>;\n        <span class=\"kwrd\">case</span> 9: <span class=\"kwrd\">return</span> <span class=\"str\">\"x64\"</span>;\n        <span class=\"kwrd\">default</span>:\n          <span class=\"kwrd\">return</span> <span class=\"str\">\"Unkown\"</span>;\n      }\n    }\n</pre></div>&nbsp; <p>There is quite a bit more information available from both the <a title=\"WMI Win32_Processor Class\" href=\"https://web.archive.org/web/20230605173454/http://msdn.microsoft.com/en-us/library/aa394373(v=vs.85).aspx\" target=\"_blank\">Win32_Processor</a> WMI class as well as the <a title=\"WMI Win32_ComputerSystem Class\" href=\"https://web.archive.org/web/20230605173454/http://msdn.microsoft.com/en-us/library/aa394102(v=vs.85).aspx\" target=\"_blank\">Win32_ComputerSystem</a>, so you may want to check out the other properties/information these object provide.</p>\n<p>I use the number of cores information to (naïvely) determine how many threads I can/should spawn when I'm doing some multi-threaded work. Of course nowadays with availability of <code>Tasks</code> in .NET and <code>Parallel.For</code> etc. one should probably use facilities built into the .NET framework where possible.</p>\n<p>You can optimize the queries if you need to. For example, we're doing a select * from for each of queries you see in the code listing above. You could change that to return only the properties you're interested in. For example the seconds query above could be rewritten as</p><pre style=\"font-family: consolas\"><span style=\"color: #a31515\">\"Select NumberOfLogicalProcessors, NumberOfProcessors from Win32_ComputerSystem\"</span><br></pre>\n<p>&nbsp;</p>\n<p>The rest of the code will remain the same, including the way in which the properties are extracted from the result.</p>  \n        </div>",
+  "images": [],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "C#",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/category/programming/c/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20230605173454/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2fgetting-the-no-of-cpus-and-cores%2f&text=Getting+the+No+Of+CPUs+and+Cores"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20230605173454/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2fgetting-the-no-of-cpus-and-cores%2f&t=Getting+the+No+Of+CPUs+and+Cores"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20230605173454/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2fgetting-the-no-of-cpus-and-cores%2f&text=Getting+the+No+Of+CPUs+and+Cores"
+    },
+    {
+      "text": "Win32_Processor",
+      "url": "https://web.archive.org/web/20230605173454/http://msdn.microsoft.com/en-us/library/aa394373(v=vs.85).aspx"
+    },
+    {
+      "text": "Win32_ComputerSystem",
+      "url": "https://web.archive.org/web/20230605173454/http://msdn.microsoft.com/en-us/library/aa394102(v=vs.85).aspx"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "Getting the No Of CPUs and Cores",
+  "url": "https://web.archive.org/web/20230605173454/http://www.matlus.com/getting-the-no-of-cpus-and-cores/"
+}

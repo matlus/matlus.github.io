@@ -1,0 +1,93 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Finding links on a Web page</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>Finding links on a Web page</h1><p class="recovery">Finding links on a Web page<br>Posted by Shiv Kumar on 31st August, 2010<br>Categorized Under: Programming C#<br>Tagged With: Parsing Html <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20240414164426/http://www.matlus.com/finding-links-on-a-web-page/">this Wayback capture</a>.</p><div class="articleText">
+        Let's say you want to either find all links on a certain web page or for a given set of websites, you want to know if they link back to your website. This post is about the later, but essentially you're finding all the links on a website first and then filtering the ones you want. I had a specific need and that was to find figure out which of our registered members was using WordPress for their blog/website, because we want to let them know of WordPress plug-in or updates to plug-ins that will be of interest to them. Since the registration info for each of our members contains the url to their website, we have that info in the database, so it was a matter of iterating over each of them call the code and class presented here. In the real system, this is multi-threaded since we're scanning hundreds of thousands of websites for this info every once in a while. But since something like this will probably function as a scheduled job it makes no difference (besides finishing faster, but taxing the server a lot more too). I use <code><a href="https://web.archive.org/web/20240414164426/http://htmlagilitypack.codeplex.com/" target="_blank">HtmlAgilityPack</a></code> as the primary html parser. It is truly an awesome html parser and I recommend it highly.  <div class="panel code content/images/csharp.png" title="Console App showing how the LinkFinder class is used" id="code_97289"><div class="codeHeading" style="background-image: url(/web/20240414164426/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Console App showing how the LinkFinder class is used</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode"><span class="kwrd">using</span> System;
+<span class="kwrd">using</span> System.Collections.Generic;
+<span class="kwrd">using</span> System.Linq;
+<span class="kwrd">using</span> System.Text;
+<span class="kwrd">using</span> HtmlAgilityPack;
+<span class="kwrd">using</span> System.Net;
+
+<span class="kwrd">namespace</span> FindingLinkToSpecificDomainOnAWebsite
+{
+  <span class="kwrd">class</span> Program
+  {
+    <span class="kwrd">static</span> <span class="kwrd">void</span> Main(<span class="kwrd">string</span>[] args)
+    {
+      <span class="kwrd">string</span> webpageUrl = <span class="str">"http://matlus.com"</span>;
+      <span class="kwrd">string</span> targetDomain = <span class="str">"exposureroom.com"</span>;
+
+      var linkFinder = <span class="kwrd">new</span> LinkFinder();
+
+      var links = linkFinder.FindLinksToDomainOnWebPage(webpageUrl, targetDomain);
+      <span class="kwrd">foreach</span> (var link <span class="kwrd">in</span> links)
+        Console.WriteLine(link);
+
+      Console.ReadLine();
+    }
+  }
+}
+</pre></div>The bulk of the work is done in the <code>LinkFinder</code> class presented below. 
+<div class="panel code content/images/csharp.png" title="LinkFinder class" id="code_22949"><div class="codeHeading" style="background-image: url(/web/20240414164426/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">LinkFinder class</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode"><span class="kwrd">using</span> System.Collections.Generic;
+<span class="kwrd">using</span> System.Text;
+<span class="kwrd">using</span> HtmlAgilityPack;
+<span class="kwrd">using</span> System.Net;
+
+
+<span class="kwrd">namespace</span> FindingLinkToSpecificDomainOnAWebsite
+{
+  <span class="kwrd">public</span> <span class="kwrd">class</span> LinkFinder
+  {
+    <span class="kwrd">public</span> IEnumerable&lt;AnchorTag&gt; FindLinksToDomainOnWebPage(<span class="kwrd">string</span> webpageUrl, <span class="kwrd">string</span> targetDomain)
+    {
+      HtmlDocument htmlDocument = <span class="kwrd">new</span> HtmlDocument();
+      htmlDocument.LoadHtml(GetWebsiteHtml(webpageUrl));
+      var anchorTags = htmlDocument.DocumentNode.SelectNodes(<span class="str">"//a"</span>);
+
+      <span class="kwrd">foreach</span> (var tag <span class="kwrd">in</span> anchorTags)
+      {
+        var hrefValue = tag.GetAttributeValue(<span class="str">"href"</span>, <span class="str">""</span>);
+        var tempHref = hrefValue.ToUpper();
+        var tempTargetDomain = targetDomain.ToUpper();
+        <span class="kwrd">if</span> (tempHref.Contains(tempTargetDomain))
+        {
+          var anchorTag = <span class="kwrd">new</span> AnchorTag();
+          <span class="kwrd">foreach</span> (var attribute <span class="kwrd">in</span> tag.Attributes)
+            anchorTag.Attributes.Add(attribute.Name, attribute.Value);
+
+          anchorTag.InnerText = tag.InnerText;
+          <span class="kwrd">yield</span> <span class="kwrd">return</span> anchorTag;
+        }
+      }
+    }
+
+    <span class="kwrd">private</span> <span class="kwrd">string</span> GetWebsiteHtml(<span class="kwrd">string</span> webpageUrl)
+    {
+      WebClient webClient = <span class="kwrd">new</span> WebClient();
+      <span class="kwrd">byte</span>[] buffer = webClient.DownloadData(webpageUrl);
+      <span class="kwrd">return</span> Encoding.UTF8.GetString(buffer);
+    }
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">class</span> AnchorTag
+  {
+    <span class="kwrd">public</span> Dictionary&lt;<span class="kwrd">string</span>, <span class="kwrd">string</span>&gt; Attributes { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> <span class="kwrd">string</span> InnerText { get; set; }
+
+    <span class="kwrd">public</span> AnchorTag()
+    {
+      Attributes = <span class="kwrd">new</span> Dictionary&lt;<span class="kwrd">string</span>, <span class="kwrd">string</span>&gt;();
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">override</span> <span class="kwrd">string</span> ToString()
+    {
+      StringBuilder sb = <span class="kwrd">new</span> StringBuilder();
+      sb.AppendLine(<span class="str">"InnerText: "</span> + InnerText);
+      sb.AppendLine(<span class="str">"Attributes:"</span>);
+      <span class="kwrd">foreach</span> (var attribute <span class="kwrd">in</span> Attributes)
+        sb.AppendLine(<span class="str">"\t"</span> + attribute.Key + <span class="str">"="</span> + attribute.Value);
+      <span class="kwrd">return</span> sb.ToString();
+    }
+  }
+}
+</pre></div>  
+        </div></body></html>

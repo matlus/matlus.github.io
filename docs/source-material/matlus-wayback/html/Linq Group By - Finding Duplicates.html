@@ -1,0 +1,48 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Linq Group By - Finding Duplicates</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>Linq Group By - Finding Duplicates</h1><p class="recovery">Linq Group By - Finding Duplicates<br>Posted by Shiv Kumar on 2nd February, 2011<br>Categorized Under: Programming C#<br>Tagged With: Linq <br>Code Gem: Snippets <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20240414171534/http://www.matlus.com/linq-group-by-finding-duplicates/">this Wayback capture</a>.</p><div class="articleText">
+        <p>This post is a little snippet on using Linq to find duplicates in a list of objects where a specific property of the object is used to find the duplicates. In this particular example, the objects are <code>Lessons</code> and in addition to other properties each lesson has a <code>AddedDate</code> property and what we need to do is find all lessons where the <code>AddedDate</code> is a duplicate of another lesson.</p> <p>In order to solve this we use <code>Group By</code> and we group by the <code>AddedDate</code> property and if any group has a count greater than 1, it is a duplicate and we need to get those. For test purposes, I've defined a variable called <code>testDateAndTime</code> that is assigned to the current DateTime. And then at the time of initializing the Lesson instances, I've assigned two lessons the same date and time using this variable. The two lessons (as shown in the code listing below) are:</p> <ol> <li>Preposition / Phrasal Verb  </li><li>German Verbs in the Present Tense</li></ol> <div class="panel code content/images/csharp.png" title="Linq - Group By Finding Duplicates" id="code_45210"><div class="codeHeading" style="background-image: url(/web/20240414171534/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Linq - Group By Finding Duplicates</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">  <span class="kwrd">class</span> Program
+  {
+    <span class="kwrd">static</span> <span class="kwrd">void</span> Main(<span class="kwrd">string</span>[] args)
+    {
+      var testDateAndTime = DateTime.Now;
+
+      var lessons = <span class="kwrd">new</span> Lesson[] {
+        <span class="kwrd">new</span> Lesson { Title=<span class="str">"Verb Tense"</span>, Subject=<span class="str">"English"</span>, AddedDate = DateTime.Now.AddMinutes(1)},
+        <span class="kwrd">new</span> Lesson { Title=<span class="str">"Conditionals"</span>, Subject=<span class="str">"English"</span>, AddedDate = DateTime.Now.AddDays(2)},
+        <span class="kwrd">new</span> Lesson { Title=<span class="str">"Gerunds and Infinitives"</span>, Subject=<span class="str">"English"</span>, AddedDate = DateTime.Now.AddDays(3)},
+        <span class="kwrd">new</span> Lesson { Title=<span class="str">"Vocabulary"</span>, Subject=<span class="str">"English"</span>, AddedDate = DateTime.Now.AddDays(4)},
+        <span class="kwrd">new</span> Lesson { Title=<span class="str">"Preposition / Phrasal Verb"</span>, Subject=<span class="str">"English"</span>, AddedDate = testDateAndTime},
+        <span class="kwrd">new</span> Lesson { Title=<span class="str">"Greetings"</span>, Subject=<span class="str">"German"</span>, AddedDate = DateTime.Now.AddMinutes(5)},
+        <span class="kwrd">new</span> Lesson { Title=<span class="str">"Personal pronouns"</span>, Subject=<span class="str">"German"</span>, AddedDate = DateTime.Now.AddDays(6)},
+        <span class="kwrd">new</span> Lesson { Title=<span class="str">"Introduction to nouns and gender"</span>, Subject=<span class="str">"German"</span>, AddedDate = DateTime.Now.AddDays(7)},
+        <span class="kwrd">new</span> Lesson { Title=<span class="str">"Two important verbs"</span>, Subject=<span class="str">"German"</span>, AddedDate = DateTime.Now.AddDays(8)},
+        <span class="kwrd">new</span> Lesson { Title=<span class="str">"German Verbs in the Present Tense"</span>, Subject=<span class="str">"German"</span>, AddedDate = testDateAndTime}
+      };
+
+      var groupedLessons = from l <span class="kwrd">in</span> lessons
+                           group l by l.AddedDate into g
+                           <span class="kwrd">where</span> g.Count() &gt; 1
+                           select <span class="kwrd">new</span> { AddedDate = g.Key, Lessons = g };
+
+      <span class="kwrd">foreach</span> (var k <span class="kwrd">in</span> groupedLessons)
+      {
+        Console.WriteLine(<span class="str">"Added Date: "</span> + k.AddedDate);
+        <span class="kwrd">foreach</span> (var l <span class="kwrd">in</span> k.Lessons)
+        {
+          Console.WriteLine(<span class="str">"\t Lesson Title: "</span> + l.Title);
+        }
+      }
+    }
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">class</span> Lesson
+  {
+    <span class="kwrd">public</span> <span class="kwrd">string</span> Title { get; set; }
+    <span class="kwrd">public</span> <span class="kwrd">string</span> Subject { get; set; }
+    <span class="kwrd">public</span> DateTime AddedDate { get; set; }
+  }</pre></div>
+<p>&nbsp;</p>
+<p>If you run this program you'll see the following output, which is what you'd expect.</p>
+<div class="panel"><pre>Added Date: 2/2/2011 8:08:59 AM<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lesson Title: Preposition / Phrasal Verb<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lesson Title: German Verbs in the Present Tense
+</pre></div>  
+        </div></body></html>

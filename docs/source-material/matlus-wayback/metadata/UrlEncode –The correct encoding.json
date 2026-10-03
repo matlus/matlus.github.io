@@ -1,0 +1,412 @@
+{
+  "body": "While developing the OAuth C# Lubrary I discovered that the HttpUtility class that's available in the System.Web assembly in .NET (in particular the HttpUtility.UrlEncode() method) doesn't quite do it correctly. So I had to develop my own method that did the encoding correctly. I used this wiki page as a reference.\n\nNotice the UrlEncode() method in the code listing below, that's the method I present in this post. The outputs of the HttpUtility.UrlEncode() method any my UrlEncode() method are listed below such that you can compare the two outputs.\n\nUrlEncoding a string in C# the correct way\n  class Program\n  {\n    private readonly static string unreservedCharacters = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~\";\n\n    static void Main(string[] args)\n    {\n      var url = \"!*'();:@&=+$,/?#[] <>~.\\\"{}|\\\\-`_^%\";\n\n      Console.WriteLine(\"Using HttpUtility: \" + HttpUtility.UrlEncode(url));\n      Console.WriteLine(\"Using UrlEncode:   \" + UrlEncode(url));\n      Console.WriteLine(HttpUtility.UrlDecode(UrlEncode(url)));\n\n      Console.ReadLine();\n    }\n\n    /// <summary>\n    /// This method is the correct implementation of UrlEncode.\n    /// Given a string, it returns a UrlEncoded version on the string.\n    /// </summary>\n    /// <param name=\"value\">the string/url to be UrlEncoded</param>\n    /// <returns>The UrlEncoded string</returns>\n    public static string UrlEncode(string value)\n    {\n      if (String.IsNullOrEmpty(value))\n        return String.Empty;\n\n      var sb = new StringBuilder();\n\n      foreach (char @char in value)\n      {\n        if (unreservedCharacters.IndexOf(@char) != -1)\n          sb.Append(@char);\n        else\n          sb.AppendFormat(\"%{0:x2}\", (int)@char);\n      }\n      return sb.ToString();\n    }\n  }\n\n\n \n\n \t!\t*\t'\t(\t)\t;\t:\t@\t&\t=\t+\t$\t,\t/\t?\t#\t[\t]\nHttpUtility\n\t!\t*\t%27\t(\t)\t%3b\t%3a\t%40\t%26\t%3d\t%2b\t%24\t%2c\t%2f\t%3f\t%23\t%5b\t%5d\nUrlEncode\t%21\t%2a\t%27\t%28\t%29\t%3b\t%3a\t%40\t%26\t%3d\t%2b\t%24\t%2c\t%2f\t%3f\t%23\t%5b\t%5d\n\n \n\n \t<\t>\t~\t.\t\"\t{\t}\t|\t\\\t-\t`\t_\t^\t%\tspace\nHttpUtility\t%3c\t%3e\t%7e\t.\t%22\t%7b\t%7d\t%7c\t%5c\t-\t%60\t_\t%5e\t%25\t+\nUrlEncode\t%3c\t%3e\t~\t.\t%22\t%7b\t%7d\t%7c\t%5c\t-\t%60\t_\t%5e\t%25\t%20",
+  "bodyLinks": [
+    {
+      "text": "OAuth C# Lubrary",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/oauth-c-library/"
+    },
+    {
+      "text": "this wiki page",
+      "url": "https://web.archive.org/web/20230331000205/http://en.wikipedia.org/wiki/Percent-encoding"
+    }
+  ],
+  "code": [
+    "  class Program\n  {\n    private readonly static string unreservedCharacters = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~\";\n\n    static void Main(string[] args)\n    {\n      var url = \"!*'();:@&=+$,/?#[] <>~.\\\"{}|\\\\-`_^%\";\n\n      Console.WriteLine(\"Using HttpUtility: \" + HttpUtility.UrlEncode(url));\n      Console.WriteLine(\"Using UrlEncode:   \" + UrlEncode(url));\n      Console.WriteLine(HttpUtility.UrlDecode(UrlEncode(url)));\n\n      Console.ReadLine();\n    }\n\n    /// <summary>\n    /// This method is the correct implementation of UrlEncode.\n    /// Given a string, it returns a UrlEncoded version on the string.\n    /// </summary>\n    /// <param name=\"value\">the string/url to be UrlEncoded</param>\n    /// <returns>The UrlEncoded string</returns>\n    public static string UrlEncode(string value)\n    {\n      if (String.IsNullOrEmpty(value))\n        return String.Empty;\n\n      var sb = new StringBuilder();\n\n      foreach (char @char in value)\n      {\n        if (unreservedCharacters.IndexOf(@char) != -1)\n          sb.Append(@char);\n        else\n          sb.AppendFormat(\"%{0:x2}\", (int)@char);\n      }\n      return sb.ToString();\n    }\n  }\n"
+  ],
+  "header": "UrlEncode –The correct encoding\nPosted by Shiv Kumar on 3rd February, 2011\nCategorized Under: Programming C#\nTagged With: Http \nCode Gem: Snippets \n  ",
+  "html": "<div class=\"articleText\">\n        <p>While developing the <a href=\"https://web.archive.org/web/20230331000205/http://www.matlus.com/oauth-c-library/\">OAuth C# Lubrary</a> I discovered that the <code>HttpUtility</code> class that's available in the <code>System.Web</code> assembly in .NET (in particular the <code>HttpUtility.UrlEncode()</code> method) doesn't quite do it correctly. So I had to develop my own method that did the encoding correctly. I used <a href=\"https://web.archive.org/web/20230331000205/http://en.wikipedia.org/wiki/Percent-encoding\">this wiki page</a> as a reference.</p> <p>Notice the <code>UrlEncode()</code> method in the code listing below, that's the method I present in this post. The outputs of the <code>HttpUtility.UrlEncode()</code> method any my <code>UrlEncode()</code> method are listed below such that you can compare the two outputs.</p> <div class=\"panel code content/images/csharp.png\" title=\"UrlEncoding a string in C# the correct way\" id=\"code_34627\"><div class=\"codeHeading\" style=\"background-image: url(/web/20230331000205/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">UrlEncoding a string in C# the correct way</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">  <span class=\"kwrd\">class</span> Program\n  {\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">readonly</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">string</span> unreservedCharacters = <span class=\"str\">\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~\"</span>;\n\n    <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> Main(<span class=\"kwrd\">string</span>[] args)\n    {\n      var url = <span class=\"str\">\"!*'();:@&amp;=+$,/?#[] &lt;&gt;~.\\\"{}|\\\\-`_^%\"</span>;\n\n      Console.WriteLine(<span class=\"str\">\"Using HttpUtility: \"</span> + HttpUtility.UrlEncode(url));\n      Console.WriteLine(<span class=\"str\">\"Using UrlEncode:   \"</span> + UrlEncode(url));\n      Console.WriteLine(HttpUtility.UrlDecode(UrlEncode(url)));\n\n      Console.ReadLine();\n    }\n\n    <span class=\"rem\">/// &lt;summary&gt;</span>\n    <span class=\"rem\">/// This method is the correct implementation of UrlEncode.</span>\n    <span class=\"rem\">/// Given a string, it returns a UrlEncoded version on the string.</span>\n    <span class=\"rem\">/// &lt;/summary&gt;</span>\n    <span class=\"rem\">/// &lt;param name=\"value\"&gt;the string/url to be UrlEncoded&lt;/param&gt;</span>\n    <span class=\"rem\">/// &lt;returns&gt;The UrlEncoded string&lt;/returns&gt;</span>\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">string</span> UrlEncode(<span class=\"kwrd\">string</span> <span class=\"kwrd\">value</span>)\n    {\n      <span class=\"kwrd\">if</span> (String.IsNullOrEmpty(<span class=\"kwrd\">value</span>))\n        <span class=\"kwrd\">return</span> String.Empty;\n\n      var sb = <span class=\"kwrd\">new</span> StringBuilder();\n\n      <span class=\"kwrd\">foreach</span> (<span class=\"kwrd\">char</span> @<span class=\"kwrd\">char</span> <span class=\"kwrd\">in</span> <span class=\"kwrd\">value</span>)\n      {\n        <span class=\"kwrd\">if</span> (unreservedCharacters.IndexOf(@<span class=\"kwrd\">char</span>) != -1)\n          sb.Append(@<span class=\"kwrd\">char</span>);\n        <span class=\"kwrd\">else</span>\n          sb.AppendFormat(<span class=\"str\">\"%{0:x2}\"</span>, (<span class=\"kwrd\">int</span>)@<span class=\"kwrd\">char</span>);\n      }\n      <span class=\"kwrd\">return</span> sb.ToString();\n    }\n  }\n</pre></div>\n<p>&nbsp;</p>\n<table style=\"border-bottom: #ccc 1px solid; text-align: center; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" border=\"0\" cellspacing=\"3\" cellpadding=\"3\">\n<tbody>\n<tr>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">&nbsp;</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">!</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">*</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">'</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">(</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">)</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">;</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">:</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">@</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">&amp;</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">=</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">+</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">$</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">,</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">/</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">?</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">#</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">[</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">]</td></tr>\n<tr>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">HttpUtility<br></td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">!</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">*</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%27</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">(</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">)</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%3b</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%3a</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%40</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%26</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%3d</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%2b</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%24</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%2c</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%2f</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%3f</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%23</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%5b</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%5d</td></tr>\n<tr>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">UrlEncode</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%21</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%2a</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%27</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%28</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%29</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%3b</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%3a</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%40</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%26</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%3d</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%2b</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%24</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%2c</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%2f</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%3f</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%23</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%5b</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%5d</td></tr></tbody></table>\n<p>&nbsp;</p>\n<table style=\"border-bottom: #ccc 1px solid; text-align: center; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" border=\"0\" cellspacing=\"3\" cellpadding=\"3\">\n<tbody>\n<tr>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">&nbsp;</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">&lt;</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">&gt;</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">~</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">.</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">\"</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">{</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">}</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">|</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">\\</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">-</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">`</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">_</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">^</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">space</td></tr>\n<tr>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">HttpUtility</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%3c</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%3e</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%7e</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">.</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%22</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%7b</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%7d</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%7c</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%5c</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">-</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%60</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">_</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%5e</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%25</td>\n<td valign=\"top\">+</td></tr>\n<tr>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">UrlEncode</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%3c</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%3e</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">~</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">.</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%22</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%7b</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%7d</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%7c</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%5c</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">-</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%60</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">_</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%5e</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%25</td>\n<td style=\"border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid\" valign=\"top\">%20</td></tr></tbody></table>  \n        </div>",
+  "images": [],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "C#",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/category/programming/c/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20230331000205/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2furlencode-the-correct-encoding%2f&text=UrlEncode+%e2%80%93The+correct+encoding"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20230331000205/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2furlencode-the-correct-encoding%2f&t=UrlEncode+%e2%80%93The+correct+encoding"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20230331000205/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2furlencode-the-correct-encoding%2f&text=UrlEncode+%e2%80%93The+correct+encoding"
+    },
+    {
+      "text": "OAuth C# Lubrary",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/oauth-c-library/"
+    },
+    {
+      "text": "this wiki page",
+      "url": "https://web.archive.org/web/20230331000205/http://en.wikipedia.org/wiki/Percent-encoding"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "UrlEncode –The correct encoding",
+  "url": "https://web.archive.org/web/20230331000205/http://www.matlus.com/urlencode-the-correct-encoding/"
+}

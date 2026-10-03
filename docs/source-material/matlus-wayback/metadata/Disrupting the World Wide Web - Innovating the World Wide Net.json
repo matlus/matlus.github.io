@@ -1,0 +1,404 @@
+{
+  "body": "We’ve been in the World Wide Web \"phase” for a little over 2 decades. A lot has happened and a lot has changed in this period. This post is not about what has happened but rather what will, or needs to happen next.\n\nIn my mind it is inevitable and as an entrepreneur or business if you want to stay ahead of the “S” curve, this is the time to get cracking. The World Wide Net is about getting out of and beyond the box.\n\nBut first let me level-set a couple of terms for this discussion.\nInternet: Internet is a short form for the word Internetwork. It is essentially an infrastructure comprised of hardware communication devices providing connectivity between computers.\n\nWorld Wide Web: The World Wide Web is web of interconnected documents and application that use the Internet as a transport medium. As a visual, what you see depicted in the image below is the current state.\n\nYou have:\n\nComputers connected via the Internet sharing documents and applications\nHumans primarily living in a virtual space\n\n\nThere are a few problems as I see it, with this status. Humans need more than “virtual”, we need to be able to share and feel more than we currently can. Essentially, we need to get out of and beyond the box. How is this going to happen and what is it going to take?\n\nA Browser as we know it today is not going to cut it, for many reasons. Browsers confine us even more to the “box”.\n\nMobile phones and devices (Android and iPhone/iPad) have taken a step in the right direction and that is, native application (available from the store) that have access to hardware on the device such as the gyro, accelerometer, GPS etc. These differences make the big difference in our experience between what we can do over the Internet with our PCs and mobile devices. Gaming consoles such as the XBOX and Play Station provide other capabilities such as high performance HD graphics, and have bridged a gap by bringing the Internet to these devices.\n\nWorld Wide Net is more than the two (mobile phones and gaming consoles) combined. First Gaming consoles and PCs will need to merge and the browser needs to go. Don’t get me wrong, I love the direction browsers are moving in and I spend virtually all of my time working with browsers. As a result I feel the constraints more so, I guess. Browsers provide us with a sandbox and that’s important but we need more then what this sandbox provides us.\n\nSo imagine a world where your PC has all of the capabilities of a PC and a gaming console and in addition the operating system rather than the browser provides the sandbox. The sandbox the operating system provides is similar to what mobile devices provide for applications downloaded from the app store. When applications need access to certain hardware (like the GPS system) they ask for permission.\n\nBut beyond the box goes further than the box (obviously). So the World Wide Net is about having access to hardware devices that may be connected directly to your PC via a USB port or serial port or via your home network. The devices I’m talking about don’t exist yet (for the most part). Some are around the corner but most of them are yet to be dreamed up. Devices that are around the corner are devices such as networked refrigerators, microwave ovens, music system etc..\n\nThese devices need to be programmable via an API and not just networked, such that any software engineer can program a certain class of device using this API.\n\nTalking to peripheral and networked devices is already possible today and has been for many years now, but it requires native applications (written in C, C++, C#, Java etc.). User interfaces are going to be more “game like” than what we have today. All of this will require an operating system level sandbox rather than a browser based sandbox and the capabilities of programming languages such as those mentioned above, rather than HTML, SVG and JavaScript.\n\nThe image below shows you my vision of the World Wide Net. The Internet is still the transport/communications layer, but we move from the World Wide Web, to the World Wide Net, of connections out of and beyond the box, more \"real\". Where people you interact with on the World Wide Net can control devices connected to your computer via applications that run in the sandbox of the operating system.\n\nBeing an electronics engineer by qualification (It’s a hobby now), I can dream up a number of devices that I can build and hook up to my computer and share with friends and family and interact and socialize with them in the “real” world, beyond the box. But as I said, most devices (that I’m talking about) don’t exist yet. They are a new breed of devices we don’t have a need for today, primarily because we don’t have the means to use them.\n\nWe’ll still have browsers and a need for them in the era of the World Wide Net because we'll continue to share \"documents\", we just need go out of and beyond the box to share more the documents.",
+  "bodyLinks": [],
+  "code": [],
+  "header": "Disrupting the World Wide Web - Innovating the World Wide Net\nPosted by Shiv Kumar on 21st March, 2011\nCategorized Under: Opinion Mine\nTagged With: Devices Future \n  ",
+  "html": "<div class=\"articleText\">\n        <p>We’ve been in the World Wide Web \"phase” for a little over 2 decades. A lot has happened and a lot has changed in this period. This post is not about what has happened but rather what will, or needs to happen next.</p> <p>In my mind it is inevitable and as an entrepreneur or business if you want to stay ahead of the “S” curve, this is the time to get cracking. The <strong>World Wide Net</strong> is about <strong><em>getting out of and beyond the box</em></strong>.</p> <p>But first let me level-set a couple of terms for this discussion.<br><strong><em>Internet</em></strong>: Internet is a short form for the word Internetwork. It is essentially an infrastructure comprised of hardware communication devices providing connectivity between computers.</p> <p><strong><em>World Wide Web</em></strong>: The World Wide Web is web of interconnected documents and application that use the Internet as a transport medium. As a visual, what you see depicted in the image below is the current state.</p> <p><img style=\"background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"WorldWideWeb\" border=\"0\" alt=\"WorldWideWeb\" src=\"https://web.archive.org/web/20240712215900im_/http://www.matlus.com/content/uploads/2011/03/WorldWideWeb_9dab62e5-b2a2-4e04-8688-c9dbd85e95e1.jpg\" width=\"640\" height=\"360\"></p> <p>You have:</p> <ul> <li>Computers connected via the Internet sharing documents and applications  </li><li>Humans primarily living in a virtual space<br></li></ul> <p>There are a few problems as I see it, with this status. Humans need more than “virtual”, we need to be able to share and feel more than we currently can. Essentially, we need to get out of and beyond the box. How is this going to happen and what is it going to take?</p> <p>A Browser as we know it today is not going to cut it, for many reasons. Browsers confine us even more to the “box”.</p> <p>Mobile phones and devices (Android and iPhone/iPad) have taken a step in the right direction and that is, native application (available from the store) that have access to hardware on the device such as the gyro, accelerometer, GPS etc. These differences make the big difference in our experience between what we can do over the Internet with our PCs and mobile devices. Gaming consoles such as the XBOX and Play Station provide other capabilities such as high performance HD graphics, and have bridged a gap by bringing the Internet to these devices.</p> <p>World Wide Net is more than the two (mobile phones and gaming consoles) combined. First Gaming consoles and PCs will need to merge and the browser needs to go. Don’t get me wrong, I love the direction browsers are moving in and I spend virtually all of my time working with browsers. As a result I feel the constraints more so, I guess. Browsers provide us with a sandbox and that’s important but we need more then what this sandbox provides us.</p> <p>So imagine a world where your PC has all of the capabilities of a PC and a gaming console and in addition the operating system rather than the browser provides the sandbox. The sandbox the operating system provides is similar to what mobile devices provide for applications downloaded from the app store. When applications need access to certain hardware (like the GPS system) they ask for permission.</p> <p>But <em><strong>beyond the box</strong></em> goes further than the box (obviously). So the World Wide Net is about having access to hardware devices that may be connected directly to your PC via a USB port or serial port or via your home network. The devices I’m talking about don’t exist yet (for the most part). Some are around the corner but most of them are yet to be dreamed up. Devices that are around the corner are devices such as networked refrigerators, microwave ovens, music system etc..</p> <p>These devices need to be programmable via an API and not just networked, such that any software engineer can program a certain class of device using this API.</p> <p>Talking to peripheral and networked devices is already possible today and has been for many years now, but it requires native applications (written in C, C++, C#, Java etc.). User interfaces are going to be more “game like” than what we have today. All of this will require an operating system level sandbox rather than a browser based sandbox and the capabilities of programming languages such as those mentioned above, rather than HTML, SVG and JavaScript.</p> <p>The image below shows you my vision of the World Wide Net. The Internet is still the transport/communications layer, but we move from the World Wide Web, to the World Wide Net, of connections out of and beyond the box, more \"real\". Where people you interact with on the World Wide Net can control devices connected to your computer via applications that run in the sandbox of the operating system.</p> <p><img style=\"background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"WorldWideNet\" border=\"0\" alt=\"WorldWideNet\" src=\"https://web.archive.org/web/20240712215900im_/http://www.matlus.com/content/uploads/2011/03/WorldWideNet_6204a363-20de-4ae8-a193-5ecfd00ef01b.jpg\" width=\"640\" height=\"640\"></p> <p>Being an electronics engineer by qualification (It’s a hobby now), I can dream up a number of devices that I can build and hook up to my computer and share with friends and family and interact and socialize with them in the “real” world, beyond the box. But as I said, most devices (that I’m talking about) don’t exist yet. They are a new breed of devices we don’t have a need for today, primarily because we don’t have the means to use them.</p> <p>We’ll still have browsers and a need for them in the era of the World Wide Net because we'll continue to share \"documents\", we just need go out of and beyond the box to share more the documents.</p>  \n        </div>",
+  "images": [
+    {
+      "alt": "WorldWideWeb",
+      "loaded": false,
+      "url": "https://web.archive.org/web/20240712215900im_/http://www.matlus.com/content/uploads/2011/03/WorldWideWeb_9dab62e5-b2a2-4e04-8688-c9dbd85e95e1.jpg"
+    },
+    {
+      "alt": "WorldWideNet",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240712215900im_/http://www.matlus.com/content/uploads/2011/03/WorldWideNet_6204a363-20de-4ae8-a193-5ecfd00ef01b.jpg"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240712215900/http://www.matlus.com/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/category/opinion/"
+    },
+    {
+      "text": "Mine",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/category/opinion/mine/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/devices/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/future/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240712215900/https://twitter.com/share?url=http%3a%2f%2fmatlus.com%2finnovating-the-world-wide-net%2f&text=Disrupting+the+World+Wide+Web+-+Innovating+the+World+Wide+Net"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240712215900/http://www.facebook.com/sharer.php?u=http%3a%2f%2fmatlus.com%2finnovating-the-world-wide-net%2f&t=Disrupting+the+World+Wide+Web+-+Innovating+the+World+Wide+Net"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240712215900/https://plus.google.com/share?url=http%3a%2f%2fmatlus.com%2finnovating-the-world-wide-net%2f&text=Disrupting+the+World+Wide+Web+-+Innovating+the+World+Wide+Net"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240712215900/http://matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240712215900/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "Disrupting the World Wide Web - Innovating the World Wide Net",
+  "url": "https://web.archive.org/web/20240712215900/http://matlus.com/innovating-the-world-wide-net/"
+}

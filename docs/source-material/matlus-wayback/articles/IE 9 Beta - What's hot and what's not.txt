@@ -1,0 +1,76 @@
+IE 9 Beta - What's hot and what's not
+=====================================
+
+IE 9 Beta - What's hot and what's not
+Posted by Shiv Kumar on 16th September, 2010
+Categorized Under: Opinion Mine
+Tagged With: IE9 Beta 
+  
+
+Original URL: http://matlus.com/ie-9-beta-whats-hot-and-whats-not/
+Wayback capture: https://web.archive.org/web/20240414180627/http://www.matlus.com/ie-9-beta-whats-hot-and-whats-not/
+
+Microsoft have finally released the long awaited (first) beta of their new IE 9. I think it is a tremendous new version that has made some huge strides in the right direction.
+Two aspects really shine
+The incredible performance improvements in all aspects of the browser
+
+WebKit SunSpider JavaScript Benchmark
+
+Hardware-accelerated SVG, Canvas, Video and Audio
+
+Standards compliance
+
+The Web Standards Project’s Acid3 Test
+
+Promise of "Same Markup" (meaning if it works in other standards compliant browsers it will work in IE 9.
+
+Having done some extensive testing (Html 5 Video and Flash) on the Html 5 video aspect myself, I can say with confidence that IE 9's implementation of the Html 5 <video> element in terms of the playback performance of really high quality video is remarkable. The same markup promise also seems to hold good for the most part. There are a few odds and ends that still need to be cleaned up but it is a really pleasure to be able to write html that works say in Chrome and Firefox and it just works in IE.
+Concentrating their efforts in the correct areas
+It seems that the IE team looked at the usage statics in the way people use a browser and broke them down by tasks in the following categories Interaction with site content (suck a clicking on links etc.) Navigation (including to other websites) Settings And what they found is that: 64% of the operations were related to Interaction with Site content 36% to navigation (navigating to sites, switching sites using the address bar and tabs 0.4% to settings. Based on these finding, they've concentrated on aspects of the new browser's UI such that the browsing experience will be much enhanced, shifting your attention to the content rather than browser and providing ways to navigate quickly.
+IE 9 needs some improvements
+There is no doubt that the IE 9 team has done a fantastic job on IE 9 so far. However, there are some aspects that I think need some improvements, especially in the UI.
+Tabs
+
+I think the tabs need to have a rounded edge to them like Chrome, because that allows for some visual separation between tabs. As they are right now things look a bit crowded.
+
+I think the tabs need to move up more (again like Chrome) and that each tab should have it's own address bar so one can see the complete url of the site/page. This aspect is important not only to the typical person browsing the Internet but also the savvy who examine the url for various reasons.
+
+The new tab button should have some icon rather than a blank button so you don't think you're seeing a partial tab (when you have a lot of tabs open it gets confusing) but you know you can open a new tab by clicking on it before you move your mouse over it.
+
+I'd like to see the refresh button and forward and back button on the tab I'm on rather than in a common area.
+
+The close icon for a tab should be a bit more prominent and should be available even if the tab is not the active tab. Thus allowing me to close a tab without having to switch to it first only to close it.
+
+Address Bar
+
+I'd like to see an address bar on each tab so not only is it clear what I'm seeing (and in the tab I'm on) but I can also see the complete URL rather than a small portion of the URL.
+
+I think they can get rid of the compatibility view icon from the address bar
+
+Get rid of the refresh button from the address bar
+
+Settings, Favorties & Home and other icons
+
+These icons should move higher, in-line with the minimize, maximize and close buttons. leaving the lower area for tabs.
+
+All icons should be consistent. So currently we have the Home, favorites and settings icons that are colorless or transparent and taken on the color of the site (if you've pinned it to your taskbar. The "add to favorites" icon, however seem out of place and doesn't gell with the theme. It should be removed from here and this icon should be placed at the right hand end of the address bar.
+
+So yes, the design in terms of where navigation and settings buttons are placed and how the address bar works is similar to how Firefox Chrome and Opera have their layout and I think that's a good thing. Not only will it be familiar but it also seems to me to be a better design. That's things that pertain to a tab, such as navigating back/forward and refresh should be on the tab. Home, favorites and settings can be in a "global" area (that is not on a tab).
+New Tab Window and Tab Management
+This window has never made sense to me. I've seen it in Chrome, Safari, Firefox and Opera (I think). But I've never used it. In fact I find the content to be quite useless in fact. I mean the sites I frequent I have favorites for. However, I do think browsers today need to provide us with a clever way of organizing the sites we visit and sites we'd like to keep aside for later. It's really a more elaborate favorites but an organization centric point of view that gives us a visual drag-drop way to organize the sites we visit regularly as well as sites one might visit while doing research etc. Firefox calls this Firefox Panorama
+
+--- Links in the article ---
+WebKit SunSpider JavaScript Benchmark
+https://web.archive.org/web/20240414180627/http://ie.microsoft.com/testdrive/benchmarks/SunSpider/Default.html
+
+The Web Standards Project’s Acid3 Test
+https://web.archive.org/web/20240414180627/http://ie.microsoft.com/testdrive/benchmarks/Acid3/Default.html
+
+Html 5 Video and Flash
+https://web.archive.org/web/20240414180627/http://www.matlus.com/html-5-video-and-flash/
+
+Firefox Panorama
+https://web.archive.org/web/20240414180627/http://www.azarask.in/blog/post/designing-tab-candy/
+
+--- Images referenced in the article ---
+

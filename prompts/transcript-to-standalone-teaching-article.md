@@ -17,7 +17,8 @@ PWI corpus chapters retain their separate mechanical conversion contract.
 
 Read the complete source before drafting. Establish the central teaching claim,
 the responsibilities or distinctions that support it, and the examples needed to
-make it understandable. Apply the professional-writing skill to all new prose.
+make it understandable. Apply the blog-writing skill at
+`.agents/skills/blog-writing/SKILL.md` to new article prose.
 Preserve the author's position and technical vocabulary.
 
 Make a coverage checklist from the complete transcript before drafting. Carry

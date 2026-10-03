@@ -1,0 +1,501 @@
+{
+  "body": "Self hosting in this context means, running your ASP.NER Web API project in your own Web Server rather than via IIS. Of course you’re not building a complete Http Web server either. You’re simply using functionality that now comes out of the box, where in just a couple of lines of code, you can have your “web server” up and running, ready to accept Http requests from your applications or browser.\n\nSelf hosting is one of 3 options of hosting now available. They are\n\n1. Hosting in IIS or “web Hosting” (this is the normal way of hosting)\n\n2. Self Hosting (we’re covering this in this post)\n\n3. In-memory hosting (we may cover this in a later post)\n\nSelf Hosting Perquisites\n\nIn order to self host your ASP.NET Web API applications, you’ll need to download and install this NuGET package: AspNetWebApi.SelfHost . The command line instruction required to installed this package using the Package Manager Console application is available at the linked page.\n\nOf course I assume you have the other packages you need in order to build an ASP.NET Web API project already installed (AspNetWebApi and AspNetWebApi.Core).\n\nFirst Self Hosted Web API Application\n\nStart a new Console Application and then installed this NuGet package (AspNetWebApi.SelfHost). In your Program.cs file, simply copy paste the entire code listing below (rename the file to match the class name as well). That will get your self hosted application up and running.\n\nProgram.cs\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text;\nusing System.Threading.Tasks;\nusing System.Net.Http;\nusing System.Web.Http;\nusing System.Web.Http.SelfHost;\nusing System.Web.Routing;\nusing System.Runtime.Serialization;\nusing System.Net.Http.Formatting;\nusing System.Net.Http.Headers;\n\n/*\n   Packages required\n   ASP.NET Web API Self Host\n   https://nuget.org/packages/AspNetWebApi.SelfHost\n   Package Manager Console command line: Install-Package AspNetWebApi.SelfHost \n */\n\nnamespace SelfHostedAspNetWebApi\n{\n    class AspNetWebApiServer\n    {\n        static void Main(string[] args)\n        {\n            var baseAddress = \"http://localhost:8080/\";\n            var selfHostconfiguration = new HttpSelfHostConfiguration(baseAddress);\n            selfHostconfiguration.Routes.MapHttpRoute(\n                name: \"Customers API\",\n                routeTemplate: \"api/{controller}/{id}\",\n                defaults: new { id = RouteParameter.Optional }\n            );\n\n            var server = new HttpSelfHostServer(selfHostconfiguration);\n            server.OpenAsync().Wait();\n            Console.WriteLine(\"ASP.NET Web API Server Running...\");\n            Console.WriteLine(\"Listening at \" + baseAddress);\n            Console.WriteLine(\"\");\n            Console.ReadLine();\n        }\n    }\n}\n\nSelf Hosted ASP.NET Web API \"Server\" application\n\nNotice that we’re using the regular ASP.NET Routing and we have one route defined. The MapHttpRoute (extension) method of Routes collection uses the new HttpControllerRouteHandler class as it’s route handler. Which implies that your controllers need to descend from ApiController (Similar to Web Hosted ASP.NET Web API application). Of course all of this is extensible but we’re looking at a basic application in this post.\n\nCustomer Controller\n\nAdd a new class to your console application project and name it and the class CustomersController. Copy paste the code shown below into this file.\n\nCustomersController.cs\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Net.Http;\nusing System.Text;\nusing System.Threading.Tasks;\nusing System.Web;\nusing System.Web.Http;\n\nnamespace SelfHostedAspNetWebApi\n{\n    public class CustomersController : ApiController\n    {\n        private static List<Customer> customers =\n            new List<Customer>\n            {\n                new Customer() { Id = 1, Name=\"George Washington\", Email = \"george.washington@whitehouse.gov\", Phone=\"2025550001\" },\n                new Customer() { Id = 2, Name=\"John Adams\", Email = \"john.adams@whitehouse.gov\", Phone=\"2025550002\" },\n                new Customer() { Id = 3, Name=\"Thomas Jefferson\", Email = \"thomas.jefferson@whitehouse.gov\", Phone=\"2025550003\" },\n                new Customer() { Id = 4, Name=\"James Madison\", Email = \"james.madison@whitehouse.gov\", Phone=\"2025550004\" },\n                new Customer() { Id = 5, Name=\"James Monroe\", Email = \"james.monroe@whitehouse.gov\", Phone=\"2025550005\" }\n            };\n\n        public IEnumerable<Customer> Get()\n        {\n            return customers;\n        }\n\n        public Customer Get(int id)\n        {\n            return customers.Where(c => c.Id == id).FirstOrDefault();\n        }\n\n        public HttpResponseMessage<Customer> Post(Customer customer)\n        {\n            var newId = customers.Max(c => c.Id);\n            customer.Id = newId + 1;\n            customers.Add(customer);\n            var responseMessage = new HttpResponseMessage<Customer>(customer, System.Net.HttpStatusCode.Created);\n            responseMessage.Headers.Location = new Uri(VirtualPathUtility.AppendTrailingSlash(Request.RequestUri.ToString()) + newId.ToString());\n            return responseMessage;\n        }\n\n        public void Put(Customer customer)\n        {\n            var cust = customers.Where(c => c.Id == customer.Id).FirstOrDefault();\n            if (cust != null)\n            {\n                cust.Name = customer.Name;\n                cust.Email = customer.Email;\n                cust.Phone = customer.Phone;\n            }\n        }\n\n        public void Delete(int id)\n        {\n            var customer = customers.Where(c => c.Id == id).FirstOrDefault();\n            if (customer != null)\n                customers.Remove(customer);\n        }\n    }\n}\n\nCustomers Controller\n\nThis class is a regular Controller that descends from ApiController and implements some methods. The methods are the standard GET, POST, PUT and DELETE methods (the CRUD methods). For demo purposes, this class also initializes an in-memory list of customers rather than retrieve them from a database.\n\nFor the moment just keep your eyes on the two Get methods. The urls for these methods as per the route we registered earlier in our AspNetWebApiServer class in the first code listing above are:\n\nGet All Customers\n\nhttp://localhost:8080/api/customers/\n\nGet Specific Customer by Id\n\nhttp://localhost:8080/api/customers/1\n\nWhere 1 at the tail end of the url is the Id of the Customer you want to retrieve. Run your application and then open up a browser and issue these requests to see the results you your browser. Browser’s (At the moment) can’t make Http Requests using the PUT or DELETE verbs, so you can test the other methods using a browser, but you can test these methods using Fildder2.\n\nThat takes care of the bare bones functional application. The Listing below is a more complete implementation of the CustomersController class.\n\nIn the next post (HttpClient .NET 4.5) we’ll take a look at implementing a client application that uses the new HttpClient class to make calls against this (and other) RESTFul Http services using GET, POST, PUT and DELETE Http verbs.",
+  "bodyLinks": [
+    {
+      "text": "AspNetWebApi.SelfHost",
+      "url": "https://web.archive.org/web/20240809175938/https://nuget.org/packages/AspNetWebApi.SelfHost"
+    },
+    {
+      "text": "AspNetWebApi",
+      "url": "https://web.archive.org/web/20240809175938/http://nuget.org/packages/aspnetwebapi"
+    },
+    {
+      "text": "AspNetWebApi.Core",
+      "url": "https://web.archive.org/web/20240809175938/http://nuget.org/packages/AspNetWebApi.Core"
+    },
+    {
+      "text": "AspNetWebApi.SelfHost",
+      "url": "https://web.archive.org/web/20240809175938/https://nuget.org/packages/AspNetWebApi.SelfHost"
+    },
+    {
+      "text": "HttpControllerRouteHandler",
+      "url": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.webhost.httpcontrollerroutehandler_methods(v=vs.108).aspx"
+    },
+    {
+      "text": "ApiController",
+      "url": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.apicontroller(v=vs.108).aspx"
+    },
+    {
+      "text": "ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240809175938/http://www.matlus.com/asp-net-web-api-with-webforms/"
+    },
+    {
+      "text": "ApiController",
+      "url": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.apicontroller(v=vs.108).aspx"
+    },
+    {
+      "text": "http://localhost:8080/api/customers/",
+      "url": "https://web.archive.org/web/20240809175938/http://localhost:8080/api/customers/"
+    },
+    {
+      "text": "http://localhost:8080/api/customers/1",
+      "url": "https://web.archive.org/web/20240809175938/http://localhost:8080/api/customers/1"
+    },
+    {
+      "text": "Fildder2",
+      "url": "https://web.archive.org/web/20240809175938/http://www.fiddler2.com/fiddler2/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240809175938/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "HttpClient",
+      "url": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx"
+    }
+  ],
+  "code": [
+    "using System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text;\nusing System.Threading.Tasks;\nusing System.Net.Http;\nusing System.Web.Http;\nusing System.Web.Http.SelfHost;\nusing System.Web.Routing;\nusing System.Runtime.Serialization;\nusing System.Net.Http.Formatting;\nusing System.Net.Http.Headers;\n\n/*\n   Packages required\n   ASP.NET Web API Self Host\n   https://nuget.org/packages/AspNetWebApi.SelfHost\n   Package Manager Console command line: Install-Package AspNetWebApi.SelfHost \n */\n\nnamespace SelfHostedAspNetWebApi\n{\n    class AspNetWebApiServer\n    {\n        static void Main(string[] args)\n        {\n            var baseAddress = \"http://localhost:8080/\";\n            var selfHostconfiguration = new HttpSelfHostConfiguration(baseAddress);\n            selfHostconfiguration.Routes.MapHttpRoute(\n                name: \"Customers API\",\n                routeTemplate: \"api/{controller}/{id}\",\n                defaults: new { id = RouteParameter.Optional }\n            );\n\n            var server = new HttpSelfHostServer(selfHostconfiguration);\n            server.OpenAsync().Wait();\n            Console.WriteLine(\"ASP.NET Web API Server Running...\");\n            Console.WriteLine(\"Listening at \" + baseAddress);\n            Console.WriteLine(\"\");\n            Console.ReadLine();\n        }\n    }\n}\n",
+    "using System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Net.Http;\nusing System.Text;\nusing System.Threading.Tasks;\nusing System.Web;\nusing System.Web.Http;\n\nnamespace SelfHostedAspNetWebApi\n{\n    public class CustomersController : ApiController\n    {\n        private static List<Customer> customers =\n            new List<Customer>\n            {\n                new Customer() { Id = 1, Name=\"George Washington\", Email = \"george.washington@whitehouse.gov\", Phone=\"2025550001\" },\n                new Customer() { Id = 2, Name=\"John Adams\", Email = \"john.adams@whitehouse.gov\", Phone=\"2025550002\" },\n                new Customer() { Id = 3, Name=\"Thomas Jefferson\", Email = \"thomas.jefferson@whitehouse.gov\", Phone=\"2025550003\" },\n                new Customer() { Id = 4, Name=\"James Madison\", Email = \"james.madison@whitehouse.gov\", Phone=\"2025550004\" },\n                new Customer() { Id = 5, Name=\"James Monroe\", Email = \"james.monroe@whitehouse.gov\", Phone=\"2025550005\" }\n            };\n\n        public IEnumerable<Customer> Get()\n        {\n            return customers;\n        }\n\n        public Customer Get(int id)\n        {\n            return customers.Where(c => c.Id == id).FirstOrDefault();\n        }\n\n        public HttpResponseMessage<Customer> Post(Customer customer)\n        {\n            var newId = customers.Max(c => c.Id);\n            customer.Id = newId + 1;\n            customers.Add(customer);\n            var responseMessage = new HttpResponseMessage<Customer>(customer, System.Net.HttpStatusCode.Created);\n            responseMessage.Headers.Location = new Uri(VirtualPathUtility.AppendTrailingSlash(Request.RequestUri.ToString()) + newId.ToString());\n            return responseMessage;\n        }\n\n        public void Put(Customer customer)\n        {\n            var cust = customers.Where(c => c.Id == customer.Id).FirstOrDefault();\n            if (cust != null)\n            {\n                cust.Name = customer.Name;\n                cust.Email = customer.Email;\n                cust.Phone = customer.Phone;\n            }\n        }\n\n        public void Delete(int id)\n        {\n            var customer = customers.Where(c => c.Id == id).FirstOrDefault();\n            if (customer != null)\n                customers.Remove(customer);\n        }\n    }\n}\n"
+  ],
+  "header": "Self Host ASP.NET Web API\nPosted by Shiv Kumar on 20th February, 2012\nCategorized Under: Programming ASP.NET\nTagged With: REST Web API \n  ",
+  "html": "<div class=\"articleText\">\n        <p>Self hosting in this context means, running your ASP.NER Web API project in your own Web Server rather than via IIS. Of course you’re not building a complete Http Web server either. You’re simply using functionality that now comes out of the box, where in just a couple of lines of code, you can have your “web server” up and running, ready to accept Http requests from your applications or browser.</p> <p>Self hosting is one of 3 options of hosting now available. They are</p> <p>1. Hosting in IIS or “web Hosting” (this is the normal way of hosting)</p> <p>2. Self Hosting (we’re covering this in this post)</p> <p>3. In-memory hosting (we may cover this in a later post)</p> <h2>Self Hosting Perquisites</h2> <p>In order to self host your ASP.NET Web API applications, you’ll need to download and install this NuGET package: <a style=\"text-align: justify; widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; font: 13px/20px verdana, arial, sans-serif; white-space: normal; orphans: 2; color: rgb(204,82,0); word-spacing: 0px; text-decoration: none; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\" href=\"https://web.archive.org/web/20240809175938/https://nuget.org/packages/AspNetWebApi.SelfHost\" target=\"_blank\">AspNetWebApi.SelfHost</a> . The command line instruction required to installed this package using the Package Manager Console application is available at the linked page.</p> <p>Of course I assume you have the other packages you need in order to build an ASP.NET Web API project already installed (<a style=\"text-align: justify; widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; font: 13px/20px verdana, arial, sans-serif; white-space: normal; orphans: 2; color: rgb(204,82,0); word-spacing: 0px; text-decoration: underline; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\" href=\"https://web.archive.org/web/20240809175938/http://nuget.org/packages/aspnetwebapi\" target=\"_blank\">AspNetWebApi</a> and <a style=\"text-align: justify; widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; font: 13px/20px verdana, arial, sans-serif; white-space: normal; orphans: 2; color: rgb(204,82,0); word-spacing: 0px; text-decoration: underline; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\" href=\"https://web.archive.org/web/20240809175938/http://nuget.org/packages/AspNetWebApi.Core\" target=\"_blank\">AspNetWebApi.Core</a>).</p> <h2>First Self Hosted Web API Application</h2> <p>Start a new Console Application and then installed this NuGet package (<a style=\"text-align: justify; widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; font: 13px/20px verdana, arial, sans-serif; white-space: normal; orphans: 2; color: rgb(204,82,0); word-spacing: 0px; text-decoration: none; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px\" href=\"https://web.archive.org/web/20240809175938/https://nuget.org/packages/AspNetWebApi.SelfHost\" target=\"_blank\">AspNetWebApi.SelfHost</a>). In your Program.cs file, simply copy paste the entire code listing below (rename the file to match the class name as well). That will get your self hosted application up and running.</p> <div class=\"panel code content/images/csharp.png\" title=\"Program.cs\" id=\"code_93051\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240809175938/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Program.cs</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre><span class=\"Keyword\">using</span> System;\n<span class=\"Keyword\">using</span> System.Collections.Generic;\n<span class=\"Keyword\">using</span> System.Linq;\n<span class=\"Keyword\">using</span> System.Text;\n<span class=\"Keyword\">using</span> System.Threading.Tasks;\n<span class=\"Keyword\">using</span> System.Net.Http;\n<span class=\"Keyword\">using</span> System.Web.Http;\n<span class=\"Keyword\">using</span> System.Web.Http.SelfHost;\n<span class=\"Keyword\">using</span> System.Web.Routing;\n<span class=\"Keyword\">using</span> System.Runtime.Serialization;\n<span class=\"Keyword\">using</span> System.Net.Http.Formatting;\n<span class=\"Keyword\">using</span> System.Net.Http.Headers;\n\n<span class=\"Comment\">/*\n   Packages required\n   ASP.NET Web API Self Host\n   https://nuget.org/packages/AspNetWebApi.SelfHost\n   Package Manager Console command line: Install-Package AspNetWebApi.SelfHost \n */</span>\n\n<span class=\"Keyword\">namespace</span> SelfHostedAspNetWebApi\n{\n    <span class=\"Keyword\">class</span> <span class=\"Identifier\">AspNetWebApiServer</span>\n    {\n        <span class=\"Keyword\">static</span> <span class=\"Keyword\">void</span> Main(<span class=\"Keyword\">string</span>[] args)\n        {\n            <span class=\"Keyword\">var</span> baseAddress = <span class=\"StringLiteral\">\"http://localhost:8080/\"</span>;\n            <span class=\"Keyword\">var</span> selfHostconfiguration = <span class=\"Keyword\">new</span> <span class=\"Identifier\">HttpSelfHostConfiguration</span>(baseAddress);\n            selfHostconfiguration.Routes.MapHttpRoute(\n                name: <span class=\"StringLiteral\">\"Customers API\"</span>,\n                routeTemplate: <span class=\"StringLiteral\">\"api/{controller}/{id}\"</span>,\n                defaults: <span class=\"Keyword\">new</span> { id = <span class=\"Identifier\">RouteParameter</span>.Optional }\n            );\n\n            <span class=\"Keyword\">var</span> server = <span class=\"Keyword\">new</span> <span class=\"Identifier\">HttpSelfHostServer</span>(selfHostconfiguration);\n            server.OpenAsync().Wait();\n            <span class=\"Identifier\">Console</span>.WriteLine(<span class=\"StringLiteral\">\"ASP.NET Web API Server Running...\"</span>);\n            <span class=\"Identifier\">Console</span>.WriteLine(<span class=\"StringLiteral\">\"Listening at \"</span> + baseAddress);\n            <span class=\"Identifier\">Console</span>.WriteLine(<span class=\"StringLiteral\">\"\"</span>);\n            <span class=\"Identifier\">Console</span>.ReadLine();\n        }\n    }\n}\n</pre>\n<h3>Self Hosted ASP.NET Web API \"Server\" application</h3></div>\n<p>Notice that we’re using the regular ASP.NET Routing and we have one route defined. The <code>MapHttpRoute</code> (extension) method of Routes collection uses the new <a href=\"https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.webhost.httpcontrollerroutehandler_methods(v=vs.108).aspx\" target=\"_blank\">HttpControllerRouteHandler</a> class as it’s route handler. Which implies that your controllers need to descend from <a href=\"https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.apicontroller(v=vs.108).aspx\" target=\"_blank\">ApiController</a> (Similar to Web Hosted <a href=\"https://web.archive.org/web/20240809175938/http://www.matlus.com/asp-net-web-api-with-webforms/\">ASP.NET Web API</a> application). Of course all of this is extensible but we’re looking at a basic application in this post.</p>\n<p>Customer Controller</p>\n<p>Add a new class to your console application project and name it and the class <code>CustomersController</code>. Copy paste the code shown below into this file.</p>\n<div class=\"panel code content/images/csharp.png\" title=\"CustomersController.cs\" id=\"code_98956\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240809175938/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">CustomersController.cs</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre><span class=\"Keyword\">using</span> System;\n<span class=\"Keyword\">using</span> System.Collections.Generic;\n<span class=\"Keyword\">using</span> System.Linq;\n<span class=\"Keyword\">using</span> System.Net.Http;\n<span class=\"Keyword\">using</span> System.Text;\n<span class=\"Keyword\">using</span> System.Threading.Tasks;\n<span class=\"Keyword\">using</span> System.Web;\n<span class=\"Keyword\">using</span> System.Web.Http;\n\n<span class=\"Keyword\">namespace</span> SelfHostedAspNetWebApi\n{\n    <span class=\"Keyword\">public</span> <span class=\"Keyword\">class</span> <span class=\"Identifier\">CustomersController</span> : <span class=\"Identifier\">ApiController</span>\n    {\n        <span class=\"Keyword\">private</span> <span class=\"Keyword\">static</span> <span class=\"Identifier\">List</span>&lt;<span class=\"Identifier\">Customer</span>&gt; customers =\n            <span class=\"Keyword\">new</span> <span class=\"Identifier\">List</span>&lt;<span class=\"Identifier\">Customer</span>&gt;\n            {\n                <span class=\"Keyword\">new</span> <span class=\"Identifier\">Customer</span>() { Id = 1, Name=<span class=\"StringLiteral\">\"George Washington\"</span>, Email = <span class=\"StringLiteral\">\"george.washington@whitehouse.gov\"</span>, Phone=<span class=\"StringLiteral\">\"2025550001\"</span> },\n                <span class=\"Keyword\">new</span> <span class=\"Identifier\">Customer</span>() { Id = 2, Name=<span class=\"StringLiteral\">\"John Adams\"</span>, Email = <span class=\"StringLiteral\">\"john.adams@whitehouse.gov\"</span>, Phone=<span class=\"StringLiteral\">\"2025550002\"</span> },\n                <span class=\"Keyword\">new</span> <span class=\"Identifier\">Customer</span>() { Id = 3, Name=<span class=\"StringLiteral\">\"Thomas Jefferson\"</span>, Email = <span class=\"StringLiteral\">\"thomas.jefferson@whitehouse.gov\"</span>, Phone=<span class=\"StringLiteral\">\"2025550003\"</span> },\n                <span class=\"Keyword\">new</span> <span class=\"Identifier\">Customer</span>() { Id = 4, Name=<span class=\"StringLiteral\">\"James Madison\"</span>, Email = <span class=\"StringLiteral\">\"james.madison@whitehouse.gov\"</span>, Phone=<span class=\"StringLiteral\">\"2025550004\"</span> },\n                <span class=\"Keyword\">new</span> <span class=\"Identifier\">Customer</span>() { Id = 5, Name=<span class=\"StringLiteral\">\"James Monroe\"</span>, Email = <span class=\"StringLiteral\">\"james.monroe@whitehouse.gov\"</span>, Phone=<span class=\"StringLiteral\">\"2025550005\"</span> }\n            };\n\n        <span class=\"Keyword\">public</span> <span class=\"Identifier\">IEnumerable</span>&lt;<span class=\"Identifier\">Customer</span>&gt; Get()\n        {\n            <span class=\"Keyword\">return</span> customers;\n        }\n\n        <span class=\"Keyword\">public</span> <span class=\"Identifier\">Customer</span> Get(<span class=\"Keyword\">int</span> id)\n        {\n            <span class=\"Keyword\">return</span> customers.Where(c =&gt; c.Id == id).FirstOrDefault();\n        }\n\n        <span class=\"Keyword\">public</span> HttpResponseMessage&lt;<span class=\"Identifier\">Customer</span>&gt; Post(<span class=\"Identifier\">Customer</span> customer)\n        {\n            <span class=\"Keyword\">var</span> newId = customers.Max(c =&gt; c.Id);\n            customer.Id = newId + 1;\n            customers.Add(customer);\n            <span class=\"Keyword\">var</span> responseMessage = <span class=\"Keyword\">new</span> <span class=\"Identifier\">HttpResponseMessage</span>&lt;<span class=\"Identifier\">Customer</span>&gt;(customer, System.Net.HttpStatusCode.Created);\n            responseMessage.Headers.Location = <span class=\"Keyword\">new</span> <span class=\"Identifier\">Uri</span>(<span class=\"Identifier\">VirtualPathUtility</span>.AppendTrailingSlash(<span class=\"Identifier\">Request</span>.RequestUri.ToString()) + newId.ToString());\n            <span class=\"Keyword\">return</span> responseMessage;\n        }\n\n        <span class=\"Keyword\">public</span> <span class=\"Keyword\">void</span> Put(<span class=\"Identifier\">Customer</span> customer)\n        {\n            <span class=\"Keyword\">var</span> cust = customers.Where(c =&gt; c.Id == customer.Id).FirstOrDefault();\n            <span class=\"Keyword\">if</span> (cust != <span class=\"Keyword\">null</span>)\n            {\n                cust.Name = customer.Name;\n                cust.Email = customer.Email;\n                cust.Phone = customer.Phone;\n            }\n        }\n\n        <span class=\"Keyword\">public</span> <span class=\"Keyword\">void</span> Delete(<span class=\"Keyword\">int</span> id)\n        {\n            <span class=\"Keyword\">var</span> customer = customers.Where(c =&gt; c.Id == id).FirstOrDefault();\n            <span class=\"Keyword\">if</span> (customer != <span class=\"Keyword\">null</span>)\n                customers.Remove(customer);\n        }\n    }\n}\n</pre>\n<h3>Customers Controller</h3></div>\n<p>This class is a regular Controller that descends from <a href=\"https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.apicontroller(v=vs.108).aspx\" target=\"_blank\">ApiController</a> and implements some methods. The methods are the standard GET, POST, PUT and DELETE methods (the CRUD methods). For demo purposes, this class also initializes an in-memory list of customers rather than retrieve them from a database.</p>\n<p>For the moment just keep your eyes on the two Get methods. The urls for these methods as per the route we registered earlier in our <code>AspNetWebApiServer</code> class in the first code listing above are:</p>\n<p>Get All Customers</p>\n<p><a href=\"https://web.archive.org/web/20240809175938/http://localhost:8080/api/customers/\">http://localhost:8080/api/customers/</a></p>\n<p>Get Specific Customer by Id</p>\n<p><a href=\"https://web.archive.org/web/20240809175938/http://localhost:8080/api/customers/1\">http://localhost:8080/api/customers/1</a></p>\n<p>Where 1 at the tail end of the url is the Id of the Customer you want to retrieve. Run your application and then open up a browser and issue these requests to see the results you your browser. Browser’s (At the moment) can’t make Http Requests using the PUT or DELETE verbs, so you can test the other methods using a browser, but you can test these methods using <a href=\"https://web.archive.org/web/20240809175938/http://www.fiddler2.com/fiddler2/\" target=\"_blank\">Fildder2</a>.</p>\n<p>That takes care of the bare bones functional application. The Listing below is a more complete implementation of the <strong>CustomersController</strong> class.</p>\n<p>In the next post (<a href=\"https://web.archive.org/web/20240809175938/http://www.matlus.com/httpclient-net-4-5/\">HttpClient .NET 4.5</a>) we’ll take a look at implementing a client application that uses the new <code><a href=\"https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx\" target=\"_blank\">HttpClient</a></code> class to make calls against this (and other) RESTFul Http services using GET, POST, PUT and DELETE Http verbs.</p>  \n        </div>",
+  "images": [],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240809175938/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "ASP.NET",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/category/programming/asp-net/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/rest/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/web-api/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240809175938/https://twitter.com/share?url=http%3a%2f%2fmatlus.com%2fself-host-asp-net-web-api%2f&text=Self+Host+ASP.NET+Web+API"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240809175938/http://www.facebook.com/sharer.php?u=http%3a%2f%2fmatlus.com%2fself-host-asp-net-web-api%2f&t=Self+Host+ASP.NET+Web+API"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240809175938/https://plus.google.com/share?url=http%3a%2f%2fmatlus.com%2fself-host-asp-net-web-api%2f&text=Self+Host+ASP.NET+Web+API"
+    },
+    {
+      "text": "AspNetWebApi.SelfHost",
+      "url": "https://web.archive.org/web/20240809175938/https://nuget.org/packages/AspNetWebApi.SelfHost"
+    },
+    {
+      "text": "AspNetWebApi",
+      "url": "https://web.archive.org/web/20240809175938/http://nuget.org/packages/aspnetwebapi"
+    },
+    {
+      "text": "AspNetWebApi.Core",
+      "url": "https://web.archive.org/web/20240809175938/http://nuget.org/packages/AspNetWebApi.Core"
+    },
+    {
+      "text": "AspNetWebApi.SelfHost",
+      "url": "https://web.archive.org/web/20240809175938/https://nuget.org/packages/AspNetWebApi.SelfHost"
+    },
+    {
+      "text": "HttpControllerRouteHandler",
+      "url": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.webhost.httpcontrollerroutehandler_methods(v=vs.108).aspx"
+    },
+    {
+      "text": "ApiController",
+      "url": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.apicontroller(v=vs.108).aspx"
+    },
+    {
+      "text": "ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240809175938/http://www.matlus.com/asp-net-web-api-with-webforms/"
+    },
+    {
+      "text": "ApiController",
+      "url": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.apicontroller(v=vs.108).aspx"
+    },
+    {
+      "text": "http://localhost:8080/api/customers/",
+      "url": "https://web.archive.org/web/20240809175938/http://localhost:8080/api/customers/"
+    },
+    {
+      "text": "http://localhost:8080/api/customers/1",
+      "url": "https://web.archive.org/web/20240809175938/http://localhost:8080/api/customers/1"
+    },
+    {
+      "text": "Fildder2",
+      "url": "https://web.archive.org/web/20240809175938/http://www.fiddler2.com/fiddler2/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240809175938/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "HttpClient",
+      "url": "https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240809175938/http://matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240809175938/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "Self Host ASP.NET Web API",
+  "url": "https://web.archive.org/web/20240809175938/http://matlus.com/self-host-asp-net-web-api/"
+}

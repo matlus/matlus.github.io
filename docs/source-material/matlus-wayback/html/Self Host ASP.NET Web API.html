@@ -1,0 +1,124 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Self Host ASP.NET Web API</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>Self Host ASP.NET Web API</h1><p class="recovery">Self Host ASP.NET Web API<br>Posted by Shiv Kumar on 20th February, 2012<br>Categorized Under: Programming ASP.NET<br>Tagged With: REST Web API <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20240809175938/http://matlus.com/self-host-asp-net-web-api/">this Wayback capture</a>.</p><div class="articleText">
+        <p>Self hosting in this context means, running your ASP.NER Web API project in your own Web Server rather than via IIS. Of course you’re not building a complete Http Web server either. You’re simply using functionality that now comes out of the box, where in just a couple of lines of code, you can have your “web server” up and running, ready to accept Http requests from your applications or browser.</p> <p>Self hosting is one of 3 options of hosting now available. They are</p> <p>1. Hosting in IIS or “web Hosting” (this is the normal way of hosting)</p> <p>2. Self Hosting (we’re covering this in this post)</p> <p>3. In-memory hosting (we may cover this in a later post)</p> <h2>Self Hosting Perquisites</h2> <p>In order to self host your ASP.NET Web API applications, you’ll need to download and install this NuGET package: <a style="text-align: justify; widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; font: 13px/20px verdana, arial, sans-serif; white-space: normal; orphans: 2; color: rgb(204,82,0); word-spacing: 0px; text-decoration: none; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px" href="https://web.archive.org/web/20240809175938/https://nuget.org/packages/AspNetWebApi.SelfHost" target="_blank">AspNetWebApi.SelfHost</a> . The command line instruction required to installed this package using the Package Manager Console application is available at the linked page.</p> <p>Of course I assume you have the other packages you need in order to build an ASP.NET Web API project already installed (<a style="text-align: justify; widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; font: 13px/20px verdana, arial, sans-serif; white-space: normal; orphans: 2; color: rgb(204,82,0); word-spacing: 0px; text-decoration: underline; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px" href="https://web.archive.org/web/20240809175938/http://nuget.org/packages/aspnetwebapi" target="_blank">AspNetWebApi</a> and <a style="text-align: justify; widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; font: 13px/20px verdana, arial, sans-serif; white-space: normal; orphans: 2; color: rgb(204,82,0); word-spacing: 0px; text-decoration: underline; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px" href="https://web.archive.org/web/20240809175938/http://nuget.org/packages/AspNetWebApi.Core" target="_blank">AspNetWebApi.Core</a>).</p> <h2>First Self Hosted Web API Application</h2> <p>Start a new Console Application and then installed this NuGet package (<a style="text-align: justify; widows: 2; text-transform: none; background-color: rgb(255,255,255); text-indent: 0px; letter-spacing: normal; font: 13px/20px verdana, arial, sans-serif; white-space: normal; orphans: 2; color: rgb(204,82,0); word-spacing: 0px; text-decoration: none; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px" href="https://web.archive.org/web/20240809175938/https://nuget.org/packages/AspNetWebApi.SelfHost" target="_blank">AspNetWebApi.SelfHost</a>). In your Program.cs file, simply copy paste the entire code listing below (rename the file to match the class name as well). That will get your self hosted application up and running.</p> <div class="panel code content/images/csharp.png" title="Program.cs" id="code_93051"><div class="codeHeading" style="background-image: url(/web/20240809175938/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Program.cs</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre><span class="Keyword">using</span> System;
+<span class="Keyword">using</span> System.Collections.Generic;
+<span class="Keyword">using</span> System.Linq;
+<span class="Keyword">using</span> System.Text;
+<span class="Keyword">using</span> System.Threading.Tasks;
+<span class="Keyword">using</span> System.Net.Http;
+<span class="Keyword">using</span> System.Web.Http;
+<span class="Keyword">using</span> System.Web.Http.SelfHost;
+<span class="Keyword">using</span> System.Web.Routing;
+<span class="Keyword">using</span> System.Runtime.Serialization;
+<span class="Keyword">using</span> System.Net.Http.Formatting;
+<span class="Keyword">using</span> System.Net.Http.Headers;
+
+<span class="Comment">/*
+   Packages required
+   ASP.NET Web API Self Host
+   https://nuget.org/packages/AspNetWebApi.SelfHost
+   Package Manager Console command line: Install-Package AspNetWebApi.SelfHost 
+ */</span>
+
+<span class="Keyword">namespace</span> SelfHostedAspNetWebApi
+{
+    <span class="Keyword">class</span> <span class="Identifier">AspNetWebApiServer</span>
+    {
+        <span class="Keyword">static</span> <span class="Keyword">void</span> Main(<span class="Keyword">string</span>[] args)
+        {
+            <span class="Keyword">var</span> baseAddress = <span class="StringLiteral">"http://localhost:8080/"</span>;
+            <span class="Keyword">var</span> selfHostconfiguration = <span class="Keyword">new</span> <span class="Identifier">HttpSelfHostConfiguration</span>(baseAddress);
+            selfHostconfiguration.Routes.MapHttpRoute(
+                name: <span class="StringLiteral">"Customers API"</span>,
+                routeTemplate: <span class="StringLiteral">"api/{controller}/{id}"</span>,
+                defaults: <span class="Keyword">new</span> { id = <span class="Identifier">RouteParameter</span>.Optional }
+            );
+
+            <span class="Keyword">var</span> server = <span class="Keyword">new</span> <span class="Identifier">HttpSelfHostServer</span>(selfHostconfiguration);
+            server.OpenAsync().Wait();
+            <span class="Identifier">Console</span>.WriteLine(<span class="StringLiteral">"ASP.NET Web API Server Running..."</span>);
+            <span class="Identifier">Console</span>.WriteLine(<span class="StringLiteral">"Listening at "</span> + baseAddress);
+            <span class="Identifier">Console</span>.WriteLine(<span class="StringLiteral">""</span>);
+            <span class="Identifier">Console</span>.ReadLine();
+        }
+    }
+}
+</pre>
+<h3>Self Hosted ASP.NET Web API "Server" application</h3></div>
+<p>Notice that we’re using the regular ASP.NET Routing and we have one route defined. The <code>MapHttpRoute</code> (extension) method of Routes collection uses the new <a href="https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.webhost.httpcontrollerroutehandler_methods(v=vs.108).aspx" target="_blank">HttpControllerRouteHandler</a> class as it’s route handler. Which implies that your controllers need to descend from <a href="https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.apicontroller(v=vs.108).aspx" target="_blank">ApiController</a> (Similar to Web Hosted <a href="https://web.archive.org/web/20240809175938/http://www.matlus.com/asp-net-web-api-with-webforms/">ASP.NET Web API</a> application). Of course all of this is extensible but we’re looking at a basic application in this post.</p>
+<p>Customer Controller</p>
+<p>Add a new class to your console application project and name it and the class <code>CustomersController</code>. Copy paste the code shown below into this file.</p>
+<div class="panel code content/images/csharp.png" title="CustomersController.cs" id="code_98956"><div class="codeHeading" style="background-image: url(/web/20240809175938/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle">CustomersController.cs</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre><span class="Keyword">using</span> System;
+<span class="Keyword">using</span> System.Collections.Generic;
+<span class="Keyword">using</span> System.Linq;
+<span class="Keyword">using</span> System.Net.Http;
+<span class="Keyword">using</span> System.Text;
+<span class="Keyword">using</span> System.Threading.Tasks;
+<span class="Keyword">using</span> System.Web;
+<span class="Keyword">using</span> System.Web.Http;
+
+<span class="Keyword">namespace</span> SelfHostedAspNetWebApi
+{
+    <span class="Keyword">public</span> <span class="Keyword">class</span> <span class="Identifier">CustomersController</span> : <span class="Identifier">ApiController</span>
+    {
+        <span class="Keyword">private</span> <span class="Keyword">static</span> <span class="Identifier">List</span>&lt;<span class="Identifier">Customer</span>&gt; customers =
+            <span class="Keyword">new</span> <span class="Identifier">List</span>&lt;<span class="Identifier">Customer</span>&gt;
+            {
+                <span class="Keyword">new</span> <span class="Identifier">Customer</span>() { Id = 1, Name=<span class="StringLiteral">"George Washington"</span>, Email = <span class="StringLiteral">"george.washington@whitehouse.gov"</span>, Phone=<span class="StringLiteral">"2025550001"</span> },
+                <span class="Keyword">new</span> <span class="Identifier">Customer</span>() { Id = 2, Name=<span class="StringLiteral">"John Adams"</span>, Email = <span class="StringLiteral">"john.adams@whitehouse.gov"</span>, Phone=<span class="StringLiteral">"2025550002"</span> },
+                <span class="Keyword">new</span> <span class="Identifier">Customer</span>() { Id = 3, Name=<span class="StringLiteral">"Thomas Jefferson"</span>, Email = <span class="StringLiteral">"thomas.jefferson@whitehouse.gov"</span>, Phone=<span class="StringLiteral">"2025550003"</span> },
+                <span class="Keyword">new</span> <span class="Identifier">Customer</span>() { Id = 4, Name=<span class="StringLiteral">"James Madison"</span>, Email = <span class="StringLiteral">"james.madison@whitehouse.gov"</span>, Phone=<span class="StringLiteral">"2025550004"</span> },
+                <span class="Keyword">new</span> <span class="Identifier">Customer</span>() { Id = 5, Name=<span class="StringLiteral">"James Monroe"</span>, Email = <span class="StringLiteral">"james.monroe@whitehouse.gov"</span>, Phone=<span class="StringLiteral">"2025550005"</span> }
+            };
+
+        <span class="Keyword">public</span> <span class="Identifier">IEnumerable</span>&lt;<span class="Identifier">Customer</span>&gt; Get()
+        {
+            <span class="Keyword">return</span> customers;
+        }
+
+        <span class="Keyword">public</span> <span class="Identifier">Customer</span> Get(<span class="Keyword">int</span> id)
+        {
+            <span class="Keyword">return</span> customers.Where(c =&gt; c.Id == id).FirstOrDefault();
+        }
+
+        <span class="Keyword">public</span> HttpResponseMessage&lt;<span class="Identifier">Customer</span>&gt; Post(<span class="Identifier">Customer</span> customer)
+        {
+            <span class="Keyword">var</span> newId = customers.Max(c =&gt; c.Id);
+            customer.Id = newId + 1;
+            customers.Add(customer);
+            <span class="Keyword">var</span> responseMessage = <span class="Keyword">new</span> <span class="Identifier">HttpResponseMessage</span>&lt;<span class="Identifier">Customer</span>&gt;(customer, System.Net.HttpStatusCode.Created);
+            responseMessage.Headers.Location = <span class="Keyword">new</span> <span class="Identifier">Uri</span>(<span class="Identifier">VirtualPathUtility</span>.AppendTrailingSlash(<span class="Identifier">Request</span>.RequestUri.ToString()) + newId.ToString());
+            <span class="Keyword">return</span> responseMessage;
+        }
+
+        <span class="Keyword">public</span> <span class="Keyword">void</span> Put(<span class="Identifier">Customer</span> customer)
+        {
+            <span class="Keyword">var</span> cust = customers.Where(c =&gt; c.Id == customer.Id).FirstOrDefault();
+            <span class="Keyword">if</span> (cust != <span class="Keyword">null</span>)
+            {
+                cust.Name = customer.Name;
+                cust.Email = customer.Email;
+                cust.Phone = customer.Phone;
+            }
+        }
+
+        <span class="Keyword">public</span> <span class="Keyword">void</span> Delete(<span class="Keyword">int</span> id)
+        {
+            <span class="Keyword">var</span> customer = customers.Where(c =&gt; c.Id == id).FirstOrDefault();
+            <span class="Keyword">if</span> (customer != <span class="Keyword">null</span>)
+                customers.Remove(customer);
+        }
+    }
+}
+</pre>
+<h3>Customers Controller</h3></div>
+<p>This class is a regular Controller that descends from <a href="https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.web.http.apicontroller(v=vs.108).aspx" target="_blank">ApiController</a> and implements some methods. The methods are the standard GET, POST, PUT and DELETE methods (the CRUD methods). For demo purposes, this class also initializes an in-memory list of customers rather than retrieve them from a database.</p>
+<p>For the moment just keep your eyes on the two Get methods. The urls for these methods as per the route we registered earlier in our <code>AspNetWebApiServer</code> class in the first code listing above are:</p>
+<p>Get All Customers</p>
+<p><a href="https://web.archive.org/web/20240809175938/http://localhost:8080/api/customers/">http://localhost:8080/api/customers/</a></p>
+<p>Get Specific Customer by Id</p>
+<p><a href="https://web.archive.org/web/20240809175938/http://localhost:8080/api/customers/1">http://localhost:8080/api/customers/1</a></p>
+<p>Where 1 at the tail end of the url is the Id of the Customer you want to retrieve. Run your application and then open up a browser and issue these requests to see the results you your browser. Browser’s (At the moment) can’t make Http Requests using the PUT or DELETE verbs, so you can test the other methods using a browser, but you can test these methods using <a href="https://web.archive.org/web/20240809175938/http://www.fiddler2.com/fiddler2/" target="_blank">Fildder2</a>.</p>
+<p>That takes care of the bare bones functional application. The Listing below is a more complete implementation of the <strong>CustomersController</strong> class.</p>
+<p>In the next post (<a href="https://web.archive.org/web/20240809175938/http://www.matlus.com/httpclient-net-4-5/">HttpClient .NET 4.5</a>) we’ll take a look at implementing a client application that uses the new <code><a href="https://web.archive.org/web/20240809175938/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx" target="_blank">HttpClient</a></code> class to make calls against this (and other) RESTFul Http services using GET, POST, PUT and DELETE Http verbs.</p>  
+        </div></body></html>

@@ -1,0 +1,208 @@
+Expanding Code listings
+=======================
+
+Expanding Code listings
+Posted by Shiv Kumar on 30th August, 2010
+Categorized Under: jQuery Code Listings
+Tagged With:
+  
+
+Original URL: http://matlus.com/expanding-code-listings/
+Wayback capture: https://web.archive.org/web/20240222150539/http://matlus.com/expanding-code-listings/
+
+ 
+
+Having just converted my website to use WordPress, and having written my first blog that contains a code listing I immediately ran into the trouble of not being able to see the complete code listing due to the constraints imposed upon by the theme I'm using. It's not the theme that's at fault really since any good website design implies the site has a fixed width (for the most part). Since the "content" area is future constrained (like in a 2 or 3 column layout), it becomes almost impossible to have code listings appear, such that they are completely visible.
+
+Formatting code
+In order to format code, you can continue to use what you're using today. The solution presented here is independent of how the code is actually formatted. I personally use the online (free) services of http://manoli.net/csharpformat/. It's not perfect, but it is the best one I've found so far and it's really simple to use. Its easy to modify the colors using CSS. The only issue I have with it is that it does not color highlight Types. They make a style sheet available, so you'll need to include the style sheet or the styles on your website. Then once you've got the formatted code you simply paste it into the blog editor and you have a great looking code listing. But as you can see, by default (depending on how wide your code is) the code gets cut off. The funny thing is, I've seen this on so many websites, and I wondered why people don't fix it. I mean if you're going to have code available on your website for people to see, learn from and/or copy, at least make it easy to ready and simple to copy. Well, soon after I published my first blog post with code in it,.... boom! So I immediately set out to fix this problem with a little bit of help from JavaScript/jQuery. Some people use a JavaScript syntax highlighters. Here is a list of options:
+SyntaxHighlighter
+Google-code-prettify
+Syntax Highlighting in JavaScript
+jquery-chili-js
+HIGHLIGHT.JS
+Lighter.js - Syntax highlighting with MooTools
+The Requirements
+So I'm my own client, and my client says it should be really simple for him (the user) to do this. Further, he wants a few things to happen magically too:
+He wants to see an icon to the top left of the code listing
+He wants to have a title to the code listing
+He wants to see an expand icon to the top right and when someone clicks on it, the the code listing should expand, in place.
+Once the code listing has expanded, he wants the expand icon to change to a collapse or close icon.
+And finally, when the use clicks on the close icon, things should get back to the way they were.
+
+"Now, I don't mind having to wrap my formatted code with a div and set some attributes, but that's it..", he says. And I said, "Ok, I think I understand your requirements, let me see what I can do". In my mind, I picture something like:
+
+As is usual when you get a set of requirements from a client, there is bound to be feature creep. So right in the middle of my thought process... "I've been thinking", he says, "uh oh - why are you thinking?", I mutter mutedly. Anyway, to cut a long story short, here are the additional requirements: Code listings could be of various types of code, such as C#, JavaScript, Html, CSS and even DOS command line stuff, somehow magically this icon needs to change to reflect the type of code listing So I said, "You could just put an image tag to...", he cut me off. "I'm not doing anything more than adding that wrapper div, remember?". Yes, of course. And just when I thought he was done...."Oh, and those icons...,I'll need those too". (Fanta-bloody-tastic), Sure, no problem, is there anything else? For the moment, no. Whew! At this point I lock the door to my office and pull the phone off the hook, and close out Outlook. My cell phone? I quietly dropped it into his coat pocket. Hopefully, I'll have some peace and can think for a change. So I get cracking on a prototype html page that has bare bones markup, but keeping in mind that most websites have a fixed width and that invariably, the content area's overflow CSS property is set to hidden. Once I had that and pasted some pre-formatted code in there I saw the same issue with the code listing not showing completely. Great!, I now have a reproducible case.
+
+Test Html Page
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Widen Code Listing</title>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script type="text/javascript" src="jquery/javascripts/matlus_custom.js"></script>
+    <style type="text/css">
+      body { font-family: Verdana; font-size: 90%; }
+      #outer { width: 1000px; padding: 10px; border: 1px solid #cccccc; }
+      #inner { width: 600px; float: left; margin-right: 10px; padding: 10px; border: 1px solid #cccccc; overflow: hidden; }
+      #right { width: 336px; float: left; border: 1px solid #cccccc; }
+
+      div.panel
+        {
+          padding: 10px; margin-bottom: 10px; border: 1px solid #eeeeee; border-top-left-radius: 10px 10px; border-top-right-radius: 10px 10px; border-bottom-left-radius: 10px 10px; border-bottom-right-radius: 10px 10px;
+          -moz-border-radius-topleft: 10px; -moz-border-radius-topright: 10px; -moz-border-radius-bottomleft: 10px; -moz-border-radius-bottomright: 10px;
+          -webkit-border-top-left-radius: 10px 10px; -webkit-border-top-right-radius: 10px 10px; -webkit-border-bottom-left-radius: 10px 10px; -webkit-border-bottom-right-radius: 10px 10px;
+        }
+      div.panel { background-color: #eeeeee; }
+      div.code { background-color: #fdfdd8; }
+      .clear { clear: both; }
+      .codeHeading { margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; margin-top: 10px; padding-left: 50px; }
+      .codeWrapper { margin: 10px 0px 10px 0px; overflow: hidden; }
+      .codeTitle { float:left; margin-top: 0px; }
+      .expand { float: right; cursor: pointer; margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; width: 48px; }
+    </style>
+</head>
+<body>
+  <div id="outer">
+    <div id="inner">
+      <!-- This is the div that wraps the code listing -->
+      <div class="panel code /images/csharp.png" title="Code Listing">        
+
+      <pre class="csharpcode">
+<span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">void</span> CreateFtpUser(<span class="kwrd">string</span> configurationPath, <span class="kwrd">string</span> username, <span class="kwrd">string</span> password)
+{
+}
+      </pre>
+      </div>
+    </div>
+    <div id="right">
+    </div>
+    <div style="clear: both;"></div>
+  </div>
+</body>
+</html>
+The important part of the html above
+<div class="panel code /images/csharp.png" title="Code Listing">
+
+your formatted code listing goes here
+
+</div>
+We'll examine this later, but I thought it was important to point it out so you can see that's all we really need.
+The Concept
+This is how I think I'm going to go about solving this problem: What if I:
+Copy the contents of the containing div (the div my client said he'd put around the formatted code), and insert it into a div I create on the fly.
+Then add the div to the DOM but I absolutely position it right over the original div.
+When I add this new div to the DOM I add it as a child of the body element, so as to eliminate any CSS constraints that may be applied to the actual content area container. I know that in most WordPress themes and pretty much any well designed website, the content area is constrained, so adding the new div as a child of anything but the body element would automatically constrain this new div as well.
+Then when the visitor closes or collapses the code, I simply remove it from the DOM and what you see is the original code listing.
+Being that this new div is not constrained, it should expand to the size of the content within it, and all of the code should be visible, without the need to know what height and especially what width to make the div
+Perfect! Looks like this will do the job nicely. So lets get cracking on the real code. There are CSS styles I use here to help with styling as well as positioning (top-left icon, top-right icon and stuff) and background images (the icons) etc. You may not need all these styles but I've listed them here anyway:
+CSS Styles
+div.panel
+  {
+    padding: 10px; margin-bottom: 10px; border: 1px solid #eeeeee; border-top-left-radius: 10px 10px; border-top-right-radius: 10px 10px; border-bottom-left-radius: 10px 10px; border-bottom-right-radius: 10px 10px;
+    -moz-border-radius-topleft: 10px; -moz-border-radius-topright: 10px; -moz-border-radius-bottomleft: 10px; -moz-border-radius-bottomright: 10px;
+    -webkit-border-top-left-radius: 10px 10px; -webkit-border-top-right-radius: 10px 10px; -webkit-border-bottom-left-radius: 10px 10px; -webkit-border-bottom-right-radius: 10px 10px;
+  }
+
+div.panel { background-color: #eeeeee; }
+div.code { background-color: #fdfdd8; }
+
+.clear { clear: both; }
+.codeHeading { margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; margin-top: 10px; padding-left: 50px; }
+.codeWrapper { margin: 10px 0px 10px 0px; }
+.codeTitle { float:left; margin-top: 0px; }
+.expand { float: right; cursor: pointer; margin-bottom: 0px; background-repeat:no-repeat; background-position: left top; height: 48px; width: 48px; }
+A note about CSS background images
+The icons you see are CSS background images. However, you'll notice that the CSS above does not specify any background images pre-se. If it did, then these images would have to be in a path relative to the css file and I personally don't like to have non-theme specific images in multiple places on the server. The accompanying JavaScript code assigns the background images as part of the style attribute.
+The JavaScript for Expanding code listings
+I've used JQuery to help with the JavaScript required to get the job done. The key aspect (I think) to get here is that this div that the client is willing to insert, that wraps the code listing, has it's class attribute set with multiple CSS classes. However, one of those classes, is not really a CSS class. It's the path to the icon image to use. In my case my images are in a folder called images, which is a sub folder of the root folder of my website. Initially, I used a custom attribute and value pair to indicate the url to the icon image to use, such as:
+  <div class="panel code" icon="/images/javascript.png" title="Some title">
+
+  Code listing goes here.
+
+  </div>
+Notice, the icon attribute? Well that would have worked, and it did in my test html page. But when I tried it on my blog (I mean I was testing, it on WordPress because I knew the client wanted to use it on his WordPress blog) something funky was going on. You see in WordPress, when you're writing a blog you use their editor. The editor has two tabs, "Visual" and "Html". So you can switch to the Html tab and write straight html if you know what you're doing. Well it so happens that when you switch from tab to tab, the editor cleans up your html and when it finds an attribute that is not "standard", it wipes it out (without warning). So once I figured out what was going on. I had to come up with another solution. The panel class (look at the CSS listing above) essentially produces the rounded border and the faint gray background. The code CSS class overwrites the gray background to a faint yellow background.
+JavaScript that makes code listings expand
+$(document).ready(function (e) {
+  $('div[class~=code]').each(function () {
+    var uniqueId = Math.floor(Math.random() * 99999).toString();
+    var icon = getIconUrlFromElement(this);
+    $(this).attr('id', 'code_' + uniqueId);
+    $(this).prepend('<div class="codeHeading" style="background-image: url(' + icon + ');"><h3 class="codeTitle">' + $(this).attr('title') +
+                    '</h3><div class="expand" style="background-image: url(/images/expand.png);" title="Expand Code Listing"></div><div class="clear"></div></div>');
+
+    $(this).find('.expand').click(function () {
+      var $codeDiv = $(this).parents('div[class~=code]');
+      var codeDivPosition = $codeDiv.position();
+      $(document.body).append('<div id="expandedCode_' + uniqueId + '" class="panel code" style="position: absolute; top: ' +
+                              codeDivPosition.top + 'px; left: ' + codeDivPosition.left + 'px;">' + $codeDiv.html() + '</div');
+      $('#expandedCode_' + uniqueId + ' div[class=expand]').click(function (e) {
+        $('#expandedCode_' + uniqueId).remove();
+      }).css('background-image', "url('/images/collapse.png')");
+    });
+  });
+
+  /* Assumption: the element's class attribute has one or more classes assigned.
+     Further, one of these classes is the url to the icon image to use and the
+     image is a .png image.
+  */
+  function getIconUrlFromElement(element) {
+    var styleClasses = $(element).attr('class');
+    var classes = styleClasses.split(' ');
+    for (var i = 0; i < classes.length; i++) {
+      if (classes[i].indexOf('.png') > 1)
+        return classes[i];
+    }
+    return null;
+  }
+});
+I'll try and explain the main aspects of the JQuery code listed above. All the magic happens in the $(document).ready event. First we select all div elements whose class attribute's value is "code". Remember that the class attribute can contain one or more space delimited calls names (or words). We use that to our benefit here. The ~= syntax tells JQuery to match the test string (code in our case) against each word (the space delimited set of "words") in the attribute value. Then for each such element found we dynamically construct the following html. The html that is not color coded is the original div tag that wraps the code listing. So what we've done is we've added our dynamic html as the "first child" of the exiting div element, using the JQuery .prepend() method.
+The Dynamically created html
+<div class="panel code /images/csharp.png" title="Code Listing">
+  <div class="codeHeading" style="background-image: url(/images/csharp.png);">
+    <h3 class="codeTitle">Code Listing</h3>
+    <div class="expand" style="background-image: url(/images/expand.png);" title="Expand Code Listing">
+    </div>
+    <div class="clear"></div>
+
+  Code listing goes here
+</div>
+
+The rest of the JQuery code does all of the plumbing required for user interaction. The additional JavaScript method getIconUrlFromElement is a helper function that extracts the url to the path of the icon from the class attribute's value. I found someone else who's done something similar, here jquery-solution-to-a-simple-problem/. It seems to get the job done for the most part, however, I don't like the fact that the width the code expands to is fixed irrespective of whether the codes requires it to be that wide or if the code is wider you have the same issue you started with. The other aspect is that, I personally like to read the author's description while examining the code listing and the mouseenter/mouseleave thing doesn't work for me personally. Besides, my client was very clear about how he wanted this to work.
+
+--- Links in the article ---
+WordPress
+https://web.archive.org/web/20240222150539/http://wordpress.org/
+
+http://manoli.net/csharpformat/
+https://web.archive.org/web/20240222150539/http://manoli.net/csharpformat/
+
+SyntaxHighlighter
+https://web.archive.org/web/20240222150539/http://alexgorbatchev.com/SyntaxHighlighter/
+
+Google-code-prettify
+https://web.archive.org/web/20240222150539/http://code.google.com/p/google-code-prettify/
+
+Syntax Highlighting in JavaScript
+https://web.archive.org/web/20240222150539/http://shjs.sourceforge.net/
+
+jquery-chili-js
+https://web.archive.org/web/20240222150539/http://code.google.com/p/jquery-chili-js/
+
+HIGHLIGHT.JS
+https://web.archive.org/web/20240222150539/http://softwaremaniacs.org/soft/highlight/en/
+
+Lighter.js - Syntax highlighting with MooTools
+https://web.archive.org/web/20240222150539/http://pradador.com/code/lighterjs/
+
+jquery-solution-to-a-simple-problem/
+https://web.archive.org/web/20240222150539/http://www.viget.com/inspire/simple-jquery-solution-to-a-simple-problem/
+
+--- Images referenced in the article ---
+WidenCodeListing
+https://web.archive.org/web/20240222150539im_/http://www.matlus.com/content/uploads/2011/01/WidenCodeListing_fb34ddd0-68bd-4628-9075-52c0e39fc7f9.jpg
+Local file: images/f898fbd7876e57f7-WidenCodeListing_fb34ddd0-68bd-4628-9075-52c0e39fc7f9.jpg
+
+VisonOfCodelistingRequirements
+https://web.archive.org/web/20240222150539im_/http://www.matlus.com/content/uploads/2011/01/VisonOfCodelistingRequirements_fe333471-a490-45ee-ab9c-163d564b5dcd.jpg
+Local file: images/fc5f22773c5454c3-VisonOfCodelistingRequirements_fe333471-a490-45ee-ab9c-163d564b5dcd.jpg

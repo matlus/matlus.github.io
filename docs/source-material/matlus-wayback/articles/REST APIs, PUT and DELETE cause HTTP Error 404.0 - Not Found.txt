@@ -1,0 +1,74 @@
+REST APIs, PUT and DELETE cause HTTP Error 404.0 - Not Found
+============================================================
+
+REST APIs, PUT and DELETE cause HTTP Error 404.0 - Not Found
+Posted by Shiv Kumar on 30th December, 2011
+Categorized Under: IIS Configuration
+Tagged With: Debugging Http IIS 7.0 IIS Express REST 
+  
+
+Original URL: http://matlus.com/rest-apis-put-and-delete-cause-http-error-404/
+Wayback capture: https://web.archive.org/web/20240414162624/http://www.matlus.com/rest-apis-put-and-delete-cause-http-error-404/
+
+If you’ve bought a new PC/Laptop and thus have forgotten you made some configuration changes when you made your first application with a RESTfull API or you’re just starting out with building a RESTfull API for one of your application then you’ll most definitely encounter the Http error 404.0 – Not Found.
+
+This happens when you’re attempting either an Http PUT or DELETE operation and the request never gets to your application. This is happening because IIS (either the full blown version or IIS Express) has not been configured to accept Http request with the PUT and/or DELETE verbs (Http Methods).
+
+The fix is really simple. All you need to do is modify the applicationhost.config file for your respective web server. For the full blown IIS, you can do it using the Internet Information Services Manager UI while for IIS Express you need to modify the file manually.
+
+Adding PUT and DELETE verbs for IIS
+
+Open up IIS Manager
+
+Double-click on the ExtensionlessUrl-Integrated-4.0 handler shown in the image above. The dialog shown below takes a while to show up, but it will show up eventually.
+
+Click on the Request Restrictions… button
+
+ 
+
+Switch to the “Verbs” tab in the dialog presented and modify the “One of these verbs” field to include the PUT and DELETE verbs, click OK all the out and you’re done.
+
+PUT and DELETE verbs for IIS Express
+
+As I said earlier, for IIS express, you need to modify the applicationhost.config file that IIS Express uses manually. You’ll find this file in your MyDocuments folder under IISExpress\config.
+
+The setting that needs to be changed can be found towards the end of the file. You’re looking for the ExtensionlessUrl-Integrated-4.0 node under the system.webserver section, under handlers node.
+
+You’ll need to add PUT and DELETE to the “verb” attribute for the handler. Save the file and you’re done.
+
+--- Links in the article ---
+
+https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerHandlerMappings_6.png
+
+
+https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerExtensionlessUrlHandler_4.png
+
+
+https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerEditManagedHandler_2.png
+
+
+https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerEditVerbs_2.png
+
+
+https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/Applicationhostconfig_4.png
+
+--- Images referenced in the article ---
+IISManagerHandlerMappings
+https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerHandlerMappings_thumb_2.png
+Local file: images/02e38c0831650a38-IISManagerHandlerMappings_thumb_2.png
+
+IISManagerExtensionlessUrlHandler
+https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerExtensionlessUrlHandler_thumb_1.png
+Local file: images/5f52bc567f6c020e-IISManagerExtensionlessUrlHandler_thumb_1.png
+
+IISManagerEditManagedHandler
+https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerEditManagedHandler_thumb.png
+Local file: images/4eed1524ce86c34a-IISManagerEditManagedHandler_thumb.png
+
+IISManagerEditVerbs
+https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerEditVerbs_thumb.png
+Local file: images/529858029f3d7c33-IISManagerEditVerbs_thumb.png
+
+Applicationhostconfig
+https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/Applicationhostconfig_thumb_1.png
+Local file: images/44bf20a95ef17990-Applicationhostconfig_thumb_1.png

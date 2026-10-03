@@ -1,0 +1,223 @@
+DataContractSerializer-IEnumerable<T>
+=====================================
+
+DataContractSerializer-IEnumerable<T>
+Posted by Shiv Kumar on 25th January, 2011
+Categorized Under: Programming WCF
+Tagged With: DbDataReader JSON 
+  
+
+Original URL: http://matlus.com/ienumerablet-datacontractserializer/
+Wayback capture: https://web.archive.org/web/20240415161635/http://matlus.com/ienumerablet-datacontractserializer/
+
+The DataContractSerializer class is mainly used in WCF services but you can use it in any kind of project including ASP.NET based applications.
+
+There are some nice features this class offers in contrast to JavaScriptSerializer like the ability to control how property names get serialized using the DataMember attribute. One problem with this class is that it does not support serializing IEnumerable<T>. It supports generic collections such as List<T> but that's not what I need since there is a reason I'm using an IEnumerable<T> to serialize to JSON.
+
+In this post I'll present a JsonSerlizer class that supports IEnumerable<T>. Some of the features of this class are as follows:
+
+Supports serializing IEnumberable<T> in addition to other collections types as well as non-collection types
+Serializes directly to System.IO.Stream (in contrast to JavaScriptSerializer)
+Supports JSONP, so you can publish your JSON feeds to the public
+
+First let me begin by showing how I get the data and why I need to serialize and IEnumerable<T> in the first place.
+
+In code listing 1 below, you can see the class SubCategoryDrw that will be serialized. It looks a bit complex but it's really just a POCO. It's what I call a DataReader Wrapper. Anyway, I've decorated the class with the required DataContract attribute and its properties with the DataMember attribute while also modifying the property names and/or case that I'd like each property to be serialized as. This feature (the ability to change the name and /or case of property name) is the reason why I prefer using the DataContractSerializer class over the JavaScriptSerializer class.
+
+ 
+
+The SubCategoryDrw class
+  [DataContract]
+  public sealed class SubCategoryDrw : BaseDbDataReaderWrapper
+  {
+    #region Properties
+
+    private Int32 categoryId;
+    [DataMember(Name="categoryId")]
+    public Int32 CategoryId { get { switch (Mode) { case WrapperMode.Wrapper: return (Int32)DbDataReader[0]; case WrapperMode.Dto: return categoryId; default: return default(Int32); } } set { categoryId = value; } }
+    private Int32 subCategoryId;
+    [DataMember(Name = "subCategoryId")]
+    public Int32 SubCategoryId { get { switch (Mode) { case WrapperMode.Wrapper: return (Int32)DbDataReader[1]; case WrapperMode.Dto: return subCategoryId; default: return default(Int32); } } set { subCategoryId = value; } }
+    private String categoryDescription;
+    [DataMember(Name = "categoryDesc")]
+    public String CategoryDescription { get { switch (Mode) { case WrapperMode.Wrapper: return (String)DbDataReader[2]; case WrapperMode.Dto: return categoryDescription; default: return default(String); } } set { categoryDescription = value; } }
+    private String subCategoryDescription;
+    [DataMember(Name = "subCategoryDesc")]
+    public String SubCategoryDescription { get { switch (Mode) { case WrapperMode.Wrapper: return (String)DbDataReader[3]; case WrapperMode.Dto: return subCategoryDescription; default: return default(String); } } set { subCategoryDescription = value; } }
+
+    #endregion Properties
+
+    public SubCategoryDrw(DbDataReader dbDataReader, WrapperMode mode)
+      : base(dbDataReader, mode)
+    {
+      switch (Mode)
+      {
+        case WrapperMode.Wrapper:
+          break;
+        case WrapperMode.Dto:
+          categoryId = (Int32)DbDataReader[0];
+          subCategoryId = (Int32)DbDataReader[1];
+          categoryDescription = (String)DbDataReader[2];
+          subCategoryDescription = (String)DbDataReader[3];
+          break;
+      }
+    }
+  }
+
+Code Listing 1: Showing the POCO SubCategory class that will be serlized
+
+ 
+
+In code listing 2, you see a method I have in my business layer, that returns an IEnumerable<SubCategoryDrw>. Because the intent is to go from data stream, straight out to the Http Response Stream in order to get the best performance possible, not only do I use a DbDataReader directly (along with a DataReader wrapper class so I get type safety) and return an IEnumerable<T>, which basically means the data that comes out of the database is streamed directly to the Http Response stream in one single iteration.
+
+ 
+
+Business Layer Method - GetSubCategories()
+    public IEnumerable<SubCategoryDrw> GetSubCategories()
+    {
+      using (var dr = DataModule.GetSubCategories())
+      {
+        var subCategoryDrw = new SubCategoryDrw(dr, WrapperMode.Wrapper);
+        while (dr.Read())
+          yield return subCategoryDrw;
+      }
+    }
+
+Code Listing 2: Showing the Business layer method returning an IEnumerable<SubCategoryDrw>
+
+ 
+
+In code listing 3 below you can see a WCF method wherein I use the JsonSerializer presented in this post to serialize a sequence of SubCategories. Note that I'm showing you a WCF method implementation, but you'll most likely use the JsonSerializer presented in this post in non-WCF applications since WCF 4.0 does handle serializing IEnumerable<T>.
+
+WCF Operation Contract
+    [WebGet(UriTemplate = "/subcategories/")]
+    public void GetSubCategories()
+    {
+      var categories = BusinessModule.GetSubCategories();
+      JsonSerializer.Serialize(categories, Response.OutputStream, Request.QueryString["callback"]);
+    }
+
+Code Listing 3: The WCF method that uses the JsonSerlizer to serialize an IEnumerable<SubCategoryDrw>
+
+ 
+
+WCF 4.0 Supports Serializing IEnumerable<T> via CreateJsonResponse
+    [WebGet(UriTemplate = "/subcategories/")]
+    public Message GetSubCategories()
+    {
+      var categories = BusinessModule.GetSubCategories();
+      return WebOperationContext.Current
+        .CreateJsonResponse<IEnumerable<SubCategoryDrw>>(categories);
+    }
+
+
+
+ 
+
+JsonSerializer
+
+As I mentioned earlier, some of the features of this class are as follows:
+
+Supports serializing IEnumberable<T> in addition to other collections types as well as non-collection types
+Serializes directly to System.IO.Stream (in contrast to JavaScriptSerializer)
+Supports JSONP, so you can publish your JSON feeds to the public
+
+There are just 2 public methods in this class. One that expects and IEnumerable<T> as the object to serialize and another where the object is not an IEnumerable<T> either a List<T> or a non collection type object.
+
+ 
+
+JsonSerializer class
+public static class JsonSerializer
+{
+  private static byte[] lBracketBytes = Encoding.UTF8.GetBytes(new char[] { '[' });
+  private static byte[] rBracketBytes = Encoding.UTF8.GetBytes(new char[] { ']' });
+  private static byte[] commaBytes = Encoding.UTF8.GetBytes(new char[] { ',' });
+  private static byte[] rparenBytes = Encoding.UTF8.GetBytes(new char[] { ')' });
+
+  public static void Serialize<T>(T obj, Stream stream, string jsonpCallback = null)
+  {
+    if (jsonpCallback == null)
+      WriteObject(obj, stream);
+    else
+    {
+      WriteJsonPCallbackStart(stream, jsonpCallback);
+      WriteObject(obj, stream);
+      WriteJsonPCallbackEnd(stream);
+    }
+  }
+
+  public static void Serialize<T>(IEnumerable<T> sequence, Stream stream, string jsonpCallback = null)
+  {
+    if (jsonpCallback == null)
+      WriteSequence(sequence, stream);
+    else
+    {
+      WriteJsonPCallbackStart(stream, jsonpCallback);
+      WriteSequence(sequence, stream);
+      WriteJsonPCallbackEnd(stream);
+    }
+  }
+
+  private static void WriteJsonPCallbackStart(Stream stream, string jsonpCallback)
+  {
+    byte[] callbackStartBytes = UTF8Encoding.UTF8.GetBytes(jsonpCallback + "(");
+    stream.Write(callbackStartBytes, 0, callbackStartBytes.Length);
+  }
+
+  private static void WriteJsonPCallbackEnd(Stream stream)
+  {
+    stream.Write(rparenBytes, 0, rparenBytes.Length);
+  }
+
+  private static void WriteObject<T>(T obj, Stream stream)
+  {
+    var serializer = new DataContractJsonSerializer(typeof(T));
+    serializer.WriteObject(stream, obj);
+  }
+
+  private static void WriteSequence<T>(IEnumerable<T> sequence, Stream stream)
+  {
+    var serializer = new DataContractJsonSerializer(typeof(T));
+    stream.Write(lBracketBytes, 0, lBracketBytes.Length);
+    int i = 0;
+    foreach (var item in sequence)
+    {
+      if (i != 0)
+        stream.Write(commaBytes, 0, commaBytes.Length);
+      serializer.WriteObject(stream, item);
+      i++;
+    }
+    stream.Write(rBracketBytes, 0, rBracketBytes.Length);
+  }
+}
+Code Listing 4: Listing of the entire JsonSerializer class
+
+That brings us to the end of this post.
+
+--- Links in the article ---
+DataContractSerializer
+https://web.archive.org/web/20240415161635/http://msdn.microsoft.com/en-us/library/system.runtime.serialization.datacontractserializer.aspx
+
+JavaScriptSerializer
+https://web.archive.org/web/20240415161635/http://msdn.microsoft.com/en-us/library/system.web.script.serialization.javascriptserializer.aspx
+
+JsonSerlizer
+https://web.archive.org/web/20240415161635/http://matlus.com/ienumerablet-datacontractserializer/#jsonserializer
+
+code listing 1
+https://web.archive.org/web/20240415161635/http://matlus.com/ienumerablet-datacontractserializer/#codelisting1
+
+DataReader Wrapper
+https://web.archive.org/web/20240415161635/http://www.matlus.com/datareader-wrappers-typesafe/
+
+code listing 2
+https://web.archive.org/web/20240415161635/http://matlus.com/ienumerablet-datacontractserializer/#codelisting2
+
+DataReader wrapper class
+https://web.archive.org/web/20240415161635/http://www.matlus.com/datareader-wrappers-typesafe/
+
+code listing 3
+https://web.archive.org/web/20240415161635/http://matlus.com/ienumerablet-datacontractserializer/#codelisting3
+
+--- Images referenced in the article ---
+

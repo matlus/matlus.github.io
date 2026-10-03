@@ -1,0 +1,72 @@
+Fastest Website on the Planet!
+==============================
+
+Fastest Website on the Planet!
+Posted by Shiv Kumar on 22nd January, 2011
+Categorized Under: Programming ASP.NET
+Tagged With: Framework Design Orion Performance Quartz for ASP.NET 
+  
+
+Original URL: http://matlus.com/fastest-website-on-the-planet/
+Wayback capture: https://web.archive.org/web/20240415151026/http://matlus.com/fastest-website-on-the-planet/
+
+During the design and development of Quartz for ASP.NET and Orion, performance was an extremely important area I focused on. Optimizing a framework such as Quartz for ASP.NET is important because other websites and application will be built using it and I believe it is imperative that frameworks pay close attention to performance. The same goes for Orion but of course at a different level since Orion is a web application.
+
+I should add that Quartz for ASP.NET does not sacrifice maintainability for performance however, there are many aspects of the design of the framework that lend themselves towards mind-bending performance. And of course code constructs.
+
+Anyway, this post is about the fastest website on the planet and you should know, you're on it! Yes, Matlus is currently the fastest website ranked by http://www.showslow.com/. Matlus has the following score:
+
+YSlow – Grade A
+
+PageSpeed – 99/100
+
+If it weren't for the Google analytics JavaScript file not being cached, PageSpeed would have given it a 100/100!
+
+ 
+
+In Google Webmaster tools under "Labs" there is a Site Performance link and this is what I see there
+
+ 
+
+Under the "Diagnostics" section, the "Crawl stats" shows me this. It so happens that I moved my blog from using WordPress as the blog engine to using Orion. So if you look at the January portion of the graph that takes a big dip towards the end, that's when the switch happened.
+
+--- Links in the article ---
+Quartz for ASP.NET
+https://web.archive.org/web/20240415151026/http://www.matlus.com/quartz-for-aspnet/
+
+Orion
+https://web.archive.org/web/20240415151026/http://www.matlus.com/orion/
+
+Quartz for ASP.NET
+https://web.archive.org/web/20240415151026/http://www.matlus.com/quartz-for-aspnet/
+
+Matlus
+https://web.archive.org/web/20240415151026/http://www.matlus.com/
+
+http://www.showslow.com/
+https://web.archive.org/web/20240415151026/http://www.showslow.com/
+
+YSlow
+https://web.archive.org/web/20240415151026/http://developer.yahoo.com/yslow/
+
+PageSpeed
+https://web.archive.org/web/20240415151026/http://code.google.com/speed/page-speed/
+
+PageSpeed
+https://web.archive.org/web/20240415151026/http://code.google.com/speed/page-speed/
+
+Orion
+https://web.archive.org/web/20240415151026/http://www.matlus.com/orion/
+
+--- Images referenced in the article ---
+MatlusOnShowSlow
+https://web.archive.org/web/20240415151026im_/http://www.matlus.com/content/uploads/2011/01/MatlusOnShowSlow_1cfbf4af-1bba-4d61-ba73-cba4dd96d0ad.jpg
+Local file: images/e00417622d18d186-MatlusOnShowSlow_1cfbf4af-1bba-4d61-ba73-cba4dd96d0ad.jpg
+
+image
+https://web.archive.org/web/20240415151026im_/http://www.matlus.com/content/uploads/2011/01/image_b76464eb-2c6f-4e97-9263-c7d748cac2ec.png
+Local file: images/e9515563e91693d7-image_b76464eb-2c6f-4e97-9263-c7d748cac2ec.png
+
+GoogleTimeSpentDownloadingAPage
+https://web.archive.org/web/20240415151026im_/http://www.matlus.com/content/uploads/2011/01/GoogleTimeSpentDownloadingAPage_b3de8a26-9d46-4f02-acef-368171d77405.jpg
+Local file: images/74f787693c0d22ac-GoogleTimeSpentDownloadingAPage_b3de8a26-9d46-4f02-acef-368171d77405.jpg

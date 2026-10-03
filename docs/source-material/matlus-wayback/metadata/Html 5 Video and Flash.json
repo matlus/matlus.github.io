@@ -1,0 +1,492 @@
+{
+  "body": " \n\nI see so much confusion and BS about Html 5 and Flash on the Internet. Most of it seems from people who know almost nothing about it in the first place. Don’t these people know that they don’t know? Getting to the subject at hand… Having been recently involved in building an Html 5 video player that will work across all major browsers and will be used in the mainstream (by major browsers, I mean IE, Firefox, Chrome, Safari and Opera). In doing so, I have acquired a deep insight into the capabilities and nuances of each browser's built in video player. Further, having built a Flash based video player that is used in the mainstream for a few years now gives me the ability to truly compare developing a video player that has the set of prerequisite features and performance metrics.\n\nSingle Codebase\nIt was imperative that I can use a single codebase for the html 5 video player across all browsers, without the need to do any browser sniffing and or conditional code paths for different browsers. However, since the video element does not function or behave the same across browsers (either due to their understanding of the html 5 or limited support at this time), I have accounted for these nuances in the implementation of the video player to the extent possible.\nHtml 5 Video Comparison\nAs browser makers continue to improve support for various Html 5 specifications it becomes important to compare browsers in this regard. In this comparison I’m interested in the implementation of the video element across browsers since there are no standards tests for this element, each browser’s implementation differs quite a bit and the result is that websites intending to support the html 5 video element have a really tough time developing a video player that has all of the functionality that their current Flash based video players have. I’ll compare the following aspects of each browser’s implementation of the video element as compared to a Flash based video player and Native video players (Native players being Windows Media Player on Windows and Quick time/QTX on MAC).\nPlayback Performance\nFeature Capability\nFeature Performance\nThe following browsers were used in the tests:\nIE 9 Platform Preview 4\nFirefox 4.0 Beta\nChrome 6.0.472.41\nSafari 5.0.1\nOpera 10.61.3484\nPlayback Performance\nThis is the ability of the browser’s built in player to playback high quality video at the frame rate the video is encoded at (that is extremely smooth without stutter, jerks or sticky frames). Videos encoded at a video bit rate of between 4000kbps – 7000kbps at dimensions of 720p and 1080p are considered high quality (for the purposes of this test). At the moment only IE 9 and Safari 5 are comparable in playback performance to the native players on their respective platforms. All other browsers lag far behind. They’ll probably catch up in time but as things stand today, IE 9 and Safari 5 are the winners. We know that Flash based video players are unable to come close to the playback performance of native players. On Windows, Flash player has direct access to hardware acceleration. On a MAC, Flash player 10.1.82.76 in combination with OS X v10.4 and above can use hardware acceleration. So most MAC users are unable to watch high quality videos when played back using Flash based video players. According to Adobe, hardware acceleration is supported on the following MACs\nMacBooks shipped after January 21st, 2009\nMac Minis shipped after March 3rd, 2009\nMacBook Pros shipped after October 14th, 2008\niMacs which shipped after the first quarter of 2009\nThis doesn’t mean that all of the above hardware can playback high quality HD video, but only that they have a hardware decoder for H.264 when using Flash player and not other players.\nThe MAC user's plight\nCurrently, however, 480p video, running on a 1.8GHz Mac mini, uses 34 percent of the CPU in Mac OS X and just 16 percent in Windows (running in BootCamp on same hardware). Flash 10.1 is expected to cut CPU consumption in half. So Html 5 video is truly a benefit for MAC users, at least those who don't have newer hardware and/or OS\nVideo Codecs\nSince the Html 5 specification does not specify a specific video codec, browser makers are free to support one or more of the common codecs. For the purposes of this test we have used the following codecs:\nH.264\nWebM\nFurther, there are multiple versions and these versions differ in dimensions and quality so as to support visitors with varying bandwidth and computer hardware capabilities. The following versions have been used for this test\n270p@500kbps\n360p@2000kbps\n480p@2600kbps\n720p@4000kbps\n1080p@7000kbps\nSo there are 10 actual videos files available on the server, 5 encoded using the H.264 codec and 5 encoded using the WebM codec.\nHtml 5 Video Full Screen\nAt the time of this writing, only Safari provides a built-in way to go to full screen. However as per the Html 5 video element specification, browser vendors should not provide a programmatic way to go to full screen. Only an actual user gesture, such as a physical mouse click can activate full screen. As a result this is what happens:\nOnly the default controls could provide a way to go to full screen or browser vendors could provide a context menu (right click over the video and choose full screen). At this time only safari provides a full screen button on its default skin.\nMost websites will have their own skin and will want to programmatically control the built-in video players. So this poses a problem because we’ll then need programmatic access to go to full screen.\nSo for the moment I’ve implemented my own full screen feature in the player that works in every browser regardless of whether the browser provides one or not since we can’t access that feature anyway. All browsers except Safari provide a way to set the browser in full screen mode using the F11 key. Note that this just puts the browser is full screen mode and has nothing to do with video. So the best user experience for full screen mode at the time is to hit the F11 key (to put the browser in full screen mode) and then to get the video to go to full screen so it fills the entire screen.\nHtml 5 Video Comparison Results\nFor those of you only interested in knowing the results, I’ve tabulated them here. All tests were performed on a 4 core 2.66GHz, 64bit hardware with 4GB RAM and Window 7.\nTest\n\tIE 9 PP4\tFirefox 4 Beta 4\tChrome 6.0.4\tSafari 5.0.1\tOpera 10.61\nPlayback Performance\t1st\t3rd\t2nd\t1st\t4th\nCodec Support\t1st\t2nd\t1st\t3rd\t2nd\nFeature Capability\t2nd\t2nd\t1st\t1st\t3rd\nFeature Performance\t1st\t1st\t1st\t3rd\t2nd\nPlayback Performance\nIE 9 and Safari 5 are the winners. Both these browsers do a fantastic job of playing back high quality HD video, really impressive indeed.\nPlayback Performance\n\tIE 9 PP4\tFirefox 4 Beta 4\tChrome 6.0.4\tSafari 5.0.1\tOpera 10.61\n480p\t6%\t10%\t12%\t16%\t21%\n720p\t9%\t19%\t18%\t25%\t42%\n1080p\t17%\t25%\t32%\t40%\t56%\nNote\nAs you can see from the results above CPU utilization is not an indication of how well a player can perform. From the looks of it however, it would seem that vendors who have experience with video players, know what the heck they’re doing. Playing the 1080p (H.264) version using Windows Media Player on the same computer utilized 12% CPU as against 17% compared to IE 9. The 1080p version using a Flash based video player was completely unwatchable and the CPU utilization was at 70%. For the 720p version, It’s give the Flash based player “good” and not excellent and the CPU utilization was at 60%. For the 480p version I’d give it an Excellent and the CPU utilization was 40%.",
+  "bodyLinks": [
+    {
+      "text": "IE 9 Platform Preview 4",
+      "url": "https://web.archive.org/web/20240415144145/http://ie.microsoft.com/testdrive/"
+    },
+    {
+      "text": "Firefox 4.0 Beta",
+      "url": "https://web.archive.org/web/20240415144145/http://www.mozilla.com/en-US/firefox/beta/"
+    },
+    {
+      "text": "Chrome 6.0.472.41",
+      "url": "https://web.archive.org/web/20240415144145/http://www.google.com/chrome"
+    },
+    {
+      "text": "Safari 5.0.1",
+      "url": "https://web.archive.org/web/20240415144145/http://www.apple.com/safari/"
+    },
+    {
+      "text": "Opera 10.61.3484",
+      "url": "https://web.archive.org/web/20240415144145/http://www.techspot.com/downloads/40-opera-for-windows.html"
+    },
+    {
+      "text": "unable to come close to the playback performance of native players",
+      "url": "https://web.archive.org/web/20240415144145/http://exposureroom.com/news/view.aspx/371/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240415144145/http://www.webmproject.org/"
+    },
+    {
+      "text": "Playback Performance",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/html-5-video-and-flash/#playbackperformance"
+    },
+    {
+      "text": "Codec Support",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/html-5-video-and-flash/#codecsupport"
+    },
+    {
+      "text": "Feature Capability",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/html-5-video-and-flash/#featurecapability"
+    },
+    {
+      "text": "Feature Performance",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/html-5-video-and-flash/#featureperformance"
+    }
+  ],
+  "code": [],
+  "header": "Html 5 Video and Flash\nPosted by Shiv Kumar on 27th August, 2010\nCategorized Under: Html 5 Video Tag\nTagged With: Flash Html 5 Performance \n  ",
+  "html": "<div class=\"articleText\">\n        <p>&nbsp;<img style=\"background-image: none; border-right-width: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"Html5Video\" border=\"0\" alt=\"Html5Video\" src=\"/web/20240415144145im_/http://matlus.com/content/uploads/2011/01/Html5Video.jpg\" width=\"600\" height=\"300\"></p> <p>I see so much confusion and BS about Html 5 and Flash on the Internet. Most of it seems from people who know almost nothing about it in the first place. Don’t these people know that they don’t know? Getting to the subject at hand… Having been recently involved in building an Html 5 video player that will work across all major browsers and will be used in the mainstream (by major browsers, I mean IE, Firefox, Chrome, Safari and Opera). In doing so, I have acquired a deep insight into the capabilities and nuances of each browser's built in video player. Further, having built a Flash based video player that is used in the mainstream for a few years now gives me the ability to truly compare developing a video player that has the set of prerequisite features and performance metrics. </p> <h2>Single Codebase</h2>It was imperative that I can use a single codebase for the html 5 video player across all browsers, without the need to do any browser sniffing and or conditional code paths for different browsers. However, since the video element does not function or behave the same across browsers (either due to their understanding of the html 5 or limited support at this time), I have accounted for these nuances in the implementation of the video player to the extent possible.  <h2>Html 5 Video Comparison</h2>As browser makers continue to improve support for various Html 5 specifications it becomes important to compare browsers in this regard. In this comparison I’m interested in the implementation of the video element across browsers since there are no standards tests for this element, each browser’s implementation differs quite a bit and the result is that websites intending to support the html 5 video element have a really tough time developing a video player that has all of the functionality that their current Flash based video players have. I’ll compare the following aspects of each browser’s implementation of the video element as compared to a Flash based video player and Native video players (Native players being Windows Media Player on Windows and Quick time/QTX on MAC).  <ol> <li>Playback Performance  </li><li>Feature Capability  </li><li>Feature Performance </li></ol>The following browsers were used in the tests:  <ol> <li><a title=\"IE 9 Platform Preview\" href=\"https://web.archive.org/web/20240415144145/http://ie.microsoft.com/testdrive/\" target=\"_blank\">IE 9 Platform Preview 4</a>  </li><li><a title=\"Firefox 4 Beta\" href=\"https://web.archive.org/web/20240415144145/http://www.mozilla.com/en-US/firefox/beta/\" target=\"_blank\">Firefox 4.0 Beta</a>  </li><li><a title=\"Chrome 6\" href=\"https://web.archive.org/web/20240415144145/http://www.google.com/chrome\" target=\"_blank\">Chrome 6.0.472.41</a>  </li><li><a title=\"Safari 5.0.1\" href=\"https://web.archive.org/web/20240415144145/http://www.apple.com/safari/\" target=\"_blank\">Safari 5.0.1</a>  </li><li><a title=\"Opera 10.61\" href=\"https://web.archive.org/web/20240415144145/http://www.techspot.com/downloads/40-opera-for-windows.html\" target=\"_blank\">Opera 10.61.3484</a> </li></ol> <h2>Playback Performance</h2>This is the ability of the browser’s built in player to playback high quality video at the frame rate the video is encoded at (that is extremely smooth without stutter, jerks or sticky frames). Videos encoded at a video bit rate of between 4000kbps – 7000kbps at dimensions of 720p and 1080p are considered high quality (for the purposes of this test). At the moment only IE 9 and Safari 5 are comparable in playback performance to the native players on their respective platforms. All other browsers lag far behind. They’ll probably catch up in time but as things stand today, IE 9 and Safari 5 are the winners. We know that Flash based video players are <a title=\"Flash player compared to Windows Media Player and Quick time\" href=\"https://web.archive.org/web/20240415144145/http://exposureroom.com/news/view.aspx/371/\" target=\"_blank\">unable to come close to the playback performance of native players</a>. On Windows, Flash player has direct access to hardware acceleration. On a MAC, Flash player 10.1.82.76 in combination with OS X v10.4 and above can use hardware acceleration. So most MAC users are unable to watch high quality videos when played back using Flash based video players. According to Adobe, hardware acceleration is supported on the following MACs  <ol> <li>MacBooks shipped after January 21st, 2009  </li><li>Mac Minis shipped after March 3rd, 2009  </li><li>MacBook Pros shipped after October 14th, 2008  </li><li>iMacs which shipped after the first quarter of 2009 </li></ol>This doesn’t mean that all of the above hardware can playback high quality HD video, but only that they have a hardware decoder for H.264 when using Flash player and not other players.  <div class=\"panel\"> <h5 class=\"note\">The MAC user's plight</h5>Currently, however, 480p video, running on a 1.8GHz Mac mini, uses 34 percent of the CPU in Mac OS X and just 16 percent in Windows (running in BootCamp on same hardware). Flash 10.1 is expected to cut CPU consumption in half. So Html 5 video is truly a benefit for MAC users, at least those who don't have newer hardware and/or OS </div> <h2>Video Codecs</h2>Since the Html 5 specification does not specify a specific video codec, browser makers are free to support one or more of the common codecs. For the purposes of this test we have used the following codecs:  <ol> <li>H.264  </li><li><a title=\"WebM\" href=\"https://web.archive.org/web/20240415144145/http://www.webmproject.org/\" target=\"_blank\">WebM</a> </li></ol>Further, there are multiple versions and these versions differ in dimensions and quality so as to support visitors with varying bandwidth and computer hardware capabilities. The following versions have been used for this test  <ol> <li>270p@500kbps  </li><li>360p@2000kbps  </li><li>480p@2600kbps  </li><li>720p@4000kbps  </li><li>1080p@7000kbps </li></ol>So there are 10 actual videos files available on the server, 5 encoded using the H.264 codec and 5 encoded using the WebM codec.  <h2>Html 5 Video Full Screen</h2>At the time of this writing, only Safari provides a built-in way to go to full screen. However as per the Html 5 video element specification, browser vendors should not provide a programmatic way to go to full screen. Only an actual user gesture, such as a physical mouse click can activate full screen. As a result this is what happens:  <ol> <li>Only the default controls could provide a way to go to full screen or browser vendors could provide a context menu (right click over the video and choose full screen). At this time only safari provides a full screen button on its default skin.  </li><li>Most websites will have their own skin and will want to programmatically control the built-in video players. So this poses a problem because we’ll then need programmatic access to go to full screen. </li></ol>So for the moment I’ve implemented my own full screen feature in the player that works in every browser regardless of whether the browser provides one or not since we can’t access that feature anyway. All browsers except Safari provide a way to set the browser in full screen mode using the F11 key. Note that this just puts the browser is full screen mode and has nothing to do with video. So the best user experience for full screen mode at the time is to hit the F11 key (to put the browser in full screen mode) and then to get the video to go to full screen so it fills the entire screen.  <h2>Html 5 Video Comparison Results</h2>For those of you only interested in knowing the results, I’ve tabulated them here. All tests were performed on a 4 core 2.66GHz, 64bit hardware with 4GB RAM and Window 7.  <table style=\"margin-top: 10px; color: #555\" cellpadding=\"5\"> <thead style=\"background-color: #eeeeee\"> <tr> <td style=\"width: 290px\"> <h5>Test</h5></td> <td style=\"text-align: center\">IE 9 PP4</td> <td style=\"text-align: center\">Firefox 4 Beta 4</td> <td style=\"text-align: center\">Chrome 6.0.4</td> <td style=\"text-align: center\">Safari 5.0.1</td> <td style=\"text-align: center\">Opera 10.61</td></tr></thead> <tbody> <tr style=\"background-color: #eeeeee\"> <td><a href=\"#playbackperformance\">Playback Performance</a></td> <td style=\"text-align: center; background-color: green; color: #000000\">1st</td> <td style=\"text-align: center; background-color: maroon; color: #000000\">3rd</td> <td style=\"text-align: center; background-color: yellow; color: #000000\">2nd</td> <td style=\"text-align: center; background-color: green; color: #000000\">1st</td> <td style=\"text-align: center; background-color: red; color: #000000\">4th</td></tr> <tr style=\"background-color: #eaeaea\"> <td><a href=\"#codecsupport\">Codec Support</a></td> <td style=\"text-align: center; background-color: green; color: #000000\">1st</td> <td style=\"text-align: center; background-color: yellow; color: #000000\">2nd</td> <td style=\"text-align: center; background-color: green; color: #000000\">1st</td> <td style=\"text-align: center; background-color: maroon; color: #000000\">3rd</td> <td style=\"text-align: center; background-color: yellow; color: #000000\">2nd</td></tr> <tr style=\"background-color: #eaeaea\"> <td><a href=\"#featurecapability\">Feature Capability</a></td> <td style=\"text-align: center; background-color: yellow; color: #000000\">2nd</td> <td style=\"text-align: center; background-color: yellow; color: #000000\">2nd</td> <td style=\"text-align: center; background-color: green; color: #000000\">1st</td> <td style=\"text-align: center; background-color: green; color: #000000\">1st</td> <td style=\"text-align: center; background-color: maroon; color: #000000\">3rd</td></tr> <tr style=\"background-color: #eaeaea\"> <td><a href=\"#featureperformance\">Feature Performance</a></td> <td style=\"text-align: center; background-color: green; color: #000000\">1st</td> <td style=\"text-align: center; background-color: green; color: #000000\">1st</td> <td style=\"text-align: center; background-color: green; color: #000000\">1st</td> <td style=\"text-align: center; background-color: maroon; color: #000000\">3rd</td> <td style=\"text-align: center; background-color: yellow; color: #000000\">2nd</td></tr></tbody></table> <h2>Playback Performance</h2><span class=\"highlight\">IE 9 and Safari 5 are the winners</span>. Both these browsers do a fantastic job of playing back high quality HD video, really impressive indeed.  <table style=\"margin-top: 10px; color: #555\" cellpadding=\"5\"> <thead style=\"background-color: #eeeeee\"> <tr> <td style=\"width: 290px\"> <h5>Playback Performance</h5></td> <td style=\"text-align: center\">IE 9 PP4</td> <td style=\"text-align: center\">Firefox 4 Beta 4</td> <td style=\"text-align: center\">Chrome 6.0.4</td> <td style=\"text-align: center\">Safari 5.0.1</td> <td style=\"text-align: center\">Opera 10.61</td></tr></thead> <tbody> <tr style=\"background-color: #eeeeee\"> <td>480p</td> <td style=\"text-align: center; background-color: green; color: #000000\">6%</td> <td style=\"text-align: center; background-color: green; color: #000000\">10%</td> <td style=\"text-align: center; background-color: green; color: #000000\">12%</td> <td style=\"text-align: center; background-color: green; color: #000000\">16%</td> <td style=\"text-align: center; background-color: green; color: #000000\">21%</td></tr> <tr style=\"background-color: #eeeeee\"> <td>720p</td> <td style=\"text-align: center; background-color: green; color: #000000\">9%</td> <td style=\"text-align: center; background-color: yellow; color: #000000\">19%</td> <td style=\"text-align: center; background-color: green; color: #000000\">18%</td> <td style=\"text-align: center; background-color: green; color: #000000\">25%</td> <td style=\"text-align: center; background-color: yellow; color: #000000\">42%</td></tr> <tr style=\"background-color: #eeeeee\"> <td>1080p</td> <td style=\"text-align: center; background-color: green; color: #000000\">17%</td> <td style=\"text-align: center; background-color: red; color: #000000\">25%</td> <td style=\"text-align: center; background-color: yellow; color: #000000\">32%</td> <td style=\"text-align: center; background-color: green; color: #000000\">40%</td> <td style=\"text-align: center; background-color: red; color: #000000\">56%</td></tr></tbody></table> <div class=\"panel\"> <h5 class=\"note\">Note</h5>As you can see from the results above CPU utilization is not an indication of how well a player can perform. From the looks of it however, it would seem that vendors who have experience with video players, know what the heck they’re doing. Playing the 1080p (H.264) version using Windows Media Player on the same computer utilized 12% CPU as against 17% compared to IE 9. The 1080p version using a Flash based video player was completely unwatchable and the CPU utilization was at 70%. For the 720p version, It’s give the Flash based player “good” and not excellent and the CPU utilization was at 60%. For the 480p version I’d give it an Excellent and the CPU utilization was 40%. </div>  \n        </div>",
+  "images": [
+    {
+      "alt": "Html5Video",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240415144145im_/http://matlus.com/content/uploads/2011/01/Html5Video.jpg"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240415144145/http://www.matlus.com/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "Video Tag",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/category/html-5/video-tag/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/flash/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415144145/https://twitter.com/share?url=http%3a%2f%2fmatlus.com%2fhtml-5-video-and-flash%2f&text=Html+5+Video+and+Flash"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415144145/http://www.facebook.com/sharer.php?u=http%3a%2f%2fmatlus.com%2fhtml-5-video-and-flash%2f&t=Html+5+Video+and+Flash"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415144145/https://plus.google.com/share?url=http%3a%2f%2fmatlus.com%2fhtml-5-video-and-flash%2f&text=Html+5+Video+and+Flash"
+    },
+    {
+      "text": "IE 9 Platform Preview 4",
+      "url": "https://web.archive.org/web/20240415144145/http://ie.microsoft.com/testdrive/"
+    },
+    {
+      "text": "Firefox 4.0 Beta",
+      "url": "https://web.archive.org/web/20240415144145/http://www.mozilla.com/en-US/firefox/beta/"
+    },
+    {
+      "text": "Chrome 6.0.472.41",
+      "url": "https://web.archive.org/web/20240415144145/http://www.google.com/chrome"
+    },
+    {
+      "text": "Safari 5.0.1",
+      "url": "https://web.archive.org/web/20240415144145/http://www.apple.com/safari/"
+    },
+    {
+      "text": "Opera 10.61.3484",
+      "url": "https://web.archive.org/web/20240415144145/http://www.techspot.com/downloads/40-opera-for-windows.html"
+    },
+    {
+      "text": "unable to come close to the playback performance of native players",
+      "url": "https://web.archive.org/web/20240415144145/http://exposureroom.com/news/view.aspx/371/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240415144145/http://www.webmproject.org/"
+    },
+    {
+      "text": "Playback Performance",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/html-5-video-and-flash/#playbackperformance"
+    },
+    {
+      "text": "Codec Support",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/html-5-video-and-flash/#codecsupport"
+    },
+    {
+      "text": "Feature Capability",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/html-5-video-and-flash/#featurecapability"
+    },
+    {
+      "text": "Feature Performance",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/html-5-video-and-flash/#featureperformance"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240415144145/http://matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415144145/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "Html 5 Video and Flash",
+  "url": "https://web.archive.org/web/20240415144145/http://matlus.com/html-5-video-and-flash/"
+}
