@@ -1,0 +1,58 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>DelegatingHandler for X-HTTP-Method-Override</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>DelegatingHandler for X-HTTP-Method-Override</h1><p class="recovery">DelegatingHandler for X-HTTP-Method-Override<br>Posted by Shiv Kumar on 3rd March, 2012<br>Categorized Under: Programming ASP.NET<br>Tagged With: Http REST Web API <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20240525153427/http://www.matlus.com/delegatinghandler-for-x-http-method-override/">this Wayback capture</a>.</p><div class="articleText">
+        <p>If you have a RESTful Web API exposed in the public domain, it is quite likely, you’ll encounter a few stumbling blocks. A couple in fact come to mind:</p> <ol> <li>Need to support older browsers that only support HTTP POST and GET  </li><li>Some firewalls block any HTTP traffic that is not either a POST or GET</li></ol> <p>This poses a problem if you’re using the new ASP.NET Web API framework to build your services since the dispatching to the specific methods in your API Controller is automatic, based on the HTTP method used.</p> <p>The basic idea behind the <code>X-HTTP-Method-Override</code> HTTP header is that browsers (typically via JavaScript/XMLHttpRequest can add the <code>X-HTTP-Method-Override</code> HTTP header with a value of either PUT or DELETE (or HEAD) and then make a regular HTTP POST request. On the receiving end, the service will interpret the HTTP method to be either a PUT or DELETE as the case may be, thus circumventing the two issues mentioned above.</p> <h2>Delegating Handlers to the rescue</h2> <p>Delegating handlers essentially allow you to intercept the Request/Response pipeline. Therefore you can use them to modify the request or response (or both) or simply send back a response (thus halting the progression of the request down the remain pipeline). If you’re familiar with ASP.NET HttpModules, then think of DelegatingHandlers similar to HttpModule.</p> <p>There is a difference between DelegatingHandlers and HttpModules and that is DelegatingHandlers are chained, such that each DelegatingHandler has a reference to an inner handler and it calls out to its inner handler when it is done. The team responsible for this design as Microsoft call this the delegate pattern. However, I don’t believe this is the delegate pattern. Nonetheless, keep your eye on when you’d use a DelegatingHandler and how they work.</p> <h2>The XHttpMethodOverrideDelegatingHandler</h2> <p>The handler itself is really very simple to implement. Take a look at the code listing below. I think the code is pretty self-explanatory. You need to register this class before you can use it.</p> <div class="panel code content/images/csharp.png" title="XHttpMethodOverrideMessageHandler.cs" id="code_28463"><div class="codeHeading" style="background-image: url(/web/20240525153427/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">XHttpMethodOverrideMessageHandler.cs</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre><span class="Keyword">using</span> System;
+<span class="Keyword">using</span> System.Collections.Generic;
+<span class="Keyword">using</span> System.Linq;
+<span class="Keyword">using</span> System.Net.Http;
+<span class="Keyword">using</span> System.Threading;
+<span class="Keyword">using</span> System.Threading.Tasks;
+<span class="Keyword">using</span> System.Web;
+
+<span class="Keyword">namespace</span> Matlus.Web.WebLib.DelegatingHandlers
+{
+    <span class="Keyword">public</span> <span class="Keyword">class</span> <span class="Identifier">XHttpMethodOverrideDelegatingHandler</span> : <span class="Identifier">DelegatingHandler</span>
+    {
+        <span class="Keyword">static</span> <span class="Keyword">readonly</span> <span class="Keyword">string</span>[] httpMethods = { <span class="StringLiteral">"PUT"</span>, <span class="StringLiteral">"DELETE"</span> };
+        <span class="Keyword">static</span> <span class="Keyword">readonly</span> <span class="Keyword">string</span> httpMethodOverrideHeader = <span class="StringLiteral">"X-HTTP-Method-Override"</span>;
+
+        <span class="Keyword">protected</span> <span class="Keyword">override</span> <span class="Identifier">Task</span>&lt;<span class="Identifier">HttpResponseMessage</span>&gt; SendAsync(<span class="Identifier">HttpRequestMessage</span> request, <span class="Identifier">CancellationToken</span> cancellationToken)
+        {
+            <span class="Keyword">if</span> (request.Method == <span class="Identifier">HttpMethod</span>.Post &amp;&amp; request.Headers.Contains(httpMethodOverrideHeader))
+            {
+                <span class="Keyword">var</span> httpMethod = request.Headers.GetValues(httpMethodOverrideHeader).FirstOrDefault();
+                <span class="Keyword">if</span> (httpMethods.Contains(httpMethod, <span class="Identifier">StringComparer</span>.InvariantCultureIgnoreCase))
+                    request.Method = <span class="Keyword">new</span> <span class="Identifier">HttpMethod</span>(httpMethod);
+            }
+            <span class="Keyword">return</span> <span class="Keyword">base</span>.SendAsync(request, cancellationToken);
+        }
+    }
+}
+</pre>
+<h3>Code listing of the XHttpMethodOverrideDelegatingHandler class</h3></div>
+<p>You do this in yout HttpApplication’s (Global) Start event like so:</p>
+<div class="panel code content/images/csharp.png" title="Global.asax.cs" id="code_65516"><div class="codeHeading" style="background-image: url(/web/20240525153427/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Global.asax.cs</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre>        <span class="Keyword">protected</span> <span class="Keyword">void</span> Application_Start(<span class="Keyword">object</span> sender, <span class="Identifier">EventArgs</span> e)
+        {
+            RegisterRoutes(<span class="Identifier">RouteTable</span>.Routes);
+            <span class="Identifier">GlobalConfiguration</span>.Configuration.MessageHandlers.Add(<span class="Keyword">new</span> <span class="Identifier">XHttpMethodOverrideDelegatingHandler</span>());
+        }
+</pre>
+<h3>Registering the XHttpMethodOverrideDelegatingHandler</h3></div>
+<p>That’s all it take to get this working on the server side of things. On the browser side, in JavaScript, you can now add the HTTP Header and make a regual HTTP POST request to your server and see this request get converted to a HTTP PUT request.</p>
+<p>Below is an example of how you would do this in jQuery:</p><pre>    <span class="Identifier">function</span> putMember() {
+      $.ajax({
+        url: <span class="StringLiteral">"http://localhost/api/members/"</span> + $(<span class="StringLiteral">"#username"</span>).val(),
+        type: <span class="StringLiteral">"POST"</span>,
+        data: $(<span class="StringLiteral">"#newMemberForm"</span>).serialize(),
+        headers: { <span class="StringLiteral">"X-HTTP-Method-Override"</span>: <span class="StringLiteral">"PUT"</span> },
+      })
+      .done(function (data) {
+      })
+      .fail(function (e) {
+        alert(e.responseText);
+      })
+      .always(function () { });
+    }
+
+</pre>
+<p>Note that due to the Sam Origin policy that browsers enforce, you can only use the JavaScript above within the same domain.</p>  
+        </div></body></html>

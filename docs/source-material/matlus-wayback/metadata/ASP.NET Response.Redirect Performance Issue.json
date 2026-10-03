@@ -1,0 +1,405 @@
+{
+  "body": "This is a short post and I'm writing this because I've seen a lot of people using Response.Redirect(url) or Response.RedirectPremanent(url) and not using the overloads:\n\nResponse.Redirect(url, false)\nResponse.RedirectPermanent(url, false)\n\nSo rather than repeat the same thing over and over, I've decided to write a blog post about it in the hopes that others may find it and learn from it. There are two overloads to these methods (I'm only showing the Response.Redirect method but the same applies to Response.RedirectPermanent):\n\nResponse.Redirect(string url)\nResponse.Redirect(string url, bool endResponse)\n\n\n\nYou typically use Response.Redirect when we want to redirect a request to another page in our application or another website or a send an Http status 301 Permanently moved or something similar. In our code the way that this works is that the line right after the call to redirect does not execute. Indeed, most times (if not all the time) this is exactly the behavior we want/expect. It's like (in C#) saying return and the execution jumps right out of the current method. It makes structuring your flow of logic that much easier.\n\nHere's the problem. Think about how, when you call Response.Redirect(url) the next line in our code is not executed (without explicitly saying return)? Yup, that's right, an exception was thrown. That's the only way to boot right out of a method without explicitly saying return. When we call Response.Redirect(url), it calls the second overload passing in true as the parameter to endResponse. What this does is, it calls Response.End(), and Response.End() throws a ThreadAbortException (that's the only way it can truly end the response).\n\nSo what we should do is use the second overload (always) and pass it false as the second parameter (always). But….but…but, yes, I know, in that case our code continues to execute and that's not what we want!\n\nThere are two solutions to this predicament.\n\nStructure our code such that the condition that warrants a Response.Redirect follows a path such that nothing else is done in our Page/Handler/Controller and our method ends gracefully.\nCall CompleteRequest() right after calling Response.Redirect(url, false). This is a method of the ApplicationInstance object, which we can get from the current context, so something like HttpContext.ApplicationInstance.CompleteRequest();. Note that the execution of code will continue as normal (and not exit/abort). But what will happen is that as soon as the Page/Handler/Controller completes the response the ASP.NET pipeline will jump straight to the EndRequest event. So the Request does \"complete\" (without any ThreadAbortException), but your code also executes. This may not be something you want to happen. But I thought I'd mention it anyway.\n\nAs regards option 1 above, here is a code listing that show you what I mean. Think of the BuildPage method shown below as the ProcessRequest method of a handler. That is once this method finishes we're done processing the request (this is code I've pulled out from Orion by blog engine). There is only one case in which we want to process the request (the if condition). All other cases warrant either a permanent redirect or redirect. All of the code expected to be executed under the normal case is inside the if condition.\n\n \n\nUsing Response.Redirect/RedirectPermanent to gracefully exist from a method\n    protected override void BuildPage(HttpContextBase httpContext, object model)\n    {\n      var postDisplayDataDto = (PostDisplayDataDto)model;\n      if (model != null && postDisplayDataDto.PostsDataTable.Rows.Count == 1)\n      {\n        //Ttile of the Post + On + Blog name\n        TitleView.Text = postDisplayDataDto.PostsDataTable.Rows[0][4].ToString() + \" On \" + BlogInfo.BlogInfoName;\n        //Title of the Post plus the Post Text\n        MetaDescriptionView.Description = postDisplayDataDto.PostsDataTable.Rows[0][4].ToString() + \" \" + postDisplayDataDto.PostsDataTable.Rows[0][5].ToString();\n \n        RegisterView(\"Body\", new PostView(httpContext, postDisplayDataDto,\n          Configuration[\"CategoryCaption\"],\n          Configuration[\"TagCaption\"]\n          ));\n      }\n      else if (model == null)\n        HttpContext.Response.RedirectPermanent(Url.Post(AppDomainAppVirtualPath, PostSlug), false);\n      else\n        PermanentlyRedirectToAppropriateLocation();\n    }\n\nShowing one way to gracefully exit from a method",
+  "bodyLinks": [
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20221207121548/http://www.matlus.com/orion/"
+    }
+  ],
+  "code": [
+    "Response.Redirect(string url)\nResponse.Redirect(string url, bool endResponse)\n\n",
+    "    protected override void BuildPage(HttpContextBase httpContext, object model)\n    {\n      var postDisplayDataDto = (PostDisplayDataDto)model;\n      if (model != null && postDisplayDataDto.PostsDataTable.Rows.Count == 1)\n      {\n        //Ttile of the Post + On + Blog name\n        TitleView.Text = postDisplayDataDto.PostsDataTable.Rows[0][4].ToString() + \" On \" + BlogInfo.BlogInfoName;\n        //Title of the Post plus the Post Text\n        MetaDescriptionView.Description = postDisplayDataDto.PostsDataTable.Rows[0][4].ToString() + \" \" + postDisplayDataDto.PostsDataTable.Rows[0][5].ToString();\n \n        RegisterView(\"Body\", new PostView(httpContext, postDisplayDataDto,\n          Configuration[\"CategoryCaption\"],\n          Configuration[\"TagCaption\"]\n          ));\n      }\n      else if (model == null)\n        HttpContext.Response.RedirectPermanent(Url.Post(AppDomainAppVirtualPath, PostSlug), false);\n      else\n        PermanentlyRedirectToAppropriateLocation();\n    }\n"
+  ],
+  "header": "ASP.NET Response.Redirect Performance Issue\nPosted by Shiv Kumar on 2nd March, 2011\nCategorized Under: Programming ASP.NET\nTagged With: Performance \n  ",
+  "html": "<div class=\"articleText\">\n        <p><a name=\"codelisting1\"></a></p> <p>This is a short post and I'm writing this because I've seen a lot of people using <code>Response.Redirect(url)</code> or <code>Response.RedirectPremanent(url)</code> and not using the overloads:</p> <ul> <li><code>Response.Redirect(url, false)</code></li> <li><code>Response.RedirectPermanent(url, false)</code></li></ul> <p>So rather than repeat the same thing over and over, I've decided to write a blog post about it in the hopes that others may find it and learn from it. There are two overloads to these methods (I'm only showing the Response.Redirect method but the same applies to Response.RedirectPermanent):</p> <p></p><pre class=\"csharpcode\">Response.Redirect(<span class=\"kwrd\">string</span> url)\nResponse.Redirect(<span class=\"kwrd\">string</span> url, <span class=\"kwrd\">bool</span> endResponse)\n\n</pre>\n<p>You typically use <code>Response.Redirect</code> when we want to redirect a request to another page in our application or another website or a send an Http status 301 Permanently moved or something similar. In our code the way that this works is that the line right after the call to redirect <em>does not execute</em>. Indeed, most times (if not all the time) this is exactly the behavior we want/expect. It's like (in C#) saying <code>return</code> and the execution jumps right out of the current method. It makes structuring your flow of logic that much easier.</p>\n<p>Here's the problem. Think about how, when you call Response.Redirect(url) the next line in our code is not executed (without explicitly saying return)? Yup, that's right, an exception was thrown. That's the only way to boot right out of a method without explicitly saying return. When we call Response.Redirect(url), it calls the second overload passing in <code>true</code> as the parameter to <code>endResponse</code>. What this does is, it calls <code>Response.End()</code>, and Response.End() throws a <code>ThreadAbortException</code> (that's the only way it can truly end the response).</p>\n<p>So what we should do is use the second overload (always) and pass it <code>false</code> as the second parameter (always). But….but…but, yes, I know, in that case our code continues to execute and that's not what we want!</p>\n<p>There are two solutions to this predicament.</p>\n<ol>\n<li>Structure our code such that the condition that warrants a Response.Redirect follows a path such that nothing else is done in our Page/Handler/Controller and our method ends gracefully. \n</li><li>Call <code>CompleteRequest()</code> right after calling Response.Redirect(url, false). This is a method of the ApplicationInstance object, which we can get from the current context, so something like HttpContext.ApplicationInstance.CompleteRequest();. Note that the <em><strong>execution of code will continue as normal</strong></em> (and not exit/abort). But what will happen is that as soon as the Page/Handler/Controller completes the response the ASP.NET pipeline will jump straight to the EndRequest event. So the Request does \"complete\" (without any ThreadAbortException), but your code also executes. This may not be something you want to happen. But I thought I'd mention it anyway.</li></ol>\n<p>As regards option 1 above, here is a code listing that show you what I mean. Think of the <code>BuildPage</code> method shown below as the <code>ProcessRequest</code> method of a handler. That is once this method finishes we're done processing the request (this is code I've pulled out from <a href=\"https://web.archive.org/web/20221207121548/http://www.matlus.com/orion/\" target=\"_blank\">Orion</a> by blog engine). There is only one case in which we want to process the request (the if condition). All other cases warrant either a permanent redirect or redirect. All of the code expected to be executed under the normal case is inside the if condition. </p>\n<p>&nbsp;</p>\n<div class=\"panel code content/images/csharp.png\" title=\"Using Response.Redirect/RedirectPermanent to gracefully exist from a method\" id=\"code_4064\"><div class=\"codeHeading\" style=\"background-image: url(/web/20221207121548/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Using Response.Redirect/RedirectPermanent to gracefully exist from a method</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre style=\"text-align: left; line-height: normal\"><font color=\"#000000\"><font style=\"font-size: 9.8pt\">    </font></font><font style=\"font-size: 9.8pt\"><span style=\"color: \" class=\"keyword\"><font color=\"#0000ff\">protected</font></span><font color=\"#000000\"> </font><span style=\"color: \" class=\"keyword\"><font color=\"#0000ff\">override</font></span><font color=\"#000000\"> </font><span style=\"color: \" class=\"keyword\"><font color=\"#0000ff\">void</font></span><font color=\"#000000\"> <span class=\"identifier\">BuildPage</span>(</font><span style=\"color: \" class=\"User Types\"><font color=\"#2b91af\">HttpContextBase</font></span><font color=\"#000000\"> <span class=\"identifier\">httpContext</span>, </font><span style=\"color: \" class=\"keyword\"><font color=\"#0000ff\">object</font></span><font color=\"#000000\"> <span class=\"identifier\">model</span>)\n    {\n      </font><span style=\"color: \" class=\"keyword\"><font color=\"#0000ff\">var</font></span><font color=\"#000000\"> <span class=\"identifier\">postDisplayDataDto</span> <span class=\"operator\">=</span> (</font><span style=\"color: \" class=\"User Types\"><font color=\"#2b91af\">PostDisplayDataDto</font></span><font color=\"#000000\">)<span class=\"identifier\">model</span>;\n      </font><span style=\"color: \" class=\"keyword\"><font color=\"#0000ff\">if</font></span><font color=\"#000000\"> (<span class=\"identifier\">model</span> <span class=\"operator\">!=</span> </font><span style=\"color: \" class=\"keyword\"><font color=\"#0000ff\">null</font></span><font color=\"#000000\"> <span class=\"operator\">&amp;&amp;</span> <span class=\"identifier\">postDisplayDataDto</span><span class=\"operator\">.</span><span class=\"identifier\">PostsDataTable</span><span class=\"operator\">.</span><span class=\"identifier\">Rows</span><span class=\"operator\">.</span><span class=\"identifier\">Count</span> <span class=\"operator\">==</span> <span class=\"number\">1</span>)\n      {\n        </font><span style=\"color: \" class=\"comment\"><font color=\"#008000\">//Ttile of the Post + On + Blog name</font></span>\n<font color=\"#000000\">        <span class=\"identifier\">TitleView</span><span class=\"operator\">.</span><span class=\"identifier\">Text</span> <span class=\"operator\">=</span> <span class=\"identifier\">postDisplayDataDto</span><span class=\"operator\">.</span><span class=\"identifier\">PostsDataTable</span><span class=\"operator\">.</span><span class=\"identifier\">Rows</span>[<span class=\"number\">0</span>][<span class=\"number\">4</span>]<span class=\"operator\">.</span><span class=\"identifier\">ToString</span>() <span class=\"operator\">+</span> </font><span style=\"color: \" class=\"string\"><font color=\"#a31515\">\" On \"</font></span><font color=\"#000000\"> <span class=\"operator\">+</span> <span class=\"identifier\">BlogInfo</span><span class=\"operator\">.</span><span class=\"identifier\">BlogInfoName</span>;\n        </font><span style=\"color: \" class=\"comment\"><font color=\"#008000\">//Title of the Post plus the Post Text</font></span>\n<font color=\"#000000\">        <span class=\"identifier\">MetaDescriptionView</span><span class=\"operator\">.</span><span class=\"identifier\">Description</span> <span class=\"operator\">=</span> <span class=\"identifier\">postDisplayDataDto</span><span class=\"operator\">.</span><span class=\"identifier\">PostsDataTable</span><span class=\"operator\">.</span><span class=\"identifier\">Rows</span>[<span class=\"number\">0</span>][<span class=\"number\">4</span>]<span class=\"operator\">.</span><span class=\"identifier\">ToString</span>() <span class=\"operator\">+</span> </font><span style=\"color: \" class=\"string\"><font color=\"#a31515\">\" \"</font></span><font color=\"#000000\"> <span class=\"operator\">+</span> <span class=\"identifier\">postDisplayDataDto</span><span class=\"operator\">.</span><span class=\"identifier\">PostsDataTable</span><span class=\"operator\">.</span><span class=\"identifier\">Rows</span>[<span class=\"number\">0</span>][<span class=\"number\">5</span>]<span class=\"operator\">.</span><span class=\"identifier\">ToString</span>();\n \n        <span class=\"identifier\">RegisterView</span>(</font><span style=\"color: \" class=\"string\"><font color=\"#a31515\">\"Body\"</font></span><font color=\"#000000\">, </font><span style=\"color: \" class=\"keyword\"><font color=\"#0000ff\">new</font></span><font color=\"#000000\"> </font><span style=\"color: \" class=\"User Types\"><font color=\"#2b91af\">PostView</font></span><font color=\"#000000\">(<span class=\"identifier\">httpContext</span>, <span class=\"identifier\">postDisplayDataDto</span>,\n          <span class=\"identifier\">Configuration</span>[</font><span style=\"color: \" class=\"string\"><font color=\"#a31515\">\"CategoryCaption\"</font></span><font color=\"#000000\">],\n          <span class=\"identifier\">Configuration</span>[</font><span style=\"color: \" class=\"string\"><font color=\"#a31515\">\"TagCaption\"</font></span><font color=\"#000000\">]\n          ));\n      }\n      </font><span style=\"color: \" class=\"keyword\"><font color=\"#0000ff\">else</font></span><font color=\"#000000\"> </font><span style=\"color: \" class=\"keyword\"><font color=\"#0000ff\">if</font></span><font color=\"#000000\"> (<span class=\"identifier\">model</span> <span class=\"operator\">==</span> </font><span style=\"color: \" class=\"keyword\"><font color=\"#0000ff\">null</font></span><font color=\"#000000\">)\n        <span class=\"identifier\">HttpContext</span><span class=\"operator\">.</span><span class=\"identifier\">Response</span><span class=\"operator\">.</span><span class=\"identifier\">RedirectPermanent</span>(</font><span style=\"color: \" class=\"User Types\"><font color=\"#2b91af\">Url</font></span><font color=\"#000000\"><span class=\"operator\">.</span><span class=\"identifier\">Post</span>(<span class=\"identifier\">AppDomainAppVirtualPath</span>, <span class=\"identifier\">PostSlug</span>), </font><span style=\"color: \" class=\"keyword\"><font color=\"#0000ff\">false</font></span><font color=\"#000000\">);\n      </font><span style=\"color: \" class=\"keyword\"><font color=\"#0000ff\">else</font></span>\n<font color=\"#000000\">        <span class=\"identifier\">PermanentlyRedirectToAppropriateLocation</span>();\n    }\n</font></font></pre>\n<h3>Showing one way to gracefully exit from a method</h3></div>  \n        </div>",
+  "images": [],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20221207121548/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "ASP.NET",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/category/programming/asp-net/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20221207121548/https://twitter.com/share?url=http%3a%2f%2fmatlus.com%2fasp-net-response-redirect-performance-issue%2f&text=ASP.NET+Response.Redirect+Performance+Issue"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20221207121548/http://www.facebook.com/sharer.php?u=http%3a%2f%2fmatlus.com%2fasp-net-response-redirect-performance-issue%2f&t=ASP.NET+Response.Redirect+Performance+Issue"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20221207121548/https://plus.google.com/share?url=http%3a%2f%2fmatlus.com%2fasp-net-response-redirect-performance-issue%2f&text=ASP.NET+Response.Redirect+Performance+Issue"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20221207121548/http://www.matlus.com/orion/"
+    },
+    {
+      "text": "Nghi?p Tr?n Công",
+      "url": "https://web.archive.org/web/20221207121548/http://www.onb.vn/"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20221207121548/http://matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20221207121548/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "ASP.NET Response.Redirect Performance Issue",
+  "url": "https://web.archive.org/web/20221207121548/http://matlus.com/asp-net-response-redirect-performance-issue/"
+}

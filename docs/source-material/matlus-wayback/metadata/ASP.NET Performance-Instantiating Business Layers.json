@@ -1,0 +1,403 @@
+{
+  "body": "The typical model of instantiating your Business Layer or business classes is to create an new instance each time you are servicing a request. That is, in your page or controller, you create a new instance of your business layer. Is there another way to do this and what would be the advantages? And would it be thread-safe? Yes, there is and the option I'll be presenting in this post has a few advantages as well. However, before we going into the details of this option we need to understand how things work insofar as IIS and the ASP.NET pipeline are concerned.\nRelationship between IIS and ASP.NET\nIn IIS your ASP.NET application really runs in an App Pool, or more specifically in a worker process that the App pool creates for your application (Take a look at Figure 1 below). A Worker Process is an application that hosts your ASP.NET application and effectively that is the App Domain in .NET terms.\n\nFigure1\nIIS, App Pool and Worker Process\nFor the purposes of this discussion, I'll treat IIS, App Pool and the Worker Process as one and the same and so you may see me use these synonymously.\nWhen IIS fields a request for your application it hands it over to the worker process. The worker process in turn creates and instance of your Global class (which is of type HttpApplication). From that point on the typical flow of an ASP.NET application takes place (the ASP.NET pipeline). However, what you need to know and understand is that the worker process (think of it as IIS really) keeps the instance of your HttpApplication (an instance of your Global class) alive, in order to field other requests. In fact it by default it would create and cache up to 10 instances of your Global class, if required (Lazy instantiation) depending on load the number of requests your website receives other factors. In Figure1 above the instances of your ASP.NET application are shown as the red boxes. There could be up to 10 of these cached by the worker process. These are really threads that the worker process has created and cached and each thread has its own instance of your Global class. Note that each of these threads is in the same App Domain. So any static classes you may have in your application are shared across each of these threads or application instances.\nIIS and Request Queuing\nIf your site is really busy and/or your requests are long running requests and the 10 cached instances are all busy servicing other requests, then when a new request arrives for your application, IIS will queue this request. In fact it will (by default) queue up to 1000 requests in the hope that one of the 10 threads will eventually free up and it can hand the request over to it. Beyond that your site visitors will see a \"Server too busy\" error.\nBusiness Layers and Global\nGiven the information discussed thus far, lets move on to the matter at hand and that is the strategy we can and should employ in creating instances of our business layer. Let's just recap what we've learn't so far: Multiple instances of your Global class will exist in the Worker process for your application (in IIS). Each one waiting to be called upon by IIS to satisfy a request. IIS will pick any one of these instances. They are actually threads that have been cached by IIS and each thread has an instance of your Global class. When a request comes in, one of these threads is called upon to handle the request-response cycle. If multiple requests arrive simultaneously, then multiple threads (each containing an instance of your Global class) will be called upon to satisfy each of those requests. IIS guarantees that one thread will service one and only one Request-Response cycle at any given time. If other requests arrive simultaneously, they will be handled by other threads. These other threads are either cached from earlier or a new thread will be created and new instance of your Global class will be created and assigned to this thread in order to service the request. If all of the above is clear, then the answer is pretty simple. Global should create an instance of your Business layer! Because we know that\nA Request-Response is handled by one and only one (IIS) thread\nThis thread has it's own instance of Global\nBy default there there may be up to 10 instances of Global created\nThese instances are cached\n\nIf we create an instance of our Business Layer within the Global class the instance is not shared with other threads and so it's all thread-safe. Further, instances of our Business Layer will be in tandem with instances of Global so there will be only 10 instances created and these will be cached, so we won't be creating and disposing instances for every request-response cycle in our application. This gives us a huge performance benefit as well.\n\n \n\nBusiness Layer MUST be stateless\nBe aware that your Business Layers and DataAccess layers MUST be stateless. That is they should not rely on any state that may have been set in a previous request-response cycle. Remember that once an instace has been created, it will likely serve thousands of requests over it's lifetime. If you do need to reset any state, you can do it in the BeginRequest event of Global. This will ensure that at the start of each Request-Response cycle, all state has been reset.\nThe code below, shows how you would go about creating an instance of your business layer in Global. Due to the way the ASP.NET framework has been designed, it is important that you create the instance in the Init() method as shown below. Notice also, that we have a property in Global for our Business layer. This is so we can get a reference to it from our Pages, Controllers and Handlers.\nCreating and instance Business Layer in Global\npublic class Global : HttpApplication\n{\n  public BusinessModule BusinessModule { get; private set; }\n\n  public override void Init()\n  {\n    base.Init();\n    BusinessModule = new BusinessModule();      \n  }\n}\nWhen we want to get a reference to our Business layer instance from within a Page, Controller or Handler, we can define\nGetting a Reference to BusinessModule from Pages, Controllers etc.\nprotected BusinessModule BusinessModule { get { return ((Global)HttpContext.Current.ApplicationInstance).BusinessModule; } }\nI hope you found this discussion helpful and useful. I've been using this technique ever since I first started with ASP.NET using version 1.0 and 1.1. I've used it in every project so far and a lot of these project are large/busy website's and have benefited tremendously from the performance gains of this technique.",
+  "bodyLinks": [],
+  "code": [
+    "public class Global : HttpApplication\n{\n  public BusinessModule BusinessModule { get; private set; }\n\n  public override void Init()\n  {\n    base.Init();\n    BusinessModule = new BusinessModule();      \n  }\n}",
+    "protected BusinessModule BusinessModule { get { return ((Global)HttpContext.Current.ApplicationInstance).BusinessModule; } }"
+  ],
+  "header": "ASP.NET Performance-Instantiating Business Layers\nPosted by Shiv Kumar on 19th November, 2010\nCategorized Under: Programming ASP.NET\nTagged With: Performance \n  ",
+  "html": "<div class=\"articleText\">\n        The typical model of instantiating your Business Layer or business classes is to create an new instance each time you are servicing a request. That is, in your page or controller, you create a new instance of your business layer. Is there another way to do this and what would be the advantages? And would it be thread-safe? Yes, there is and the option I'll be presenting in this post has a few advantages as well. However, before we going into the details of this option we need to understand how things work insofar as IIS and the ASP.NET pipeline are concerned.  <h2>Relationship between IIS and ASP.NET</h2>In IIS your ASP.NET application really runs in an App Pool, or more specifically in a worker process that the App pool creates for your application (Take a look at Figure 1 below). A Worker Process is an application that hosts your ASP.NET application and effectively that is the App Domain in .NET terms.  <p><img style=\"background-image: none; border-right-width: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"IISAppPoolAndGlobal\" border=\"0\" alt=\"IISAppPoolAndGlobal\" src=\"https://web.archive.org/web/20221207131040im_/http://www.matlus.com/content/uploads/2011/01/IISAppPoolAndGlobal_7a87db2b-b0be-4e84-96dd-d2bf6d0f4cfa.jpg\" width=\"457\" height=\"337\">  </p><h3 class=\"imgFooter\">Figure1</h3> <div class=\"panel tbmargin\"> <h3 class=\"note\">IIS, App Pool and Worker Process</h3>For the purposes of this discussion, I'll treat IIS, App Pool and the Worker Process as one and the same and so you may see me use these synonymously. </div>When IIS fields a request for your application it hands it over to the worker process. The worker process in turn creates and instance of your Global class (which is of type <code>HttpApplication</code>). From that point on the typical flow of an ASP.NET application takes place (the ASP.NET pipeline). However, what you need to know and understand is that the worker process (think of it as IIS really) keeps the instance of your <code>HttpApplication</code> (an instance of your <code>Global</code> class) alive, in order to field other requests. In fact it by default it would create and cache up to 10 instances of your <code>Global</code> class, if required (Lazy instantiation) depending on load the number of requests your website receives other factors. In Figure1 above the instances of your ASP.NET application are shown as the red boxes. There could be up to 10 of these cached by the worker process. These are really threads that the worker process has created and cached and each thread has its own instance of your <code>Global</code> class. Note that each of these threads is in the same App Domain. So any static classes you may have in your application are shared across each of these threads or application instances.  <div class=\"panel tbmargin\"> <h3 class=\"note\">IIS and Request Queuing</h3>If your site is really busy and/or your requests are long running requests and the 10 cached instances are all busy servicing other requests, then when a new request arrives for your application, IIS will queue this request. In fact it will (by default) queue up to 1000 requests in the hope that one of the 10 threads will eventually free up and it can hand the request over to it. Beyond that your site visitors will see a \"Server too busy\" error. </div> <h2>Business Layers and Global</h2>Given the information discussed thus far, lets move on to the matter at hand and that is the strategy we can and should employ in creating instances of our business layer. Let's just recap what we've learn't so far: Multiple instances of your <code>Global</code> class will exist in the Worker process for your application (in IIS). Each one waiting to be called upon by IIS to satisfy a request. IIS will pick any one of these instances. They are actually threads that have been cached by IIS and each thread has an instance of your Global class. When a request comes in, one of these threads is called upon to handle the request-response cycle. If multiple requests arrive simultaneously, then multiple threads (each containing an instance of your Global class) will be called upon to satisfy each of those requests. IIS guarantees that one thread will service <b>one and only one</b> Request-Response cycle at any given time. If other requests arrive simultaneously, they will be handled by other threads. These other threads are either cached from earlier or a new thread will be created and new instance of your <code>Global</code> class will be created and assigned to this thread in order to service the request. If all of the above is clear, then the answer is pretty simple. Global should create an instance of your Business layer! Because we know that  <ol> <li>A Request-Response is handled by one and only one (IIS) thread  </li><li>This thread has it's own instance of <code>Global</code>  </li><li>By default there there may be up to 10 instances of <code>Global</code> created  </li><li>These instances are cached </li></ol> <p>If we create an instance of our Business Layer within the Global class the instance is not shared with other threads and so it's all thread-safe. Further, instances of our Business Layer will be in tandem with instances of Global so there will be only 10 instances created and these will be cached, so we won't be creating and disposing instances for every request-response cycle in our application. This gives us a huge performance benefit as well. </p> <p><img style=\"background-image: none; border-right-width: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"GlobalBusinessLayerDataLayer\" border=\"0\" alt=\"GlobalBusinessLayerDataLayer\" src=\"https://web.archive.org/web/20221207131040im_/http://www.matlus.com/content/uploads/2011/01/GlobalBusinessLayerDataLayer_2819bcfe-6884-4589-be6f-b17b6fc03791.jpg\" width=\"337\" height=\"264\"></p> <p>&nbsp;</p> <div class=\"panel tbmargin\"> <h3 class=\"note\">Business Layer MUST be stateless</h3>Be aware that your Business Layers and DataAccess layers MUST be stateless. That is they should not rely on any state that may have been set in a previous request-response cycle. Remember that once an instace has been created, it will likely serve thousands of requests over it's lifetime. If you do need to reset any state, you can do it in the <code>BeginRequest</code> event of <code>Global</code>. This will ensure that at the start of each Request-Response cycle, all state has been reset. </div>The code below, shows how you would go about creating an instance of your business layer in <code>Global</code>. Due to the way the ASP.NET framework has been designed, it is important that you create the instance in the <code>Init()</code> method as shown below. Notice also, that we have a property in <code>Global</code> for our Business layer. This is so we can get a reference to it from our <code>Pages</code>, <code>Controllers</code> and <code>Handlers</code>.  <div class=\"panel code content/images/csharp.png\" title=\"Creating and instance Business Layer in Global \" id=\"code_85516\"><div class=\"codeHeading\" style=\"background-image: url(/web/20221207131040/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Creating and instance Business Layer in Global </h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> <span class=\"identifier\">Global</span> : HttpApplication\n{\n  <span class=\"kwrd\">public</span> <span class=\"identifier\">BusinessModule</span> BusinessModule { get; <span class=\"kwrd\">private</span> set; }\n\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">override</span> <span class=\"kwrd\">void</span> Init()\n  {\n    <span class=\"kwrd\">base</span>.Init();\n    BusinessModule = <span class=\"kwrd\">new</span> <span class=\"identifier\">BusinessModule</span>();      \n  }\n}</pre></div>When we want to get a reference to our Business layer instance from within a <code>Page</code>, <code>Controller</code> or <code>Handler</code>, we can define \n<div class=\"panel code content/images/csharp.png\" title=\"Getting a Reference to BusinessModule from Pages, Controllers etc.\" id=\"code_14519\"><div class=\"codeHeading\" style=\"background-image: url(/web/20221207131040/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Getting a Reference to BusinessModule from Pages, Controllers etc.</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">protected</span> <span class=\"identifier\">BusinessModule</span> BusinessModule { get { <span class=\"kwrd\">return</span> ((<span class=\"identifier\">Global</span>)<span class=\"identifier\">HttpContext</span>.Current.ApplicationInstance).BusinessModule; } }</pre></div>I hope you found this discussion helpful and useful. I've been using this technique ever since I first started with ASP.NET using version 1.0 and 1.1. I've used it in every project so far and a lot of these project are large/busy website's and have benefited tremendously from the performance gains of this technique.\n  \n        </div>",
+  "images": [
+    {
+      "alt": "IISAppPoolAndGlobal",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20221207131040im_/http://www.matlus.com/content/uploads/2011/01/IISAppPoolAndGlobal_7a87db2b-b0be-4e84-96dd-d2bf6d0f4cfa.jpg"
+    },
+    {
+      "alt": "GlobalBusinessLayerDataLayer",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20221207131040im_/http://www.matlus.com/content/uploads/2011/01/GlobalBusinessLayerDataLayer_2819bcfe-6884-4589-be6f-b17b6fc03791.jpg"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20221207131040/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "ASP.NET",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/category/programming/asp-net/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20221207131040/https://twitter.com/share?url=http%3a%2f%2fmatlus.com%2finstantiating-business-layers-asp-net-performance%2f&text=ASP.NET+Performance-Instantiating+Business+Layers"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20221207131040/http://www.facebook.com/sharer.php?u=http%3a%2f%2fmatlus.com%2finstantiating-business-layers-asp-net-performance%2f&t=ASP.NET+Performance-Instantiating+Business+Layers"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20221207131040/https://plus.google.com/share?url=http%3a%2f%2fmatlus.com%2finstantiating-business-layers-asp-net-performance%2f&text=ASP.NET+Performance-Instantiating+Business+Layers"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20221207131040/http://matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20221207131040/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "ASP.NET Performance-Instantiating Business Layers",
+  "url": "https://web.archive.org/web/20221207131040/http://matlus.com/instantiating-business-layers-asp-net-performance/"
+}

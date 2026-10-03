@@ -1,0 +1,486 @@
+{
+  "body": "HttpClient has been around for quite some time now. It originally appeared as part of the REST Starter Kit in 2009. Since then it has gone through a huge number of changes and improvements (or over engineering some might argue) and a ton of breaking changes as well. Nonetheless, it’s intent was and still is to simplify client side Http programming and I think it does that quite well.\n\nThe new HttpClient has only async methods. That is you can’t make synchronous calls. You can make async calls synchronous (but I would advise against it). However, in this post the code you see is synchronous. Please also keep in mind that all of the code in this post and other posts is intentionally simple (that is not very object oriented) so as to help those who are learning something new stay sane. Once you’ve got the grasp of things, you should structure you code better and introduce exception handling etc.\n\nOne other thing that HttpClient does not do is throw exceptions when it receives Http Status code of the 500 and 400 series. The is a method on the HttpResponseMessage called EnsureSuccessStatusCode which throws an exception if the IsSuccessStatusCode property for the HTTP response is false.\n\nClient for the service in a previous post\n\nIn this post we’re essentially building a very simple Http client for the WEB API Self hosted application we built in a previous post Self Host ASP.NET Web API.\n\nStart a new Console application and overwrite the contents of the Program.cs file with the code listing below.\n\nHttpClientRESTFul\nusing System;\nusing System.Collections;\nusing System.Collections.Generic;\nusing System.Net.Http;\nusing System.Net.Http.Formatting;\nusing System.Net.Http.Headers;\nusing SelfHostedAspNetWebApi;\n\n/* Requires the following package from NuGet\n   \n   ASP.NET Web API (Beta) 4.0.20126.16343\n   http://nuget.org/packages/aspnetwebapi\n   Package Manager Console Command line: Install-Package HttpClient -Version 0.6.0\n   \n   System.Net.Http.Formatting\n   http://nuget.org/packages/System.Net.Http.Formatting\n   Package Manager Console Command line: Install-Package System.Net.Http.Formatting\n */\n\nnamespace HttpClientRESTFul\n{\n    class Program\n    {\n        static void Main(string[] args)\n        {\n            var serverAddress = \"http://localhost:8080\";\n\n            using (var httpClient = new HttpClient() { BaseAddress = new Uri(serverAddress) })\n            {\n                //GET all customers\n                var response = httpClient.GetStringAsync(\"api/customers\").Result;\n                Console.WriteLine(\"Response From Server:\\r\\n\\r\\n{0}\", response);\n\n                var newCustomer = new Customer { Name = \"George Washington Jr.\", Phone = \"1-202-555-0100\", Email = \"gwjr@whitehouse.gov\" };\n                var requestMessage = new HttpRequestMessage();\n                var objectContent = requestMessage.CreateContent<Customer>(\n                    newCustomer,\n                    MediaTypeHeaderValue.Parse(\"application/json\"),\n                    new MediaTypeFormatter[] { new JsonMediaTypeFormatter() },\n                    new FormatterSelector());\n\n                //POST new customer\n                var responseMessage = httpClient.PostAsync(\"api/customers\", objectContent).Result;\n                var newlyCreatedCustomer = responseMessage.Content.ReadAsAsync<Customer>().Result;\n                Console.WriteLine(\"Created (POST) new customer. New Customer Id is: \" + newlyCreatedCustomer.Id.ToString());\n\n                newlyCreatedCustomer.Name = \"George Washington III\";\n                objectContent = requestMessage.CreateContent<Customer>(\n                    newlyCreatedCustomer,\n                    MediaTypeHeaderValue.Parse(\"application/json\"),\n                    new MediaTypeFormatter[] { new JsonMediaTypeFormatter() },\n                    new FormatterSelector());\n\n                //PUT newly created customer\n                responseMessage = httpClient.PutAsync(\"api/customers/\" + newlyCreatedCustomer.Id.ToString(), objectContent).Result;\n                Console.WriteLine(\"Updated (PUT) newly created customer\");\n\n                //DELETE the newly created customer\n                var r = httpClient.DeleteAsync(\"api/customers/\" + newlyCreatedCustomer.Id.ToString()).Result;\n                Console.WriteLine(\"Deleted (DELETE) newly created customer\");\n            }\n\n            Console.ReadLine();\n        }\n    }\n}\n\n\nThe RESTFul client using HttpClient\n\nYou’ll need a couple of NuGet packages in order to be able to compile and run this application. I’ve provided links to them in the code listing above, at the very top.\n\nYou’ll also need the CustomerController class from the Self Host ASP.NET Web API project. This class in contained in the CustomerController.cs file code listing.\n\nBefore you run this application, make sure serverAddress matches the base address of your server application. Then run the server app first and then run this client application.\n\nThe code essentially executes GET,POST,PUT and DELETE methods on the service. The code is completely functional, but I’ve kept it really simply.\n\nAt this point you’re essentially done building the client application, however there are some points I’d like to make about the code that I think you should read.\n\nReceiving IEnumerable<Customer> instead of a string of JSON objects\n\nIdeally, rather than receiving a list of customers as a string of JSON objects, you’d like to receive them as say an IEnumerable<Customer>. The HttpClient class makes this fairly simple to do. Take a look at the following code listing:\n\nGetCustomers Method\nprivate static IEnumerable<Customer> GetCustomers(HttpClient httpClient)\n{\n    var responseMessage = httpClient.GetAsync(\"api/customers/\").Result;\n    responseMessage.EnsureSuccessStatusCode();\n    var customers = responseMessage.Content.ReadAsAsync<IEnumerable<Customer>>().Result;\n    return customers;\n}\n\nThe GetCustomers method returning an IEnumerable\n\nYou’ll notice that we do a similar thing when we receive the result of POSTing a new Customer, in order to receive an instance of the newly created customer as an instance of Customer (instead of a string). Except here, we’re receiving a sequence of Customers rather than a single.\n\nObjectContent constructor changed\n\nIf you look carefully at the code the “assembles” an instance of an HttpRequestMessage prior to calling the POST method on the server, you’ll notice we’re stuffing an instance of a (new) Customer instance into the “content”, before we make the http request. In other words, an instance of a customer it sent across the wire as a JSON object so the server side can create this new customer.\n\nThe way the HttpClient class works is that the HttpContent (The payload if you will) is abstracted into a class called HttpContent. This is an abstract class. However, out of the box, there are a number of descendants of this class that we could (have) used.\n\nStringContent\nByteArrayContent\nMultipartContent\nStreamContent\n\nTo keep things really simple, we could have just used the StringContent class, stuffed a JSON representation of our new customer (that we wanted POSTed to the server) and be done with it.\n\nBut I wanted this example to be a bit more real-world and so I wanted to use the ObjectContent type. The ASP.NET team has changed the constructor to internal. Not sure why. But what’s worse is not sure how else to use the ObjectContent. We could use a StreamContent and serialize of object instance to a stream, but that’s a lot more work.\n\nSo as it happens, I found a round-a-bout way of creating an instance of this class, as you can see in the very first code listing as well as below.\n\nUsing ObjectContent to send an object instance\n                var requestMessage = new HttpRequestMessage();\n                var objectContent = requestMessage.CreateContent<Customer>(\n                    newCustomer,\n                    MediaTypeHeaderValue.Parse(\"application/json\"),\n                    new MediaTypeFormatter[] { new JsonMediaTypeFormatter() },\n                    new FormatterSelector());\n\nCreating an instance of an ObjectContent\n\nAt the time of this writing I couldn’t find any documentation or example of how else to do it, so you may want to keep a watch out for the correct or better way of doing this.",
+  "bodyLinks": [
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx"
+    },
+    {
+      "text": "HttpClient",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx"
+    },
+    {
+      "text": "HttpResponseMessage",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpresponsemessage(v=vs.110).aspx"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "HttpContent",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpcontent(v=vs.110).aspx"
+    },
+    {
+      "text": "StringContent",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.stringcontent(v=vs.110).aspx"
+    },
+    {
+      "text": "ByteArrayContent",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.bytearraycontent(v=vs.110).aspx"
+    },
+    {
+      "text": "MultipartContent",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.multipartcontent(v=vs.110).aspx"
+    },
+    {
+      "text": "StreamContent",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.streamcontent(v=vs.110).aspx"
+    }
+  ],
+  "code": [
+    "using System;\nusing System.Collections;\nusing System.Collections.Generic;\nusing System.Net.Http;\nusing System.Net.Http.Formatting;\nusing System.Net.Http.Headers;\nusing SelfHostedAspNetWebApi;\n\n/* Requires the following package from NuGet\n   \n   ASP.NET Web API (Beta) 4.0.20126.16343\n   http://nuget.org/packages/aspnetwebapi\n   Package Manager Console Command line: Install-Package HttpClient -Version 0.6.0\n   \n   System.Net.Http.Formatting\n   http://nuget.org/packages/System.Net.Http.Formatting\n   Package Manager Console Command line: Install-Package System.Net.Http.Formatting\n */\n\nnamespace HttpClientRESTFul\n{\n    class Program\n    {\n        static void Main(string[] args)\n        {\n            var serverAddress = \"http://localhost:8080\";\n\n            using (var httpClient = new HttpClient() { BaseAddress = new Uri(serverAddress) })\n            {\n                //GET all customers\n                var response = httpClient.GetStringAsync(\"api/customers\").Result;\n                Console.WriteLine(\"Response From Server:\\r\\n\\r\\n{0}\", response);\n\n                var newCustomer = new Customer { Name = \"George Washington Jr.\", Phone = \"1-202-555-0100\", Email = \"gwjr@whitehouse.gov\" };\n                var requestMessage = new HttpRequestMessage();\n                var objectContent = requestMessage.CreateContent<Customer>(\n                    newCustomer,\n                    MediaTypeHeaderValue.Parse(\"application/json\"),\n                    new MediaTypeFormatter[] { new JsonMediaTypeFormatter() },\n                    new FormatterSelector());\n\n                //POST new customer\n                var responseMessage = httpClient.PostAsync(\"api/customers\", objectContent).Result;\n                var newlyCreatedCustomer = responseMessage.Content.ReadAsAsync<Customer>().Result;\n                Console.WriteLine(\"Created (POST) new customer. New Customer Id is: \" + newlyCreatedCustomer.Id.ToString());\n\n                newlyCreatedCustomer.Name = \"George Washington III\";\n                objectContent = requestMessage.CreateContent<Customer>(\n                    newlyCreatedCustomer,\n                    MediaTypeHeaderValue.Parse(\"application/json\"),\n                    new MediaTypeFormatter[] { new JsonMediaTypeFormatter() },\n                    new FormatterSelector());\n\n                //PUT newly created customer\n                responseMessage = httpClient.PutAsync(\"api/customers/\" + newlyCreatedCustomer.Id.ToString(), objectContent).Result;\n                Console.WriteLine(\"Updated (PUT) newly created customer\");\n\n                //DELETE the newly created customer\n                var r = httpClient.DeleteAsync(\"api/customers/\" + newlyCreatedCustomer.Id.ToString()).Result;\n                Console.WriteLine(\"Deleted (DELETE) newly created customer\");\n            }\n\n            Console.ReadLine();\n        }\n    }\n}\n\n",
+    "private static IEnumerable<Customer> GetCustomers(HttpClient httpClient)\n{\n    var responseMessage = httpClient.GetAsync(\"api/customers/\").Result;\n    responseMessage.EnsureSuccessStatusCode();\n    var customers = responseMessage.Content.ReadAsAsync<IEnumerable<Customer>>().Result;\n    return customers;\n}\n",
+    "                var requestMessage = new HttpRequestMessage();\n                var objectContent = requestMessage.CreateContent<Customer>(\n                    newCustomer,\n                    MediaTypeHeaderValue.Parse(\"application/json\"),\n                    new MediaTypeFormatter[] { new JsonMediaTypeFormatter() },\n                    new FormatterSelector());\n"
+  ],
+  "header": "HttpClient .NET 4.5\nPosted by Shiv Kumar on 20th February, 2012\nCategorized Under: Programming WCF\nTagged With: Http JSON REST Web API \n  ",
+  "html": "<div class=\"articleText\">\n        <p><a href=\"https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx\" target=\"_blank\"><code></code></a><code><a href=\"https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx\" target=\"_blank\">HttpClient</a></code> has been around for quite some time now. It originally appeared as part of the REST Starter Kit in 2009. Since then it has gone through a huge number of changes and improvements (or over engineering some might argue) and a ton of breaking changes as well. Nonetheless, it’s intent was and still is to simplify client side Http programming and I think it does that quite well.</p> <p>The new <code>HttpClient </code>has only async methods. That is you can’t make synchronous calls. You can make async calls synchronous (but I would advise against it). However, in this post the code you see is synchronous. Please also keep in mind that all of the code in this post and other posts is intentionally simple (that is not very object oriented) so as to help those who are learning something new stay sane. Once you’ve got the grasp of things, you should structure you code better and introduce exception handling etc.</p> <p>One other thing that <code>HttpClient</code> does not do is throw exceptions when it receives Http Status code of the 500 and 400 series. The is a method on the <code><a href=\"https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpresponsemessage(v=vs.110).aspx\" target=\"_blank\">HttpResponseMessage</a></code> called <code>EnsureSuccessStatusCode</code> which throws an exception if the IsSuccessStatusCode property for the HTTP response is false.</p> <h2>Client for the service in a previous post</h2> <p>In this post we’re essentially building a very simple Http client for the WEB API Self hosted application we built in a previous post <a href=\"https://web.archive.org/web/20240712143051/http://www.matlus.com/self-host-asp-net-web-api/\">Self Host ASP.NET Web API</a>. </p> <p>Start a new Console application and overwrite the contents of the Program.cs file with the code listing below.</p> <div class=\"panel code content/images/csharp.png\" title=\"HttpClientRESTFul\" id=\"code_92168\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240712143051/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">HttpClientRESTFul</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre><span class=\"Keyword\">using</span> System;\n<span class=\"Keyword\">using</span> System.Collections;\n<span class=\"Keyword\">using</span> System.Collections.Generic;\n<span class=\"Keyword\">using</span> System.Net.Http;\n<span class=\"Keyword\">using</span> System.Net.Http.Formatting;\n<span class=\"Keyword\">using</span> System.Net.Http.Headers;\n<span class=\"Keyword\">using</span> SelfHostedAspNetWebApi;\n\n<span class=\"Comment\">/* Requires the following package from NuGet\n   \n   ASP.NET Web API (Beta) 4.0.20126.16343\n   http://nuget.org/packages/aspnetwebapi\n   Package Manager Console Command line: Install-Package HttpClient -Version 0.6.0\n   \n   System.Net.Http.Formatting\n   http://nuget.org/packages/System.Net.Http.Formatting\n   Package Manager Console Command line: Install-Package System.Net.Http.Formatting\n */</span>\n\n<span class=\"Keyword\">namespace</span> HttpClientRESTFul\n{\n    <span class=\"Keyword\">class</span> <span class=\"Identifier\">Program</span>\n    {\n        <span class=\"Keyword\">static</span> <span class=\"Keyword\">void</span> Main(<span class=\"Keyword\">string</span>[] args)\n        {\n            <span class=\"Keyword\">var</span> serverAddress = <span class=\"StringLiteral\">\"http://localhost:8080\"</span>;\n\n            <span class=\"Keyword\">using</span> (<span class=\"Keyword\">var</span> httpClient = <span class=\"Keyword\">new</span> <span class=\"Identifier\">HttpClient</span>() { BaseAddress = <span class=\"Keyword\">new</span> <span class=\"Identifier\">Uri</span>(serverAddress) })\n            {\n                <span class=\"Comment\">//GET all customers</span>\n                <span class=\"Keyword\">var</span> response = httpClient.GetStringAsync(<span class=\"StringLiteral\">\"api/customers\"</span>).Result;\n                <span class=\"Identifier\">Console</span>.WriteLine(<span class=\"StringLiteral\">\"Response From Server:\\r\\n\\r\\n{0}\"</span>, response);\n\n                <span class=\"Keyword\">var</span> newCustomer = <span class=\"Keyword\">new</span> <span class=\"Identifier\">Customer</span> { Name = <span class=\"StringLiteral\">\"George Washington Jr.\"</span>, Phone = <span class=\"StringLiteral\">\"1-202-555-0100\"</span>, Email = <span class=\"StringLiteral\">\"gwjr@whitehouse.gov\"</span> };\n                <span class=\"Keyword\">var</span> requestMessage = <span class=\"Keyword\">new</span> <span class=\"Identifier\">HttpRequestMessage</span>();\n                <span class=\"Keyword\">var</span> objectContent = requestMessage.CreateContent&lt;<span class=\"Identifier\">Customer</span>&gt;(\n                    newCustomer,\n                    <span class=\"Identifier\">MediaTypeHeaderValue</span>.Parse(<span class=\"StringLiteral\">\"application/json\"</span>),\n                    <span class=\"Keyword\">new</span> MediaTypeFormatter[] { <span class=\"Keyword\">new</span> <span class=\"Identifier\">JsonMediaTypeFormatter</span>() },\n                    <span class=\"Keyword\">new</span> <span class=\"Identifier\">FormatterSelector</span>());\n\n                <span class=\"Comment\">//POST new customer</span>\n                <span class=\"Keyword\">var</span> responseMessage = httpClient.PostAsync(<span class=\"StringLiteral\">\"api/customers\"</span>, objectContent).Result;\n                <span class=\"Keyword\">var</span> newlyCreatedCustomer = responseMessage.Content.ReadAsAsync&lt;<span class=\"Identifier\">Customer</span>&gt;().Result;\n                <span class=\"Identifier\">Console</span>.WriteLine(<span class=\"StringLiteral\">\"Created (POST) new customer. New Customer Id is: \"</span> + newlyCreatedCustomer.Id.ToString());\n\n                newlyCreatedCustomer.Name = <span class=\"StringLiteral\">\"George Washington III\"</span>;\n                objectContent = requestMessage.CreateContent&lt;<span class=\"Identifier\">Customer</span>&gt;(\n                    newlyCreatedCustomer,\n                    <span class=\"Identifier\">MediaTypeHeaderValue</span>.Parse(<span class=\"StringLiteral\">\"application/json\"</span>),\n                    <span class=\"Keyword\">new</span> MediaTypeFormatter[] { <span class=\"Keyword\">new</span> <span class=\"Identifier\">JsonMediaTypeFormatter</span>() },\n                    <span class=\"Keyword\">new</span> <span class=\"Identifier\">FormatterSelector</span>());\n\n                <span class=\"Comment\">//PUT newly created customer</span>\n                responseMessage = httpClient.PutAsync(<span class=\"StringLiteral\">\"api/customers/\"</span> + newlyCreatedCustomer.Id.ToString(), objectContent).Result;\n                <span class=\"Identifier\">Console</span>.WriteLine(<span class=\"StringLiteral\">\"Updated (PUT) newly created customer\"</span>);\n\n                <span class=\"Comment\">//DELETE the newly created customer</span>\n                <span class=\"Keyword\">var</span> r = httpClient.DeleteAsync(<span class=\"StringLiteral\">\"api/customers/\"</span> + newlyCreatedCustomer.Id.ToString()).Result;\n                <span class=\"Identifier\">Console</span>.WriteLine(<span class=\"StringLiteral\">\"Deleted (DELETE) newly created customer\"</span>);\n            }\n\n            <span class=\"Identifier\">Console</span>.ReadLine();\n        }\n    }\n}\n\n</pre>\n<h3>The RESTFul client using HttpClient</h3></div>\n<p>You’ll need a couple of NuGet packages in order to be able to compile and run this application. I’ve provided links to them in the code listing above, at the very top.</p>\n<p>You’ll also need the <code>CustomerController</code> class from the <a href=\"https://web.archive.org/web/20240712143051/http://www.matlus.com/self-host-asp-net-web-api/\">Self Host ASP.NET Web API</a> project. This class in contained in the CustomerController.cs file code listing.</p>\n<p>Before you run this application, make sure serverAddress matches the base address of your server application. Then run the server app first and then run this client application.</p>\n<p>The code essentially executes GET,POST,PUT and DELETE methods on the service. The code is completely functional, but I’ve kept it really simply.</p>\n<p>At this point you’re essentially done building the client application, however there are some points I’d like to make about the code that I think you should read.</p>\n<h3>Receiving <code>IEnumerable&lt;Customer&gt;</code> instead of a string of JSON objects</h3>\n<p>Ideally, rather than receiving a list of customers as a string of JSON objects, you’d like to receive them as say an <code>IEnumerable&lt;Customer&gt;</code>. The HttpClient class makes this fairly simple to do. Take a look at the following code listing:</p>\n<div class=\"panel code content/images/csharp.png\" title=\"GetCustomers Method\" id=\"code_89612\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240712143051/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">GetCustomers Method</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre><span class=\"Keyword\">private</span> <span class=\"Keyword\">static</span> IEnumerable&lt;<span class=\"Identifier\">Customer</span>&gt; GetCustomers(<span class=\"Identifier\">HttpClient</span> httpClient)\n{\n    <span class=\"Keyword\">var</span> responseMessage = httpClient.GetAsync(<span class=\"StringLiteral\">\"api/customers/\"</span>).Result;\n    responseMessage.EnsureSuccessStatusCode();\n    <span class=\"Keyword\">var</span> customers = responseMessage.Content.ReadAsAsync&lt;<span class=\"Identifier\">IEnumerable</span>&lt;<span class=\"Identifier\">Customer</span>&gt;&gt;().Result;\n    <span class=\"Keyword\">return</span> customers;\n}\n</pre>\n<h3>The GetCustomers method returning an IEnumerable<customer></customer></h3></div>\n<p>You’ll notice that we do a similar thing when we receive the result of POSTing a new Customer, in order to receive an instance of the newly created customer as an instance of Customer (instead of a string). Except here, we’re receiving a sequence of Customers rather than a single.</p>\n<h2>ObjectContent constructor changed</h2>\n<p>If you look carefully at the code the “assembles” an instance of an HttpRequestMessage prior to calling the POST method on the server, you’ll notice we’re stuffing an instance of a (new) Customer instance into the “content”, before we make the http request. In other words, an instance of a customer it sent across the wire as a JSON object so the server side can create this new customer.</p>\n<p>The way the HttpClient class works is that the HttpContent (The payload if you will) is abstracted into a class called <a href=\"https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpcontent(v=vs.110).aspx\" target=\"_blank\">HttpContent</a>. This is an abstract class. However, out of the box, there are a number of descendants of this class that we could (have) used.</p>\n<ol>\n<li><a href=\"https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.stringcontent(v=vs.110).aspx\" target=\"_blank\">StringContent</a> \n</li><li><a href=\"https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.bytearraycontent(v=vs.110).aspx\" target=\"_blank\">ByteArrayContent</a> \n</li><li><a href=\"https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.multipartcontent(v=vs.110).aspx\" target=\"_blank\">MultipartContent</a> \n</li><li><a href=\"https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.streamcontent(v=vs.110).aspx\" target=\"_blank\">StreamContent</a></li></ol>\n<p>To keep things really simple, we could have just used the <code>StringContent</code> class, stuffed a JSON representation of our new customer (that we wanted POSTed to the server) and be done with it.</p>\n<p>But I wanted this example to be a bit more real-world and so I wanted to use the ObjectContent type. The ASP.NET team has changed the constructor to internal. Not sure why. But what’s worse is not sure how else to use the ObjectContent. We could use a StreamContent and serialize of object instance to a stream, but that’s a lot more work.</p>\n<p>So as it happens, I found a round-a-bout way of creating an instance of this class, as you can see in the very first code listing as well as below.</p>\n<div class=\"panel code content/images/csharp.png\" title=\"Using ObjectContent to send an object instance\" id=\"code_14809\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240712143051/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Using ObjectContent to send an object instance</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre>                <span class=\"Identifier\">var</span> requestMessage = <span class=\"Keyword\">new</span> <span class=\"Identifier\">HttpRequestMessage</span>();\n                <span class=\"Identifier\">var</span> objectContent = requestMessage.CreateContent&lt;<span class=\"Identifier\">Customer</span>&gt;(\n                    newCustomer,\n                    <span class=\"Identifier\">MediaTypeHeaderValue</span>.Parse(<span class=\"StringLiteral\">\"application/json\"</span>),\n                    <span class=\"Keyword\">new</span> MediaTypeFormatter[] { <span class=\"Keyword\">new</span> <span class=\"Identifier\">JsonMediaTypeFormatter</span>() },\n                    <span class=\"Keyword\">new</span> <span class=\"Identifier\">FormatterSelector</span>());\n</pre>\n<h3>Creating an instance of an ObjectContent</h3></div>\n<p>At the time of this writing I couldn’t find any documentation or example of how else to do it, so you may want to keep a watch out for the correct or better way of doing this.</p>  \n        </div>",
+  "images": [],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/category/programming/wcf/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240712143051/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2fhttpclient-net-4-5%2f&text=HttpClient+.NET+4.5"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240712143051/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2fhttpclient-net-4-5%2f&t=HttpClient+.NET+4.5"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240712143051/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2fhttpclient-net-4-5%2f&text=HttpClient+.NET+4.5"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx"
+    },
+    {
+      "text": "HttpClient",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx"
+    },
+    {
+      "text": "HttpResponseMessage",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpresponsemessage(v=vs.110).aspx"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "HttpContent",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpcontent(v=vs.110).aspx"
+    },
+    {
+      "text": "StringContent",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.stringcontent(v=vs.110).aspx"
+    },
+    {
+      "text": "ByteArrayContent",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.bytearraycontent(v=vs.110).aspx"
+    },
+    {
+      "text": "MultipartContent",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.multipartcontent(v=vs.110).aspx"
+    },
+    {
+      "text": "StreamContent",
+      "url": "https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.streamcontent(v=vs.110).aspx"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "HttpClient .NET 4.5",
+  "url": "https://web.archive.org/web/20240712143051/http://www.matlus.com/httpclient-net-4-5/"
+}

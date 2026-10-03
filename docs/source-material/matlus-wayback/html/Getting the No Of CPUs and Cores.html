@@ -1,0 +1,41 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Getting the No Of CPUs and Cores</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>Getting the No Of CPUs and Cores</h1><p class="recovery">Getting the No Of CPUs and Cores<br>Posted by Shiv Kumar on 7th February, 2011<br>Categorized Under: Programming C#<br>Tagged With: Asynchronous WMI <br>Code Gem: Snippets <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20230605173454/http://www.matlus.com/getting-the-no-of-cpus-and-cores/">this Wayback capture</a>.</p><div class="articleText">
+        <p>Using WMI (Windows Management Instrumentation) it is really simple to get the all kinds of weird and useful information about the hardware of a computer. Here I use <code>ManagementObjectSearcher</code> from the <code>System.Management</code> assembly/namespace to get at information on the CPU. In particular: </p> <ul> <li>No of Cores  </li><li>No of Logical Processors  </li><li>No of Physical Processors  </li><li>Hardware Bitness (32/64 bit etc.)  </li><li>CPU Architecture (x86, x64, Itanium etc.) </li></ul> <div class="panel code content/images/csharp.png" title="WMI Code to Extract information in the CPU" id="code_3321"><div class="codeHeading" style="background-image: url(/web/20230605173454/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">WMI Code to Extract information in the CPU</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">void</span> GetCpuInformation()
+    {
+      var noOfCores = 0;
+      <span class="kwrd">foreach</span> (var item <span class="kwrd">in</span> <span class="kwrd">new</span> System.Management.ManagementObjectSearcher(<span class="str">"Select * from Win32_Processor"</span>).Get())
+      {
+        noOfCores += <span class="kwrd">int</span>.Parse(item[<span class="str">"NumberOfCores"</span>].ToString());
+        Console.WriteLine(<span class="str">"Bitness: {0}"</span>, item[<span class="str">"AddressWidth"</span>]);
+        Console.WriteLine(<span class="str">"Architecture: {0}"</span>, GetArchitectureDiscription(<span class="kwrd">int</span>.Parse(item[<span class="str">"Architecture"</span>].ToString())));
+      }
+
+      Console.WriteLine(<span class="str">"Number Of Cores: {0}"</span>, noOfCores);
+
+      <span class="kwrd">foreach</span> (var item <span class="kwrd">in</span> <span class="kwrd">new</span> System.Management.ManagementObjectSearcher(<span class="str">"Select * from Win32_ComputerSystem"</span>).Get())
+      {
+        Console.WriteLine(<span class="str">"Number Of Logical Processors: {0} "</span>, item[<span class="str">"NumberOfLogicalProcessors"</span>]);
+        Console.WriteLine(<span class="str">"Number Of Physical Processors: {0} "</span>, item[<span class="str">"NumberOfProcessors"</span>]);
+      }      
+    }
+
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">string</span> GetArchitectureDiscription(<span class="kwrd">int</span> architectureNo)
+    {
+      <span class="kwrd">switch</span> (architectureNo)
+      {
+        <span class="kwrd">case</span> 0: <span class="kwrd">return</span> <span class="str">"x86"</span>;
+        <span class="kwrd">case</span> 1: <span class="kwrd">return</span> <span class="str">"MIPS"</span>;
+        <span class="kwrd">case</span> 2: <span class="kwrd">return</span> <span class="str">"Alpha"</span>;
+        <span class="kwrd">case</span> 3: <span class="kwrd">return</span> <span class="str">"PowerPC"</span>;
+        <span class="kwrd">case</span> 6: <span class="kwrd">return</span> <span class="str">"Itanium-based systems"</span>;
+        <span class="kwrd">case</span> 9: <span class="kwrd">return</span> <span class="str">"x64"</span>;
+        <span class="kwrd">default</span>:
+          <span class="kwrd">return</span> <span class="str">"Unkown"</span>;
+      }
+    }
+</pre></div>&nbsp; <p>There is quite a bit more information available from both the <a title="WMI Win32_Processor Class" href="https://web.archive.org/web/20230605173454/http://msdn.microsoft.com/en-us/library/aa394373(v=vs.85).aspx" target="_blank">Win32_Processor</a> WMI class as well as the <a title="WMI Win32_ComputerSystem Class" href="https://web.archive.org/web/20230605173454/http://msdn.microsoft.com/en-us/library/aa394102(v=vs.85).aspx" target="_blank">Win32_ComputerSystem</a>, so you may want to check out the other properties/information these object provide.</p>
+<p>I use the number of cores information to (naïvely) determine how many threads I can/should spawn when I'm doing some multi-threaded work. Of course nowadays with availability of <code>Tasks</code> in .NET and <code>Parallel.For</code> etc. one should probably use facilities built into the .NET framework where possible.</p>
+<p>You can optimize the queries if you need to. For example, we're doing a select * from for each of queries you see in the code listing above. You could change that to return only the properties you're interested in. For example the seconds query above could be rewritten as</p><pre style="font-family: consolas"><span style="color: #a31515">"Select NumberOfLogicalProcessors, NumberOfProcessors from Win32_ComputerSystem"</span><br></pre>
+<p>&nbsp;</p>
+<p>The rest of the code will remain the same, including the way in which the properties are extracted from the result.</p>  
+        </div></body></html>

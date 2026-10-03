@@ -1,0 +1,423 @@
+{
+  "body": "The linq SelectMany method is probably one of the most powerful method on the Enumerable class but sadly also of of the most difficult to understand. As per the the MSDN documentation for Enumerable.SelectMany, this method is described as:\n\nProjects each element of a sequence to an IEnumerable<T> and flattens the resulting sequences into one sequence.\n\nI don't know about you, but I had to re-read this statement multiple times just to figure out what it was saying and even then, couldn't figure out where or why I'd use it. And then I thought well, maybe it's like doing a join, where for each element of sequence 1, I could produce many elements from sequence 2 and then get a flatten result (similar to doing a join in a database across a one-to-many relationship). Another way to look it is a nested foreach, where where you iterate over sequence 1 and for each element of sequence 1 you \"find\" or get all matching elements in sequence 2.\n\nOnce I had that picture in mind I set about trying to write a linq query to see how I could achieve this. Before we take a look at that, lets take a look at the classes and data, we'll be using in this post. Code Listing 1 below, shows the two classes we'll be working with, and the initial data these classes have.\n\nThe Category and Post classes\n  public class Category\n  {\n    public int Id { get; set; }\n    public string Name { get; set; }\n  }\n\n  class Post\n  {\n    public int Id { get; set; }\n    public int CategoryId { get; set; }\n    public string Title { get; set; }\n  }\n\nCode Listing 1: Showing the Category and Post classes\n\nIn Code Listing 2, below we can see the initial data we'll be working with. You'll notice that there are 3 Categories\n\nProgramming\nHtml 5\njQuery\n\nAnd that there are multiple posts in each of these categories. For instance there are 2 posts categorized as Html 5 (Category id = 2).\n\nHtml 5 Video Element Poster\nHtml5 File Upload with Progress\nThe Category and Post data\nvar categories = new Category[]\n{\n  new Category() { Id=1, Name =\"Programming\"},\n  new Category() { Id=2, Name =\"Html\"},\n  new Category() { Id=3, Name =\"jQuery\"}\n};\n\nvar posts = new Post[]\n{\n  new Post { Id=1, CategoryId=1, Title=\"Data Parallel – Parallel Programming in C#/.NET\"},\n  new Post { Id=2, CategoryId=1, Title=\"Getting the No Of CPUs and Cores\"},\n  new Post { Id=3, CategoryId=1, Title=\"Orion - A Blog Engine\"},\n  new Post { Id=4, CategoryId=1, Title=\"Quartz for ASP.NET\"},\n  new Post { Id=5, CategoryId=2, Title=\"Html 5 Video Element Poster\"},\n  new Post { Id=6, CategoryId=2, Title=\"Html5 File Upload with Progress\"},\n  new Post { Id=7, CategoryId=3, Title=\"Expanding Code listings\"},\n  new Post { Id=8, CategoryId=3, Title=\"jQuery working with select option\"},\n  new Post { Id=9, CategoryId=3, Title=\"jQuery working with checkboxes and radio button\"}\n};\n\nCode Listing 2: Showing the Category and Post classes populated with data\n\nThe \"foreign key\" in the Post class in this case is CategoryId. No that's not how the database is modeled in Quartz for ASP.NET (the blogging engine I use for this blog), I'm using this structure to keep things simple. Moving on…So if we were to do a \"inner join\" between these two sequences, the result should look like the output below.\n\nProgramming :  Data Parallel - Parallel Programming in C#/.NET\nProgramming :  Getting the No Of CPUs and Cores\nProgramming :  Orion - A Blog Engine\nProgramming :  Quartz for ASP.NET\nHtml        :  Html 5 Video Element Poster\nHtml        :  Html5 File Upload with Progress\njQuery      :  Expanding Code listings\njQuery      :  jQuery working with select option\njQuery      :  jQuery working with checkboxes and radio button\n\n\n\n \n\nThe linq query syntax for this is actually quite simple if you've done joins using linq before. It looks like that shown in Code Listing 3 below. Both versions produce the same result. It's almost like the old join syntax versus the ASNI SQL syntax for a join in SQL.\n\nvar categoryPosts = from c in categories                          \n                    join p in posts on c.Id equals p.CategoryId\n                    select new { CategoryName = c.Name, PostTitle = p.Title };\n\nOR\n\nvar categoryPosts = from c in categories\n                    from p in posts                           \n                    where c.Id == p.CategoryId\n                    select new { CategoryName = c.Name, PostTitle = p.Title };\n\n\nCode Listing 3: Doing a Join using Linq and query expression syntax\n\nWhat's important to note here is that the first version shown in Code Listing 3 above is actually translated by the compiler to use a SelectMany. The code thus generated would look similar to what have in Code Listing 4 below.\n\nSo far so good. Now lets go back to the SelectMany method. Let's also re-examine the statement of what SelectMany does.\n\nProjects each element of a sequence to an IEnumerable<T>.\n\nSo the elements in our sequence are the various Categories and we have the ability to project each Category to an IEnumerable<Post>. That is for each Category, project the Posts that pertain to the Category. Effectively, a one-to-many. But we're not done yet.\n\nFlattens the resulting sequence into one sequence.\n\nSo essentially producing one resulting sequence that is the flattened version of multiple, one-to-manys, thus giving us a \"join\". You could also think of SelectMany that does a nested foreach (as explained earlier), where the outer foreach is our categories sequence and the inner foreach is the sequence of posts.\n\nWell, even after digesting the above, attempting to write the linq statement using the method syntax (versus the query expression syntax) turned out to be quite confusing indeed.\n\nHere is the equivalent linq method syntax for using one of the many overloads of the SelectMany method:\n\nShowing the syntax for using the SelectMany Enumerable Method\nvar categoryPosts2 = categories.SelectMany(\n            c => posts.Where(p => p.CategoryId == c.Id),\n            (c, p) => new { CategoryName = c.Name, PostTitle = p.Title });\n\nCode Listing 4: Using the SelectMany method to do the same thing\n\nLet's break this down so we can better understand what is going on. The overload we're using in this case is:\n\nThe SelectMany overload being used\npublic static IEnumerable<TResult> SelectMany<TSource, TCollection, TResult>(\n    this IEnumerable<TSource> source,\n    Func<TSource, IEnumerable<TCollection>> collectionSelector,\n    Func<TSource, TCollection, TResult> resultSelector\n)\n\nwhich in our case translates to\n\nEnumerable<Category>.SelectMany(Func<Category, IEnumerable<Post>>, collectionSelector, Func<Category, Post, `a> resultSelector\n\n\n\n\n \n\nSo the first parameter is a Func that takes a Category and returns an IEnumerable<Post>. Of course the posts it returns are those that match the category (see  code listing 4 above). In other words, the first parameter maps each category to a sequence of matching posts.\n\nThe second parameter transforms each matched pair:\n\n{ (c1, p1), (c1, p2), (c1, p3), (c1, p4), (c2, p5), (c2, p6), (c3, p7), (c3, p8), (c3, p9)}\n\ninto a new anonymous type that has a CategoryName property and a PostTitle property.\n\nThe implementation of SelectMany would look like the following:\n\nThe actual implementation of SelectMany\nforeach (TSource item in source)\n  foreach (TCollection subItem in collectionSelector(item))\n    yield return resultSelector(item, subItem);\nImplementation of SelectMany in terms of nested foreaches and calling delegates\n\nWhere the collectionSelector delegate and resultSelector delegates have the signature described above.\n\nNow it so happens that the second parameter of the SelectMany method we're using is optional, in that there is another overload that requires only the first parameter. So what would happen if we used this overload instead?\n\nIn order to better understand what we'll get, we need to modify our data a bit. So let's remove the Programming Category from our sequence of categories (just comment out the first item).\n\nWhat we'll get is simply a sequence of Posts (IEnumerable<Post>) that have associated categories (an \"inner join\" if you will) but without the projection (our anonymous type). So the first 4 posts in our data won't be part of this result a shown below. The number is the Id of the Post (and not the CategoryId).\n\n5 : Html 5 Video Element Poster\n6 : Html5 File Upload with Progress\n7 : Expanding Code listings\n8 : jQuery working with select option\n9 : jQuery working with checkboxes and radio button\n\n",
+  "bodyLinks": [
+    {
+      "text": "MSDN documentation for Enumerable.SelectMany",
+      "url": "https://web.archive.org/web/20240415161339/http://msdn.microsoft.com/en-us/library/system.linq.enumerable.selectmany.aspx"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240415161339/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "code": [
+    "  public class Category\n  {\n    public int Id { get; set; }\n    public string Name { get; set; }\n  }\n\n  class Post\n  {\n    public int Id { get; set; }\n    public int CategoryId { get; set; }\n    public string Title { get; set; }\n  }\n",
+    "var categories = new Category[]\n{\n  new Category() { Id=1, Name =\"Programming\"},\n  new Category() { Id=2, Name =\"Html\"},\n  new Category() { Id=3, Name =\"jQuery\"}\n};\n\nvar posts = new Post[]\n{\n  new Post { Id=1, CategoryId=1, Title=\"Data Parallel – Parallel Programming in C#/.NET\"},\n  new Post { Id=2, CategoryId=1, Title=\"Getting the No Of CPUs and Cores\"},\n  new Post { Id=3, CategoryId=1, Title=\"Orion - A Blog Engine\"},\n  new Post { Id=4, CategoryId=1, Title=\"Quartz for ASP.NET\"},\n  new Post { Id=5, CategoryId=2, Title=\"Html 5 Video Element Poster\"},\n  new Post { Id=6, CategoryId=2, Title=\"Html5 File Upload with Progress\"},\n  new Post { Id=7, CategoryId=3, Title=\"Expanding Code listings\"},\n  new Post { Id=8, CategoryId=3, Title=\"jQuery working with select option\"},\n  new Post { Id=9, CategoryId=3, Title=\"jQuery working with checkboxes and radio button\"}\n};\n",
+    "Programming :  Data Parallel - Parallel Programming in C#/.NET\nProgramming :  Getting the No Of CPUs and Cores\nProgramming :  Orion - A Blog Engine\nProgramming :  Quartz for ASP.NET\nHtml        :  Html 5 Video Element Poster\nHtml        :  Html5 File Upload with Progress\njQuery      :  Expanding Code listings\njQuery      :  jQuery working with select option\njQuery      :  jQuery working with checkboxes and radio button\n\n",
+    "var categoryPosts = from c in categories                          \n                    join p in posts on c.Id equals p.CategoryId\n                    select new { CategoryName = c.Name, PostTitle = p.Title };\n\nOR\n\nvar categoryPosts = from c in categories\n                    from p in posts                           \n                    where c.Id == p.CategoryId\n                    select new { CategoryName = c.Name, PostTitle = p.Title };\n\n",
+    "var categoryPosts2 = categories.SelectMany(\n            c => posts.Where(p => p.CategoryId == c.Id),\n            (c, p) => new { CategoryName = c.Name, PostTitle = p.Title });\n",
+    "public static IEnumerable<TResult> SelectMany<TSource, TCollection, TResult>(\n    this IEnumerable<TSource> source,\n    Func<TSource, IEnumerable<TCollection>> collectionSelector,\n    Func<TSource, TCollection, TResult> resultSelector\n)\n\nwhich in our case translates to\n\nEnumerable<Category>.SelectMany(Func<Category, IEnumerable<Post>>, collectionSelector, Func<Category, Post, `a> resultSelector\n\n\n",
+    "foreach (TSource item in source)\n  foreach (TCollection subItem in collectionSelector(item))\n    yield return resultSelector(item, subItem);",
+    "5 : Html 5 Video Element Poster\n6 : Html5 File Upload with Progress\n7 : Expanding Code listings\n8 : jQuery working with select option\n9 : jQuery working with checkboxes and radio button\n\n"
+  ],
+  "header": "Linq - SelectMany\nPosted by Shiv Kumar on 17th February, 2011\nCategorized Under: Programming C#\nTagged With: Join Linq SelectMany \n  ",
+  "html": "<div class=\"articleText\">\n        <p>The linq SelectMany method is probably one of the most powerful method on the Enumerable class but sadly also of of the most difficult to understand. As per the the <a href=\"https://web.archive.org/web/20240415161339/http://msdn.microsoft.com/en-us/library/system.linq.enumerable.selectmany.aspx\" target=\"_blank\">MSDN documentation for Enumerable.SelectMany</a>, this method is described as:</p> <blockquote> <p><em><strong>Projects each element of a sequence to an IEnumerable&lt;T&gt; and flattens the resulting sequences into one sequence.</strong></em></p></blockquote> <p>I don't know about you, but I had to re-read this statement multiple times just to figure out what it was saying and even then, couldn't figure out where or why I'd use it. And then I thought well, maybe it's like doing a join, where for each element of sequence 1, I could produce many elements from sequence 2 and then get a flatten result (similar to doing a join in a database across a one-to-many relationship). Another way to look it is a nested foreach, where where you iterate over sequence 1 and for each element of sequence 1 you \"find\" or get all matching elements in sequence 2.</p> <p>Once I had that picture in mind I set about trying to write a linq query to see how I could achieve this. Before we take a look at that, lets take a look at the classes and data, we'll be using in this post. Code Listing 1 below, shows the two classes we'll be working with, and the initial data these classes have.</p> <div class=\"panel code content/images/csharp.png\" title=\"The Category and Post classes\" id=\"code_64039\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415161339/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">The Category and Post classes</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">  <span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> Category\n  {\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">int</span> Id { get; set; }\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">string</span> Name { get; set; }\n  }\n\n  <span class=\"kwrd\">class</span> Post\n  {\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">int</span> Id { get; set; }\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">int</span> CategoryId { get; set; }\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">string</span> Title { get; set; }\n  }\n</pre>\n<h3>Code Listing 1: Showing the Category and Post classes</h3></div>\n<p>In Code Listing 2, below we can see the initial data we'll be working with. You'll notice that there are 3 Categories</p>\n<ol>\n<li>Programming \n</li><li>Html 5 \n</li><li>jQuery</li></ol>\n<p>And that there are multiple posts in each of these categories. For instance there are 2 posts categorized as Html 5 (Category id = 2).</p>\n<ol>\n<li>Html 5 Video Element Poster \n</li><li>Html5 File Upload with Progress</li></ol>\n<div class=\"panel code cotnent/images/csharp.png\" title=\"The Category and Post data\" id=\"code_59117\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415161339/http://matlus.com/cotnent/images/csharp.png);\"><h3 class=\"codeTitle\">The Category and Post data</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">var categories = <span class=\"kwrd\">new</span> Category[]\n{\n  <span class=\"kwrd\">new</span> Category() { Id=1, Name =<span class=\"str\">\"Programming\"</span>},\n  <span class=\"kwrd\">new</span> Category() { Id=2, Name =<span class=\"str\">\"Html\"</span>},\n  <span class=\"kwrd\">new</span> Category() { Id=3, Name =<span class=\"str\">\"jQuery\"</span>}\n};\n\nvar posts = <span class=\"kwrd\">new</span> Post[]\n{\n  <span class=\"kwrd\">new</span> Post { Id=1, CategoryId=1, Title=<span class=\"str\">\"Data Parallel – Parallel Programming in C#/.NET\"</span>},\n  <span class=\"kwrd\">new</span> Post { Id=2, CategoryId=1, Title=<span class=\"str\">\"Getting the No Of CPUs and Cores\"</span>},\n  <span class=\"kwrd\">new</span> Post { Id=3, CategoryId=1, Title=<span class=\"str\">\"Orion - A Blog Engine\"</span>},\n  <span class=\"kwrd\">new</span> Post { Id=4, CategoryId=1, Title=<span class=\"str\">\"Quartz for ASP.NET\"</span>},\n  <span class=\"kwrd\">new</span> Post { Id=5, CategoryId=2, Title=<span class=\"str\">\"Html 5 Video Element Poster\"</span>},\n  <span class=\"kwrd\">new</span> Post { Id=6, CategoryId=2, Title=<span class=\"str\">\"Html5 File Upload with Progress\"</span>},\n  <span class=\"kwrd\">new</span> Post { Id=7, CategoryId=3, Title=<span class=\"str\">\"Expanding Code listings\"</span>},\n  <span class=\"kwrd\">new</span> Post { Id=8, CategoryId=3, Title=<span class=\"str\">\"jQuery working with select option\"</span>},\n  <span class=\"kwrd\">new</span> Post { Id=9, CategoryId=3, Title=<span class=\"str\">\"jQuery working with checkboxes and radio button\"</span>}\n};\n</pre>\n<h3>Code Listing 2: Showing the Category and Post classes populated with data</h3></div>\n<p>The \"foreign key\" in the Post class in this case is CategoryId. No that's not how the database is modeled in <a title=\"Quartz for ASP.NET\" href=\"https://web.archive.org/web/20240415161339/http://www.matlus.com/quartz-for-aspnet/\" target=\"_blank\">Quartz for ASP.NET</a> (the blogging engine I use for this blog), I'm using this structure to keep things simple. Moving on…So if we were to do a \"inner join\" between these two sequences, the result should look like the output below.</p>\n<div class=\"panel\"><pre>Programming :  Data Parallel - Parallel Programming in C#/.NET\nProgramming :  Getting the No Of CPUs and Cores\nProgramming :  Orion - A Blog Engine\nProgramming :  Quartz for ASP.NET\nHtml        :  Html 5 Video Element Poster\nHtml        :  Html5 File Upload with Progress\njQuery      :  Expanding Code listings\njQuery      :  jQuery working with select option\njQuery      :  jQuery working with checkboxes and radio button\n\n</pre></div>\n<p>&nbsp;</p>\n<p>The linq query syntax for this is actually quite simple if you've done joins using linq before. It looks like that shown in Code Listing 3 below. Both versions produce the same result. It's almost like the old join syntax versus the ASNI SQL syntax for a join in SQL.</p>\n<div class=\"panel code content/images/csharp.png\" id=\"code_75773\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415161339/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\"></h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">var</span> categoryPosts = <span class=\"kwrd\">from</span> c <span class=\"kwrd\">in</span> categories                          \n                    <span class=\"kwrd\">join</span> p <span class=\"kwrd\">in</span> posts on c.Id equals p.CategoryId\n                    <span class=\"kwrd\">select</span> <span class=\"kwrd\">new</span> { CategoryName = c.Name, PostTitle = p.Title };\n\nOR\n\n<span class=\"kwrd\">var</span> categoryPosts = <span class=\"kwrd\">from</span> c <span class=\"kwrd\">in</span> categories\n                    <span class=\"kwrd\">from</span> p <span class=\"kwrd\">in</span> posts                           \n                    <span class=\"kwrd\">where</span> c.Id == p.CategoryId\n                    <span class=\"kwrd\">select</span> <span class=\"kwrd\">new</span> { CategoryName = c.Name, PostTitle = p.Title };\n\n</pre>\n<h3>Code Listing 3: Doing a Join using Linq and query expression syntax</h3></div>\n<p>What's important to note here is that the first version shown in Code Listing 3 above is actually translated by the compiler to use a SelectMany. The code thus generated would look similar to what have in Code Listing 4 below.</p>\n<p>So far so good. Now lets go back to the SelectMany method. Let's also re-examine the statement of what SelectMany does.</p>\n<p><em>Projects each element of a sequence to an IEnumerable&lt;T&gt;.</em></p>\n<p>So the elements in our sequence are the various Categories and we have the ability to project each Category to an IEnumerable&lt;Post&gt;. That is for each Category, project the Posts that pertain to the Category. Effectively, a one-to-many. But we're not done yet.</p>\n<p><em>Flattens the resulting sequence into <strong>one</strong> sequence.</em></p>\n<p>So essentially producing one resulting sequence that is the flattened version of multiple, one-to-manys, thus giving us a \"join\". You could also think of SelectMany that does a nested foreach (as explained earlier), where the outer foreach is our categories sequence and the inner foreach is the sequence of posts.</p>\n<p>Well, even after digesting the above, attempting to write the linq statement using the method syntax (versus the query expression syntax) turned out to be quite confusing indeed.</p>\n<p>Here is the equivalent linq method syntax for using one of the many overloads of the SelectMany method:</p>\n<div class=\"panel code content/images/csharp.png\" title=\"Showing the syntax for using the SelectMany Enumerable Method\" id=\"code_739\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415161339/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Showing the syntax for using the SelectMany Enumerable Method</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">var</span> categoryPosts2 = categories.SelectMany(\n            c =&gt; posts.Where(p =&gt; p.CategoryId == c.Id),\n            (c, p) =&gt; <span class=\"kwrd\">new</span> { CategoryName = c.Name, PostTitle = p.Title });\n</pre>\n<h3>Code Listing 4: Using the SelectMany method to do the same thing</h3></div>\n<p>Let's break this down so we can better understand what is going on. The overload we're using in this case is:</p>\n<div class=\"panel code content/images/csharp.png\" title=\"The SelectMany overload being used\" id=\"code_94812\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415161339/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">The SelectMany overload being used</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">public</span> <span class=\"kwrd\">static</span> IEnumerable&lt;TResult&gt; SelectMany&lt;TSource, TCollection, TResult&gt;(\n    <span class=\"kwrd\">this</span> IEnumerable&lt;TSource&gt; source,\n    Func&lt;TSource, IEnumerable&lt;TCollection&gt;&gt; collectionSelector,\n    Func&lt;TSource, TCollection, TResult&gt; resultSelector\n)\n\nwhich in our case translates to\n\n<span class=\"identifier\">Enumerable</span>&lt;<span class=\"identifier\">Category</span>&gt;.SelectMany(<span class=\"identifier\">Func</span>&lt;<span class=\"identifier\">Category</span>, IEnumerable&lt;<span class=\"identifier\">Post</span>&gt;&gt;, collectionSelector, <span class=\"identifier\">Func</span>&lt;<span class=\"identifier\">Category</span>, <span class=\"identifier\">Post</span>, `a&gt; resultSelector\n\n\n</pre></div>\n<p>&nbsp;</p>\n<p>So the first parameter is a Func that takes a Category and returns an IEnumerable&lt;Post&gt;. Of course the posts it returns are those that match the category (see&nbsp; code listing 4 above). In other words, <em>the first parameter maps each category to a sequence of matching posts.</em></p>\n<p>The second parameter transforms each matched pair:</p>\n<p>{ (c1, p1), (c1, p2), (c1, p3), (c1, p4), (c2, p5), (c2, p6), (c3, p7), (c3, p8), (c3, p9)}</p>\n<p>into a new anonymous type that has a CategoryName property and a PostTitle property.</p>\n<p>The implementation of SelectMany would look like the following:</p>\n<div class=\"panel code content/images/csharp.png\" title=\"The actual implementation of SelectMany\" id=\"code_81762\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415161339/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">The actual implementation of SelectMany</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">foreach</span> (TSource item <span class=\"kwrd\">in</span> source)\n  <span class=\"kwrd\">foreach</span> (TCollection subItem <span class=\"kwrd\">in</span> collectionSelector(item))\n    <span class=\"kwrd\">yield</span> <span class=\"kwrd\">return</span> resultSelector(item, subItem);</pre>\n<h3>Implementation of SelectMany in terms of nested foreaches and calling delegates </h3></div>\n<p>Where the <code>collectionSelector</code> delegate and <code>resultSelector</code> delegates have the signature described above.</p>\n<p>Now it so happens that the second parameter of the SelectMany method we're using is optional, in that there is another overload that requires only the first parameter. So what would happen if we used this overload instead?</p>\n<p>In order to better understand what we'll get, we need to modify our data a bit. So let's remove the Programming Category from our sequence of categories (just comment out the first item).</p>\n<p>What we'll get is simply a sequence of Posts (IEnumerable&lt;Post&gt;) that have associated categories (an \"inner join\" if you will) but without the projection (our anonymous type). So the first 4 posts in our data won't be part of this result a shown below. The number is the Id of the Post (and not the CategoryId).</p>\n<div class=\"panel\"><pre>5 : Html 5 Video Element Poster\n6 : Html5 File Upload with Progress\n7 : Expanding Code listings\n8 : jQuery working with select option\n9 : jQuery working with checkboxes and radio button\n\n</pre></div>  \n        </div>",
+  "images": [],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240415161339/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "C#",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/category/programming/c/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/join/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/linq/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415161339/https://twitter.com/share?url=http%3a%2f%2fmatlus.com%2flinq-selectmany%2f&text=Linq+-+SelectMany"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415161339/http://www.facebook.com/sharer.php?u=http%3a%2f%2fmatlus.com%2flinq-selectmany%2f&t=Linq+-+SelectMany"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415161339/https://plus.google.com/share?url=http%3a%2f%2fmatlus.com%2flinq-selectmany%2f&text=Linq+-+SelectMany"
+    },
+    {
+      "text": "MSDN documentation for Enumerable.SelectMany",
+      "url": "https://web.archive.org/web/20240415161339/http://msdn.microsoft.com/en-us/library/system.linq.enumerable.selectmany.aspx"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240415161339/http://www.matlus.com/quartz-for-aspnet/"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240415161339/http://matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415161339/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "Linq - SelectMany",
+  "url": "https://web.archive.org/web/20240415161339/http://matlus.com/linq-selectmany/"
+}

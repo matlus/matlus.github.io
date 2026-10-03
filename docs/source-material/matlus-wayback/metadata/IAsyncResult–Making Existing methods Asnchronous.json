@@ -1,0 +1,421 @@
+{
+  "body": "The APM or Asynchronous programming model has been in .NET since the beginning. There are quite a few BCL classes that use this programming model to effectively provide asynchronous methods to methods that also have synchronous counterparts. But what if you want to make one of your existing methods asynchronous? In this post I show you how simple it is to make an existing synchronous method available as an asynchronous method.\n\nBefore we go down that route, let me say that I assume you're somewhat familiar with using asynchronous methods. The intent of this post is to show you how you would convert one or more of your own synchronous methods into asynchronous method. So I'm not going to be explaining the basics of asynchronous programming in .NET.\n\nThe APM design pattern in .NET uses some naming conventions for the method names as well as the basic method signatures. You'll have BeginXXX and EndXXX method, where XXX is the name of the synchronous method. In other words asynchronous operations that use the APM (IAsyncResult) design pattern are implemented as a pair of methods. The basic method signature for the BeginXXX method is\n\nIAsyncResult BeginXXX(AsyncCallback callback, object state)\n\n\n \n\nThe basic method signature for the EndXXX method is\n\nvoid EndXXX(IAsyncResult result)\n\n\n \n\nNow if we want to make one of our own methods asynchronous then we'll have to follow the basic signature. If our method required additional parameters or has a return type then we can include these parameters, while keeping the basic signature. The idea is to re-use our existing method (and implementation) but as an asynchronous operation.\n\nSo lets say we have a method in our business layer class that does some compute-bound work. For the sake of an example let's say the method requires an int[]as an input parameter and it returns the number of prime numbers in the array as an int. The synchronous version of the method in shown in the code listing below.\n\nSynchronous Version of the GetNumberOfPrimeNumbersInArray method\n    /// <summary>\n    /// Synchronous Method to Get the number of prime numbers in an array of numbers\n    /// </summary>\n    /// <param name=\"numbers\"></param>\n    /// <returns></returns>\n    public int GetNumberOfPrimeNumbersInArray(int[] numbers)\n    {\n      int count = 0;\n      for (int i = 0; i < numbers.Length; i++)\n      {\n        if (IsPrime(numbers[i]))\n          count++;\n      }\n      return count;\n    }\n\n    private bool IsPrime(int number)\n    {\n      if (number == 4)\n        return false;\n      for (int i = 2; i < number / 2; i++)\n        if (number % i == 0)\n          return false;\n      return true;\n    }\n  }\n\nImplementing Asynchronous Methods\n\nThe BeginXXX method takes any parameters declared in the signature of the synchronous version of the method that are passed by value or by reference (in this case the int[]). Any out parameters are not part of the BeginXXX method signature. The BeginXXX method signature also includes two additional parameters which are part of the basic method signature as shown above. Further, the BeginXXX method needs to also return an instance of IAsyncResult which is also part of the basic method signature. So effectively, our BeginGetNumberOfPrimeNumbersInArray method signature will look like the following\n\n public IAsyncResult BeginGetNumberOfPrimeNumbersInArray(int[] numbers,\n   AsyncCallback callback, object state)\n {\n }\n\nSimilarly, our EndGetNumberOfPrimeNumbersInArray method will follow the basic signature but because our synchronous version returns an int, so our End method will return an int. Following the basic method signature and making appropriate modifications to the signature, the method signature for our EndGetNumberOfPrimeNumbersInArray will look like the following:\n\npublic int EndGetNumberOfPrimeNumbersInArray(IAsyncResult result)\n{\n}\n\n\nSo now, all we're left with is the actual implementation of these methods. Keep in mind that we're going to use the existing synchronous method in here so we don't have to re-implement the existing method but rather re-use it asynchronously.\n\nLooking at the signature of our BeginXXX method a question that's going to come up (if it hasn't already) is that we'll need an implementation of the IAsyncResult interface. That's true. Implementing the IAsyncResult is not a trivial task. However all delegates provide us with an instance of an IAsyncResult upon calling their BeginInvoke method. So we could look at using this approach. The general consensus on the .NET community is that using the delegate's BeginInvoke/EndInvoke is slow. Slow is a relative term. If the method itself is going to take 2-3 seconds or more to complete then any performance gains you might get by implementing your own IAsyncResult quickly diminishes. Remember that you only call BeginInvoke once. Now in the case where you're calling your asynchronous method thousands of times or more then improving on this slowness could make a difference.\n\nIAsyncResult Implementations\n\nThere are some well written implementations available that you could use instead of delegates, but I'll leave that up to you. The concept remains the same and you can easily swap out the delegate version for any of the other implementations. The LazyAsyncResult internal class (that's part of the System.NET assembly) is a good place to look (using Reflector) if you're interested in implementing your own IAsyncResult implementation.\n\nA few others are\n\nJeffrey Richter's implementation\nImplementing the CLR Asynchronous Programming Model\nJoe Duffy's implementation\nImplementing a high-perf IAsyncResult: lock-free lazy allocation\n\nThe code listing below shows the completed implementations of the BeginGetNumberOfPrimeNumbersInArray and the EndGetNumberOfPrimeNumbersInArray method. We also use an AsyncState class that is shown towards the end of the code listing. It's just a simple class that is used to pass state information between the Begin and End methods.\n\nIn the Begin method, we define a delegate that has the same signature as our synchronous method. That's because we will be calling our synchronous method asynchronously and we use a delegate to help with calling it asynchronously. A reference to this delegate is passed along to the End method via the AsyncState object.\n\n \n\nCode Listing Showing the BeginXXX and EndXXX implementations\n  public class BusinessModule\n  {\n    public IAsyncResult BeginGetNumberOfPrimeNumbersInArray(int[] numbers, AsyncCallback callback, object state)\n    {\n      Func<int[], int> del = GetNumberOfPrimeNumbersInArray;\n      var asyncState = new AsyncState(del, state);\n      return del.BeginInvoke(numbers, callback, asyncState);\n    }\n\n    public int EndGetNumberOfPrimeNumbersInArray(IAsyncResult result)\n    {\n      var asyncState = (AsyncState)result.AsyncState;\n      var del = (Func<int[], int>)asyncState.Del;\n      return del.EndInvoke(result);\n    }\n\n    /// <summary>\n    /// Synchronous Method to Get the number of prime numbers in an array of numbers\n    /// </summary>\n    /// <param name=\"numbers\"></param>\n    /// <returns></returns>\n    public int GetNumberOfPrimeNumbersInArray(int[] numbers)\n    {\n      int count = 0;\n      for (int i = 0; i < numbers.Length; i++)\n      {\n        if (IsPrime(numbers[i]))\n          count++;\n      }\n      return count;\n    }\n\n    private bool IsPrime(int number)\n    {\n      if (number == 4)\n        return false;\n      for (int i = 2; i < number / 2; i++)\n        if (number % i == 0)\n          return false;\n      return true;\n    }\n  }\n\n  public class AsyncState\n  {\n    public Delegate Del { get; private set; }\n    public object State { get; private set; }\n\n    public AsyncState(Delegate del, object state)\n    {\n      Del = del;\n      State = state;\n    }\n  }\n\nUsing Asynchronous Methods\n\nThe code listing below is the entire code you'll need to run this application. Using our new asynchronous method is similar to using any asynchronous method you would encounter in the .NET BCL. You can see the call to our BeginGetNumberOfPrimeNumbersInArray method in the main method shown below.\n\nComplete code listing - Showing how ot call the Async method.\n  class Program\n  {\n    static void Main(string[] args)\n    {\n      var bm = new BusinessModule();\n      var numbers = Enumerable.Range(0, 10000).ToArray();\n\n      bm.BeginGetNumberOfPrimeNumbersInArray(numbers, GetNumberOfPrimeNumbersInArrayCallback, bm);\n      Console.WriteLine(\"You should see the number of primes after this message\");      \n      Console.ReadLine();\n    }\n\n    static void GetNumberOfPrimeNumbersInArrayCallback(IAsyncResult result)\n    {\n      var asyncState = (AsyncState)result.AsyncState;\n      var del = (Func<int[], int>)asyncState.Del;\n      var numberOfPrimes = del.EndInvoke(result);\n      Console.WriteLine(numberOfPrimes);\n    }\n  }\n\n  public class BusinessModule\n  {\n    public IAsyncResult BeginGetNumberOfPrimeNumbersInArray(int[] numbers, AsyncCallback callback, object state)\n    {\n      Func<int[], int> del = GetNumberOfPrimeNumbersInArray;\n      var asyncState = new AsyncState(del, state);\n      return del.BeginInvoke(numbers, callback, asyncState);\n    }\n\n    public int EndGetNumberOfPrimeNumbersInArray(IAsyncResult result)\n    {\n      var asyncState = (AsyncState)result.AsyncState;\n      var del = (Func<int[], int>)asyncState.Del;\n      return del.EndInvoke(result);\n    }\n\n    /// <summary>\n    /// Synchronous Method to Get the number of prime numbers in an array of numbers\n    /// </summary>\n    /// <param name=\"numbers\"></param>\n    /// <returns></returns>\n    public int GetNumberOfPrimeNumbersInArray(int[] numbers)\n    {\n      int count = 0;\n      for (int i = 0; i < numbers.Length; i++)\n      {\n        if (IsPrime(numbers[i]))\n          count++;\n      }\n      return count;\n    }\n\n    private bool IsPrime(int number)\n    {\n      if (number == 4)\n        return false;\n      for (int i = 2; i < number / 2; i++)\n        if (number % i == 0)\n          return false;\n      return true;\n    }\n  }\n\n  public class AsyncState\n  {\n    public Delegate Del { get; private set; }\n    public object State { get; private set; }\n\n    public AsyncState(Delegate del, object state)\n    {\n      Del = del;\n      State = state;\n    }\n  }\n\n\n \n\nBecause the method is asynchronous and we're calling in asynchronously rather than making a blocking call (which is also an option when using the APM), you'll see the message:\n\nYou should see the number of primes after this message\n\nBefore you see the count of the number of prime numbers in the int array. So for example, on my desktop, the output I see is.",
+  "bodyLinks": [
+    {
+      "text": "Implementing the CLR Asynchronous Programming Model",
+      "url": "https://web.archive.org/web/20221205001011/http://msdn.microsoft.com/en-us/magazine/cc163467.aspx"
+    },
+    {
+      "text": "Implementing a high-perf IAsyncResult: lock-free lazy allocation",
+      "url": "https://web.archive.org/web/20221205001011/http://www.bluebytesoftware.com/blog/PermaLink,guid,661dc0d7-9759-4a91-ad97-247c66d6f784.aspx"
+    }
+  ],
+  "code": [
+    "IAsyncResult BeginXXX(AsyncCallback callback, object state)\n",
+    "void EndXXX(IAsyncResult result)\n",
+    "    /// <summary>\n    /// Synchronous Method to Get the number of prime numbers in an array of numbers\n    /// </summary>\n    /// <param name=\"numbers\"></param>\n    /// <returns></returns>\n    public int GetNumberOfPrimeNumbersInArray(int[] numbers)\n    {\n      int count = 0;\n      for (int i = 0; i < numbers.Length; i++)\n      {\n        if (IsPrime(numbers[i]))\n          count++;\n      }\n      return count;\n    }\n\n    private bool IsPrime(int number)\n    {\n      if (number == 4)\n        return false;\n      for (int i = 2; i < number / 2; i++)\n        if (number % i == 0)\n          return false;\n      return true;\n    }\n  }\n",
+    " public IAsyncResult BeginGetNumberOfPrimeNumbersInArray(int[] numbers,\n   AsyncCallback callback, object state)\n {\n }",
+    "public int EndGetNumberOfPrimeNumbersInArray(IAsyncResult result)\n{\n}\n",
+    "  public class BusinessModule\n  {\n    public IAsyncResult BeginGetNumberOfPrimeNumbersInArray(int[] numbers, AsyncCallback callback, object state)\n    {\n      Func<int[], int> del = GetNumberOfPrimeNumbersInArray;\n      var asyncState = new AsyncState(del, state);\n      return del.BeginInvoke(numbers, callback, asyncState);\n    }\n\n    public int EndGetNumberOfPrimeNumbersInArray(IAsyncResult result)\n    {\n      var asyncState = (AsyncState)result.AsyncState;\n      var del = (Func<int[], int>)asyncState.Del;\n      return del.EndInvoke(result);\n    }\n\n    /// <summary>\n    /// Synchronous Method to Get the number of prime numbers in an array of numbers\n    /// </summary>\n    /// <param name=\"numbers\"></param>\n    /// <returns></returns>\n    public int GetNumberOfPrimeNumbersInArray(int[] numbers)\n    {\n      int count = 0;\n      for (int i = 0; i < numbers.Length; i++)\n      {\n        if (IsPrime(numbers[i]))\n          count++;\n      }\n      return count;\n    }\n\n    private bool IsPrime(int number)\n    {\n      if (number == 4)\n        return false;\n      for (int i = 2; i < number / 2; i++)\n        if (number % i == 0)\n          return false;\n      return true;\n    }\n  }\n\n  public class AsyncState\n  {\n    public Delegate Del { get; private set; }\n    public object State { get; private set; }\n\n    public AsyncState(Delegate del, object state)\n    {\n      Del = del;\n      State = state;\n    }\n  }\n",
+    "  class Program\n  {\n    static void Main(string[] args)\n    {\n      var bm = new BusinessModule();\n      var numbers = Enumerable.Range(0, 10000).ToArray();\n\n      bm.BeginGetNumberOfPrimeNumbersInArray(numbers, GetNumberOfPrimeNumbersInArrayCallback, bm);\n      Console.WriteLine(\"You should see the number of primes after this message\");      \n      Console.ReadLine();\n    }\n\n    static void GetNumberOfPrimeNumbersInArrayCallback(IAsyncResult result)\n    {\n      var asyncState = (AsyncState)result.AsyncState;\n      var del = (Func<int[], int>)asyncState.Del;\n      var numberOfPrimes = del.EndInvoke(result);\n      Console.WriteLine(numberOfPrimes);\n    }\n  }\n\n  public class BusinessModule\n  {\n    public IAsyncResult BeginGetNumberOfPrimeNumbersInArray(int[] numbers, AsyncCallback callback, object state)\n    {\n      Func<int[], int> del = GetNumberOfPrimeNumbersInArray;\n      var asyncState = new AsyncState(del, state);\n      return del.BeginInvoke(numbers, callback, asyncState);\n    }\n\n    public int EndGetNumberOfPrimeNumbersInArray(IAsyncResult result)\n    {\n      var asyncState = (AsyncState)result.AsyncState;\n      var del = (Func<int[], int>)asyncState.Del;\n      return del.EndInvoke(result);\n    }\n\n    /// <summary>\n    /// Synchronous Method to Get the number of prime numbers in an array of numbers\n    /// </summary>\n    /// <param name=\"numbers\"></param>\n    /// <returns></returns>\n    public int GetNumberOfPrimeNumbersInArray(int[] numbers)\n    {\n      int count = 0;\n      for (int i = 0; i < numbers.Length; i++)\n      {\n        if (IsPrime(numbers[i]))\n          count++;\n      }\n      return count;\n    }\n\n    private bool IsPrime(int number)\n    {\n      if (number == 4)\n        return false;\n      for (int i = 2; i < number / 2; i++)\n        if (number % i == 0)\n          return false;\n      return true;\n    }\n  }\n\n  public class AsyncState\n  {\n    public Delegate Del { get; private set; }\n    public object State { get; private set; }\n\n    public AsyncState(Delegate del, object state)\n    {\n      Del = del;\n      State = state;\n    }\n  }\n",
+    "You should see the number of primes after this message"
+  ],
+  "header": "IAsyncResult–Making Existing methods Asnchronous\nPosted by Shiv Kumar on 7th February, 2011\nCategorized Under: Programming C#\nTagged With: Asynchronous \n  ",
+  "html": "<div class=\"articleText\">\n        <p>The APM or Asynchronous programming model has been in .NET since the beginning. There are quite a few BCL classes that use this programming model to effectively provide asynchronous methods to methods that also have synchronous counterparts. But what if you want to make one of your existing methods asynchronous? In this post I show you how simple it is to make an existing synchronous method available as an asynchronous method.</p> <p>Before we go down that route, let me say that I assume you're somewhat familiar with using asynchronous methods. The intent of this post is to show you how you would convert one or more of your own synchronous methods into asynchronous method. So I'm not going to be explaining the basics of asynchronous programming in .NET.</p> <p>The APM design pattern in .NET uses some naming conventions for the method names as well as the basic method signatures. You'll have BeginXXX and EndXXX method, where XXX is the name of the synchronous method. In other words asynchronous operations that use the APM (IAsyncResult) design pattern are implemented as a pair of methods. The basic method signature for the BeginXXX method is</p><pre class=\"csharpcode\"><span class=\"identifier\">IAsyncResult</span> BeginXXX(<span class=\"identifier\">AsyncCallback</span> callback, <span class=\"kwrd\">object</span> state)\n</pre>\n<p>&nbsp;</p>\n<p>The basic method signature for the EndXXX method is</p><pre class=\"csharpcode\"><span class=\"kwrd\">void</span> EndXXX(<span class=\"identifier\">IAsyncResult</span> result)\n</pre>\n<p>&nbsp;</p>\n<p>Now if we want to make one of our own methods asynchronous then we'll have to follow the basic signature. If our method required additional parameters or has a return type then we can include these parameters, while keeping the basic signature. <strong><em>The idea is to re-use our existing method (and implementation) but as an asynchronous operation.</em></strong></p>\n<p>So lets say we have a method in our business layer class that does some compute-bound work. For the sake of an example let's say the method requires an <code class=\"csharpcode\"><span class=\"kwrd\">int</span>[]</code>as an input parameter and it returns the number of prime numbers in the array as an int. The synchronous version of the method in shown in the code listing below. \n</p><div class=\"panel code content/images/csharp.png\" title=\"Synchronous Version of the GetNumberOfPrimeNumbersInArray method\" id=\"code_85760\"><div class=\"codeHeading\" style=\"background-image: url(/web/20221205001011/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Synchronous Version of the GetNumberOfPrimeNumbersInArray method</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">    <span class=\"rem\">/// &lt;summary&gt;</span>\n    <span class=\"rem\">/// Synchronous Method to Get the number of prime numbers in an array of numbers</span>\n    <span class=\"rem\">/// &lt;/summary&gt;</span>\n    <span class=\"rem\">/// &lt;param name=\"numbers\"&gt;&lt;/param&gt;</span>\n    <span class=\"rem\">/// &lt;returns&gt;&lt;/returns&gt;</span>\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">int</span> GetNumberOfPrimeNumbersInArray(<span class=\"kwrd\">int</span>[] numbers)\n    {\n      <span class=\"kwrd\">int</span> count = 0;\n      <span class=\"kwrd\">for</span> (<span class=\"kwrd\">int</span> i = 0; i &lt; numbers.Length; i++)\n      {\n        <span class=\"kwrd\">if</span> (IsPrime(numbers[i]))\n          count++;\n      }\n      <span class=\"kwrd\">return</span> count;\n    }\n\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">bool</span> IsPrime(<span class=\"kwrd\">int</span> number)\n    {\n      <span class=\"kwrd\">if</span> (number == 4)\n        <span class=\"kwrd\">return</span> <span class=\"kwrd\">false</span>;\n      <span class=\"kwrd\">for</span> (<span class=\"kwrd\">int</span> i = 2; i &lt; number / 2; i++)\n        <span class=\"kwrd\">if</span> (number % i == 0)\n          <span class=\"kwrd\">return</span> <span class=\"kwrd\">false</span>;\n      <span class=\"kwrd\">return</span> <span class=\"kwrd\">true</span>;\n    }\n  }\n</pre></div>\n<h2>Implementing Asynchronous Methods</h2>\n<p>The BeginXXX method takes any parameters declared in the signature of the synchronous version of the method that are passed by value or by reference (in this case the int[]). Any out parameters <strong>are not</strong> part of the BeginXXX method signature. The BeginXXX method signature also includes two additional parameters which are part of the basic method signature as shown above. Further, the BeginXXX method needs to also return an instance of IAsyncResult which is also part of the basic method signature. So effectively, our BeginGetNumberOfPrimeNumbersInArray method signature will look like the following</p><pre class=\"csharpcode\"> <span class=\"kwrd\">public</span> <span class=\"identifier\">IAsyncResult</span> BeginGetNumberOfPrimeNumbersInArray(<span class=\"kwrd\">int</span>[] numbers,\n   <span class=\"identifier\">AsyncCallback</span> callback, <span class=\"kwrd\">object</span> state)\n {\n }</pre>\n<p>Similarly, our EndGetNumberOfPrimeNumbersInArray method will follow the basic signature but because our synchronous version returns an int, so our End method will return an int. Following the basic method signature and making appropriate modifications to the signature, the method signature for our EndGetNumberOfPrimeNumbersInArray will look like the following:</p><pre class=\"csharpcode\"><span class=\"kwrd\">public</span> <span class=\"kwrd\">int</span> EndGetNumberOfPrimeNumbersInArray(IAsyncResult result)\n{\n}\n</pre>\n<p>So now, all we're left with is the actual implementation of these methods. Keep in mind that we're going to use the existing synchronous method in here so we don't have to re-implement the existing method but rather re-use it asynchronously.</p>\n<p>Looking at the signature of our BeginXXX method a question that's going to come up (if it hasn't already) is that we'll need an implementation of the IAsyncResult interface. That's true. Implementing the IAsyncResult is not a trivial task. However all delegates provide us with an instance of an IAsyncResult upon calling their BeginInvoke method. So we could look at using this approach. The general consensus on the .NET community is that using the delegate's BeginInvoke/EndInvoke is slow. Slow is a relative term. If the method itself is going to take 2-3 seconds or more to complete then any performance gains you might get by implementing your own IAsyncResult quickly diminishes. Remember that you only call BeginInvoke once. Now in the case where you're calling your asynchronous method thousands of times or more then improving on this slowness could make a difference.</p>\n<div class=\"panel\">\n<h2 class=\"note\">IAsyncResult Implementations</h2>\n<p>There are some well written implementations available that you could use instead of delegates, but I'll leave that up to you. The concept remains the same and you can easily swap out the delegate version for any of the other implementations. The <code>LazyAsyncResult</code> internal class (that's part of the System.NET assembly) is a good place to look (using Reflector) if you're interested in implementing your own IAsyncResult implementation.</p>\n<p>A few others are</p>\n<ul>\n<li>Jeffrey Richter's implementation \n</li><li><a href=\"https://web.archive.org/web/20221205001011/http://msdn.microsoft.com/en-us/magazine/cc163467.aspx\">Implementing the CLR Asynchronous Programming Model</a> \n</li><li>Joe Duffy's implementation \n</li><li><a href=\"https://web.archive.org/web/20221205001011/http://www.bluebytesoftware.com/blog/PermaLink,guid,661dc0d7-9759-4a91-ad97-247c66d6f784.aspx\">Implementing a high-perf IAsyncResult: lock-free lazy allocation</a> </li></ul></div>\n<p>The code listing below shows the completed implementations of the BeginGetNumberOfPrimeNumbersInArray and the EndGetNumberOfPrimeNumbersInArray method. We also use an AsyncState class that is shown towards the end of the code listing. It's just a simple class that is used to pass state information between the Begin and End methods.</p>\n<p>In the Begin method, we define a delegate that has the same signature as our synchronous method. That's because we will be calling our synchronous method asynchronously and we use a delegate to help with calling it asynchronously. A reference to this delegate is passed along to the End method via the AsyncState object.</p>\n<p>&nbsp;</p>\n<div class=\"panel code content/images/csharp.png\" title=\"Code Listing Showing the BeginXXX and EndXXX implementations\" id=\"code_91126\"><div class=\"codeHeading\" style=\"background-image: url(/web/20221205001011/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Code Listing Showing the BeginXXX and EndXXX implementations</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">  <span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> BusinessModule\n  {\n    <span class=\"kwrd\">public</span> IAsyncResult BeginGetNumberOfPrimeNumbersInArray(<span class=\"kwrd\">int</span>[] numbers, AsyncCallback callback, <span class=\"kwrd\">object</span> state)\n    {\n      Func&lt;<span class=\"kwrd\">int</span>[], <span class=\"kwrd\">int</span>&gt; del = GetNumberOfPrimeNumbersInArray;\n      var asyncState = <span class=\"kwrd\">new</span> AsyncState(del, state);\n      <span class=\"kwrd\">return</span> del.BeginInvoke(numbers, callback, asyncState);\n    }\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">int</span> EndGetNumberOfPrimeNumbersInArray(IAsyncResult result)\n    {\n      var asyncState = (AsyncState)result.AsyncState;\n      var del = (Func&lt;<span class=\"kwrd\">int</span>[], <span class=\"kwrd\">int</span>&gt;)asyncState.Del;\n      <span class=\"kwrd\">return</span> del.EndInvoke(result);\n    }\n\n    <span class=\"rem\">/// &lt;summary&gt;</span>\n    <span class=\"rem\">/// Synchronous Method to Get the number of prime numbers in an array of numbers</span>\n    <span class=\"rem\">/// &lt;/summary&gt;</span>\n    <span class=\"rem\">/// &lt;param name=\"numbers\"&gt;&lt;/param&gt;</span>\n    <span class=\"rem\">/// &lt;returns&gt;&lt;/returns&gt;</span>\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">int</span> GetNumberOfPrimeNumbersInArray(<span class=\"kwrd\">int</span>[] numbers)\n    {\n      <span class=\"kwrd\">int</span> count = 0;\n      <span class=\"kwrd\">for</span> (<span class=\"kwrd\">int</span> i = 0; i &lt; numbers.Length; i++)\n      {\n        <span class=\"kwrd\">if</span> (IsPrime(numbers[i]))\n          count++;\n      }\n      <span class=\"kwrd\">return</span> count;\n    }\n\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">bool</span> IsPrime(<span class=\"kwrd\">int</span> number)\n    {\n      <span class=\"kwrd\">if</span> (number == 4)\n        <span class=\"kwrd\">return</span> <span class=\"kwrd\">false</span>;\n      <span class=\"kwrd\">for</span> (<span class=\"kwrd\">int</span> i = 2; i &lt; number / 2; i++)\n        <span class=\"kwrd\">if</span> (number % i == 0)\n          <span class=\"kwrd\">return</span> <span class=\"kwrd\">false</span>;\n      <span class=\"kwrd\">return</span> <span class=\"kwrd\">true</span>;\n    }\n  }\n\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> AsyncState\n  {\n    <span class=\"kwrd\">public</span> Delegate Del { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">object</span> State { get; <span class=\"kwrd\">private</span> set; }\n\n    <span class=\"kwrd\">public</span> AsyncState(Delegate del, <span class=\"kwrd\">object</span> state)\n    {\n      Del = del;\n      State = state;\n    }\n  }\n</pre></div>\n<h2>Using Asynchronous Methods</h2>\n<p>The code listing below is the entire code you'll need to run this application. Using our new asynchronous method is similar to using any asynchronous method you would encounter in the .NET BCL. You can see the call to our BeginGetNumberOfPrimeNumbersInArray method in the main method shown below.</p>\n<div class=\"panel code content/images/csharp.png\" title=\"Complete code listing - Showing how ot call the Async method.\" id=\"code_97083\"><div class=\"codeHeading\" style=\"background-image: url(/web/20221205001011/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Complete code listing - Showing how ot call the Async method.</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">  <span class=\"kwrd\">class</span> Program\n  {\n    <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> Main(<span class=\"kwrd\">string</span>[] args)\n    {\n      var bm = <span class=\"kwrd\">new</span> BusinessModule();\n      var numbers = Enumerable.Range(0, 10000).ToArray();\n\n      bm.BeginGetNumberOfPrimeNumbersInArray(numbers, GetNumberOfPrimeNumbersInArrayCallback, bm);\n      Console.WriteLine(<span class=\"str\">\"You should see the number of primes after this message\"</span>);      \n      Console.ReadLine();\n    }\n\n    <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> GetNumberOfPrimeNumbersInArrayCallback(IAsyncResult result)\n    {\n      var asyncState = (AsyncState)result.AsyncState;\n      var del = (Func&lt;<span class=\"kwrd\">int</span>[], <span class=\"kwrd\">int</span>&gt;)asyncState.Del;\n      var numberOfPrimes = del.EndInvoke(result);\n      Console.WriteLine(numberOfPrimes);\n    }\n  }\n\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> BusinessModule\n  {\n    <span class=\"kwrd\">public</span> IAsyncResult BeginGetNumberOfPrimeNumbersInArray(<span class=\"kwrd\">int</span>[] numbers, AsyncCallback callback, <span class=\"kwrd\">object</span> state)\n    {\n      Func&lt;<span class=\"kwrd\">int</span>[], <span class=\"kwrd\">int</span>&gt; del = GetNumberOfPrimeNumbersInArray;\n      var asyncState = <span class=\"kwrd\">new</span> AsyncState(del, state);\n      <span class=\"kwrd\">return</span> del.BeginInvoke(numbers, callback, asyncState);\n    }\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">int</span> EndGetNumberOfPrimeNumbersInArray(IAsyncResult result)\n    {\n      var asyncState = (AsyncState)result.AsyncState;\n      var del = (Func&lt;<span class=\"kwrd\">int</span>[], <span class=\"kwrd\">int</span>&gt;)asyncState.Del;\n      <span class=\"kwrd\">return</span> del.EndInvoke(result);\n    }\n\n    <span class=\"rem\">/// &lt;summary&gt;</span>\n    <span class=\"rem\">/// Synchronous Method to Get the number of prime numbers in an array of numbers</span>\n    <span class=\"rem\">/// &lt;/summary&gt;</span>\n    <span class=\"rem\">/// &lt;param name=\"numbers\"&gt;&lt;/param&gt;</span>\n    <span class=\"rem\">/// &lt;returns&gt;&lt;/returns&gt;</span>\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">int</span> GetNumberOfPrimeNumbersInArray(<span class=\"kwrd\">int</span>[] numbers)\n    {\n      <span class=\"kwrd\">int</span> count = 0;\n      <span class=\"kwrd\">for</span> (<span class=\"kwrd\">int</span> i = 0; i &lt; numbers.Length; i++)\n      {\n        <span class=\"kwrd\">if</span> (IsPrime(numbers[i]))\n          count++;\n      }\n      <span class=\"kwrd\">return</span> count;\n    }\n\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">bool</span> IsPrime(<span class=\"kwrd\">int</span> number)\n    {\n      <span class=\"kwrd\">if</span> (number == 4)\n        <span class=\"kwrd\">return</span> <span class=\"kwrd\">false</span>;\n      <span class=\"kwrd\">for</span> (<span class=\"kwrd\">int</span> i = 2; i &lt; number / 2; i++)\n        <span class=\"kwrd\">if</span> (number % i == 0)\n          <span class=\"kwrd\">return</span> <span class=\"kwrd\">false</span>;\n      <span class=\"kwrd\">return</span> <span class=\"kwrd\">true</span>;\n    }\n  }\n\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> AsyncState\n  {\n    <span class=\"kwrd\">public</span> Delegate Del { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">object</span> State { get; <span class=\"kwrd\">private</span> set; }\n\n    <span class=\"kwrd\">public</span> AsyncState(Delegate del, <span class=\"kwrd\">object</span> state)\n    {\n      Del = del;\n      State = state;\n    }\n  }\n</pre></div>\n<p>&nbsp;</p>\n<p>Because the method is asynchronous and we're calling in asynchronously rather than making a blocking call (which is also an option when using the APM), you'll see the message:</p><pre style=\"font-family: consolas\"><span style=\"color: #a31515\">You should see the number of primes after this message</span><br></pre>Before you see the count of the number of prime numbers in the int array. So for example, on my desktop, the output I see is. \n<p><img style=\"background-image: none; border-right-width: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"AMPSampleOutput\" border=\"0\" alt=\"AMPSampleOutput\" src=\"https://web.archive.org/web/20221205001011im_/http://www.matlus.com/content/uploads/2011/02/AMPSampleOutput_0d7e9d93-2f31-4af4-948e-9dac2fbf2d41.jpg\" width=\"605\" height=\"255\"></p>  \n        </div>",
+  "images": [
+    {
+      "alt": "AMPSampleOutput",
+      "loaded": false,
+      "url": "https://web.archive.org/web/20221205001011im_/http://www.matlus.com/content/uploads/2011/02/AMPSampleOutput_0d7e9d93-2f31-4af4-948e-9dac2fbf2d41.jpg"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "C#",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/category/programming/c/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20221205001011/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2fiasyncresult-making-existing-methods-asnchronous%2f&text=IAsyncResult%e2%80%93Making+Existing+methods+Asnchronous"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20221205001011/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2fiasyncresult-making-existing-methods-asnchronous%2f&t=IAsyncResult%e2%80%93Making+Existing+methods+Asnchronous"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20221205001011/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2fiasyncresult-making-existing-methods-asnchronous%2f&text=IAsyncResult%e2%80%93Making+Existing+methods+Asnchronous"
+    },
+    {
+      "text": "Implementing the CLR Asynchronous Programming Model",
+      "url": "https://web.archive.org/web/20221205001011/http://msdn.microsoft.com/en-us/magazine/cc163467.aspx"
+    },
+    {
+      "text": "Implementing a high-perf IAsyncResult: lock-free lazy allocation",
+      "url": "https://web.archive.org/web/20221205001011/http://www.bluebytesoftware.com/blog/PermaLink,guid,661dc0d7-9759-4a91-ad97-247c66d6f784.aspx"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "IAsyncResult–Making Existing methods Asnchronous",
+  "url": "https://web.archive.org/web/20221205001011/http://www.matlus.com/iasyncresult-making-existing-methods-asnchronous/"
+}

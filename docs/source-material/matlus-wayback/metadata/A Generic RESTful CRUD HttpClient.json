@@ -1,0 +1,503 @@
+{
+  "body": "In earlier posts, we looked at:\n\nBuilding a simple Web API Service: ASP.NET Web API with WebForms\nSelf-Hosting a Web API service: Self Host ASP.NET Web API\nBuilding a very simple Web API Client: HttpClient .NET 4.5\nRealistic Web API service: ASP.NET Web API Supporting RESTful CRUD Operations\n\nIn this post we’ll be looking at a generic asynchronous RESTful CRUD HttpClient that can be used with any service (including the services in the list above). This class will make it extremely simple for us to build RESTful clients going against services that talk REST. If you want to build a RESTful cross-domain client (or not cross domain) using JavaScript/jQuery, then take a look at this post: Cross Domain RESTful CRUD Operations using jQuery.\n\nWe’ll use the service we built in ASP.NET Web API Supporting RESTful CRUD Operations post as our service for which we’ll build a fully functional client.\n\nPrerequisites\n\nIf you’re just starting down this path, you’ll need to install (as of this writing) a couple of NuGet packages:\n\nASP.NET Web API\nSystem.Net.Http.Formatting\n\nYou’ll find the command line for installing these package on their respective pages.\n\nRefactoring a simple implementation\n\nAs with most things of this nature, it starts with refactoring implementations you might have done a couple of times. So towards that end, you may want to take a look at the this post (HttpClient .NET 4.5) for a very basic implementation from which we derived the class we’ll look at here.\n\nGenericRestfulCrudHttpClient\n\nThe entire class is listed in the code listing below. It’s a really simple abstraction frankly. And you can see it’s hardcoded to support only JSON. This is simple to change or make customizable or configurable so I’ll leave it up to you to do if you need such a beast.\n\nThe comments in the code should help you understand how to use it. We’ll now make a simple client application that uses this class to talk REST and perform CRUD operations against a RESTful service that supports CRUD operation such as ASP.NET Web API Supporting RESTful CRUD Operations\n\nGenericRestfulCrudHttpClient\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Net.Http;\nusing System.Net.Http.Formatting;\nusing System.Net.Http.Headers;\nusing System.Text;\nusing System.Threading.Tasks;\n\nnamespace Matlus.Web.WebLib.WebApi.HttpClients\n{\n    /// <summary>\n    /// This class exposes RESTful CRUD functionality in a generic way, abstracting\n    /// the implementation and useage details of HttpClient, HttpRequestMessage,\n    /// HttpResponseMessage, ObjectContent, Formatters etc. \n    /// </summary>\n    /// <typeparam name=\"T\">This is the Type of Resource you want to work with, such as Customer, Order etc.</typeparam>\n    /// <typeparam name=\"TResourceIdentifier\">This is the type of the identifier that uniquely identifies a specific resource such as Id or Username etc.</typeparam>\n    public class GenericRestfulCrudHttpClient<T, TResourceIdentifier> : IDisposable where T : class\n    {\n        private bool disposed = false;\n        private HttpClient httpClient;\n        protected readonly string serviceBaseAddress;\n        private readonly string addressSuffix;\n        private readonly string jsonMediaType = \"application/json\";\n\n        /// <summary>\n        /// The constructor requires two parameters that essentially initialize the underlying HttpClient.\n        /// In a RESTful service, you might have URLs of the following nature (for a given resource - Member in this example):<para />\n        /// 1. http://www.somedomain/api/members/<para />\n        /// 2. http://www.somedomain/api/members/jdoe<para />\n        /// Where the first URL will GET you all members, and allow you to POST new members.<para />\n        /// While the second URL supports PUT and DELETE operations on a specifc member.\n        /// </summary>\n        /// <param name=\"serviceBaseAddress\">As per the example, this would be \"http://www.somedomain\"</param>\n        /// <param name=\"addressSuffix\">As per the example, this would be \"api/members/\"</param>\n\n        public GenericRestfulCrudHttpClient(string serviceBaseAddress, string addressSuffix)\n        {\n            this.serviceBaseAddress = serviceBaseAddress;\n            this.addressSuffix = addressSuffix;\n            httpClient = MakeHttpClient(serviceBaseAddress);\n        }\n\n        protected virtual HttpClient MakeHttpClient(string serviceBaseAddress)\n        {\n            httpClient = new HttpClient();\n            httpClient.BaseAddress = new Uri(serviceBaseAddress);\n            httpClient.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(jsonMediaType));\n            httpClient.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse(\"gzip\"));\n            httpClient.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse(\"defalte\"));\n            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue(\"Matlus_HttpClient\", \"1.0\")));\n            return httpClient;\n        }\n\n        public async Task<IEnumerable<T>> GetManyAsync()\n        {\n            var responseMessage = await httpClient.GetAsync(addressSuffix);\n            responseMessage.EnsureSuccessStatusCode();\n            return await responseMessage.Content.ReadAsAsync<IEnumerable<T>>();\n        }\n\n        public async Task<T> GetAsync(TResourceIdentifier identifier)\n        {\n            var responseMessage = await httpClient.GetAsync(addressSuffix + identifier.ToString());\n            responseMessage.EnsureSuccessStatusCode();\n            return await responseMessage.Content.ReadAsAsync<T>();\n        }\n\n        public async Task<T> PostAsync(T model)\n        {\n            var requestMessage = new HttpRequestMessage();\n            var objectContent = CreateJsonObjectContent(model);\n            var responseMessage = await httpClient.PostAsync(addressSuffix, objectContent);\n            return await responseMessage.Content.ReadAsAsync<T>();\n        }\n\n        public async Task PutAsync(TResourceIdentifier identifier, T model)\n        {\n            var requestMessage = new HttpRequestMessage();\n            var objectContent = CreateJsonObjectContent(model);\n            var responseMessage = await httpClient.PutAsync(addressSuffix + identifier.ToString(), objectContent);\n        }\n\n        public async Task DeleteAsync(TResourceIdentifier identifier)\n        {\n            var r = await httpClient.DeleteAsync(addressSuffix + identifier.ToString());\n        }\n\n        private ObjectContent CreateJsonObjectContent(T model)\n        {\n            var requestMessage = new HttpRequestMessage();\n            return requestMessage.CreateContent<T>(\n                model,\n                MediaTypeHeaderValue.Parse(jsonMediaType),\n                new MediaTypeFormatter[] { new JsonMediaTypeFormatter() },\n                new FormatterSelector());\n        }\n\n        #region IDisposable Members\n\n        public void Dispose()\n        {\n            Dispose(true);\n            GC.SuppressFinalize(this);\n        }\n\n        private void Dispose(bool disposing)\n        {\n            if (!disposed && disposing)\n            {\n                if (httpClient != null)\n                {\n                    var hc = httpClient;\n                    httpClient = null;\n                    hc.Dispose();\n                }\n                disposed = true;\n            }\n        }\n\n        #endregion IDisposable Members\n    }\n}\nCode listing showing the entire GenericRestfulCrudHttpClient\n\nSo now that we have this class, let’s take a look at building a client application that talks to a REST service.\n\nBuilding a Working Client\n\nWhat we’re going to do next is build a Repository that essentially gets its data from a remote service. Essentially a Remote Proxy or Gateway.\n\nMemberRepository.cs\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Runtime.Serialization;\nusing System.Text;\nusing System.Threading.Tasks;\nusing Matlus.Web.WebLib.WebApi.HttpClients;\n\nnamespace Matlus.Web\n{\n    public class MemberRepository : IDisposable\n    {\n        private bool disposed = false;\n        private GenericRestfulCrudHttpClient<Member, string> memberClient =\n            new GenericRestfulCrudHttpClient<Member, string>(\"http://localhost:17413/\", \"api/members/\");\n\n        public async Task<IEnumerable<Member>> GetMembersAsync()\n        {\n            return await memberClient.GetManyAsync();\n        }\n\n        public async Task<Member> GetMemberAsync(string username)\n        {\n            return await memberClient.GetAsync(username);\n        }\n\n        public async Task<Member> PostMemberAsync(Member member)\n        {\n            return await memberClient.PostAsync(member);\n        }\n\n        public async Task PutMemberAsync(string username, Member member)\n        {\n            await memberClient.PutAsync(username, member);\n        }\n\n        public async Task DeleteMemberAsync(string username)\n        {\n            await memberClient.DeleteAsync(username);\n        }\n\n        public void Dispose()\n        {\n            Dispose(true);\n            GC.SuppressFinalize(this);\n        }\n\n        private void Dispose(bool disposing)\n        {\n            if (!disposed && disposing)\n            {\n                if (memberClient != null)\n                {\n                    var mc = memberClient;\n                    memberClient = null;\n                    mc.Dispose();\n                }\n                disposed = true;\n            }            \n        }\n    }\n}\n\nThe Member Repository class\n\nAs you can see from the code listing above, the MemberRepository class has the base CRUD methods for a Member. That is all methods are strongly typed on the type Member.\n\nThis class internally uses an instance of the GenericRestfulCrudHttpClient and declares a closed generic type (the private memberClient variable in the code listing above) that works with the Member type.\n\nI hope you can see how easily we could make various other closed generic types from the GenericRestfulCrudHttpClient class that work with other types we may have our application (such as Customer, Order etc.). You don’t need a different repository class for the other types, but that’s entirely your choice.\n\nBe sure to change the serviceBaseAddress to match your service.\n\nThe Member class is just a POCO and is listed below. It’s the same class that the service (ASP.NET Web API Supporting RESTful CRUD Operations) uses as well.\n\nMember.cs\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Runtime.Serialization;\nusing System.Text;\nusing System.Threading.Tasks;\nusing Matlus.Web.WebLib.WebApi.HttpClients;\n\nnamespace Matlus.Web\n{\n    [DataContract]\n    public sealed class Member\n    {\n        #region Properties\n\n        [DataMember(Name = \"username\")]\n        public string Username { get; set; }\n        [DataMember(Name = \"id\")]\n        public int Id { get; set; }\n        [DataMember(Name = \"firstName\")]\n        public string FirstName { get; set; }\n        [DataMember(Name = \"lastName\")]\n        public string LastName { get; set; }\n        [DataMember(Name = \"email\")]\n        public string Email { get; set; }\n        [DataMember(Name = \"createdDate\")]\n        public DateTime CreatedDate { get; set; }\n\n        #endregion Properties\n\n        public Member()\n            : base()\n        {\n        }\n    }\n}\n\nThe POCO Member class\n\nFinally, we get to the actual RESTful CRUD Http Client.\n\nThe client is nothing fancy really, but you can see how easy it is to call the various CRUD methods of the MemberRepository class.\n\nRESTful CRUD HttpClient\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text;\nusing System.Threading.Tasks;\nusing Matlus.Web;\n\nnamespace Matlus.RestClient\n{\n    class Program\n    {\n        static void Main(string[] args)\n        {\n            WorkWithMembers();\n            Console.ReadLine();\n        }\n\n        private async static void WorkWithMembers()\n        {\n            using (var memberRepository = new MemberRepository())\n            {\n                //GET All Members\n                var members = await memberRepository.GetMembersAsync();\n                foreach (var item in members)\n                    Console.WriteLine(item.FirstName + \" \" + item.LastName);\n                Console.WriteLine();\n\n                //GET Specific Member\n                var member = await memberRepository.GetMemberAsync(\"skumar\");\n                Console.WriteLine(\"GetMemberAsync: \" + member.FirstName + \" \" + member.LastName);\n                Console.WriteLine();\n\n                //POST new Member\n                var newMember = new Matlus.Web.Member\n                {\n                    Username = \"testUsername\",\n                    FirstName = \"TestFirstName\",\n                    LastName = \"TestLastName\",\n                    Email = \"testUsername@gmail.com\"\n                };\n                var newlyCreatedUsername = await memberRepository.PostMemberAsync(newMember);\n                Console.WriteLine(\"PostMemberAsync: \" + newMember.FirstName + \" \" + newMember.LastName);\n                Console.WriteLine();\n\n                //PUT Member (i.e. update the member)\n                newMember.FirstName = \"TestFirstNameModified\";\n                await memberRepository.PutMemberAsync(newMember.Username, newMember);\n                var updateMember = await memberRepository.GetMemberAsync(newMember.Username);\n                Console.WriteLine(\"PutMethod: \" + updateMember.FirstName + \" \" + updateMember.LastName);\n                Console.WriteLine();\n\n                //DELETE Member\n                await memberRepository.DeleteMemberAsync(newMember.Username);\n                members = await memberRepository.GetMembersAsync();\n                foreach (var item in members)\n                    Console.WriteLine(item.FirstName + \" \" + item.LastName);\n\n            }\n        }\n    }\n}\n\n\nThe code for the RESTful CRUD client application\n\nThat concludes this post.",
+  "bodyLinks": [
+    {
+      "text": "ASP.NET Web API with WebForms",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/asp-net-web-api-with-webforms/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240624011608/http://nuget.org/packages/aspnetwebapi"
+    },
+    {
+      "text": "System.Net.Http.Formatting",
+      "url": "https://web.archive.org/web/20240624011608/http://nuget.org/packages/System.Net.Http.Formatting"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "Repository",
+      "url": "https://web.archive.org/web/20240624011608/http://msdn.microsoft.com/en-us/library/ff649690.aspx"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    }
+  ],
+  "code": [
+    "using System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Net.Http;\nusing System.Net.Http.Formatting;\nusing System.Net.Http.Headers;\nusing System.Text;\nusing System.Threading.Tasks;\n\nnamespace Matlus.Web.WebLib.WebApi.HttpClients\n{\n    /// <summary>\n    /// This class exposes RESTful CRUD functionality in a generic way, abstracting\n    /// the implementation and useage details of HttpClient, HttpRequestMessage,\n    /// HttpResponseMessage, ObjectContent, Formatters etc. \n    /// </summary>\n    /// <typeparam name=\"T\">This is the Type of Resource you want to work with, such as Customer, Order etc.</typeparam>\n    /// <typeparam name=\"TResourceIdentifier\">This is the type of the identifier that uniquely identifies a specific resource such as Id or Username etc.</typeparam>\n    public class GenericRestfulCrudHttpClient<T, TResourceIdentifier> : IDisposable where T : class\n    {\n        private bool disposed = false;\n        private HttpClient httpClient;\n        protected readonly string serviceBaseAddress;\n        private readonly string addressSuffix;\n        private readonly string jsonMediaType = \"application/json\";\n\n        /// <summary>\n        /// The constructor requires two parameters that essentially initialize the underlying HttpClient.\n        /// In a RESTful service, you might have URLs of the following nature (for a given resource - Member in this example):<para />\n        /// 1. http://www.somedomain/api/members/<para />\n        /// 2. http://www.somedomain/api/members/jdoe<para />\n        /// Where the first URL will GET you all members, and allow you to POST new members.<para />\n        /// While the second URL supports PUT and DELETE operations on a specifc member.\n        /// </summary>\n        /// <param name=\"serviceBaseAddress\">As per the example, this would be \"http://www.somedomain\"</param>\n        /// <param name=\"addressSuffix\">As per the example, this would be \"api/members/\"</param>\n\n        public GenericRestfulCrudHttpClient(string serviceBaseAddress, string addressSuffix)\n        {\n            this.serviceBaseAddress = serviceBaseAddress;\n            this.addressSuffix = addressSuffix;\n            httpClient = MakeHttpClient(serviceBaseAddress);\n        }\n\n        protected virtual HttpClient MakeHttpClient(string serviceBaseAddress)\n        {\n            httpClient = new HttpClient();\n            httpClient.BaseAddress = new Uri(serviceBaseAddress);\n            httpClient.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(jsonMediaType));\n            httpClient.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse(\"gzip\"));\n            httpClient.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse(\"defalte\"));\n            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue(\"Matlus_HttpClient\", \"1.0\")));\n            return httpClient;\n        }\n\n        public async Task<IEnumerable<T>> GetManyAsync()\n        {\n            var responseMessage = await httpClient.GetAsync(addressSuffix);\n            responseMessage.EnsureSuccessStatusCode();\n            return await responseMessage.Content.ReadAsAsync<IEnumerable<T>>();\n        }\n\n        public async Task<T> GetAsync(TResourceIdentifier identifier)\n        {\n            var responseMessage = await httpClient.GetAsync(addressSuffix + identifier.ToString());\n            responseMessage.EnsureSuccessStatusCode();\n            return await responseMessage.Content.ReadAsAsync<T>();\n        }\n\n        public async Task<T> PostAsync(T model)\n        {\n            var requestMessage = new HttpRequestMessage();\n            var objectContent = CreateJsonObjectContent(model);\n            var responseMessage = await httpClient.PostAsync(addressSuffix, objectContent);\n            return await responseMessage.Content.ReadAsAsync<T>();\n        }\n\n        public async Task PutAsync(TResourceIdentifier identifier, T model)\n        {\n            var requestMessage = new HttpRequestMessage();\n            var objectContent = CreateJsonObjectContent(model);\n            var responseMessage = await httpClient.PutAsync(addressSuffix + identifier.ToString(), objectContent);\n        }\n\n        public async Task DeleteAsync(TResourceIdentifier identifier)\n        {\n            var r = await httpClient.DeleteAsync(addressSuffix + identifier.ToString());\n        }\n\n        private ObjectContent CreateJsonObjectContent(T model)\n        {\n            var requestMessage = new HttpRequestMessage();\n            return requestMessage.CreateContent<T>(\n                model,\n                MediaTypeHeaderValue.Parse(jsonMediaType),\n                new MediaTypeFormatter[] { new JsonMediaTypeFormatter() },\n                new FormatterSelector());\n        }\n\n        #region IDisposable Members\n\n        public void Dispose()\n        {\n            Dispose(true);\n            GC.SuppressFinalize(this);\n        }\n\n        private void Dispose(bool disposing)\n        {\n            if (!disposed && disposing)\n            {\n                if (httpClient != null)\n                {\n                    var hc = httpClient;\n                    httpClient = null;\n                    hc.Dispose();\n                }\n                disposed = true;\n            }\n        }\n\n        #endregion IDisposable Members\n    }\n}",
+    "using System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Runtime.Serialization;\nusing System.Text;\nusing System.Threading.Tasks;\nusing Matlus.Web.WebLib.WebApi.HttpClients;\n\nnamespace Matlus.Web\n{\n    public class MemberRepository : IDisposable\n    {\n        private bool disposed = false;\n        private GenericRestfulCrudHttpClient<Member, string> memberClient =\n            new GenericRestfulCrudHttpClient<Member, string>(\"http://localhost:17413/\", \"api/members/\");\n\n        public async Task<IEnumerable<Member>> GetMembersAsync()\n        {\n            return await memberClient.GetManyAsync();\n        }\n\n        public async Task<Member> GetMemberAsync(string username)\n        {\n            return await memberClient.GetAsync(username);\n        }\n\n        public async Task<Member> PostMemberAsync(Member member)\n        {\n            return await memberClient.PostAsync(member);\n        }\n\n        public async Task PutMemberAsync(string username, Member member)\n        {\n            await memberClient.PutAsync(username, member);\n        }\n\n        public async Task DeleteMemberAsync(string username)\n        {\n            await memberClient.DeleteAsync(username);\n        }\n\n        public void Dispose()\n        {\n            Dispose(true);\n            GC.SuppressFinalize(this);\n        }\n\n        private void Dispose(bool disposing)\n        {\n            if (!disposed && disposing)\n            {\n                if (memberClient != null)\n                {\n                    var mc = memberClient;\n                    memberClient = null;\n                    mc.Dispose();\n                }\n                disposed = true;\n            }            \n        }\n    }\n}\n",
+    "using System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Runtime.Serialization;\nusing System.Text;\nusing System.Threading.Tasks;\nusing Matlus.Web.WebLib.WebApi.HttpClients;\n\nnamespace Matlus.Web\n{\n    [DataContract]\n    public sealed class Member\n    {\n        #region Properties\n\n        [DataMember(Name = \"username\")]\n        public string Username { get; set; }\n        [DataMember(Name = \"id\")]\n        public int Id { get; set; }\n        [DataMember(Name = \"firstName\")]\n        public string FirstName { get; set; }\n        [DataMember(Name = \"lastName\")]\n        public string LastName { get; set; }\n        [DataMember(Name = \"email\")]\n        public string Email { get; set; }\n        [DataMember(Name = \"createdDate\")]\n        public DateTime CreatedDate { get; set; }\n\n        #endregion Properties\n\n        public Member()\n            : base()\n        {\n        }\n    }\n}\n",
+    "using System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text;\nusing System.Threading.Tasks;\nusing Matlus.Web;\n\nnamespace Matlus.RestClient\n{\n    class Program\n    {\n        static void Main(string[] args)\n        {\n            WorkWithMembers();\n            Console.ReadLine();\n        }\n\n        private async static void WorkWithMembers()\n        {\n            using (var memberRepository = new MemberRepository())\n            {\n                //GET All Members\n                var members = await memberRepository.GetMembersAsync();\n                foreach (var item in members)\n                    Console.WriteLine(item.FirstName + \" \" + item.LastName);\n                Console.WriteLine();\n\n                //GET Specific Member\n                var member = await memberRepository.GetMemberAsync(\"skumar\");\n                Console.WriteLine(\"GetMemberAsync: \" + member.FirstName + \" \" + member.LastName);\n                Console.WriteLine();\n\n                //POST new Member\n                var newMember = new Matlus.Web.Member\n                {\n                    Username = \"testUsername\",\n                    FirstName = \"TestFirstName\",\n                    LastName = \"TestLastName\",\n                    Email = \"testUsername@gmail.com\"\n                };\n                var newlyCreatedUsername = await memberRepository.PostMemberAsync(newMember);\n                Console.WriteLine(\"PostMemberAsync: \" + newMember.FirstName + \" \" + newMember.LastName);\n                Console.WriteLine();\n\n                //PUT Member (i.e. update the member)\n                newMember.FirstName = \"TestFirstNameModified\";\n                await memberRepository.PutMemberAsync(newMember.Username, newMember);\n                var updateMember = await memberRepository.GetMemberAsync(newMember.Username);\n                Console.WriteLine(\"PutMethod: \" + updateMember.FirstName + \" \" + updateMember.LastName);\n                Console.WriteLine();\n\n                //DELETE Member\n                await memberRepository.DeleteMemberAsync(newMember.Username);\n                members = await memberRepository.GetMembersAsync();\n                foreach (var item in members)\n                    Console.WriteLine(item.FirstName + \" \" + item.LastName);\n\n            }\n        }\n    }\n}\n\n"
+  ],
+  "header": "A Generic RESTful CRUD HttpClient\nPosted by Shiv Kumar on 10th March, 2012\nCategorized Under: Programming ASP.NET\nTagged With: Http JSON REST Web API \n  ",
+  "html": "<div class=\"articleText\">\n        <p>In earlier posts, we looked at:</p> <ul> <li>Building a simple Web API Service: <a href=\"https://web.archive.org/web/20240624011608/http://www.matlus.com/asp-net-web-api-with-webforms/\" target=\"_blank\">ASP.NET Web API with WebForms</a>  </li><li>Self-Hosting a Web API service: <a href=\"https://web.archive.org/web/20240624011608/http://www.matlus.com/self-host-asp-net-web-api/\" target=\"_blank\">Self Host ASP.NET Web API</a>  </li><li>Building a very simple Web API Client: <a href=\"https://web.archive.org/web/20240624011608/http://www.matlus.com/httpclient-net-4-5/\" target=\"_blank\">HttpClient .NET 4.5</a>  </li><li>Realistic Web API service: <a href=\"https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/\" target=\"_blank\">ASP.NET Web API Supporting RESTful CRUD Operations</a></li></ul> <p>In this post we’ll be looking at a generic asynchronous RESTful CRUD HttpClient that can be used with any service (including the services in the list above). This class will make it extremely simple for us to build RESTful clients going against services that talk REST. If you want to build a RESTful cross-domain client (or not cross domain) using JavaScript/jQuery, then take a look at this post: <a href=\"https://web.archive.org/web/20240624011608/http://www.matlus.com/a-generic-restful-crud-httpclient/\" target=\"_blank\">Cross Domain RESTful CRUD Operations using jQuery</a>.</p> <p>We’ll use the service we built in <a href=\"https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/\" target=\"_blank\">ASP.NET Web API Supporting RESTful CRUD Operations</a> post as our service for which we’ll build a fully functional client.</p> <h2>Prerequisites</h2> <p>If you’re just starting down this path, you’ll need to install (as of this writing) a couple of NuGet packages:</p> <ul> <li><a href=\"https://web.archive.org/web/20240624011608/http://nuget.org/packages/aspnetwebapi\" target=\"_blank\">ASP.NET Web API</a>  </li><li><a href=\"https://web.archive.org/web/20240624011608/http://nuget.org/packages/System.Net.Http.Formatting\" target=\"_blank\">System.Net.Http.Formatting</a></li></ul> <p>You’ll find the command line for installing these package on their respective pages.</p> <h2>Refactoring a simple implementation</h2> <p>As with most things of this nature, it starts with refactoring implementations you might have done a couple of times. So towards that end, you may want to take a look at the this post (<a href=\"https://web.archive.org/web/20240624011608/http://www.matlus.com/httpclient-net-4-5/\" target=\"_blank\">HttpClient .NET 4.5</a>) for a very basic implementation from which we derived the class we’ll look at here.</p> <h2>GenericRestfulCrudHttpClient</h2> <p>The entire class is listed in the code listing below. It’s a really simple abstraction frankly. And you can see it’s hardcoded to support only JSON. This is simple to change or make customizable or configurable so I’ll leave it up to you to do if you need such a beast.</p> <p>The comments in the code should help you understand how to use it. We’ll now make a simple client application that uses this class to talk REST and perform CRUD operations against a RESTful service that supports CRUD operation such as <a href=\"https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/\">ASP.NET Web API Supporting RESTful CRUD Operations</a></p> <div class=\"panel code content/images/csharp.png\" title=\"GenericRestfulCrudHttpClient\" id=\"code_67654\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240624011608/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">GenericRestfulCrudHttpClient</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">using</span> System;\n<span class=\"kwrd\">using</span> System.Collections.Generic;\n<span class=\"kwrd\">using</span> System.Linq;\n<span class=\"kwrd\">using</span> System.Net.Http;\n<span class=\"kwrd\">using</span> System.Net.Http.Formatting;\n<span class=\"kwrd\">using</span> System.Net.Http.Headers;\n<span class=\"kwrd\">using</span> System.Text;\n<span class=\"kwrd\">using</span> System.Threading.Tasks;\n\n<span class=\"kwrd\">namespace</span> Matlus.Web.WebLib.WebApi.HttpClients\n{\n    <span class=\"rem\">/// &lt;summary&gt;</span>\n    <span class=\"rem\">/// This class exposes RESTful CRUD functionality in a generic way, abstracting</span>\n    <span class=\"rem\">/// the implementation and useage details of HttpClient, HttpRequestMessage,</span>\n    <span class=\"rem\">/// HttpResponseMessage, ObjectContent, Formatters etc. </span>\n    <span class=\"rem\">/// &lt;/summary&gt;</span>\n    <span class=\"rem\">/// &lt;typeparam name=\"T\"&gt;This is the Type of Resource you want to work with, such as Customer, Order etc.&lt;/typeparam&gt;</span>\n    <span class=\"rem\">/// &lt;typeparam name=\"TResourceIdentifier\"&gt;This is the type of the identifier that uniquely identifies a specific resource such as Id or Username etc.&lt;/typeparam&gt;</span>\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> GenericRestfulCrudHttpClient&lt;T, TResourceIdentifier&gt; : IDisposable where T : <span class=\"kwrd\">class</span>\n    {\n        <span class=\"kwrd\">private</span> <span class=\"kwrd\">bool</span> disposed = <span class=\"kwrd\">false</span>;\n        <span class=\"kwrd\">private</span> HttpClient httpClient;\n        <span class=\"kwrd\">protected</span> <span class=\"kwrd\">readonly</span> <span class=\"kwrd\">string</span> serviceBaseAddress;\n        <span class=\"kwrd\">private</span> <span class=\"kwrd\">readonly</span> <span class=\"kwrd\">string</span> addressSuffix;\n        <span class=\"kwrd\">private</span> <span class=\"kwrd\">readonly</span> <span class=\"kwrd\">string</span> jsonMediaType = <span class=\"str\">\"application/json\"</span>;\n\n        <span class=\"rem\">/// &lt;summary&gt;</span>\n        <span class=\"rem\">/// The constructor requires two parameters that essentially initialize the underlying HttpClient.</span>\n        <span class=\"rem\">/// In a RESTful service, you might have URLs of the following nature (for a given resource - Member in this example):&lt;para /&gt;</span>\n        <span class=\"rem\">/// 1. http://www.somedomain/api/members/&lt;para /&gt;</span>\n        <span class=\"rem\">/// 2. http://www.somedomain/api/members/jdoe&lt;para /&gt;</span>\n        <span class=\"rem\">/// Where the first URL will GET you all members, and allow you to POST new members.&lt;para /&gt;</span>\n        <span class=\"rem\">/// While the second URL supports PUT and DELETE operations on a specifc member.</span>\n        <span class=\"rem\">/// &lt;/summary&gt;</span>\n        <span class=\"rem\">/// &lt;param name=\"serviceBaseAddress\"&gt;As per the example, this would be \"http://www.somedomain\"&lt;/param&gt;</span>\n        <span class=\"rem\">/// &lt;param name=\"addressSuffix\"&gt;As per the example, this would be \"api/members/\"&lt;/param&gt;</span>\n\n        <span class=\"kwrd\">public</span> GenericRestfulCrudHttpClient(<span class=\"kwrd\">string</span> serviceBaseAddress, <span class=\"kwrd\">string</span> addressSuffix)\n        {\n            <span class=\"kwrd\">this</span>.serviceBaseAddress = serviceBaseAddress;\n            <span class=\"kwrd\">this</span>.addressSuffix = addressSuffix;\n            httpClient = MakeHttpClient(serviceBaseAddress);\n        }\n\n        <span class=\"kwrd\">protected</span> <span class=\"kwrd\">virtual</span> HttpClient MakeHttpClient(<span class=\"kwrd\">string</span> serviceBaseAddress)\n        {\n            httpClient = <span class=\"kwrd\">new</span> HttpClient();\n            httpClient.BaseAddress = <span class=\"kwrd\">new</span> Uri(serviceBaseAddress);\n            httpClient.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(jsonMediaType));\n            httpClient.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse(<span class=\"str\">\"gzip\"</span>));\n            httpClient.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse(<span class=\"str\">\"defalte\"</span>));\n            httpClient.DefaultRequestHeaders.UserAgent.Add(<span class=\"kwrd\">new</span> ProductInfoHeaderValue(<span class=\"kwrd\">new</span> ProductHeaderValue(<span class=\"str\">\"Matlus_HttpClient\"</span>, <span class=\"str\">\"1.0\"</span>)));\n            <span class=\"kwrd\">return</span> httpClient;\n        }\n\n        <span class=\"kwrd\">public</span> async Task&lt;IEnumerable&lt;T&gt;&gt; GetManyAsync()\n        {\n            <span class=\"kwrd\">var</span> responseMessage = await httpClient.GetAsync(addressSuffix);\n            responseMessage.EnsureSuccessStatusCode();\n            <span class=\"kwrd\">return</span> await responseMessage.Content.ReadAsAsync&lt;IEnumerable&lt;T&gt;&gt;();\n        }\n\n        <span class=\"kwrd\">public</span> async Task&lt;T&gt; GetAsync(TResourceIdentifier identifier)\n        {\n            <span class=\"kwrd\">var</span> responseMessage = await httpClient.GetAsync(addressSuffix + identifier.ToString());\n            responseMessage.EnsureSuccessStatusCode();\n            <span class=\"kwrd\">return</span> await responseMessage.Content.ReadAsAsync&lt;T&gt;();\n        }\n\n        <span class=\"kwrd\">public</span> async Task&lt;T&gt; PostAsync(T model)\n        {\n            <span class=\"kwrd\">var</span> requestMessage = <span class=\"kwrd\">new</span> HttpRequestMessage();\n            <span class=\"kwrd\">var</span> objectContent = CreateJsonObjectContent(model);\n            <span class=\"kwrd\">var</span> responseMessage = await httpClient.PostAsync(addressSuffix, objectContent);\n            <span class=\"kwrd\">return</span> await responseMessage.Content.ReadAsAsync&lt;T&gt;();\n        }\n\n        <span class=\"kwrd\">public</span> async Task PutAsync(TResourceIdentifier identifier, T model)\n        {\n            <span class=\"kwrd\">var</span> requestMessage = <span class=\"kwrd\">new</span> HttpRequestMessage();\n            <span class=\"kwrd\">var</span> objectContent = CreateJsonObjectContent(model);\n            <span class=\"kwrd\">var</span> responseMessage = await httpClient.PutAsync(addressSuffix + identifier.ToString(), objectContent);\n        }\n\n        <span class=\"kwrd\">public</span> async Task DeleteAsync(TResourceIdentifier identifier)\n        {\n            <span class=\"kwrd\">var</span> r = await httpClient.DeleteAsync(addressSuffix + identifier.ToString());\n        }\n\n        <span class=\"kwrd\">private</span> ObjectContent CreateJsonObjectContent(T model)\n        {\n            <span class=\"kwrd\">var</span> requestMessage = <span class=\"kwrd\">new</span> HttpRequestMessage();\n            <span class=\"kwrd\">return</span> requestMessage.CreateContent&lt;T&gt;(\n                model,\n                MediaTypeHeaderValue.Parse(jsonMediaType),\n                <span class=\"kwrd\">new</span> MediaTypeFormatter[] { <span class=\"kwrd\">new</span> JsonMediaTypeFormatter() },\n                <span class=\"kwrd\">new</span> FormatterSelector());\n        }\n\n        <span class=\"preproc\">#region</span> IDisposable Members\n\n        <span class=\"kwrd\">public</span> <span class=\"kwrd\">void</span> Dispose()\n        {\n            Dispose(<span class=\"kwrd\">true</span>);\n            GC.SuppressFinalize(<span class=\"kwrd\">this</span>);\n        }\n\n        <span class=\"kwrd\">private</span> <span class=\"kwrd\">void</span> Dispose(<span class=\"kwrd\">bool</span> disposing)\n        {\n            <span class=\"kwrd\">if</span> (!disposed &amp;&amp; disposing)\n            {\n                <span class=\"kwrd\">if</span> (httpClient != <span class=\"kwrd\">null</span>)\n                {\n                    <span class=\"kwrd\">var</span> hc = httpClient;\n                    httpClient = <span class=\"kwrd\">null</span>;\n                    hc.Dispose();\n                }\n                disposed = <span class=\"kwrd\">true</span>;\n            }\n        }\n\n        <span class=\"preproc\">#endregion</span> IDisposable Members\n    }\n}</pre>\n<h3>Code listing showing the entire GenericRestfulCrudHttpClient</h3></div>\n<p>So now that we have this class, let’s take a look at building a client application that talks to a REST service.</p>\n<h2>Building a Working Client</h2>\n<p>What we’re going to do next is build a <a href=\"https://web.archive.org/web/20240624011608/http://msdn.microsoft.com/en-us/library/ff649690.aspx\" target=\"_blank\">Repository</a> that essentially gets its data from a remote service. Essentially a Remote Proxy or Gateway.</p>\n<div class=\"panel code content/images/csharp.png\" title=\"MemberRepository.cs\" id=\"code_85931\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240624011608/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">MemberRepository.cs</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">using</span> System;\n<span class=\"kwrd\">using</span> System.Collections.Generic;\n<span class=\"kwrd\">using</span> System.Linq;\n<span class=\"kwrd\">using</span> System.Runtime.Serialization;\n<span class=\"kwrd\">using</span> System.Text;\n<span class=\"kwrd\">using</span> System.Threading.Tasks;\n<span class=\"kwrd\">using</span> Matlus.Web.WebLib.WebApi.HttpClients;\n\n<span class=\"kwrd\">namespace</span> Matlus.Web\n{\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> MemberRepository : IDisposable\n    {\n        <span class=\"kwrd\">private</span> <span class=\"kwrd\">bool</span> disposed = <span class=\"kwrd\">false</span>;\n        <span class=\"kwrd\">private</span> GenericRestfulCrudHttpClient&lt;Member, <span class=\"kwrd\">string</span>&gt; memberClient =\n            <span class=\"kwrd\">new</span> GenericRestfulCrudHttpClient&lt;Member, <span class=\"kwrd\">string</span>&gt;(<span class=\"str\">\"http://localhost:17413/\"</span>, <span class=\"str\">\"api/members/\"</span>);\n\n        <span class=\"kwrd\">public</span> async Task&lt;IEnumerable&lt;Member&gt;&gt; GetMembersAsync()\n        {\n            <span class=\"kwrd\">return</span> await memberClient.GetManyAsync();\n        }\n\n        <span class=\"kwrd\">public</span> async Task&lt;Member&gt; GetMemberAsync(<span class=\"kwrd\">string</span> username)\n        {\n            <span class=\"kwrd\">return</span> await memberClient.GetAsync(username);\n        }\n\n        <span class=\"kwrd\">public</span> async Task&lt;Member&gt; PostMemberAsync(Member member)\n        {\n            <span class=\"kwrd\">return</span> await memberClient.PostAsync(member);\n        }\n\n        <span class=\"kwrd\">public</span> async Task PutMemberAsync(<span class=\"kwrd\">string</span> username, Member member)\n        {\n            await memberClient.PutAsync(username, member);\n        }\n\n        <span class=\"kwrd\">public</span> async Task DeleteMemberAsync(<span class=\"kwrd\">string</span> username)\n        {\n            await memberClient.DeleteAsync(username);\n        }\n\n        <span class=\"kwrd\">public</span> <span class=\"kwrd\">void</span> Dispose()\n        {\n            Dispose(<span class=\"kwrd\">true</span>);\n            GC.SuppressFinalize(<span class=\"kwrd\">this</span>);\n        }\n\n        <span class=\"kwrd\">private</span> <span class=\"kwrd\">void</span> Dispose(<span class=\"kwrd\">bool</span> disposing)\n        {\n            <span class=\"kwrd\">if</span> (!disposed &amp;&amp; disposing)\n            {\n                <span class=\"kwrd\">if</span> (memberClient != <span class=\"kwrd\">null</span>)\n                {\n                    <span class=\"kwrd\">var</span> mc = memberClient;\n                    memberClient = <span class=\"kwrd\">null</span>;\n                    mc.Dispose();\n                }\n                disposed = <span class=\"kwrd\">true</span>;\n            }            \n        }\n    }\n}\n</pre>\n<h3>The Member Repository class</h3></div>\n<p>As you can see from the code listing above, the <code>MemberRepository</code> class has the base CRUD methods for a <code>Member</code>. That is all methods are strongly typed on the type <code>Member</code>. </p>\n<p>This class internally uses an instance of the <code>GenericRestfulCrudHttpClient</code> and declares a closed generic type (the private <code>memberClient</code> variable in the code listing above) that works with the <code>Member</code> type.</p>\n<p>I hope you can see how easily we could make various other closed generic types from the <code>GenericRestfulCrudHttpClient</code> class that work with other types we may have our application (such as Customer, Order etc.). You don’t need a different repository class for the other types, but that’s entirely your choice.</p>\n<p><strong><em>Be sure to change the serviceBaseAddress to match your service.</em></strong></p>\n<p>The Member class is just a POCO and is listed below. It’s the same class that the service (<a href=\"https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/\" target=\"_blank\">ASP.NET Web API Supporting RESTful CRUD Operations</a>) uses as well.</p>\n<div class=\"panel code content/images/csharp.png\" title=\"Member.cs\" id=\"code_81961\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240624011608/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Member.cs</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><!-- code formatted by http://manoli.net/csharpformat/ --><pre class=\"csharpcode\"><span class=\"kwrd\">using</span> System;\n<span class=\"kwrd\">using</span> System.Collections.Generic;\n<span class=\"kwrd\">using</span> System.Linq;\n<span class=\"kwrd\">using</span> System.Runtime.Serialization;\n<span class=\"kwrd\">using</span> System.Text;\n<span class=\"kwrd\">using</span> System.Threading.Tasks;\n<span class=\"kwrd\">using</span> Matlus.Web.WebLib.WebApi.HttpClients;\n\n<span class=\"kwrd\">namespace</span> Matlus.Web\n{\n    [DataContract]\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">sealed</span> <span class=\"kwrd\">class</span> Member\n    {\n        <span class=\"preproc\">#region</span> Properties\n\n        [DataMember(Name = <span class=\"str\">\"username\"</span>)]\n        <span class=\"kwrd\">public</span> <span class=\"kwrd\">string</span> Username { <span class=\"kwrd\">get</span>; <span class=\"kwrd\">set</span>; }\n        [DataMember(Name = <span class=\"str\">\"id\"</span>)]\n        <span class=\"kwrd\">public</span> <span class=\"kwrd\">int</span> Id { <span class=\"kwrd\">get</span>; <span class=\"kwrd\">set</span>; }\n        [DataMember(Name = <span class=\"str\">\"firstName\"</span>)]\n        <span class=\"kwrd\">public</span> <span class=\"kwrd\">string</span> FirstName { <span class=\"kwrd\">get</span>; <span class=\"kwrd\">set</span>; }\n        [DataMember(Name = <span class=\"str\">\"lastName\"</span>)]\n        <span class=\"kwrd\">public</span> <span class=\"kwrd\">string</span> LastName { <span class=\"kwrd\">get</span>; <span class=\"kwrd\">set</span>; }\n        [DataMember(Name = <span class=\"str\">\"email\"</span>)]\n        <span class=\"kwrd\">public</span> <span class=\"kwrd\">string</span> Email { <span class=\"kwrd\">get</span>; <span class=\"kwrd\">set</span>; }\n        [DataMember(Name = <span class=\"str\">\"createdDate\"</span>)]\n        <span class=\"kwrd\">public</span> DateTime CreatedDate { <span class=\"kwrd\">get</span>; <span class=\"kwrd\">set</span>; }\n\n        <span class=\"preproc\">#endregion</span> Properties\n\n        <span class=\"kwrd\">public</span> Member()\n            : <span class=\"kwrd\">base</span>()\n        {\n        }\n    }\n}\n</pre>\n<h3>The POCO Member class</h3></div>\n<p>Finally, we get to the actual RESTful CRUD Http Client.</p>\n<p>The client is nothing fancy really, but you can see how easy it is to call the various CRUD methods of the <code>MemberRepository </code>class.</p>\n<div class=\"panel code content/images/csharp.png\" title=\"RESTful CRUD HttpClient\" id=\"code_49878\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240624011608/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">RESTful CRUD HttpClient</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre><span class=\"Keyword\">using</span> System;\n<span class=\"Keyword\">using</span> System.Collections.Generic;\n<span class=\"Keyword\">using</span> System.Linq;\n<span class=\"Keyword\">using</span> System.Text;\n<span class=\"Keyword\">using</span> System.Threading.Tasks;\n<span class=\"Keyword\">using</span> Matlus.Web;\n\n<span class=\"Keyword\">namespace</span> Matlus.RestClient\n{\n    <span class=\"Keyword\">class</span> <span class=\"Identifier\">Program</span>\n    {\n        <span class=\"Keyword\">static</span> <span class=\"Keyword\">void</span> Main(<span class=\"Keyword\">string</span>[] args)\n        {\n            WorkWithMembers();\n            <span class=\"Identifier\">Console</span>.ReadLine();\n        }\n\n        <span class=\"Keyword\">private</span> async <span class=\"Keyword\">static</span> <span class=\"Keyword\">void</span> WorkWithMembers()\n        {\n            <span class=\"Keyword\">using</span> (<span class=\"Keyword\">var</span> memberRepository = <span class=\"Keyword\">new</span> <span class=\"Identifier\">MemberRepository</span>())\n            {\n                <span class=\"Comment\">//GET All Members</span>\n                <span class=\"Keyword\">var</span> members = await memberRepository.GetMembersAsync();\n                <span class=\"Keyword\">foreach</span> (<span class=\"Keyword\">var</span> item <span class=\"Keyword\">in</span> members)\n                    <span class=\"Identifier\">Console</span>.WriteLine(item.FirstName + <span class=\"StringLiteral\">\" \"</span> + item.LastName);\n                <span class=\"Identifier\">Console</span>.WriteLine();\n\n                <span class=\"Comment\">//GET Specific Member</span>\n                <span class=\"Keyword\">var</span> member = await memberRepository.GetMemberAsync(<span class=\"StringLiteral\">\"skumar\"</span>);\n                <span class=\"Identifier\">Console</span>.WriteLine(<span class=\"StringLiteral\">\"GetMemberAsync: \"</span> + member.FirstName + <span class=\"StringLiteral\">\" \"</span> + member.LastName);\n                <span class=\"Identifier\">Console</span>.WriteLine();\n\n                <span class=\"Comment\">//POST new Member</span>\n                <span class=\"Keyword\">var</span> newMember = <span class=\"Keyword\">new</span> Matlus.Web.Member\n                {\n                    Username = <span class=\"StringLiteral\">\"testUsername\"</span>,\n                    FirstName = <span class=\"StringLiteral\">\"TestFirstName\"</span>,\n                    LastName = <span class=\"StringLiteral\">\"TestLastName\"</span>,\n                    Email = <span class=\"StringLiteral\">\"testUsername@gmail.com\"</span>\n                };\n                <span class=\"Keyword\">var</span> newlyCreatedUsername = await memberRepository.PostMemberAsync(newMember);\n                <span class=\"Identifier\">Console</span>.WriteLine(<span class=\"StringLiteral\">\"PostMemberAsync: \"</span> + newMember.FirstName + <span class=\"StringLiteral\">\" \"</span> + newMember.LastName);\n                <span class=\"Identifier\">Console</span>.WriteLine();\n\n                <span class=\"Comment\">//PUT Member (i.e. update the member)</span>\n                newMember.FirstName = <span class=\"StringLiteral\">\"TestFirstNameModified\"</span>;\n                <span class=\"Identifier\">await</span> memberRepository.PutMemberAsync(newMember.Username, newMember);\n                <span class=\"Keyword\">var</span> updateMember = await memberRepository.GetMemberAsync(newMember.Username);\n                <span class=\"Identifier\">Console</span>.WriteLine(<span class=\"StringLiteral\">\"PutMethod: \"</span> + updateMember.FirstName + <span class=\"StringLiteral\">\" \"</span> + updateMember.LastName);\n                <span class=\"Identifier\">Console</span>.WriteLine();\n\n                <span class=\"Comment\">//DELETE Member</span>\n                <span class=\"Identifier\">await</span> memberRepository.DeleteMemberAsync(newMember.Username);\n                members = await memberRepository.GetMembersAsync();\n                <span class=\"Keyword\">foreach</span> (<span class=\"Keyword\">var</span> item <span class=\"Keyword\">in</span> members)\n                    <span class=\"Identifier\">Console</span>.WriteLine(item.FirstName + <span class=\"StringLiteral\">\" \"</span> + item.LastName);\n\n            }\n        }\n    }\n}\n\n</pre>\n<h3>The code for the RESTful CRUD client application</h3></div>\n<p>That concludes this post.</p>  \n        </div>",
+  "images": [],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "ASP.NET",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/category/programming/asp-net/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240624011608/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2fa-generic-restful-crud-httpclient%2f&text=A+Generic+RESTful+CRUD+HttpClient"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240624011608/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2fa-generic-restful-crud-httpclient%2f&t=A+Generic+RESTful+CRUD+HttpClient"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240624011608/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2fa-generic-restful-crud-httpclient%2f&text=A+Generic+RESTful+CRUD+HttpClient"
+    },
+    {
+      "text": "ASP.NET Web API with WebForms",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/asp-net-web-api-with-webforms/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240624011608/http://nuget.org/packages/aspnetwebapi"
+    },
+    {
+      "text": "System.Net.Http.Formatting",
+      "url": "https://web.archive.org/web/20240624011608/http://nuget.org/packages/System.Net.Http.Formatting"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "Repository",
+      "url": "https://web.archive.org/web/20240624011608/http://msdn.microsoft.com/en-us/library/ff649690.aspx"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "A Generic RESTful CRUD HttpClient",
+  "url": "https://web.archive.org/web/20240624011608/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+}

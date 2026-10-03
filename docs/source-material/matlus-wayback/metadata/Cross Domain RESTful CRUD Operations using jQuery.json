@@ -1,0 +1,466 @@
+{
+  "body": "So, you’ve built your brand spanking new RESTful service and it all works as expect only in the same domain. When you test it from a different domain, the GET methods work but the POST, PUT and DELETE methods don’t work as expected. Heck they don’t work at all.\n\nThe errors you see could be any one of the following\n\n1. Http Error 404 Not Found (see REST APIs, PUT and DELETE cause HTTP Error 404.0 - Not Found to see how to fix this)\n\n2. Access Denied\n\n3. 405 Method not allowed\n\n4. Service does not support the method OPTIONS\n\nIf you’re attempting to support cross-domain (or Cross-Origin Resource Sharing as it is officially called) RESTful CRUD operations from browser clients using JavaScript/jQuery etc. then this post is for you. However, the solution to these problems entails fixing the service side as well as ensuring you’re doing things correctly on the jQuery side. The solution presented in this post works on all major browsers (IE, Firefox, Chrome and Safari).\n\nCross-Domain Protocol Backgrounder\n\nIf you’re not interested in understanding all of the Http protocol nuances that make up this problem as well as the solution, then skip to the next section.\n\nWEB API RESTful CRUD Service fixes\n\nThe fix comes in the form of a DelegatingHandler (new to .NET 4.5). In fact it’s a simple extension to the XHttpMethodOverrideDelegatingHandler we developed in this post DelegatingHandler for X-HTTP-Method-Override. If you’ve read the previous section on the cross domain protocol backgrounder, then the code listing of the entire delegating handler will make sense to you. If you didn’t, well, then there is nothing to explain really. The code is really simple, it’s the complexity of the protocol that needs explaining.\n\nJsonpMediaTypeFormatter\n\nNote: You’ll also need the JsonpMediaTypeFormatter from an earlier post JsonpMediaTypeFormatter–Web API JSONP, in order to support JSONP, which you will need to do, in order to support cross-domain JSON.\n\nHere is the entire code for the delegating handler:\n\nXHttpMethodOverrideDelegatingHandler.cs\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Net;\nusing System.Net.Http;\nusing System.Threading;\nusing System.Threading.Tasks;\nusing System.Web;\n\nnamespace NuSI.Web.WebLib.DelegatingHandlers\n{\n    public class XHttpMethodOverrideDelegatingHandler : DelegatingHandler\n    {\n        static readonly string[] httpOverrideMethods = { \"PUT\", \"DELETE\" };\n        static readonly string[] accessControlAllowMethods = { \"POST\", \"PUT\", \"DELETE\" };\n        static readonly string httpMethodOverrideHeader = \"X-HTTP-Method-Override\";\n        static readonly string ORIGIN_HEADER = \"ORIGIN\";\n        static readonly string accessControlAllowOriginHeader = \"Access-Control-Allow-Origin\";\n        static readonly string accessControlAllowMethodsHeader = \"Access-Control-Allow-Methods\";\n        static readonly string accessControlAllowHeadersHeader = \"Access-Control-Allow-Headers\";\n\n        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)\n        {\n            if (request.Method == HttpMethod.Post && request.Headers.Contains(httpMethodOverrideHeader))\n            {\n                var httpMethod = request.Headers.GetValues(httpMethodOverrideHeader).FirstOrDefault();\n                if (httpOverrideMethods.Contains(httpMethod, StringComparer.InvariantCultureIgnoreCase))\n                    request.Method = new HttpMethod(httpMethod);\n            }\n\n            var httpResponseMessage = base.SendAsync(request, cancellationToken);\n\n            if (request.Method == HttpMethod.Options && request.Headers.Contains(ORIGIN_HEADER))\n            {\n                httpResponseMessage.Result.Headers.Add(accessControlAllowOriginHeader, request.Headers.GetValues(ORIGIN_HEADER).FirstOrDefault());\n                httpResponseMessage.Result.Headers.Add(accessControlAllowMethodsHeader, String.Join(\", \", accessControlAllowMethods));\n                httpResponseMessage.Result.Headers.Add(accessControlAllowHeadersHeader, httpMethodOverrideHeader);\n                httpResponseMessage.Result.StatusCode = HttpStatusCode.OK;\n            }\n            //No mater what the HttpMethod (POST, PUT, DELETE), if a Origin Header exists, we need to take care of it\n            else if (request.Headers.Contains(ORIGIN_HEADER))\n            {\n                httpResponseMessage.Result.Headers.Add(accessControlAllowOriginHeader, request.Headers.GetValues(ORIGIN_HEADER).FirstOrDefault());\n            }\n\n            return httpResponseMessage;\n        }\n    }\n}\n\nEntire code for the XHttpMethodOverrideDelegatingHandler\n\nDon’t forget to register this handler in your Global’s Application_Start event.\n\nGlobal.asax.cs\n        protected void Application_Start(object sender, EventArgs e)\n        {\n            RegisterRoutes(RouteTable.Routes);\n            \n            GlobalConfiguration.Configuration.Formatters.Insert(0, new JsonpMediaTypeFormatter()); \n            GlobalConfiguration.Configuration.MessageHandlers.Add(new XHttpMethodOverrideDelegatingHandler());            \n        }\n\n\nRegistering the MediaFormatter and Delegating Handler\nCross Domain RESTful client using jQuery\n\nthe html page containing the html and jQuery goes here.\n\nThe html + jQuery client presented here will work against the ASP.NET WEB API CRUD service application we built in this post ASP.NET Web API Supporting RESTful CRUD Operations. If you’ve got your own service, be sure to make all of the necessary changes to the jQuery code you see. Also make sure you change the value of the baseAddress JavaScript variable to be the URL to your service application.\n\nThe parts of interest here are the actual $.ajax() calls for the CRUD methods. In particular it is the options object that is passed to the $.ajax() method this is of primary importance. There are 4 methods that make AJAX calls in the JavaScript code and they are:\n\ninitializeMember()\npostMember()\nputMember()\ndeleteMember()\n\nIf you need to support older browsers that don’t support HTTP methods other than GET and POST, then please take a look at the post on the X-HTTP-Method-Override HTTP Header: DelegatingHandler for X-HTTP-Method-Override for what changes you’ll need to make in your jQuery (again just the Options object that’s sent to the $.ajax() method).\n\nHtmljQuery RESTful CRUD client\n<!DOCTYPE html>\n<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n  <meta charset=\"utf-8\" />\n  <title></title>\n  <script type=\"text/javascript\" src=\"http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js\"></script>\n  <style type=\"text/css\">\n    body\n    {\n      font-family: Tahoma, Arial;\n    }\n  </style>\n</head>\n<body>\n  <form id=\"memberForm\" class=\"dataEntryForm\" method=\"post\">\n  <fieldset>\n    <legend>New Customer</legend>\n    <ul>\n      <li>\n        <label for=\"firstName\" title=\"First Name\">First Name</label>\n        <input type=\"text\" id=\"firstName\" name=\"firstName\" value=\"John\" />\n      </li>\n      <li>\n        <label for=\"lastName\" title=\"Last Name\">Last Name</label>\n        <input type=\"text\" id=\"lastName\" name=\"lastName\" value=\"Ely\" />\n      </li>\n      <li>\n        <label for=\"username\" title=\"Username\">Username</label>\n        <input type=\"text\" id=\"username\" name=\"username\" value=\"jely\" />\n      </li>\n      <li>\n        <label for=\"email\" title=\"Email Address\">Email</label>\n        <input type=\"text\" id=\"email\" name=\"email\" value=\"shivy@gmail.com\" />\n      </li>\n    </ul>\n  </fieldset>\n  </form>\n  <button onclick=\"postMember()\">Post Member</button>\n  <button onclick=\"putMember()\">Put Member</button>\n  <button onclick=\"deleteMember()\">Delete Member</button>\n  <div id=\"membersDiv\"></div>\n  \n  <script type=\"text/javascript\">\n\n    var baseAddress = \"http://localhost:17414/api/members/\";\n    \n    $(function () {\n      jQuery.support.cors = true;\n      initializeMembers($(\"#membersDiv\"));\n    });\n\n    function initializeMembers(elem) {\n      $.ajax({\n        url: baseAddress,\n        dataType: \"jsonp\"\n      })\n        .done(function (data) {\n          elem.empty();\n          var ulElementId = \"membersList\";          \n          var items = [];\n          $.each(data, function (index, value) {\n            items.push('<li data-member=\\'' + JSON.stringify(value) + '\\'>' + value.firstName + ' ' + value.lastName + '</i>');\n          });\n          $(\"<ul />\", {\n            \"id\": ulElementId,\n            \"class\": \"members-list\",\n            html: items.join('')\n          }).appendTo(elem);\n\n          $(\"#\" + ulElementId).click(function (e) {\n            var member = $(e.srcElement).data(\"member\");\n            assignFormFieldValues(\"memberForm\", member);\n          });\n        })\n        .fail(function (e) {\n          alert(\"fail\");\n        })\n        .always(function () { });\n    }\n\n    function assignFormFieldValues(formId, obj) {\n      var fields = $(\"#\" + formId).serializeArray();\n      $.each(fields, function (index, field) {\n        var f = $(\"[name=\" + field.name + \"]\").val(obj[field.name]);        \n      });\n    }\n\n    function postMember() {\n      $.ajax({\n        url: baseAddress,\n        type: \"POST\",\n        // Firefox reuires the dataType otherwise the \"data\" argument of the done callback\n        // is just a string and not a JSON \n        dataType: 'json',\n        accept: \"application/json\",\n        data: $(\"#memberForm\").serialize(),\n      })\n      .done(function (data) {        \n        $(\"#membersList\").append('<li data-member=\\'' + JSON.stringify(data) + '\\'>' + data.firstName + ' ' + data.lastName + '</i>');\n      })\n      .fail(function (e) {\n        alert(e.statusText);\n      })\n      .always(function () { });\n    }\n\n    function putMember() {\n      $.ajax({\n        url: baseAddress + $(\"#username\").val(),\n        type: \"POST\",\n        data: $(\"#memberForm\").serialize(),\n        headers: { \"X-HTTP-Method-Override\": \"PUT\" }\n      })\n      .done(function (data) {\n        initializeMembers($(\"#membersDiv\"));\n      })\n      .fail(function (e) {\n        alert(e.statusText);\n      })\n      .always(function () { });\n    }\n\n    function deleteMember() {\n      $.ajax({\n        url: baseAddress + $(\"#username\").val(),\n        type: \"POST\",\n        data: $(\"#memberForm\").serialize(),\n        headers: { \"X-HTTP-Method-Override\": \"DELETE\" }\n      })\n      .done(function (data) {\n        initializeMembers($(\"#membersDiv\"));\n      })\n      .fail(function (e) {\n        alert(e.statusText);\n      })\n      .always(function () { });\n    }\n  </script>\n</body>\n</html>\n\nCode listing show the entire Html + jQuery RESTful CRUD client\nTesting the Cross-Domain CRUD Operation\n\nLuckily, this part is not that difficult. Cross-domain from a browser’s perspective is not just domains but even ports. So if you’ve using IIS Express for development, your CRUD service application runs on a specific port. You can then have an html page in your IIS’s (the full blown version) root folder (typically wwwroot) with the html and jQuery listed earlier. You can then browse to this html page using http://localhost/yourpage.html, just make sure you change the baseAddress variable to your service’s baseAddress.\n\nIf you don’t have IIS installed and don’t want to install it, you could simply start a new ASP.NET project and place the  entire Html + jQuery listing from above into the default.aspx of the new application. This application will run on a different port from your service application so you can run both projects to test this out.\n\nIf all else fails, you can deploy your service app to a staging website and test it against that.",
+  "bodyLinks": [
+    {
+      "text": "REST APIs, PUT and DELETE cause HTTP Error 404.0 - Not Found",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/rest-apis-put-and-delete-cause-http-error-404/"
+    },
+    {
+      "text": "Cross-Origin Resource Sharing",
+      "url": "https://web.archive.org/web/20240915042434/http://www.w3.org/TR/cors/"
+    },
+    {
+      "text": "DelegatingHandler",
+      "url": "https://web.archive.org/web/20240915042434/http://msdn.microsoft.com/en-us/library/system.net.http.delegatinghandler(v=vs.110).aspx"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "http://localhost/yourpage.html",
+      "url": "https://web.archive.org/web/20240915042434/http://localhost/yourpage.html"
+    }
+  ],
+  "code": [
+    "using System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Net;\nusing System.Net.Http;\nusing System.Threading;\nusing System.Threading.Tasks;\nusing System.Web;\n\nnamespace NuSI.Web.WebLib.DelegatingHandlers\n{\n    public class XHttpMethodOverrideDelegatingHandler : DelegatingHandler\n    {\n        static readonly string[] httpOverrideMethods = { \"PUT\", \"DELETE\" };\n        static readonly string[] accessControlAllowMethods = { \"POST\", \"PUT\", \"DELETE\" };\n        static readonly string httpMethodOverrideHeader = \"X-HTTP-Method-Override\";\n        static readonly string ORIGIN_HEADER = \"ORIGIN\";\n        static readonly string accessControlAllowOriginHeader = \"Access-Control-Allow-Origin\";\n        static readonly string accessControlAllowMethodsHeader = \"Access-Control-Allow-Methods\";\n        static readonly string accessControlAllowHeadersHeader = \"Access-Control-Allow-Headers\";\n\n        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)\n        {\n            if (request.Method == HttpMethod.Post && request.Headers.Contains(httpMethodOverrideHeader))\n            {\n                var httpMethod = request.Headers.GetValues(httpMethodOverrideHeader).FirstOrDefault();\n                if (httpOverrideMethods.Contains(httpMethod, StringComparer.InvariantCultureIgnoreCase))\n                    request.Method = new HttpMethod(httpMethod);\n            }\n\n            var httpResponseMessage = base.SendAsync(request, cancellationToken);\n\n            if (request.Method == HttpMethod.Options && request.Headers.Contains(ORIGIN_HEADER))\n            {\n                httpResponseMessage.Result.Headers.Add(accessControlAllowOriginHeader, request.Headers.GetValues(ORIGIN_HEADER).FirstOrDefault());\n                httpResponseMessage.Result.Headers.Add(accessControlAllowMethodsHeader, String.Join(\", \", accessControlAllowMethods));\n                httpResponseMessage.Result.Headers.Add(accessControlAllowHeadersHeader, httpMethodOverrideHeader);\n                httpResponseMessage.Result.StatusCode = HttpStatusCode.OK;\n            }\n            //No mater what the HttpMethod (POST, PUT, DELETE), if a Origin Header exists, we need to take care of it\n            else if (request.Headers.Contains(ORIGIN_HEADER))\n            {\n                httpResponseMessage.Result.Headers.Add(accessControlAllowOriginHeader, request.Headers.GetValues(ORIGIN_HEADER).FirstOrDefault());\n            }\n\n            return httpResponseMessage;\n        }\n    }\n}\n",
+    "        protected void Application_Start(object sender, EventArgs e)\n        {\n            RegisterRoutes(RouteTable.Routes);\n            \n            GlobalConfiguration.Configuration.Formatters.Insert(0, new JsonpMediaTypeFormatter()); \n            GlobalConfiguration.Configuration.MessageHandlers.Add(new XHttpMethodOverrideDelegatingHandler());            \n        }\n\n",
+    "<!DOCTYPE html>\n<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n  <meta charset=\"utf-8\" />\n  <title></title>\n  <script type=\"text/javascript\" src=\"http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js\"></script>\n  <style type=\"text/css\">\n    body\n    {\n      font-family: Tahoma, Arial;\n    }\n  </style>\n</head>\n<body>\n  <form id=\"memberForm\" class=\"dataEntryForm\" method=\"post\">\n  <fieldset>\n    <legend>New Customer</legend>\n    <ul>\n      <li>\n        <label for=\"firstName\" title=\"First Name\">First Name</label>\n        <input type=\"text\" id=\"firstName\" name=\"firstName\" value=\"John\" />\n      </li>\n      <li>\n        <label for=\"lastName\" title=\"Last Name\">Last Name</label>\n        <input type=\"text\" id=\"lastName\" name=\"lastName\" value=\"Ely\" />\n      </li>\n      <li>\n        <label for=\"username\" title=\"Username\">Username</label>\n        <input type=\"text\" id=\"username\" name=\"username\" value=\"jely\" />\n      </li>\n      <li>\n        <label for=\"email\" title=\"Email Address\">Email</label>\n        <input type=\"text\" id=\"email\" name=\"email\" value=\"shivy@gmail.com\" />\n      </li>\n    </ul>\n  </fieldset>\n  </form>\n  <button onclick=\"postMember()\">Post Member</button>\n  <button onclick=\"putMember()\">Put Member</button>\n  <button onclick=\"deleteMember()\">Delete Member</button>\n  <div id=\"membersDiv\"></div>\n  \n  <script type=\"text/javascript\">\n\n    var baseAddress = \"http://localhost:17414/api/members/\";\n    \n    $(function () {\n      jQuery.support.cors = true;\n      initializeMembers($(\"#membersDiv\"));\n    });\n\n    function initializeMembers(elem) {\n      $.ajax({\n        url: baseAddress,\n        dataType: \"jsonp\"\n      })\n        .done(function (data) {\n          elem.empty();\n          var ulElementId = \"membersList\";          \n          var items = [];\n          $.each(data, function (index, value) {\n            items.push('<li data-member=\\'' + JSON.stringify(value) + '\\'>' + value.firstName + ' ' + value.lastName + '</i>');\n          });\n          $(\"<ul />\", {\n            \"id\": ulElementId,\n            \"class\": \"members-list\",\n            html: items.join('')\n          }).appendTo(elem);\n\n          $(\"#\" + ulElementId).click(function (e) {\n            var member = $(e.srcElement).data(\"member\");\n            assignFormFieldValues(\"memberForm\", member);\n          });\n        })\n        .fail(function (e) {\n          alert(\"fail\");\n        })\n        .always(function () { });\n    }\n\n    function assignFormFieldValues(formId, obj) {\n      var fields = $(\"#\" + formId).serializeArray();\n      $.each(fields, function (index, field) {\n        var f = $(\"[name=\" + field.name + \"]\").val(obj[field.name]);        \n      });\n    }\n\n    function postMember() {\n      $.ajax({\n        url: baseAddress,\n        type: \"POST\",\n        // Firefox reuires the dataType otherwise the \"data\" argument of the done callback\n        // is just a string and not a JSON \n        dataType: 'json',\n        accept: \"application/json\",\n        data: $(\"#memberForm\").serialize(),\n      })\n      .done(function (data) {        \n        $(\"#membersList\").append('<li data-member=\\'' + JSON.stringify(data) + '\\'>' + data.firstName + ' ' + data.lastName + '</i>');\n      })\n      .fail(function (e) {\n        alert(e.statusText);\n      })\n      .always(function () { });\n    }\n\n    function putMember() {\n      $.ajax({\n        url: baseAddress + $(\"#username\").val(),\n        type: \"POST\",\n        data: $(\"#memberForm\").serialize(),\n        headers: { \"X-HTTP-Method-Override\": \"PUT\" }\n      })\n      .done(function (data) {\n        initializeMembers($(\"#membersDiv\"));\n      })\n      .fail(function (e) {\n        alert(e.statusText);\n      })\n      .always(function () { });\n    }\n\n    function deleteMember() {\n      $.ajax({\n        url: baseAddress + $(\"#username\").val(),\n        type: \"POST\",\n        data: $(\"#memberForm\").serialize(),\n        headers: { \"X-HTTP-Method-Override\": \"DELETE\" }\n      })\n      .done(function (data) {\n        initializeMembers($(\"#membersDiv\"));\n      })\n      .fail(function (e) {\n        alert(e.statusText);\n      })\n      .always(function () { });\n    }\n  </script>\n</body>\n</html>\n"
+  ],
+  "header": "Cross Domain RESTful CRUD Operations using jQuery\nPosted by Shiv Kumar on 29th March, 2012\nCategorized Under: Programming ASP.NET\nTagged With: JSON REST Web API \n  ",
+  "html": "<div class=\"articleText\">\n        <p>So, you’ve built your brand spanking new RESTful service and it all works as expect only in the same domain. When you test it from a different domain, the GET methods work but the POST, PUT and DELETE methods don’t work as expected. Heck they don’t work at all.</p> <p>The errors you see could be any one of the following</p> <p>1. Http Error 404 Not Found (see <a href=\"https://web.archive.org/web/20240915042434/http://www.matlus.com/rest-apis-put-and-delete-cause-http-error-404/\">REST APIs, PUT and DELETE cause HTTP Error 404.0 - Not Found</a> to see how to fix this)</p> <p>2. Access Denied</p> <p>3. 405 Method not allowed</p> <p>4. Service does not support the method OPTIONS</p> <p>If you’re attempting to support cross-domain (or <a href=\"https://web.archive.org/web/20240915042434/http://www.w3.org/TR/cors/\">Cross-Origin Resource Sharing</a> as it is officially called) RESTful CRUD operations from browser clients using JavaScript/jQuery etc. then this post is for you. However, the solution to these problems entails fixing the service side as well as ensuring you’re doing things correctly on the jQuery side. The solution presented in this post works on all major browsers (IE, Firefox, Chrome and Safari). </p> <h2>Cross-Domain Protocol Backgrounder</h2> <p>If you’re not interested in understanding all of the Http protocol nuances that make up this problem as well as the solution, then skip to the next section.</p> <h2>WEB API RESTful CRUD Service fixes</h2> <p>The fix comes in the form of a <a href=\"https://web.archive.org/web/20240915042434/http://msdn.microsoft.com/en-us/library/system.net.http.delegatinghandler(v=vs.110).aspx\">DelegatingHandler</a> (new to .NET 4.5). In fact it’s a simple extension to the XHttpMethodOverrideDelegatingHandler we developed in this post <a href=\"https://web.archive.org/web/20240915042434/http://www.matlus.com/delegatinghandler-for-x-http-method-override/\">DelegatingHandler for X-HTTP-Method-Override</a>. If you’ve read the previous section on the cross domain protocol backgrounder, then the code listing of the entire delegating handler will make sense to you. If you didn’t, well, then there is nothing to explain really. The code is really simple, it’s the complexity of the protocol that needs explaining.</p> <div class=\"panel\"> <h2 class=\"note\">JsonpMediaTypeFormatter</h2> <p>Note: You’ll also need the JsonpMediaTypeFormatter from an earlier post <a href=\"https://web.archive.org/web/20240915042434/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/\" target=\"_blank\">JsonpMediaTypeFormatter–Web API JSONP</a>, in order to support JSONP, which you will need to do, in order to support cross-domain JSON. </p></div> <p>Here is the entire code for the delegating handler:</p> <div class=\"panel code content/images/csharp.png\" title=\"XHttpMethodOverrideDelegatingHandler.cs\" id=\"code_53157\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240915042434/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">XHttpMethodOverrideDelegatingHandler.cs</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre><span class=\"Keyword\">using</span> System;\n<span class=\"Keyword\">using</span> System.Collections.Generic;\n<span class=\"Keyword\">using</span> System.Linq;\n<span class=\"Keyword\">using</span> System.Net;\n<span class=\"Keyword\">using</span> System.Net.Http;\n<span class=\"Keyword\">using</span> System.Threading;\n<span class=\"Keyword\">using</span> System.Threading.Tasks;\n<span class=\"Keyword\">using</span> System.Web;\n\n<span class=\"Keyword\">namespace</span> NuSI.Web.WebLib.DelegatingHandlers\n{\n    <span class=\"Keyword\">public</span> <span class=\"Keyword\">class</span> <span class=\"Identifier\">XHttpMethodOverrideDelegatingHandler</span> : <span class=\"Identifier\">DelegatingHandler</span>\n    {\n        <span class=\"Keyword\">static</span> <span class=\"Keyword\">readonly</span> <span class=\"Keyword\">string</span>[] httpOverrideMethods = { <span class=\"StringLiteral\">\"PUT\"</span>, <span class=\"StringLiteral\">\"DELETE\"</span> };\n        <span class=\"Keyword\">static</span> <span class=\"Keyword\">readonly</span> <span class=\"Keyword\">string</span>[] accessControlAllowMethods = { <span class=\"StringLiteral\">\"POST\"</span>, <span class=\"StringLiteral\">\"PUT\"</span>, <span class=\"StringLiteral\">\"DELETE\"</span> };\n        <span class=\"Keyword\">static</span> <span class=\"Keyword\">readonly</span> <span class=\"Keyword\">string</span> httpMethodOverrideHeader = <span class=\"StringLiteral\">\"X-HTTP-Method-Override\"</span>;\n        <span class=\"Keyword\">static</span> <span class=\"Keyword\">readonly</span> <span class=\"Keyword\">string</span> ORIGIN_HEADER = <span class=\"StringLiteral\">\"ORIGIN\"</span>;\n        <span class=\"Keyword\">static</span> <span class=\"Keyword\">readonly</span> <span class=\"Keyword\">string</span> accessControlAllowOriginHeader = <span class=\"StringLiteral\">\"Access-Control-Allow-Origin\"</span>;\n        <span class=\"Keyword\">static</span> <span class=\"Keyword\">readonly</span> <span class=\"Keyword\">string</span> accessControlAllowMethodsHeader = <span class=\"StringLiteral\">\"Access-Control-Allow-Methods\"</span>;\n        <span class=\"Keyword\">static</span> <span class=\"Keyword\">readonly</span> <span class=\"Keyword\">string</span> accessControlAllowHeadersHeader = <span class=\"StringLiteral\">\"Access-Control-Allow-Headers\"</span>;\n\n        <span class=\"Keyword\">protected</span> <span class=\"Keyword\">override</span> <span class=\"Identifier\">Task</span>&lt;<span class=\"Identifier\">HttpResponseMessage</span>&gt; SendAsync(<span class=\"Identifier\">HttpRequestMessage</span> request, <span class=\"Identifier\">CancellationToken</span> cancellationToken)\n        {\n            <span class=\"Keyword\">if</span> (request.Method == <span class=\"Identifier\">HttpMethod</span>.Post &amp;&amp; request.Headers.Contains(httpMethodOverrideHeader))\n            {\n                <span class=\"Keyword\">var</span> httpMethod = request.Headers.GetValues(httpMethodOverrideHeader).FirstOrDefault();\n                <span class=\"Keyword\">if</span> (httpOverrideMethods.Contains(httpMethod, <span class=\"Identifier\">StringComparer</span>.InvariantCultureIgnoreCase))\n                    request.Method = <span class=\"Keyword\">new</span> <span class=\"Identifier\">HttpMethod</span>(httpMethod);\n            }\n\n            <span class=\"Keyword\">var</span> httpResponseMessage = <span class=\"Keyword\">base</span>.SendAsync(request, cancellationToken);\n\n            <span class=\"Keyword\">if</span> (request.Method == <span class=\"Identifier\">HttpMethod</span>.Options &amp;&amp; request.Headers.Contains(ORIGIN_HEADER))\n            {\n                httpResponseMessage.Result.Headers.Add(accessControlAllowOriginHeader, request.Headers.GetValues(ORIGIN_HEADER).FirstOrDefault());\n                httpResponseMessage.Result.Headers.Add(accessControlAllowMethodsHeader, <span class=\"Identifier\">String</span>.Join(<span class=\"StringLiteral\">\", \"</span>, accessControlAllowMethods));\n                httpResponseMessage.Result.Headers.Add(accessControlAllowHeadersHeader, httpMethodOverrideHeader);\n                httpResponseMessage.Result.StatusCode = <span class=\"Identifier\">HttpStatusCode</span>.OK;\n            }\n            <span class=\"Comment\">//No mater what the HttpMethod (POST, PUT, DELETE), if a Origin Header exists, we need to take care of it</span>\n            <span class=\"Keyword\">else</span> <span class=\"Keyword\">if</span> (request.Headers.Contains(ORIGIN_HEADER))\n            {\n                httpResponseMessage.Result.Headers.Add(accessControlAllowOriginHeader, request.Headers.GetValues(ORIGIN_HEADER).FirstOrDefault());\n            }\n\n            <span class=\"Keyword\">return</span> httpResponseMessage;\n        }\n    }\n}\n</pre>\n<h3>Entire code for the XHttpMethodOverrideDelegatingHandler</h3></div>\n<p>Don’t forget to register this handler in your Global’s Application_Start event.</p>\n<div class=\"panel code content/images/csharp.png\" title=\"Global.asax.cs\" id=\"code_47746\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240915042434/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Global.asax.cs</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre>        <span class=\"Keyword\">protected</span> <span class=\"Keyword\">void</span> Application_Start(<span class=\"Keyword\">object</span> sender, <span class=\"Identifier\">EventArgs</span> e)\n        {\n            RegisterRoutes(<span class=\"Identifier\">RouteTable</span>.Routes);\n            \n            <span class=\"Identifier\">GlobalConfiguration</span>.Configuration.Formatters.Insert(0, <span class=\"Keyword\">new</span> <span class=\"Identifier\">JsonpMediaTypeFormatter</span>()); \n            <span class=\"Identifier\">GlobalConfiguration</span>.Configuration.MessageHandlers.Add(<span class=\"Keyword\">new</span> <span class=\"Identifier\">XHttpMethodOverrideDelegatingHandler</span>());            \n        }\n\n</pre>\n<h3>Registering the MediaFormatter and Delegating Handler</h3></div>\n<h2>Cross Domain RESTful client using jQuery</h2>\n<p>the html page containing the html and jQuery goes here.</p>\n<p>The html + jQuery client presented here will work against the ASP.NET WEB API CRUD service application we built in this post <a href=\"https://web.archive.org/web/20240915042434/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/\" target=\"_blank\">ASP.NET Web API Supporting RESTful CRUD Operations</a>. If you’ve got your own service, be sure to make all of the necessary changes to the jQuery code you see. Also make sure you change the value of the <code>baseAddress</code> JavaScript variable to be the URL to your service application.</p>\n<p>The parts of interest here are the actual <code>$.ajax()</code> calls for the CRUD methods. In particular it is the options object that is passed to the <code>$.ajax()</code> method this is of primary importance. There are 4 methods that make AJAX calls in the JavaScript code and they are:</p>\n<ul><code>\n</code><li><code>initializeMember()</code><code> \n</code></li><li><code>postMember()</code><code> \n</code></li><li><code>putMember()</code><code> \n</code></li><li><code>deleteMember()</code></li></ul>\n<p>If you need to support older browsers that don’t support HTTP methods other than GET and POST, then please take a look at the post on the <code>X-HTTP-Method-Override</code> HTTP Header: <a href=\"https://web.archive.org/web/20240915042434/http://www.matlus.com/delegatinghandler-for-x-http-method-override/\" target=\"_blank\">DelegatingHandler for X-HTTP-Method-Override</a> for what changes you’ll need to make in your jQuery (again just the Options object that’s sent to the <code>$.ajax()</code> method).</p>\n<div class=\"panel code content/images/csharp.png\" title=\"HtmljQuery RESTful CRUD client\" id=\"code_19162\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240915042434/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">HtmljQuery RESTful CRUD client</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">&lt;!</span><span class=\"html\">DOCTYPE</span> <span class=\"attr\">html</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;</span><span class=\"html\">html</span> <span class=\"attr\">lang</span><span class=\"kwrd\">=\"en\"</span> <span class=\"attr\">xmlns</span><span class=\"kwrd\">=\"http://www.w3.org/1999/xhtml\"</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;</span><span class=\"html\">head</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">meta</span> <span class=\"attr\">charset</span><span class=\"kwrd\">=\"utf-8\"</span> <span class=\"kwrd\">/&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">title</span><span class=\"kwrd\">&gt;&lt;/</span><span class=\"html\">title</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">script</span> <span class=\"attr\">type</span><span class=\"kwrd\">=\"text/javascript\"</span> <span class=\"attr\">src</span><span class=\"kwrd\">=\"http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js\"</span><span class=\"kwrd\">&gt;&lt;/</span><span class=\"html\">script</span><span class=\"kwrd\">&gt;</span>\n  &lt;style type=<span class=\"str\">\"text/css\"</span>&gt;\n    body\n    {\n      font-family: Tahoma, Arial;\n    }\n  &lt;/style&gt;\n&lt;/head&gt;\n&lt;body&gt;\n  &lt;form id=<span class=\"str\">\"memberForm\"</span> <span class=\"kwrd\">class</span>=<span class=\"str\">\"dataEntryForm\"</span> method=<span class=\"str\">\"post\"</span>&gt;\n  &lt;fieldset&gt;\n    &lt;legend&gt;New Customer&lt;/legend&gt;\n    &lt;ul&gt;\n      &lt;li&gt;\n        &lt;label <span class=\"kwrd\">for</span>=<span class=\"str\">\"firstName\"</span> title=<span class=\"str\">\"First Name\"</span>&gt;First Name&lt;/label&gt;\n        &lt;input type=<span class=\"str\">\"text\"</span> id=<span class=\"str\">\"firstName\"</span> name=<span class=\"str\">\"firstName\"</span> value=<span class=\"str\">\"John\"</span> /&gt;\n      &lt;/li&gt;\n      &lt;li&gt;\n        &lt;label <span class=\"kwrd\">for</span>=<span class=\"str\">\"lastName\"</span> title=<span class=\"str\">\"Last Name\"</span>&gt;Last Name&lt;/label&gt;\n        &lt;input type=<span class=\"str\">\"text\"</span> id=<span class=\"str\">\"lastName\"</span> name=<span class=\"str\">\"lastName\"</span> value=<span class=\"str\">\"Ely\"</span> /&gt;\n      &lt;/li&gt;\n      &lt;li&gt;\n        &lt;label <span class=\"kwrd\">for</span>=<span class=\"str\">\"username\"</span> title=<span class=\"str\">\"Username\"</span>&gt;Username&lt;/label&gt;\n        &lt;input type=<span class=\"str\">\"text\"</span> id=<span class=\"str\">\"username\"</span> name=<span class=\"str\">\"username\"</span> value=<span class=\"str\">\"jely\"</span> /&gt;\n      &lt;/li&gt;\n      &lt;li&gt;\n        &lt;label <span class=\"kwrd\">for</span>=<span class=\"str\">\"email\"</span> title=<span class=\"str\">\"Email Address\"</span>&gt;Email&lt;/label&gt;\n        &lt;input type=<span class=\"str\">\"text\"</span> id=<span class=\"str\">\"email\"</span> name=<span class=\"str\">\"email\"</span> value=<span class=\"str\">\"shivy@gmail.com\"</span> /&gt;\n      &lt;/li&gt;\n    &lt;/ul&gt;\n  &lt;/fieldset&gt;\n  &lt;/form&gt;\n  &lt;button onclick=<span class=\"str\">\"postMember()\"</span>&gt;Post Member&lt;/button&gt;\n  &lt;button onclick=<span class=\"str\">\"putMember()\"</span>&gt;Put Member&lt;/button&gt;\n  &lt;button onclick=<span class=\"str\">\"deleteMember()\"</span>&gt;Delete Member&lt;/button&gt;\n  &lt;div id=<span class=\"str\">\"membersDiv\"</span>&gt;&lt;/div&gt;\n  \n  &lt;script type=<span class=\"str\">\"text/javascript\"</span>&gt;\n\n    <span class=\"kwrd\">var</span> baseAddress = <span class=\"str\">\"http://localhost:17414/api/members/\"</span>;\n    \n    $(<span class=\"kwrd\">function</span> () {\n      jQuery.support.cors = <span class=\"kwrd\">true</span>;\n      initializeMembers($(<span class=\"str\">\"#membersDiv\"</span>));\n    });\n\n    <span class=\"kwrd\">function</span> initializeMembers(elem) {\n      $.ajax({\n        url: baseAddress,\n        dataType: <span class=\"str\">\"jsonp\"</span>\n      })\n        .done(<span class=\"kwrd\">function</span> (data) {\n          elem.empty();\n          <span class=\"kwrd\">var</span> ulElementId = <span class=\"str\">\"membersList\"</span>;          \n          <span class=\"kwrd\">var</span> items = [];\n          $.each(data, <span class=\"kwrd\">function</span> (index, value) {\n            items.push(<span class=\"str\">'&lt;li data-member=\\''</span> + JSON.stringify(value) + <span class=\"str\">'\\'&gt;'</span> + value.firstName + <span class=\"str\">' '</span> + value.lastName + <span class=\"str\">'&lt;/i&gt;'</span>);\n          });\n          $(<span class=\"str\">\"&lt;ul /&gt;\"</span>, {\n            <span class=\"str\">\"id\"</span>: ulElementId,\n            <span class=\"str\">\"class\"</span>: <span class=\"str\">\"members-list\"</span>,\n            html: items.join(<span class=\"str\">''</span>)\n          }).appendTo(elem);\n\n          $(<span class=\"str\">\"#\"</span> + ulElementId).click(<span class=\"kwrd\">function</span> (e) {\n            <span class=\"kwrd\">var</span> member = $(e.srcElement).data(<span class=\"str\">\"member\"</span>);\n            assignFormFieldValues(<span class=\"str\">\"memberForm\"</span>, member);\n          });\n        })\n        .fail(<span class=\"kwrd\">function</span> (e) {\n          alert(<span class=\"str\">\"fail\"</span>);\n        })\n        .always(<span class=\"kwrd\">function</span> () { });\n    }\n\n    <span class=\"kwrd\">function</span> assignFormFieldValues(formId, obj) {\n      <span class=\"kwrd\">var</span> fields = $(<span class=\"str\">\"#\"</span> + formId).serializeArray();\n      $.each(fields, <span class=\"kwrd\">function</span> (index, field) {\n        <span class=\"kwrd\">var</span> f = $(<span class=\"str\">\"[name=\"</span> + field.name + <span class=\"str\">\"]\"</span>).val(obj[field.name]);        \n      });\n    }\n\n    <span class=\"kwrd\">function</span> postMember() {\n      $.ajax({\n        url: baseAddress,\n        type: <span class=\"str\">\"POST\"</span>,\n        <span class=\"rem\">// Firefox reuires the dataType otherwise the \"data\" argument of the done callback</span>\n        <span class=\"rem\">// is just a string and not a JSON </span>\n        dataType: <span class=\"str\">'json'</span>,\n        accept: <span class=\"str\">\"application/json\"</span>,\n        data: $(<span class=\"str\">\"#memberForm\"</span>).serialize(),\n      })\n      .done(<span class=\"kwrd\">function</span> (data) {        \n        $(<span class=\"str\">\"#membersList\"</span>).append(<span class=\"str\">'&lt;li data-member=\\''</span> + JSON.stringify(data) + <span class=\"str\">'\\'&gt;'</span> + data.firstName + <span class=\"str\">' '</span> + data.lastName + <span class=\"str\">'&lt;/i&gt;'</span>);\n      })\n      .fail(<span class=\"kwrd\">function</span> (e) {\n        alert(e.statusText);\n      })\n      .always(<span class=\"kwrd\">function</span> () { });\n    }\n\n    <span class=\"kwrd\">function</span> putMember() {\n      $.ajax({\n        url: baseAddress + $(<span class=\"str\">\"#username\"</span>).val(),\n        type: <span class=\"str\">\"POST\"</span>,\n        data: $(<span class=\"str\">\"#memberForm\"</span>).serialize(),\n        headers: { <span class=\"str\">\"X-HTTP-Method-Override\"</span>: <span class=\"str\">\"PUT\"</span> }\n      })\n      .done(<span class=\"kwrd\">function</span> (data) {\n        initializeMembers($(<span class=\"str\">\"#membersDiv\"</span>));\n      })\n      .fail(<span class=\"kwrd\">function</span> (e) {\n        alert(e.statusText);\n      })\n      .always(<span class=\"kwrd\">function</span> () { });\n    }\n\n    <span class=\"kwrd\">function</span> deleteMember() {\n      $.ajax({\n        url: baseAddress + $(<span class=\"str\">\"#username\"</span>).val(),\n        type: <span class=\"str\">\"POST\"</span>,\n        data: $(<span class=\"str\">\"#memberForm\"</span>).serialize(),\n        headers: { <span class=\"str\">\"X-HTTP-Method-Override\"</span>: <span class=\"str\">\"DELETE\"</span> }\n      })\n      .done(<span class=\"kwrd\">function</span> (data) {\n        initializeMembers($(<span class=\"str\">\"#membersDiv\"</span>));\n      })\n      .fail(<span class=\"kwrd\">function</span> (e) {\n        alert(e.statusText);\n      })\n      .always(<span class=\"kwrd\">function</span> () { });\n    }\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">script</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">body</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">html</span><span class=\"kwrd\">&gt;</span>\n</pre>\n<h3>Code listing show the entire Html + jQuery RESTful CRUD client</h3></div>\n<h2>Testing the Cross-Domain CRUD Operation</h2>\n<p>Luckily, this part is not that difficult. Cross-domain from a browser’s perspective is not just domains but even ports. So if you’ve using IIS Express for development, your CRUD service application runs on a specific port. You can then have an html page in your IIS’s (the full blown version) root folder (typically wwwroot) with the html and jQuery listed earlier. You can then browse to this html page using <a href=\"https://web.archive.org/web/20240915042434/http://localhost/yourpage.html\">http://localhost/yourpage.html</a>, just make sure you change the <code>baseAddress</code> variable to your service’s <code>baseAddress</code>.</p>\n<p>If you don’t have IIS installed and don’t want to install it, you could simply start a new ASP.NET project and place the&nbsp; entire Html + jQuery listing from above into the default.aspx of the new application. This application will run on a different port from your service application so you can run both projects to test this out.</p>\n<p>If all else fails, you can deploy your service app to a staging website and test it against that.</p>  \n        </div>",
+  "images": [],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "ASP.NET",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/category/programming/asp-net/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240915042434/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2fcross-domain-restful-crud-operations-using-jquery%2f&text=Cross+Domain+RESTful+CRUD+Operations+using+jQuery"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240915042434/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2fcross-domain-restful-crud-operations-using-jquery%2f&t=Cross+Domain+RESTful+CRUD+Operations+using+jQuery"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240915042434/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2fcross-domain-restful-crud-operations-using-jquery%2f&text=Cross+Domain+RESTful+CRUD+Operations+using+jQuery"
+    },
+    {
+      "text": "REST APIs, PUT and DELETE cause HTTP Error 404.0 - Not Found",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/rest-apis-put-and-delete-cause-http-error-404/"
+    },
+    {
+      "text": "Cross-Origin Resource Sharing",
+      "url": "https://web.archive.org/web/20240915042434/http://www.w3.org/TR/cors/"
+    },
+    {
+      "text": "DelegatingHandler",
+      "url": "https://web.archive.org/web/20240915042434/http://msdn.microsoft.com/en-us/library/system.net.http.delegatinghandler(v=vs.110).aspx"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "http://localhost/yourpage.html",
+      "url": "https://web.archive.org/web/20240915042434/http://localhost/yourpage.html"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "Cross Domain RESTful CRUD Operations using jQuery",
+  "url": "https://web.archive.org/web/20240915042434/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+}

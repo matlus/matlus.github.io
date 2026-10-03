@@ -1,0 +1,424 @@
+{
+  "body": "DataReaders (DbDataReader), in .NET give you the fastest access to your data. There is nothing that beats the speed of DataReaders. However, there are a few drawbacks to using them\nNo Type Checking\nIf field ordering or field name changes in your stored procedures or queries will likely break your code\nCode that uses DataReaders tends to be not so clear to read\nHere is a example of what the typical code looks like: Lets say we have a blog item record that has the following fields:\nItemId\nMemberId\nItemTitle\nItemDesc\nItemPubdate\nItemCommentCnt\nItemAllowComment\nIn order to use a DataReader your code might look like the following:\nDataReader - using field names\nusing (DbDataReader dr = GetBlog(42))\n{\n  var blogs = new List<BlogItem>();\n  while (dr.Read())\n  {\n    var blogItem = new BlogItem();\n\n    blogItem.ItemId = (long)dr[\"ItemId\"];\n    blogItem.MemberId = (long)dr[\"MemberId\"];\n    blogItem.ItemTitle = (string)dr[\"Itemtitle\"];\n    blogItem.ItemDesc = dr[\"ItemDesc\"] != DBNull.Value ? (string)dr[\"ItemDesc\"] : null;\n    blogItem.ItemPubdate = (DateTime)dr[\"ItemPubdate\"];\n    blogItem.ItemCommentCnt = (int)dr[\"ItemCommentCnt\"];\n    blogItem.ItemAllowComment = (bool)dr[\"ItemAllowComment\"];\n\n    blogs.Add(blogItem);\n\n  }\n  return blogs;\n}\nIn the code above, I'm using field names to get at the fields, but it is faster if you index into the fields as shown below.\nDataReader using Field index\nusing (DbDataReader dr = GetBlog(42))\n{\n  var blogs = new List<BlogItem>();\n  while (dr.Read())\n  {\n    var blogItem = new BlogItem();\n\n    blogItem.ItemId = (long)dr[0];\n    blogItem.MemberId = (long)dr[1];\n    blogItem.ItemTitle = (string)dr[2];\n    blogItem.ItemDesc = dr[3] != DBNull.Value ? (string)dr[3] : null;\n    blogItem.ItemPubdate = (DateTime)dr[4];\n    blogItem.ItemCommentCnt = (int)dr[5];\n    blogItem.ItemAllowComment = (bool)dr[6];\n\n    blogs.Add(blogItem);\n\n  }\n  return blogs;\n}\nIn both these code snippets there are a few problems.\nNo compile type type checking\nReadability isn't too good\nIf a field is null-able (like ItemDesc above) then the code to access the field's value is even more cumbersome\nHere is what I use in order to be able to use DataReaders but no have the issues cited above.\nDataReader Wrapper\n/// <summary>\n///This is the Base Class for all DbDataReader Wrappers\n/// </summary>\npublic class BaseDbDataReaderWrapper\n{\n    public DbDataReader DbDataReader { get; set; }\n\n    public BaseDbDataReaderWrapper()\n    {\n    }\n\n    public BaseDbDataReaderWrapper(DbDataReader dbDataReader)\n      :this()\n    {\n        DbDataReader = dbDataReader;\n    }\n}\n\n/// <summary>\n///This class is a wrapper around a DbDataReader,\n///Associated with the stored procedure - usp_GET_BLOG_ITEM\n///This class provides a strongly typed interface to access data from the DbDataReader.\n///containing the result of the given stored procedure.\n/// </summary>\npublic sealed class BlogItemDrw : BaseDbDataReaderWrapper\n{\n    public Int64 ItemId { get { return (Int64)DbDataReader[0]; } }\n    public Int64 MemberId { get { return (Int64)DbDataReader[1]; } }\n    public String ItemTitle { get { return (String)DbDataReader[2]; } }\n    public String ItemDesc { get { if (DbDataReader[3] != DBNull.Value) return (String)DbDataReader[3]; else return default(String); } }\n    public DateTime ItemPubdate { get { return (DateTime)DbDataReader[4]; } }\n    public Int32 ItemCommentCnt { get { return (Int32)DbDataReader[5]; } }\n    public Boolean ItemAllowComment { get { return (Boolean)DbDataReader[6]; } }\n    public BlogItemDrw()\n      :base()\n    {\n    }\n\n    public BlogItemDrw(DbDataReader dbDataReader)\n      :base(dbDataReader)\n    {\n    }\n}\nThe class above is designed in such as way as to require only one instance of the class while you're iterating over the DataReader. This technique also has a postivate impact on performance, since you're not creating a new instance of this class for each record in your DataReader.\nIEnumerable<T> - DbDataReader\nThe way you'd use this class is really in a method that returns an IEnumerable<T>.\nIEnumerable DataReader Wrapper\npublic IEnumerable<BlogItem> GetBlogs()\n{\n  using (DbDataReader dr = GetBlogsDataReader())\n  {\n    var blogItem = new BlogItem(dr);\n    while (dr.Read())\n    {\n      yield return blogItem;\n    }\n  }\n}\nWhen you use a DataReader like this (IEnumerable<T>) you have to be careful in that you need to be aware that each time you iterate over the IEnumerable, you're really querying the database again. Further, the code that returns the DataReader (GetBlogsDataReader() in this case) should make sure the connection is closed when the DataReader is disposed by using the CommandBehavior.CloseConnection behavior at the time of calling the ExecuteReader() method on a command instance like so:\nreturn command.ExecuteReader(CommandBehavior.CloseConnection);\nList<T> - DbDataReader\nThere may be times when you need to use a List<T> instead of an IEnumerable<T> because you either have multiple result sets being returned in the DataReader or you need to fire another query and you can't have a DbDataReader open and fire another query using the same connection. In such situations your class could look like this:\nList DataReader\n  public sealed class BlogItem\n  {\n    public Int64 ItemId { get; private set; }\n    public Int64 MemberId { get; private set; }\n    public String ItemTitle { get; private set; }\n    public String ItemDesc { get; private set; }\n    public DateTime ItemPubdate { get; private set; }\n    public DateTime ItemPubtime { get; private set; }\n    public Decimal ItemRatingAvg { get; private set; }\n    public Int32 ItemViewCnt { get; private set; }\n    public Int32 ItemCommentCnt { get; private set; }\n    public Int32 ItemRatingCnt { get; private set; }\n    public Int32 ItemFavoriteCnt { get; private set; }\n    public Boolean ItemIsPrivate { get; private set; }\n    public Boolean ItemAllowComment { get; private set; }\n    public Boolean ItemIsPublished { get; private set; }\n\n    public BlogItem(DbDataReader dbDataReader)\n      : base()\n    {\n      ItemId = (Int64)dbDataReader[0];\n      MemberId = (Int64)dbDataReader[1];\n      ItemTitle = (String)dbDataReader[2];\n      ItemDesc = dbDataReader[3] != DBNull.Value ? (String)dbDataReader[3] : default(String);\n      ItemPubdate = (DateTime)dbDataReader[4];\n      ItemRatingAvg = (Decimal)dbDataReader[5];\n      ItemViewCnt = (Int32)dbDataReader[6];\n      ItemCommentCnt = (Int32)dbDataReader[7];\n      ItemRatingCnt = (Int32)dbDataReader[8];\n      ItemFavoriteCnt = (Int32)dbDataReader[9];\n      ItemIsPrivate = (Boolean)dbDataReader[10];\n      ItemAllowComment = (Boolean)dbDataReader[11];\n      ItemIsPublished = (Boolean)dbDataReader[12];\n    }\n  }\nAnd the way you'd use this class to return a List<BlogItem> is\nUsing List DataReader Wrapper class\n     internal  List <BlogItem > GetMemberBlogsList(long  memberId)\n     {\n       using  (var  dr = DataAccessModule.GetMemberBlogs(memberId))\n       {\n         var  blogItems = new  List <BlogItem >();\n         while  (dr.Read())\n           blogItems.Add(new  BlogItem (dr));\n         return  blogItems;\n       }\n     }\n \n \nCode Generation\nIdeally, you'd want these wrapper classes to be automatically generated for you as per the stored procedure's metadata. That way, if you change the number of fields or field ordering in your stored procedures the class definition changes and of course if there is a breaking change, you'll know that as soon as you compile your project. I'll be posting another blog about the code generation aspect and I'll make the source code and a sample project available for download as well.",
+  "bodyLinks": [],
+  "code": [
+    "using (DbDataReader dr = GetBlog(42))\n{\n  var blogs = new List<BlogItem>();\n  while (dr.Read())\n  {\n    var blogItem = new BlogItem();\n\n    blogItem.ItemId = (long)dr[\"ItemId\"];\n    blogItem.MemberId = (long)dr[\"MemberId\"];\n    blogItem.ItemTitle = (string)dr[\"Itemtitle\"];\n    blogItem.ItemDesc = dr[\"ItemDesc\"] != DBNull.Value ? (string)dr[\"ItemDesc\"] : null;\n    blogItem.ItemPubdate = (DateTime)dr[\"ItemPubdate\"];\n    blogItem.ItemCommentCnt = (int)dr[\"ItemCommentCnt\"];\n    blogItem.ItemAllowComment = (bool)dr[\"ItemAllowComment\"];\n\n    blogs.Add(blogItem);\n\n  }\n  return blogs;\n}",
+    "using (DbDataReader dr = GetBlog(42))\n{\n  var blogs = new List<BlogItem>();\n  while (dr.Read())\n  {\n    var blogItem = new BlogItem();\n\n    blogItem.ItemId = (long)dr[0];\n    blogItem.MemberId = (long)dr[1];\n    blogItem.ItemTitle = (string)dr[2];\n    blogItem.ItemDesc = dr[3] != DBNull.Value ? (string)dr[3] : null;\n    blogItem.ItemPubdate = (DateTime)dr[4];\n    blogItem.ItemCommentCnt = (int)dr[5];\n    blogItem.ItemAllowComment = (bool)dr[6];\n\n    blogs.Add(blogItem);\n\n  }\n  return blogs;\n}",
+    "/// <summary>\n///This is the Base Class for all DbDataReader Wrappers\n/// </summary>\npublic class BaseDbDataReaderWrapper\n{\n    public DbDataReader DbDataReader { get; set; }\n\n    public BaseDbDataReaderWrapper()\n    {\n    }\n\n    public BaseDbDataReaderWrapper(DbDataReader dbDataReader)\n      :this()\n    {\n        DbDataReader = dbDataReader;\n    }\n}\n\n/// <summary>\n///This class is a wrapper around a DbDataReader,\n///Associated with the stored procedure - usp_GET_BLOG_ITEM\n///This class provides a strongly typed interface to access data from the DbDataReader.\n///containing the result of the given stored procedure.\n/// </summary>\npublic sealed class BlogItemDrw : BaseDbDataReaderWrapper\n{\n    public Int64 ItemId { get { return (Int64)DbDataReader[0]; } }\n    public Int64 MemberId { get { return (Int64)DbDataReader[1]; } }\n    public String ItemTitle { get { return (String)DbDataReader[2]; } }\n    public String ItemDesc { get { if (DbDataReader[3] != DBNull.Value) return (String)DbDataReader[3]; else return default(String); } }\n    public DateTime ItemPubdate { get { return (DateTime)DbDataReader[4]; } }\n    public Int32 ItemCommentCnt { get { return (Int32)DbDataReader[5]; } }\n    public Boolean ItemAllowComment { get { return (Boolean)DbDataReader[6]; } }\n    public BlogItemDrw()\n      :base()\n    {\n    }\n\n    public BlogItemDrw(DbDataReader dbDataReader)\n      :base(dbDataReader)\n    {\n    }\n}",
+    "public IEnumerable<BlogItem> GetBlogs()\n{\n  using (DbDataReader dr = GetBlogsDataReader())\n  {\n    var blogItem = new BlogItem(dr);\n    while (dr.Read())\n    {\n      yield return blogItem;\n    }\n  }\n}",
+    "return command.ExecuteReader(CommandBehavior.CloseConnection);",
+    "  public sealed class BlogItem\n  {\n    public Int64 ItemId { get; private set; }\n    public Int64 MemberId { get; private set; }\n    public String ItemTitle { get; private set; }\n    public String ItemDesc { get; private set; }\n    public DateTime ItemPubdate { get; private set; }\n    public DateTime ItemPubtime { get; private set; }\n    public Decimal ItemRatingAvg { get; private set; }\n    public Int32 ItemViewCnt { get; private set; }\n    public Int32 ItemCommentCnt { get; private set; }\n    public Int32 ItemRatingCnt { get; private set; }\n    public Int32 ItemFavoriteCnt { get; private set; }\n    public Boolean ItemIsPrivate { get; private set; }\n    public Boolean ItemAllowComment { get; private set; }\n    public Boolean ItemIsPublished { get; private set; }\n\n    public BlogItem(DbDataReader dbDataReader)\n      : base()\n    {\n      ItemId = (Int64)dbDataReader[0];\n      MemberId = (Int64)dbDataReader[1];\n      ItemTitle = (String)dbDataReader[2];\n      ItemDesc = dbDataReader[3] != DBNull.Value ? (String)dbDataReader[3] : default(String);\n      ItemPubdate = (DateTime)dbDataReader[4];\n      ItemRatingAvg = (Decimal)dbDataReader[5];\n      ItemViewCnt = (Int32)dbDataReader[6];\n      ItemCommentCnt = (Int32)dbDataReader[7];\n      ItemRatingCnt = (Int32)dbDataReader[8];\n      ItemFavoriteCnt = (Int32)dbDataReader[9];\n      ItemIsPrivate = (Boolean)dbDataReader[10];\n      ItemAllowComment = (Boolean)dbDataReader[11];\n      ItemIsPublished = (Boolean)dbDataReader[12];\n    }\n  }",
+    "     internal  List <BlogItem > GetMemberBlogsList(long  memberId)",
+    "     {",
+    "       using  (var  dr = DataAccessModule.GetMemberBlogs(memberId))",
+    "       {",
+    "         var  blogItems = new  List <BlogItem >();",
+    "         while  (dr.Read())",
+    "           blogItems.Add(new  BlogItem (dr));",
+    "         return  blogItems;",
+    "       }",
+    "     }",
+    " ",
+    " "
+  ],
+  "header": "DataReader Wrappers - TypeSafe\nPosted by Shiv Kumar on 18th November, 2010\nCategorized Under: Programming C#\nTagged With: ADO.NET CodeGen Data Access DbDataReader Performance \n  ",
+  "html": "<div class=\"articleText\">\n        DataReaders (<code>DbDataReader</code>), in .NET give you the fastest access to your data. There is nothing that beats the speed of DataReaders. However, there are a few drawbacks to using them <ol> \t<li>No Type Checking</li> \t<li>If field ordering or field name changes in your stored procedures or queries will likely break your code</li> \t<li>Code that uses DataReaders tends to be not so clear to read</li> </ol> Here is a example of what the typical code looks like: Lets say we have a blog item record that has the following fields: <ol> \t<li>ItemId</li> \t<li>MemberId</li> \t<li>ItemTitle</li> \t<li>ItemDesc</li> \t<li>ItemPubdate</li> \t<li>ItemCommentCnt</li> \t<li>ItemAllowComment</li> </ol> In order to use a DataReader your code might look like the following: <div class=\"panel code content/images/csharp.png\" title=\"DataReader - using field names\" id=\"code_36768\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414171920/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">DataReader - using field names</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div> <pre class=\"csharpcode\"><span class=\"kwrd\">using</span> (DbDataReader dr = GetBlog(42))\n{\n  var blogs = <span class=\"kwrd\">new</span> List&lt;BlogItem&gt;();\n  <span class=\"kwrd\">while</span> (dr.Read())\n  {\n    var blogItem = <span class=\"kwrd\">new</span> BlogItem();\n\n    blogItem.ItemId = (<span class=\"kwrd\">long</span>)dr[<span class=\"str\">\"ItemId\"</span>];\n    blogItem.MemberId = (<span class=\"kwrd\">long</span>)dr[<span class=\"str\">\"MemberId\"</span>];\n    blogItem.ItemTitle = (<span class=\"kwrd\">string</span>)dr[<span class=\"str\">\"Itemtitle\"</span>];\n    blogItem.ItemDesc = dr[<span class=\"str\">\"ItemDesc\"</span>] != DBNull.Value ? (<span class=\"kwrd\">string</span>)dr[<span class=\"str\">\"ItemDesc\"</span>] : <span class=\"kwrd\">null</span>;\n    blogItem.ItemPubdate = (DateTime)dr[<span class=\"str\">\"ItemPubdate\"</span>];\n    blogItem.ItemCommentCnt = (<span class=\"kwrd\">int</span>)dr[<span class=\"str\">\"ItemCommentCnt\"</span>];\n    blogItem.ItemAllowComment = (<span class=\"kwrd\">bool</span>)dr[<span class=\"str\">\"ItemAllowComment\"</span>];\n\n    blogs.Add(blogItem);\n\n  }\n  <span class=\"kwrd\">return</span> blogs;\n}</pre>\n</div>\nIn the code above, I'm using field names to get at the fields, but it is faster if you index into the fields as shown below.\n<div class=\"panel code content/images/csharp.png\" title=\"DataReader using Field index\" id=\"code_6717\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414171920/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">DataReader using Field index</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div>\n<pre class=\"csharpcode\"><span class=\"kwrd\">using</span> (DbDataReader dr = GetBlog(42))\n{\n  var blogs = <span class=\"kwrd\">new</span> List&lt;BlogItem&gt;();\n  <span class=\"kwrd\">while</span> (dr.Read())\n  {\n    var blogItem = <span class=\"kwrd\">new</span> BlogItem();\n\n    blogItem.ItemId = (<span class=\"kwrd\">long</span>)dr[0];\n    blogItem.MemberId = (<span class=\"kwrd\">long</span>)dr[1];\n    blogItem.ItemTitle = (<span class=\"kwrd\">string</span>)dr[2];\n    blogItem.ItemDesc = dr[3] != DBNull.Value ? (<span class=\"kwrd\">string</span>)dr[3] : <span class=\"kwrd\">null</span>;\n    blogItem.ItemPubdate = (DateTime)dr[4];\n    blogItem.ItemCommentCnt = (<span class=\"kwrd\">int</span>)dr[5];\n    blogItem.ItemAllowComment = (<span class=\"kwrd\">bool</span>)dr[6];\n\n    blogs.Add(blogItem);\n\n  }\n  <span class=\"kwrd\">return</span> blogs;\n}</pre>\n</div>\nIn both these code snippets there are a few problems.\n<ol>\n\t<li>No compile type type checking</li>\n\t<li>Readability isn't too good</li>\n\t<li>If a field is null-able (like ItemDesc above) then the code to access the field's value is even more cumbersome</li>\n</ol>\nHere is what I use in order to be able to use DataReaders but no have the issues cited above.\n<div class=\"panel code content/images/csharp.png\" title=\"DataReader Wrapper\" id=\"code_2258\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414171920/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">DataReader Wrapper</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div>\n<pre class=\"csharpcode\"><span class=\"rem\">/// &lt;summary&gt;</span>\n<span class=\"rem\">///This is the Base Class for all DbDataReader Wrappers</span>\n<span class=\"rem\">/// &lt;/summary&gt;</span>\n<span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> <span class=\"identifier\">BaseDbDataReaderWrapper</span>\n{\n    <span class=\"kwrd\">public</span> <span class=\"identifier\">DbDataReader</span> DbDataReader { get; set; }\n\n    <span class=\"kwrd\">public</span> BaseDbDataReaderWrapper()\n    {\n    }\n\n    <span class=\"kwrd\">public</span> BaseDbDataReaderWrapper(DbDataReader dbDataReader)\n      :<span class=\"kwrd\">this</span>()\n    {\n        DbDataReader = dbDataReader;\n    }\n}\n\n<span class=\"rem\">/// &lt;summary&gt;</span>\n<span class=\"rem\">///This class is a wrapper around a DbDataReader,</span>\n<span class=\"rem\">///Associated with the stored procedure - usp_GET_BLOG_ITEM</span>\n<span class=\"rem\">///This class provides a strongly typed interface to access data from the DbDataReader.</span>\n<span class=\"rem\">///containing the result of the given stored procedure.</span>\n<span class=\"rem\">/// &lt;/summary&gt;</span>\n<span class=\"kwrd\">public</span> <span class=\"kwrd\">sealed</span> <span class=\"kwrd\">class</span> <span class=\"identifier\">BlogItemDrw</span> : <span class=\"identifier\">BaseDbDataReaderWrapper</span>\n{\n    <span class=\"kwrd\">public</span> <span class=\"identifier\">Int64</span> ItemId { get { <span class=\"kwrd\">return</span> (<span class=\"identifier\">Int64</span>)DbDataReader[0]; } }\n    <span class=\"kwrd\">public</span> <span class=\"identifier\">Int64</span> MemberId { get { <span class=\"kwrd\">return</span> (<span class=\"identifier\">Int64</span>)DbDataReader[1]; } }\n    <span class=\"kwrd\">public</span> <span class=\"identifier\">String</span> ItemTitle { get { <span class=\"kwrd\">return</span> (<span class=\"identifier\">String</span>)DbDataReader[2]; } }\n    <span class=\"kwrd\">public</span> <span class=\"identifier\">String</span> ItemDesc { get { <span class=\"kwrd\">if</span> (DbDataReader[3] != <span class=\"identifier\">DBNull</span>.Value) <span class=\"kwrd\">return</span> (<span class=\"identifier\">String</span>)DbDataReader[3]; <span class=\"kwrd\">else</span> <span class=\"kwrd\">return</span> <span class=\"kwrd\">default</span>(<span class=\"identifier\">String</span>); } }\n    <span class=\"kwrd\">public</span> <span class=\"identifier\">DateTime</span> ItemPubdate { get { <span class=\"kwrd\">return</span> (<span class=\"identifier\">DateTime</span>)DbDataReader[4]; } }\n    <span class=\"kwrd\">public</span> <span class=\"identifier\">Int32</span> ItemCommentCnt { get { <span class=\"kwrd\">return</span> (<span class=\"identifier\">Int32</span>)DbDataReader[5]; } }\n    <span class=\"kwrd\">public</span> <span class=\"identifier\">Boolean</span> ItemAllowComment { get { <span class=\"kwrd\">return</span> (<span class=\"identifier\">Boolean</span>)DbDataReader[6]; } }\n    <span class=\"kwrd\">public</span> BlogItemDrw()\n      :<span class=\"kwrd\">base</span>()\n    {\n    }\n\n    <span class=\"kwrd\">public</span> BlogItemDrw(DbDataReader dbDataReader)\n      :<span class=\"kwrd\">base</span>(dbDataReader)\n    {\n    }\n}</pre>\n</div>\nThe class above is designed in such as way as to require only one instance of the class while you're iterating over the DataReader. This technique also has a postivate impact on performance, since you're not creating a new instance of this class for each record in your DataReader.\n<h2>IEnumerable&lt;T&gt; - DbDataReader</h2>\nThe way you'd use this class is really in a method that returns an <code>IEnumerable&lt;T&gt;</code>.\n<div class=\"panel code content/images/csharp.png\" title=\"IEnumerable&lt;T&gt; DataReader Wrapper\" id=\"code_24933\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414171920/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">IEnumerable<t> DataReader Wrapper</t></h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div>\n<pre class=\"csharpcode\"><span class=\"kwrd\">public</span> IEnumerable&lt;BlogItem&gt; GetBlogs()\n{\n  <span class=\"kwrd\">using</span> (DbDataReader dr = GetBlogsDataReader())\n  {\n    var blogItem = <span class=\"kwrd\">new</span> BlogItem(dr);\n    <span class=\"kwrd\">while</span> (dr.Read())\n    {\n      <span class=\"kwrd\">yield</span> <span class=\"kwrd\">return</span> blogItem;\n    }\n  }\n}</pre>\n</div>\nWhen you use a DataReader like this (<code>IEnumerable&lt;T&gt;</code>) you have to be careful in that you need to be aware that each time you iterate over the <code>IEnumerable</code>, you're really querying the database again. Further, the code that returns the DataReader (<code>GetBlogsDataReader()</code> in this case) should make sure the connection is closed when the DataReader is disposed by using the <code>CommandBehavior.CloseConnection</code> behavior at the time of calling the <code>ExecuteReader()</code> method on a command instance like so:\n<pre><span class=\"kwrd\">return</span> command.ExecuteReader(<span class=\"identifier\">CommandBehavior</span>.CloseConnection);</pre>\n<h2>List&lt;T&gt; - DbDataReader</h2>\nThere may be times when you need to use a List&lt;T&gt; instead of an IEnumerable&lt;T&gt; because you either have multiple result sets being returned in the DataReader or you need to fire another query and you can't have a DbDataReader open and fire another query using the same connection. In such situations your class could look like this:\n\n<div class=\"panel code content/images/csharp.png\" title=\"List&lt;T&gt; DataReader\" id=\"code_28138\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414171920/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">List<t> DataReader</t></h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div>\n<pre class=\"csharpcode\">  <span class=\"kwrd\">public</span> <span class=\"kwrd\">sealed</span> <span class=\"kwrd\">class</span> BlogItem\n  {\n    <span class=\"kwrd\">public</span> Int64 ItemId { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> Int64 MemberId { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> String ItemTitle { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> String ItemDesc { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> DateTime ItemPubdate { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> DateTime ItemPubtime { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> Decimal ItemRatingAvg { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> Int32 ItemViewCnt { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> Int32 ItemCommentCnt { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> Int32 ItemRatingCnt { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> Int32 ItemFavoriteCnt { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> Boolean ItemIsPrivate { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> Boolean ItemAllowComment { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> Boolean ItemIsPublished { get; <span class=\"kwrd\">private</span> set; }\n\n    <span class=\"kwrd\">public</span> BlogItem(DbDataReader dbDataReader)\n      : <span class=\"kwrd\">base</span>()\n    {\n      ItemId = (Int64)dbDataReader[0];\n      MemberId = (Int64)dbDataReader[1];\n      ItemTitle = (String)dbDataReader[2];\n      ItemDesc = dbDataReader[3] != DBNull.Value ? (String)dbDataReader[3] : <span class=\"kwrd\">default</span>(String);\n      ItemPubdate = (DateTime)dbDataReader[4];\n      ItemRatingAvg = (Decimal)dbDataReader[5];\n      ItemViewCnt = (Int32)dbDataReader[6];\n      ItemCommentCnt = (Int32)dbDataReader[7];\n      ItemRatingCnt = (Int32)dbDataReader[8];\n      ItemFavoriteCnt = (Int32)dbDataReader[9];\n      ItemIsPrivate = (Boolean)dbDataReader[10];\n      ItemAllowComment = (Boolean)dbDataReader[11];\n      ItemIsPublished = (Boolean)dbDataReader[12];\n    }\n  }</pre>\n</div>\n\nAnd the way you'd use this class to return a <code>List&lt;<span class=\"identifier\">BlogItem</span>&gt;</code> is\n\n<div class=\"panel code content/images/csharp.png\" title=\"Using List&lt;T&gt; DataReader Wrapper class\" id=\"code_39342\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414171920/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Using List<t> DataReader Wrapper class</t></h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div>\n<pre style=\"margin:0em;\">     <span style=\"color:#0000ff\">internal</span><span style=\"color:#000000\">  <span style=\"color:#2b91af\">List</span><span style=\"color:#000000\"> &lt;<span style=\"color:#2b91af\">BlogItem</span><span style=\"color:#000000\"> &gt; GetMemberBlogsList(<span style=\"color:#0000ff\">long</span><span style=\"color:#000000\">  memberId)</span></span></span></span></pre>\n<pre style=\"margin:0em;\">     <span style=\"color:#000000\">{</span></pre>\n<pre style=\"margin:0em;\">       <span style=\"color:#0000ff\">using</span><span style=\"color:#000000\">  (<span style=\"color:#0000ff\">var</span><span style=\"color:#000000\">  dr = DataAccessModule.GetMemberBlogs(memberId))</span></span></pre>\n<pre style=\"margin:0em;\">       <span style=\"color:#000000\">{</span></pre>\n<pre style=\"margin:0em;\">         <span style=\"color:#0000ff\">var</span><span style=\"color:#000000\">  blogItems = <span style=\"color:#0000ff\">new</span><span style=\"color:#000000\">  <span style=\"color:#2b91af\">List</span><span style=\"color:#000000\"> &lt;<span style=\"color:#2b91af\">BlogItem</span><span style=\"color:#000000\"> &gt;();</span></span></span></span></pre>\n<pre style=\"margin:0em;\">         <span style=\"color:#0000ff\">while</span><span style=\"color:#000000\">  (dr.Read())</span></pre>\n<pre style=\"margin:0em;\">           blogItems.Add(<span style=\"color:#0000ff\">new</span><span style=\"color:#000000\">  <span style=\"color:#2b91af\">BlogItem</span><span style=\"color:#000000\"> (dr));</span></span></pre>\n<pre style=\"margin:0em;\">         <span style=\"color:#0000ff\">return</span><span style=\"color:#000000\">  blogItems;</span></pre>\n<pre style=\"margin:0em;\">       <span style=\"color:#000000\">}</span></pre>\n<pre style=\"margin:0em;\">     <span style=\"color:#000000\">}</span></pre>\n<pre style=\"margin:0em;\"> </pre>\n<pre style=\"margin:0em;\"> </pre>\n</div>\n\n<h2>Code Generation</h2>\nIdeally, you'd want these wrapper classes to be automatically generated for you as per the stored procedure's metadata. That way, if you change the number of fields or field ordering in your stored procedures the class definition changes and of course if there is a breaking change, you'll know that as soon as you compile your project.\n\nI'll be posting another blog about the code generation aspect and I'll make the source code and a sample project available for download as well.  \n        </div>",
+  "images": [],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "C#",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/category/programming/c/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414171920/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2fdatareader-wrappers-typesafe%2f&text=DataReader+Wrappers+-+TypeSafe"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414171920/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2fdatareader-wrappers-typesafe%2f&t=DataReader+Wrappers+-+TypeSafe"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414171920/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2fdatareader-wrappers-typesafe%2f&text=DataReader+Wrappers+-+TypeSafe"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "DataReader Wrappers - TypeSafe",
+  "url": "https://web.archive.org/web/20240414171920/http://www.matlus.com/datareader-wrappers-typesafe/"
+}

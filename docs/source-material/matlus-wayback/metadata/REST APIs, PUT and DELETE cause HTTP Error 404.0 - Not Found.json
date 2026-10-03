@@ -1,0 +1,472 @@
+{
+  "body": "If you’ve bought a new PC/Laptop and thus have forgotten you made some configuration changes when you made your first application with a RESTfull API or you’re just starting out with building a RESTfull API for one of your application then you’ll most definitely encounter the Http error 404.0 – Not Found.\n\nThis happens when you’re attempting either an Http PUT or DELETE operation and the request never gets to your application. This is happening because IIS (either the full blown version or IIS Express) has not been configured to accept Http request with the PUT and/or DELETE verbs (Http Methods).\n\nThe fix is really simple. All you need to do is modify the applicationhost.config file for your respective web server. For the full blown IIS, you can do it using the Internet Information Services Manager UI while for IIS Express you need to modify the file manually.\n\nAdding PUT and DELETE verbs for IIS\n\nOpen up IIS Manager\n\nDouble-click on the ExtensionlessUrl-Integrated-4.0 handler shown in the image above. The dialog shown below takes a while to show up, but it will show up eventually.\n\nClick on the Request Restrictions… button\n\n \n\nSwitch to the “Verbs” tab in the dialog presented and modify the “One of these verbs” field to include the PUT and DELETE verbs, click OK all the out and you’re done.\n\nPUT and DELETE verbs for IIS Express\n\nAs I said earlier, for IIS express, you need to modify the applicationhost.config file that IIS Express uses manually. You’ll find this file in your MyDocuments folder under IISExpress\\config.\n\nThe setting that needs to be changed can be found towards the end of the file. You’re looking for the ExtensionlessUrl-Integrated-4.0 node under the system.webserver section, under handlers node.\n\nYou’ll need to add PUT and DELETE to the “verb” attribute for the handler. Save the file and you’re done.",
+  "bodyLinks": [
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerHandlerMappings_6.png"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerExtensionlessUrlHandler_4.png"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerEditManagedHandler_2.png"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerEditVerbs_2.png"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/Applicationhostconfig_4.png"
+    }
+  ],
+  "code": [],
+  "header": "REST APIs, PUT and DELETE cause HTTP Error 404.0 - Not Found\nPosted by Shiv Kumar on 30th December, 2011\nCategorized Under: IIS Configuration\nTagged With: Debugging Http IIS 7.0 IIS Express REST \n  ",
+  "html": "<div class=\"articleText\">\n        <p>If you’ve bought a new PC/Laptop and thus have forgotten you made some configuration changes when you made your first application with a RESTfull API or you’re just starting out with building a RESTfull API for one of your application then you’ll most definitely encounter the Http error 404.0 – Not Found.</p> <p>This happens when you’re attempting either an Http PUT or DELETE operation and the request never gets to your application. This is happening because IIS (either the full blown version or IIS Express) has not been configured to accept Http request with the PUT and/or DELETE verbs (Http Methods).</p> <p>The fix is really simple. All you need to do is modify the <strong>applicationhost.config</strong> file for your respective web server. For the full blown IIS, you can do it using the Internet Information Services Manager UI while for IIS Express you need to modify the file manually.</p> <h2>Adding PUT and DELETE verbs for IIS</h2> <p>Open up IIS Manager</p> <p><a href=\"https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerHandlerMappings_6.png\"><img style=\"background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"IISManagerHandlerMappings\" border=\"0\" alt=\"IISManagerHandlerMappings\" src=\"https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerHandlerMappings_thumb_2.png\" width=\"830\" height=\"711\"></a></p> <p><a href=\"https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerExtensionlessUrlHandler_4.png\"><img style=\"background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"IISManagerExtensionlessUrlHandler\" border=\"0\" alt=\"IISManagerExtensionlessUrlHandler\" src=\"https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerExtensionlessUrlHandler_thumb_1.png\" width=\"830\" height=\"711\"></a></p> <p>Double-click on the <strong>ExtensionlessUrl-Integrated-4.0</strong> handler shown in the image above. The dialog shown below takes a while to show up, but it will show up eventually.</p> <p><a href=\"https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerEditManagedHandler_2.png\"><img style=\"background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"IISManagerEditManagedHandler\" border=\"0\" alt=\"IISManagerEditManagedHandler\" src=\"https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerEditManagedHandler_thumb.png\" width=\"475\" height=\"388\"></a></p> <p>Click on the Request Restrictions… button</p> <p><a href=\"https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerEditVerbs_2.png\"><img style=\"background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"IISManagerEditVerbs\" border=\"0\" alt=\"IISManagerEditVerbs\" src=\"https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerEditVerbs_thumb.png\" width=\"475\" height=\"388\"></a></p> <p>&nbsp;</p> <p>Switch to the “Verbs” tab in the dialog presented and modify the “One of these verbs” field to include the PUT and DELETE verbs, click OK all the out and you’re done.</p> <p>PUT and DELETE verbs for IIS Express</p> <p>As I said earlier, for IIS express, you need to modify the applicationhost.config file that IIS Express uses manually. You’ll find this file in your MyDocuments folder under IISExpress\\config.</p> <p>The setting that needs to be changed can be found towards the end of the file. You’re looking for the <strong>ExtensionlessUrl-Integrated-4.0 node</strong> under the system.webserver section, under handlers node.</p> <p><a href=\"https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/Applicationhostconfig_4.png\"><img style=\"background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px\" title=\"Applicationhostconfig\" border=\"0\" alt=\"Applicationhostconfig\" src=\"https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/Applicationhostconfig_thumb_1.png\" width=\"765\" height=\"686\"></a></p>  <p>You’ll need to add PUT and DELETE to the “verb” attribute for the handler. Save the file and you’re done.</p>  \n        </div>",
+  "images": [
+    {
+      "alt": "IISManagerHandlerMappings",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerHandlerMappings_thumb_2.png"
+    },
+    {
+      "alt": "IISManagerExtensionlessUrlHandler",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerExtensionlessUrlHandler_thumb_1.png"
+    },
+    {
+      "alt": "IISManagerEditManagedHandler",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerEditManagedHandler_thumb.png"
+    },
+    {
+      "alt": "IISManagerEditVerbs",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/IISManagerEditVerbs_thumb.png"
+    },
+    {
+      "alt": "Applicationhostconfig",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240414162624im_/http://www.matlus.com/content/uploads/2012/03/Applicationhostconfig_thumb_1.png"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "Configuration",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/category/iis/configuration/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162624/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2frest-apis-put-and-delete-cause-http-error-404%2f&text=REST+APIs%2c+PUT+and+DELETE+cause+HTTP+Error+404.0+-+Not+Found"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162624/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2frest-apis-put-and-delete-cause-http-error-404%2f&t=REST+APIs%2c+PUT+and+DELETE+cause+HTTP+Error+404.0+-+Not+Found"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162624/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2frest-apis-put-and-delete-cause-http-error-404%2f&text=REST+APIs%2c+PUT+and+DELETE+cause+HTTP+Error+404.0+-+Not+Found"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerHandlerMappings_6.png"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerExtensionlessUrlHandler_4.png"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerEditManagedHandler_2.png"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/IISManagerEditVerbs_2.png"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/content/uploads/2012/03/Applicationhostconfig_4.png"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "REST APIs, PUT and DELETE cause HTTP Error 404.0 - Not Found",
+  "url": "https://web.archive.org/web/20240414162624/http://www.matlus.com/rest-apis-put-and-delete-cause-http-error-404/"
+}

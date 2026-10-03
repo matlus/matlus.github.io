@@ -1,0 +1,534 @@
+{
+  "body": "The MVC design pattern is probably the most misunderstood and misinterpreted design pattern. It’s probably due to this that the various implementations of the MVC design pattern are so different. Another way to look at it is that the MVC design pattern is not the most suitable design pattern for web based applications and as a result, many implementations/interpretations of the MVC design pattern go against the original intent. This article is about what I think are the problems with the design and implementation of Microsoft’s ASP.NET MVC framework. I believe that one design flaw leads to a tower of design flaws and as it relates to the ASP.NET MVC implementation, a couple of design flaws have led to many others. Rather than focus on Microsoft’s implementation of the MVC design pattern, I’ll be focusing on system design related issues (independent of the MVC design pattern) from the perspective of Web Application framework design. Figure 1 below shows you the design and control flow of the various parts of the ASP.NET MVC framework.\n\n \n\nFigure 1: ASP.NET MVC Design and control flow\nList of Problems with ASP.NET MVC\nNo access to view or partial view instances\nViewData is your loosely typed information carrier\nController is not really in control\nChild Actions have no sense of the Request Context\nViews are coupled to controllers\nReferencing Layout Pages using virtual paths\nRouting\nHtml interspersed with code and code interspersed with html nightmare\nNaming conventions\nNo Access to View or Partial View instances\nI believe this is the first major design flaw (not from an MVC design perspective but rather, just from a framework design perspective) and the cause of a number of other design issues. Because a controller doesn't have access to an instance of the view it enlists, the only way for a controller to communicate information to a view is by using ViewData which is a Dictionary<string, object>. So you can stuff anything you want in there, with each “thing” identified by a string key. The two code listings below show you some code that do the same things but in entirely different ways. Code listing 1, shows you the code you'd write in a controller's Action method in ASP.NET MVC and Code listing 2 shows you the code you'd write in a builder's BuildPage() method in Quartz for ASP.NET\npublic ActionResult Index()\n{\n  /* If a specific features is selected */\n  if (FeatureId != 0)\n  {\n    var featurePageModel = BusinessModule.GetFeaturePageModel(FeatureId);\n\n    ViewData[\"Title\"] = featurePageModel.CurrentFeature.Title;\n    ViewData[\"AdBoxTopViewBoxTitle\"] = \"More Features\";\n    ViewData[\"AdBoxTopViewModel\"] = featurePageModel.AdBoxModel;\n    ViewData.Model = featurePageModel.CurrentFeature;\n    return View(\"FeatureDisplay\");\n  }\n  else\n  {\n    var featuresAllPageModel = BusinessModule.GetFeaturesAllPageModel();\n\n    ViewData[\"Title\"] = featurePageModel.CurrentFeature.Title;\n    ViewData[\"AdBoxTopViewBoxTitle\"] = \"Highlights\";\n    ViewData[\"AdBoxTopViewModel\"] = featuresAllPageModel.AdBoxModel;\n    ViewData.Model = featuresAllPageModel.Features;\n    return View(\"FeaturesAllView\");\n  }\n}\nCode Listing 1: Showing ASP.NET MVC code in a Controller Action method\nprotected override void BuildPage(HttpContextBase httpContext, object model)\n{\n  /* If a specific features is selected */\n  if (FeatureId != 0)\n  {\n    var featurePageModel = (FeaturePageModel)model;\n\n    TitleView.Title = featurePageModel.CurrentFeature.Title;\n    AdBoxTopView.BoxTitle = \"More Features\";\n    AdBoxTopView.Model = featurePageModel.AdBoxModel;\n    RegisterView(\"Body\", new FeatureDisplayView(httpContext,\n      this, featurePageModel.CurrentFeature));\n  }\n  else\n  {\n    var featuresAllPageModel = (FeaturesAllPageModel)model;\n\n    TitleView.Title = \"Builder for ASP.NET - Features\";\n    AdBoxTopView.BoxTitle = \"Highlights\";\n    AdBoxTopView.Model = featuresAllPageModel.AdBoxModel;\n    RegisterView(\"Body\", new FeaturesAllView(httpContext, this,\n      featuresAllPageModel.Features));\n  }\n}\n\nCode Listing 2: Showing Builder for ASP.NET code in a Builder's BuildPage() method\nThe problems with this (code listing 1) approach are:\nThe controller can’t ensure that the view and all partial views are looking for (and getting) the data it stuffed in ViewData using the same string keys.\nBy looking at the code in the controller's action method, it is impossible to tell what is really going on, because all you see is a bunch of things added to ViewData, but you can’t tell who is using what (if at all). That is, you can't tell which View and or partial view is using what thing in the dictionary and if this thing (the item in the dictionary) is even the correct type for the other thing (view and/or partial view) using it\nNo strong typing, and so no type checking, no compile time checks and no IDE navigation help between controller and view's methods and properties, sub classes/super classes\nIf the same partial view is used by other controllers then these controllers also need to use the same string keys to stuff their data into ViewData. But there is no way to ensure that at the time of writing or reading code\nIf the API of the partial view changes or the names of the keys a partial view relies upon changes there is no way to tell during development time what pages are going to break. In a strongly typed system like .NET a simple Ctrl + Shift + B would highlight all such breaking changes. But this is not the case with ASP.NET MVC due to the loosely typed ViewData\nA strongly typed view makes thing slightly better. So you can define a specific ViewModel for your view and now the view can refer to this ViewModel is a strongly typed manner. But what about the partial views? Needless to say that if you analyze all this you'll conclude that:\nThe controller has to know about all the requirements of the view, partial views, master views as well as any child actions\nEither the view further breaks down your ViewModel into sub viewmodels and hands these sub viewmodels to each of the partial views. Or, every partial view and master view are privy to some other view's data. If you do the former, then the view needs to be aware of what the partial views need (just like the controller needs to know), which means both the controller and view need to know about the partial views, master views and child actions. So that's not any better. Doing the later is not correct either.\nIf the controller had access to instances of the view, partial views, master views etc. then you'd have code like that shown in Code listing 2. Doing all of the above *is* the controller's concern. If not, these concerns propagate throughout. Take a look at Figure 3. It shows you the connectivity and control flow of what the picture would look like where the controller has direct access to the view, partial views and master views.\nThe Controller is not really in control\nTake a look at Figure 1, and you’ll see that the controller only really talks to the view (via ViewData nonetheless because it never really has access to an instance of the view). It doesn’t control or seemingly know of the partial views this view may in turn enlist, in order to get the job done. But the controller does need to know of the partial views because it has to pass data and instructions to partial views. One could argue separation of concerns here. But I beg to differ because propagating responsibilities down the line makes a system incoherent, unmanageable and a maintenance/debugging nightmare. You have to follow bread crumbs from the controller to the view and from there to other partial views just to get a sense of what is going on and who is doing it and who is using what piece of data (that the controller put into ViewData). A big part of the reason for this design seems to be that the view needs to be compiled (the html + code) and so an instance of the view can only be realized after compiling. However, since the view does not use a code file, the controller won't know how to reference the view since it doesn't have a class type to reference at the time of compilation. One could get around this by having the view descend from one of your own base classes, that way you can reference the view solely as the base type and so the controller can be compiled. But getting an instance of a view (due to the ViewEngine and compilation model) is not that easy. Code listing 3, below shows how you can get an instance of a view. It's pretty convoluted, since it is not the intent of code compilation model.\n  public class HomeController : BaseController\n  {\n    public ActionResult Index()\n    {\n      ViewData[\"Title\"] = \"Movies In Theaters\";\n      ViewData[\"AdvertBoxTopName\"] = \"Popular Channels\";\n      ViewData.Model = BusinessModule.GetHomePageThumbnails();\n\n      ViewEngineResult result = new ViewEngineResult(\n        new RazorViewExt(ControllerContext,\n        \"~/Views/Home/Index.cshtml\",\n        \"~/Views/Shared/LayoutSite.cshtml\"),\n        new RazorViewEngine());      \n      \n      return View(result.View);\n    }\n  }\n\n  public class RazorViewExt : RazorView\n  {\n    public RazorViewExt(ControllerContext controllerContext, string viewPath,\n      string layoutPath)\n      :base(controllerContext, viewPath, layoutPath, false, null) \n    {\n\n    }\n\n    protected override void RenderView(ViewContext viewContext, TextWriter writer,\n      object instance)\n    {\n      /* This view descends from BaseHomeIndexView */\n      BaseHomeIndexView viewInstance = (BaseHomeIndexView)instance;\n      /* viewInstance is now a valid reference to the Home Controller's\n       * Index action's view */\n\n      \n      /* The other way to do this is to treat the parameter \"instance\"\n       * as dynamic */\n      /* this will allow you to set properties and call methods,\n       * but no strong typing */\n      dynamic viewInstanceDyn = instance;\n      viewInstanceDyn.SomeProperty = \"SomeValue\";\n\n      base.RenderView(viewContext, writer, instance);\n    }\n  }\n\nCode Listing 3: Getting a reference to an instance of a View\nIf you created instances of your own classes that implemented IView, then you get all the benefits and none of the demerits. That tells me that the current design (and inability to program in a strongly typed manner and all the other things we've been talking about so far) are due to one or more of the following:\nA design limitation in the way the compilation model/ViewEngine works\nThey gave up code files for views (they were there initially) without realizing the down side\nOr, that's how they intended the design to be.\nThe View is in control\nOne could argue that (in the ASP.NET MVC design) the view is really in control. Well, at least insofar as the partial views and passing data on to them is concerned. The issues with this reasoning are:\nFor a view to be in control, the controller needs to know what the view needs, since the view doesn't get its data directly from the model. So once again, concerns have been propagated rather than being confined\nThe view is not really in control of the partial views it enlists. The only way it can communicate to a partial view is – you guessed it, ViewData (or a subset of a ViewModel, but we already talked about the issue with that)\nIt’s almost as if no one wants to take responsibility and so everyone needs to be concerned!\nRenderAction() / Child Actions\n\nLet me start by stating the problem RenderAction() is trying to solve. Imagine that in your page, you have a menu system. Typically, menu systems are complex because they are contextual and they depend on the user and her access rights and the page she is on. As a result, one could argue that the menu is not the concern of the view. Ok, I could argue either way, but I’ll go along with this argument.\n\n \n\nFigure 2: Showing the control flow for RenderAction()\n\nSo the view enlists the services of the Child Action (that is RenderAction() really calls out to another action. This action could be in any controller and is not limited to an action in the controller that started the chain reaction. If we’re arguing separation of concerns, then why is the view calling out to a child action in the first place? Further, in order to call out to a child action (using RenderAction()) it has to be completely aware of the data to pass on to it (again using ViewData to extract the correct item(s) or portions of particular item(s). In other words it is coupled to the Child Action. If the child action changes its API (the parameters and/or types of these parameters) all views that call out to this child action that is not supposedly their concern need to change. And in a situation like this that’s pretty much every view in your system! Let’s say for argument sake that the menu controller (and the views and partial views involved) is self sufficient in that it can function completely as expected using information it can get via the Request context (i.e. request path information, query strings, cookies, session, user identity etc.). I would imagine that if the menu system were designed properly, then that is how it would be designed. Well, it so happens, that when you call into a child action, it is a brand new request (it basically goes back out to the entry point of the ASP.NET pipeline and re-enters the pipeline as a brand new request). See Figure 2. The problem with this design is that the context of the original request is completely lost. So the menu controller doesn't get the information it needs. But wait, the original view has to ensure that it sends all of the information it needs when it calls out to it using RenderAction(). Do you see this tsunami rushing back at you? No, ok, If the view has to send the data to the child action, who provides the view with this data? The controller of course! So now every controller and every view in the system are completely aware of and coupled to this supposedly “not your concern” child action. Well, without really being aware, that is. If you look at Figure 2 again, you’ll start to see the flaws in the design by simply looking at the interconnections between the various parts and the flow of control. Compare that with what you see in Figure 3 below\n\nYou'll also notice in Figure 2, that the control hands of the job of rendering the menu to the menu controller (the second controller in the figure). The controller doesn't need to know what information or data to provide the second controller because this controller has the complete request context of the original (the same request really) request. The design shown in Figure 3 solves of the issues cited thus far.\n\nThe Controller is in control\nThe controller has direct access to all views/partial views, master views etc. as instances of classes\nThe Child Action issue doesn't exist\nThere are a few other design issues, that I'll mention briefly but I won't explain the issues in detail. They are:\nRouting - Separation of concerns\nIs setting default values for action method parameters the concern of the routing engine or would you rather, the method implementation take care of that? In .NET 4.0 one can even define default parameter values in method signatures.\nShouldn't on be able to define the routes the controller says it will handle be in the controller rather than in a central location?\nHtml and Code interspersed - Well, you either don't mind it or you can't stand it.\nHowever, the current design forces both. That is, html + code and code + html\nHtmlHelperitis\nAttributeitis\nRubyitis\nNaming conventions\nI guess Rubyitis could be blamed for the naming and loose typing conventions in ASP.NET MVC? It is a well known and accepted norm to name method names as verbs or verb phrases. Similarly names of properties should be noun or noun phrases. So while in a controller action method, when you see something called View. What do you think it is? Is it a property or a method? If it is a method, is it returning something or not? And if it is a method and it is returning something, what is it returning? You can't tell any of this from the name of the method. Yes, it is a name of a method and it returns an ActionResult Now when you’re in a view, you have access to something called View. What do you supposed that is? I'll give you a clue. You could also write: View.Title. Did that help? Or are you even more confused?",
+  "bodyLinks": [
+    {
+      "text": "Code listing 1",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#codeListing1"
+    },
+    {
+      "text": "Code listing 2",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#codeListing2"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240911164124/http://www.matlus.com/quartz-for-aspnet/"
+    },
+    {
+      "text": "code listing 1",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#codeListing1"
+    },
+    {
+      "text": "Code listing 2",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#codeListing2"
+    },
+    {
+      "text": "Figure 3",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#figure3"
+    },
+    {
+      "text": "Figure 1",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#figure1"
+    },
+    {
+      "text": "Code listing 3",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#codeListing2"
+    },
+    {
+      "text": "talked about the issue with that",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#viewmodelsubsettingissue"
+    },
+    {
+      "text": "Figure 2",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#figure2"
+    },
+    {
+      "text": "Figure 2",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#figure2"
+    },
+    {
+      "text": "Figure 3",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#figure3"
+    },
+    {
+      "text": "Figure 2",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#figure2"
+    },
+    {
+      "text": "Figure 3",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#figure3"
+    }
+  ],
+  "code": [
+    "public ActionResult Index()\n{\n  /* If a specific features is selected */\n  if (FeatureId != 0)\n  {\n    var featurePageModel = BusinessModule.GetFeaturePageModel(FeatureId);\n\n    ViewData[\"Title\"] = featurePageModel.CurrentFeature.Title;\n    ViewData[\"AdBoxTopViewBoxTitle\"] = \"More Features\";\n    ViewData[\"AdBoxTopViewModel\"] = featurePageModel.AdBoxModel;\n    ViewData.Model = featurePageModel.CurrentFeature;\n    return View(\"FeatureDisplay\");\n  }\n  else\n  {\n    var featuresAllPageModel = BusinessModule.GetFeaturesAllPageModel();\n\n    ViewData[\"Title\"] = featurePageModel.CurrentFeature.Title;\n    ViewData[\"AdBoxTopViewBoxTitle\"] = \"Highlights\";\n    ViewData[\"AdBoxTopViewModel\"] = featuresAllPageModel.AdBoxModel;\n    ViewData.Model = featuresAllPageModel.Features;\n    return View(\"FeaturesAllView\");\n  }\n}",
+    "protected override void BuildPage(HttpContextBase httpContext, object model)\n{\n  /* If a specific features is selected */\n  if (FeatureId != 0)\n  {\n    var featurePageModel = (FeaturePageModel)model;\n\n    TitleView.Title = featurePageModel.CurrentFeature.Title;\n    AdBoxTopView.BoxTitle = \"More Features\";\n    AdBoxTopView.Model = featurePageModel.AdBoxModel;\n    RegisterView(\"Body\", new FeatureDisplayView(httpContext,\n      this, featurePageModel.CurrentFeature));\n  }\n  else\n  {\n    var featuresAllPageModel = (FeaturesAllPageModel)model;\n\n    TitleView.Title = \"Builder for ASP.NET - Features\";\n    AdBoxTopView.BoxTitle = \"Highlights\";\n    AdBoxTopView.Model = featuresAllPageModel.AdBoxModel;\n    RegisterView(\"Body\", new FeaturesAllView(httpContext, this,\n      featuresAllPageModel.Features));\n  }\n}\n",
+    "  public class HomeController : BaseController\n  {\n    public ActionResult Index()\n    {\n      ViewData[\"Title\"] = \"Movies In Theaters\";\n      ViewData[\"AdvertBoxTopName\"] = \"Popular Channels\";\n      ViewData.Model = BusinessModule.GetHomePageThumbnails();\n\n      ViewEngineResult result = new ViewEngineResult(\n        new RazorViewExt(ControllerContext,\n        \"~/Views/Home/Index.cshtml\",\n        \"~/Views/Shared/LayoutSite.cshtml\"),\n        new RazorViewEngine());      \n      \n      return View(result.View);\n    }\n  }\n\n  public class RazorViewExt : RazorView\n  {\n    public RazorViewExt(ControllerContext controllerContext, string viewPath,\n      string layoutPath)\n      :base(controllerContext, viewPath, layoutPath, false, null) \n    {\n\n    }\n\n    protected override void RenderView(ViewContext viewContext, TextWriter writer,\n      object instance)\n    {\n      /* This view descends from BaseHomeIndexView */\n      BaseHomeIndexView viewInstance = (BaseHomeIndexView)instance;\n      /* viewInstance is now a valid reference to the Home Controller's\n       * Index action's view */\n\n      \n      /* The other way to do this is to treat the parameter \"instance\"\n       * as dynamic */\n      /* this will allow you to set properties and call methods,\n       * but no strong typing */\n      dynamic viewInstanceDyn = instance;\n      viewInstanceDyn.SomeProperty = \"SomeValue\";\n\n      base.RenderView(viewContext, writer, instance);\n    }\n  }\n"
+  ],
+  "header": "ASP.NET MVC Framework Design Problems\nPosted by Shiv Kumar on 27th October, 2010\nCategorized Under: Programming ASP.NET\nTagged With: Design Pattern Framework Design MVC MVC3 \n  ",
+  "html": "<div class=\"articleText\">\n        <p>The MVC design pattern is probably the most misunderstood and misinterpreted design pattern. It’s probably due to this that the various implementations of the MVC design pattern are so different. Another way to look at it is that the MVC design pattern is not the most suitable design pattern for web based applications and as a result, many implementations/interpretations of the MVC design pattern go against the original intent. This article is about what I think are the problems with the design and implementation of Microsoft’s ASP.NET MVC framework. I believe that one design flaw leads to a tower of design flaws and as it relates to the ASP.NET MVC implementation, a couple of design flaws have led to many others. Rather than focus on Microsoft’s implementation of the MVC design pattern, I’ll be focusing on system design related issues (independent of the MVC design pattern) from the perspective of Web Application framework design. <b>Figure 1</b> below shows you the design and control flow of the various parts of the ASP.NET MVC framework. <a name=\"figure1\"></a></p> <p><img style=\"background-image: none; border-right-width: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"MVCAndBuilderDesignPattern\" border=\"0\" alt=\"MVCAndBuilderDesignPattern\" src=\"https://web.archive.org/web/20240911164124im_/http://www.matlus.com/content/uploads/2011/01/MVCAndBuilderDesignPattern_e3b9fae1-b5cc-4557-8214-f7042d037bed.jpg\" width=\"540\" height=\"247\">&nbsp;</p> <h3>Figure 1: ASP.NET MVC Design and control flow</h3> <h2 class=\"header\">List of Problems with ASP.NET MVC</h2> <ol> <li>No access to view or partial view instances  </li><li>ViewData is your loosely typed information carrier  </li><li>Controller is not really in control  </li><li>Child Actions have no sense of the Request Context  </li><li>Views are coupled to controllers  </li><li>Referencing Layout Pages using virtual paths  </li><li>Routing  </li><li>Html interspersed with code and code interspersed with html nightmare  </li><li>Naming conventions </li></ol> <h2 class=\"header\">No Access to View or Partial View instances</h2>I believe this is the first major design flaw (not from an MVC design perspective but rather, just from a framework design perspective) and the cause of a number of other design issues. Because a controller doesn't have access to an instance of the view it enlists, the only way for a controller to communicate information to a view is by using ViewData which is a <code>Dictionary&lt;string, object&gt;</code>. So you can stuff anything you want in there, with each “thing” identified by a string key. The two code listings below show you some code that do the same things but in entirely different ways. <a href=\"#codeListing1\">Code listing 1</a>, shows you the code you'd write in a controller's <code>Action</code> method in ASP.NET MVC and <a href=\"#codeListing2\">Code listing 2</a> shows you the code you'd write in a builder's <code>BuildPage()</code> method in <a href=\"https://web.archive.org/web/20240911164124/http://www.matlus.com/quartz-for-aspnet/\" target=\"_blank\">Quartz for ASP.NET</a>  <div class=\"panel\"><a name=\"codeListing1\"></a><pre class=\"csharpcode\"><span class=\"kwrd\">public</span> ActionResult Index()\n{\n  <span class=\"rem\">/* If a specific features is selected */</span>\n  <span class=\"kwrd\">if</span> (FeatureId != 0)\n  {\n    var featurePageModel = BusinessModule.GetFeaturePageModel(FeatureId);\n\n    ViewData[<span class=\"str\">\"Title\"</span>] = featurePageModel.CurrentFeature.Title;\n    ViewData[<span class=\"str\">\"AdBoxTopViewBoxTitle\"</span>] = <span class=\"str\">\"More Features\"</span>;\n    ViewData[<span class=\"str\">\"AdBoxTopViewModel\"</span>] = featurePageModel.AdBoxModel;\n    ViewData.Model = featurePageModel.CurrentFeature;\n    <span class=\"kwrd\">return</span> View(<span class=\"str\">\"FeatureDisplay\"</span>);\n  }\n  <span class=\"kwrd\">else</span>\n  {\n    var featuresAllPageModel = BusinessModule.GetFeaturesAllPageModel();\n\n    ViewData[<span class=\"str\">\"Title\"</span>] = featurePageModel.CurrentFeature.Title;\n    ViewData[<span class=\"str\">\"AdBoxTopViewBoxTitle\"</span>] = <span class=\"str\">\"Highlights\"</span>;\n    ViewData[<span class=\"str\">\"AdBoxTopViewModel\"</span>] = featuresAllPageModel.AdBoxModel;\n    ViewData.Model = featuresAllPageModel.Features;\n    <span class=\"kwrd\">return</span> View(<span class=\"str\">\"FeaturesAllView\"</span>);\n  }\n}</pre></div>\n<h3>Code Listing 1: Showing ASP.NET MVC code in a Controller Action method</h3><a name=\"codeListing2\"></a>\n<div class=\"mgntop20\"></div>\n<div class=\"panel\"><pre class=\"csharpcode\"><span class=\"kwrd\">protected</span> <span class=\"kwrd\">override</span> <span class=\"kwrd\">void</span> BuildPage(HttpContextBase httpContext, <span class=\"kwrd\">object</span> model)\n{\n  <span class=\"rem\">/* If a specific features is selected */</span>\n  <span class=\"kwrd\">if</span> (FeatureId != 0)\n  {\n    <span class=\"kwrd\">var</span> featurePageModel = (<span class=\"identifier\">FeaturePageModel</span>)model;\n\n    TitleView.Title = featurePageModel.CurrentFeature.Title;\n    AdBoxTopView.BoxTitle = <span class=\"str\">\"More Features\"</span>;\n    AdBoxTopView.Model = featurePageModel.AdBoxModel;\n    RegisterView(<span class=\"str\">\"Body\"</span>, <span class=\"kwrd\">new</span> <span class=\"identifier\">FeatureDisplayView</span>(httpContext,\n      <span class=\"kwrd\">this</span>, featurePageModel.CurrentFeature));\n  }\n  <span class=\"kwrd\">else</span>\n  {\n    var featuresAllPageModel = (<span class=\"identifier\">FeaturesAllPageModel</span>)model;\n\n    TitleView.Title = <span class=\"str\">\"Builder for ASP.NET - Features\"</span>;\n    AdBoxTopView.BoxTitle = <span class=\"str\">\"Highlights\"</span>;\n    AdBoxTopView.Model = featuresAllPageModel.AdBoxModel;\n    RegisterView(<span class=\"str\">\"Body\"</span>, <span class=\"kwrd\">new</span> <span class=\"identifier\">FeaturesAllView</span>(httpContext, <span class=\"kwrd\">this</span>,\n      featuresAllPageModel.Features));\n  }\n}\n</pre></div>\n<h3>Code Listing 2: Showing Builder for ASP.NET code in a Builder's BuildPage() method</h3>The problems with this (<a href=\"#codeListing1\">code listing 1</a>) approach are: \n<ol>\n<li>The controller can’t ensure that the view and all partial views are looking for (and getting) the data it stuffed in ViewData using the same string keys. \n</li><li>By looking at the code in the controller's <code>action</code> method, it is impossible to tell what is really going on, because all you see is a bunch of things added to ViewData, but you can’t tell who is using what (if at all). That is, you can't tell which View and or partial view is using what thing in the dictionary and if this thing (the item in the dictionary) is even the correct type for the other thing (view and/or partial view) using it \n</li><li>No strong typing, and so no type checking, no compile time checks and no IDE navigation help between controller and view's methods and properties, sub classes/super classes \n</li><li>If the same partial view is used by other controllers then these controllers also need to use the same string keys to stuff their data into ViewData. But there is no way to ensure that at the time of writing or reading code \n</li><li>If the API of the partial view changes or the names of the keys a partial view relies upon changes there is no way to tell during development time what pages are going to break. In a strongly typed system like .NET a simple Ctrl + Shift + B would highlight all such breaking changes. But this is not the case with ASP.NET MVC due to the loosely typed ViewData </li></ol>A strongly typed view makes thing slightly better. So you can define a specific ViewModel for your view and now the view can refer to this ViewModel is a strongly typed manner. But what about the partial views? Needless to say that if you analyze all this you'll conclude that: \n<ol>\n<li>The controller has to know about all the requirements of the view, partial views, master views as well as any child actions \n</li><li>Either the view further breaks down your ViewModel into sub viewmodels and hands these sub viewmodels to each of the partial views. Or, every partial view and master view are privy to some other view's data. If you do the former, then the view needs to be aware of what the partial views need (just like the controller needs to know), which means both the controller and view need to know about the partial views, master views and child actions. So that's not any better. Doing the later is not correct either. </li></ol>If the controller had access to instances of the view, partial views, master views etc. then you'd have code like that shown in <a href=\"#codeListing2\">Code listing 2</a>. Doing all of the above *is* the controller's concern. If not, these concerns propagate throughout. Take a look at <a href=\"#figure3\">Figure 3</a>. It shows you the connectivity and control flow of what the picture would look like where the controller has direct access to the view, partial views and master views. \n<h2 class=\"header\">The Controller is not really in control</h2>Take a look at <a href=\"#figure1\">Figure 1</a>, and you’ll see that the controller only really talks to the view (via ViewData nonetheless because it never really has access to an instance of the view). It doesn’t control or seemingly know of the partial views this view may in turn enlist, in order to get the job done. But the controller does need to know of the partial views because it has to pass data and instructions to partial views. One could argue separation of concerns here. But I beg to differ because propagating responsibilities down the line makes a system incoherent, unmanageable and a maintenance/debugging nightmare. You have to follow bread crumbs from the controller to the view and from there to other partial views just to get a sense of what is going on and who is doing it and who is using what piece of data (that the controller put into ViewData). A big part of the reason for this design seems to be that the view needs to be compiled (the html + code) and so an instance of the view can only be realized after compiling. However, since the view does not use a code file, the controller won't know how to reference the view since it doesn't have a class type to reference at the time of compilation. One could get around this by having the view descend from one of your own base classes, that way you can reference the view solely as the base type and so the controller can be compiled. But getting an instance of a view (due to the ViewEngine and compilation model) is not that easy. <a href=\"#codeListing2\">Code listing 3</a>, below shows how you can get an instance of a view. It's pretty convoluted, since it is not the intent of code compilation model. <a name=\"codeListing2\"></a>\n<div class=\"mgntop20\"></div>\n<div class=\"panel\"><pre class=\"csharpcode\">  <span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> HomeController : BaseController\n  {\n    <span class=\"kwrd\">public</span> ActionResult Index()\n    {\n      ViewData[<span class=\"str\">\"Title\"</span>] = <span class=\"str\">\"Movies In Theaters\"</span>;\n      ViewData[<span class=\"str\">\"AdvertBoxTopName\"</span>] = <span class=\"str\">\"Popular Channels\"</span>;\n      ViewData.Model = BusinessModule.GetHomePageThumbnails();\n\n      ViewEngineResult result = <span class=\"kwrd\">new</span> ViewEngineResult(\n        <span class=\"kwrd\">new</span> RazorViewExt(ControllerContext,\n        <span class=\"str\">\"~/Views/Home/Index.cshtml\"</span>,\n        <span class=\"str\">\"~/Views/Shared/LayoutSite.cshtml\"</span>),\n        <span class=\"kwrd\">new</span> RazorViewEngine());      \n      \n      <span class=\"kwrd\">return</span> View(result.View);\n    }\n  }\n\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> RazorViewExt : RazorView\n  {\n    <span class=\"kwrd\">public</span> RazorViewExt(ControllerContext controllerContext, <span class=\"kwrd\">string</span> viewPath,\n      <span class=\"kwrd\">string</span> layoutPath)\n      :<span class=\"kwrd\">base</span>(controllerContext, viewPath, layoutPath, <span class=\"kwrd\">false</span>, <span class=\"kwrd\">null</span>) \n    {\n\n    }\n\n    <span class=\"kwrd\">protected</span> <span class=\"kwrd\">override</span> <span class=\"kwrd\">void</span> RenderView(ViewContext viewContext, TextWriter writer,\n      <span class=\"kwrd\">object</span> instance)\n    {\n      <span class=\"rem\">/* This view descends from BaseHomeIndexView */</span>\n      BaseHomeIndexView viewInstance = (BaseHomeIndexView)instance;\n      <span class=\"rem\">/* viewInstance is now a valid reference to the Home Controller's</span>\n<span class=\"rem\">       * Index action's view */</span>\n\n      \n      <span class=\"rem\">/* The other way to do this is to treat the parameter \"instance\"</span>\n<span class=\"rem\">       * as dynamic */</span>\n      <span class=\"rem\">/* this will allow you to set properties and call methods,</span>\n<span class=\"rem\">       * but no strong typing */</span>\n      dynamic viewInstanceDyn = instance;\n      viewInstanceDyn.SomeProperty = <span class=\"str\">\"SomeValue\"</span>;\n\n      <span class=\"kwrd\">base</span>.RenderView(viewContext, writer, instance);\n    }\n  }\n</pre></div>\n<h3>Code Listing 3: Getting a reference to an instance of a View</h3>If you created instances of your own classes that implemented <code>IView</code>, then you get all the benefits and none of the demerits. That tells me that the current design (and inability to program in a strongly typed manner and all the other things we've been talking about so far) are due to one or more of the following: \n<ol>\n<li>A design limitation in the way the compilation model/ViewEngine works \n</li><li>They gave up code files for views (they were there initially) without realizing the down side \n</li><li>Or, that's how they intended the design to be. </li></ol>\n<h2 class=\"header\">The View is in control</h2>One could argue that (in the ASP.NET MVC design) the view is really in control. Well, at least insofar as the partial views and passing data on to them is concerned. The issues with this reasoning are: \n<ol>\n<li>For a view to be in control, the controller needs to know what the view needs, since the view doesn't get its data directly from the model. So once again, concerns have been propagated rather than being confined \n</li><li>The view is not really in control of the partial views it enlists. The only way it can communicate to a partial view is – you guessed it, ViewData (or a subset of a ViewModel, but we already <a href=\"#viewmodelsubsettingissue\">talked about the issue with that</a>) </li></ol>It’s almost as if no one wants to take responsibility and so everyone needs to be concerned! \n<h2 class=\"header\">RenderAction() / Child Actions</h2>\n<p>Let me start by stating the problem <code>RenderAction()</code> is trying to solve. Imagine that in your page, you have a menu system. Typically, menu systems are complex because they are contextual and they depend on the user and her access rights and the page she is on. As a result, one could argue that the menu is not the concern of the view. Ok, I could argue either way, but I’ll go along with this argument. <a name=\"figure2\"></a></p>\n<p><img style=\"background-image: none; border-right-width: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"MVCRenderActionFlow\" border=\"0\" alt=\"MVCRenderActionFlow\" src=\"https://web.archive.org/web/20240911164124im_/http://www.matlus.com/content/uploads/2011/01/MVCRenderActionFlow_e57146e4-8a59-408e-a383-df77ba6c3ca9.jpg\" width=\"540\" height=\"247\">&nbsp;</p>\n<h3>Figure 2: Showing the control flow for <code>RenderAction()</code></h3>\n<p>So the view enlists the services of the Child Action (that is <code>RenderAction()</code> really calls out to another action. This action could be in any controller and is not limited to an action in the controller that started the chain reaction. If we’re arguing separation of concerns, then why is the view calling out to a child action in the first place? Further, in order to call out to a child action (using <code>RenderAction()</code>) it has to be completely aware of the data to pass on to it (again using ViewData to extract the correct item(s) or portions of particular item(s). In other words it is coupled to the Child Action. If the child action changes its API (the parameters and/or types of these parameters) all views that call out to this child action that is not supposedly their concern need to change. And in a situation like this that’s pretty much every view in your system! Let’s say for argument sake that the menu controller (and the views and partial views involved) is self sufficient in that it can function completely as expected using information it can get via the Request context (i.e. request path information, query strings, cookies, session, user identity etc.). I would imagine that if the menu system were designed properly, then that is how it would be designed. Well, it so happens, that when you call into a child action, it is a brand new request (it basically goes back out to the entry point of the ASP.NET pipeline and re-enters the pipeline as a brand new request). See <a href=\"#figure2\">Figure 2</a>. The problem with this design is that the context of the original request is completely lost. So the menu controller doesn't get the information it needs. But wait, the original view has to ensure that it sends all of the information it needs when it calls out to it using <code>RenderAction()</code>. Do you see this tsunami rushing back at you? No, ok, If the view has to send the data to the child action, who provides the view with this data? The controller of course! So now every controller and every view in the system are completely aware of and coupled to this supposedly “not your concern” child action. Well, without really being aware, that is. If you look at <a href=\"#figure2\">Figure 2</a> again, you’ll start to see the flaws in the design by simply looking at the interconnections between the various parts and the flow of control. Compare that with what you see in <a href=\"#figure3\">Figure 3</a> below <a name=\"figure3\"></a></p>\n<p><img style=\"background-image: none; border-right-width: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"BuilderForASPNETBuildByComposition\" border=\"0\" alt=\"BuilderForASPNETBuildByComposition\" src=\"https://web.archive.org/web/20240911164124im_/http://www.matlus.com/content/uploads/2011/01/BuilderForASPNETBuildByComposition_bda2425a-9724-4a0b-9925-76483deadd05.jpg\" width=\"547\" height=\"312\"></p>\n<p>You'll also notice in <a href=\"#figure2\">Figure 2</a>, that the control hands of the job of rendering the menu to the menu controller (the second controller in the figure). The controller doesn't need to know what information or data to provide the second controller because this controller has the complete request context of the original (the same request really) request. The design shown in <a href=\"#figure3\">Figure 3</a> solves of the issues cited thus far. </p>\n<ol>\n<li>The Controller is in control \n</li><li>The controller has direct access to all views/partial views, master views etc. as instances of classes \n</li><li>The Child Action issue doesn't exist </li></ol>There are a few other design issues, that I'll mention briefly but I won't explain the issues in detail. They are: \n<ol>\n<li>Routing - Separation of concerns \n<ul>\n<li>Is setting default values for action method parameters the concern of the routing engine or would you rather, the method implementation take care of that? In .NET 4.0 one can even define default parameter values in method signatures. \n</li><li>Shouldn't on be able to define the routes the controller says it will handle be in the controller rather than in a central location? </li></ul>\n</li><li>Html and Code interspersed - Well, you either don't mind it or you can't stand it. \n<ul>\n<li>However, the current design forces both. That is, html + code and code + html </li></ul>\n</li><li>HtmlHelperitis \n</li><li>Attributeitis \n</li><li>Rubyitis </li></ol>\n<h2 class=\"header\">Naming conventions</h2>I guess Rubyitis could be blamed for the naming and loose typing conventions in ASP.NET MVC? It is a well known and accepted norm to name method names as verbs or verb phrases. Similarly names of properties should be noun or noun phrases. So while in a controller action method, when you see something called <code>View</code>. What do you think it is? Is it a property or a method? If it is a method, is it returning something or not? And if it is a method and it is returning something, what is it returning? You can't tell any of this from the name of the method. Yes, it is a name of a method and it returns an <code>ActionResult</code> Now when you’re in a view, you have access to something called <code>View</code>. What do you supposed that is? I'll give you a clue. You could also write: <code>View.Title</code>. Did that help? Or are you even more confused? \n  \n        </div>",
+  "images": [
+    {
+      "alt": "MVCAndBuilderDesignPattern",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240911164124im_/http://www.matlus.com/content/uploads/2011/01/MVCAndBuilderDesignPattern_e3b9fae1-b5cc-4557-8214-f7042d037bed.jpg"
+    },
+    {
+      "alt": "MVCRenderActionFlow",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240911164124im_/http://www.matlus.com/content/uploads/2011/01/MVCRenderActionFlow_e57146e4-8a59-408e-a383-df77ba6c3ca9.jpg"
+    },
+    {
+      "alt": "BuilderForASPNETBuildByComposition",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240911164124im_/http://www.matlus.com/content/uploads/2011/01/BuilderForASPNETBuildByComposition_bda2425a-9724-4a0b-9925-76483deadd05.jpg"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240911164124/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "ASP.NET",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/category/programming/asp-net/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240911164124/https://twitter.com/share?url=http%3a%2f%2fmatlus.com%2fproblems-with-asp-net-mvc-framework-design%2f&text=ASP.NET+MVC+Framework+Design+Problems"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240911164124/http://www.facebook.com/sharer.php?u=http%3a%2f%2fmatlus.com%2fproblems-with-asp-net-mvc-framework-design%2f&t=ASP.NET+MVC+Framework+Design+Problems"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240911164124/https://plus.google.com/share?url=http%3a%2f%2fmatlus.com%2fproblems-with-asp-net-mvc-framework-design%2f&text=ASP.NET+MVC+Framework+Design+Problems"
+    },
+    {
+      "text": "Code listing 1",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#codeListing1"
+    },
+    {
+      "text": "Code listing 2",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#codeListing2"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240911164124/http://www.matlus.com/quartz-for-aspnet/"
+    },
+    {
+      "text": "code listing 1",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#codeListing1"
+    },
+    {
+      "text": "Code listing 2",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#codeListing2"
+    },
+    {
+      "text": "Figure 3",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#figure3"
+    },
+    {
+      "text": "Figure 1",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#figure1"
+    },
+    {
+      "text": "Code listing 3",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#codeListing2"
+    },
+    {
+      "text": "talked about the issue with that",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#viewmodelsubsettingissue"
+    },
+    {
+      "text": "Figure 2",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#figure2"
+    },
+    {
+      "text": "Figure 2",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#figure2"
+    },
+    {
+      "text": "Figure 3",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#figure3"
+    },
+    {
+      "text": "Figure 2",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#figure2"
+    },
+    {
+      "text": "Figure 3",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/#figure3"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240911164124/http://matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240911164124/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "ASP.NET MVC Framework Design Problems",
+  "url": "https://web.archive.org/web/20240911164124/http://matlus.com/problems-with-asp-net-mvc-framework-design/"
+}

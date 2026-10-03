@@ -1,0 +1,703 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>HttpWebRequest - Asynchronous Programming Model/Task.Factory.FromAsyc</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>HttpWebRequest - Asynchronous Programming Model/Task.Factory.FromAsyc</h1><p class="recovery">HttpWebRequest - Asynchronous Programming Model/Task.Factory.FromAsyc<br>Posted by Shiv Kumar on 23rd February, 2011<br>Categorized Under: Programming C#<br>Tagged With: Asynchronous Http Performance <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20240809051734/http://www.matlus.com/httpwebrequest-asynchronous-programming">this Wayback capture</a>.</p><div class="articleText">
+        <p>The Asynchronous Programming Model (or APM) has been around since .NET 1.1 and is still (as of .NET 4.0) the best/recommended solution for asynchronous I/O. Many people go down the route of using a multi-threaded approach to try get speedup when the workload is I/O bound. Using multiple threads to do I/O bound tasks such as Disk I/O and Network I/O, won't (in most cases) give you any speed up and in fact could end up hurting performance. </p> <p>If the workload is compute bound (rather than I/O bound) then it makes complete sense to use multiple threads (provided you have multiple cores and the work is fairly long running and so justifies the overhead of spawning and managing multiple threads), as discussed in this post <a title="Data Parallel – Parallel Programming in C#/.NET" href="https://web.archive.org/web/20240809051734/http://www.matlus.com/data-parallel-parallel-programming-in-net/" target="_blank">Data Parallel – Parallel Programming in C#/.NET</a></p> <p>Using the APM is not the easiest thing to do primarily because it works with callbacks so you start in one method in your code and you get the result in another method. So ideally you should re-think you design so as to work in an asynchronous workflow pattern rather than a synchronous pattern.</p> <p>In this post I’m going to show you a few ways in which you can use the HttpWebRequest class to make multiple http requests while getting really good performance/throughput. I strongly advice against using threads for I/O bound work when you're after performance and throughput. Of course in some cases, you could be using the synchronous option or the synchronous option with threads if I/O throughput is not a big concern. Or you could use a combination of threads and asynchronous work. It all depends.</p> <p>When working with Http we invariably have different needs in different projects. Sometimes we:</p> <ol> <li>Need to make multiple calls to some endpoint and wait till each one is done before we can process all of the responses.  </li><li>Need to make multiple calls but have to wait for each one to complete because the response of one feeds into the request of the next.  </li><li>Need to make multiple calls to some endpoint and can continue processing the responses as soon as we receive them (the ideal situation for an Asynchronous work flow).  </li><li>All of the above could be using either the Http GET or POST methods. In the case of the Http POST method there is an additional asynchronous call to be made so it adds a bit more complexity.<br></li></ol> <p>In this post I’ll show you various options to accomplish these kinds of things using the APM as well as Tasks (System.Threading.Tasks.Task).</p> <p>The HttpWebRequest makes it particularly difficult to use the APM because if you want to use it (correctly) for POST methods in an asynchronous manner it involves calling two methods asynchronously back to back and thus also involves 2 separate callback methods.</p> <p>First let’s take a look at how we’d use the HttpWebRequest in an asynchronous manner, with the assumption that your program logic (or workflow) is designed to be asynchronous as well. I’m intentionally not using lambdas here for those of you who either don’t like to use lambdas or get confused by them.</p> <p>In the code listing below, I present the HttpSocket class that essentially makes it really simple to make asynchronous Http calls. Note that the reason I've presented a class here is because there are some common methods that the primary methods (listed below) use and so I thought it best to present 4 of these methods in the form of a class.</p> <p>The class is a static class and essentially a wrapper that provides some helper methods as well. This class has 4 public methods of interest to this discussion, namely:</p> <ol> <li>PostAsync  </li><li>GetAsync  </li><li>PostAsyncTask  </li><li>GetAsyncTask</li></ol> <p>The <code>PostAsync</code> and <code>GetAsync</code> methods use the Begin/End pairs of methods available in the <code>HttpWebRequest</code> class. While the <code>PostAsyncTask</code> and <code>GetAsyncTask</code> methods use <code>Tasks</code> (new in .NET 4.0) to get the job done. In particular, they use the <code>Task.Factory.FromAsync</code> method.</p> <p>From a performance perspective, both styles perform the same, but the <code>PostAsync</code> and <code>GetAsync</code> methods use less resources and this could be beneficial in large production systems where you make tons of http calls out to some other http service.</p> <p>&nbsp;</p><a name="codelisting1"></a> <div class="panel code content/images/csharp.png" title="The HttpSocket class" id="code_79829"><div class="codeHeading" style="background-image: url(/web/20240809051734/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">The HttpSocket class</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode"><span class="kwrd">using</span> System;
+<span class="kwrd">using</span> System.Collections.Generic;
+<span class="kwrd">using</span> System.Linq;
+<span class="kwrd">using</span> System.Text;
+<span class="kwrd">using</span> System.Net;
+<span class="kwrd">using</span> System.Collections.Specialized;
+<span class="kwrd">using</span> System.IO;
+<span class="kwrd">using</span> System.Threading;
+<span class="kwrd">using</span> System.Threading.Tasks;
+<span class="kwrd">using</span> System.Runtime.Serialization.Json;
+
+<span class="kwrd">namespace</span> ConsoleApplication3
+{
+  <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">class</span> HttpSocket
+  {
+    <span class="kwrd">static</span> HttpWebRequest CreateHttpWebRequest(<span class="kwrd">string</span> url, <span class="kwrd">string</span> httpMethod, <span class="kwrd">string</span> contentType)
+    {
+      var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
+      httpWebRequest.ContentType = contentType;
+      httpWebRequest.Method = httpMethod;
+      <span class="kwrd">return</span> httpWebRequest;
+    }
+
+    <span class="kwrd">static</span> <span class="kwrd">byte</span>[] GetRequestBytes(NameValueCollection postParameters)
+    {
+      <span class="kwrd">if</span> (postParameters == <span class="kwrd">null</span> || postParameters.Count == 0)
+        <span class="kwrd">return</span> <span class="kwrd">new</span> <span class="kwrd">byte</span>[0];
+      var sb = <span class="kwrd">new</span> StringBuilder();
+      <span class="kwrd">foreach</span> (var key <span class="kwrd">in</span> postParameters.AllKeys)
+        sb.Append(key + <span class="str">"="</span> + postParameters[key] + <span class="str">"&amp;"</span>);
+      sb.Length = sb.Length - 1;
+      <span class="kwrd">return</span> Encoding.UTF8.GetBytes(sb.ToString());
+    }
+
+    <span class="kwrd">static</span> <span class="kwrd">void</span> BeginGetRequestStreamCallback(IAsyncResult asyncResult)
+    {
+      Stream requestStream = <span class="kwrd">null</span>;
+      HttpWebRequestAsyncState asyncState = <span class="kwrd">null</span>;
+      <span class="kwrd">try</span>
+      {
+        asyncState = (HttpWebRequestAsyncState)asyncResult.AsyncState;
+        requestStream = asyncState.HttpWebRequest.EndGetRequestStream(asyncResult);
+        requestStream.Write(asyncState.RequestBytes, 0, asyncState.RequestBytes.Length);
+        requestStream.Close();
+        asyncState.HttpWebRequest.BeginGetResponse(BeginGetResponseCallback,
+          <span class="kwrd">new</span> HttpWebRequestAsyncState
+          {
+            HttpWebRequest = asyncState.HttpWebRequest,
+            ResponseCallback = asyncState.ResponseCallback,
+            State = asyncState.State
+          });
+      }
+      <span class="kwrd">catch</span> (Exception ex)
+      {
+        <span class="kwrd">if</span> (asyncState != <span class="kwrd">null</span>)
+          asyncState.ResponseCallback(<span class="kwrd">new</span> HttpWebRequestCallbackState(ex));
+        <span class="kwrd">else</span>
+          <span class="kwrd">throw</span>;
+      }
+      <span class="kwrd">finally</span>
+      {
+        <span class="kwrd">if</span> (requestStream != <span class="kwrd">null</span>)
+          requestStream.Close();
+      }
+    }
+
+    <span class="kwrd">static</span> <span class="kwrd">void</span> BeginGetResponseCallback(IAsyncResult asyncResult)
+    {
+      WebResponse webResponse = <span class="kwrd">null</span>;
+      Stream responseStream = <span class="kwrd">null</span>;
+      HttpWebRequestAsyncState asyncState = <span class="kwrd">null</span>;
+      <span class="kwrd">try</span>
+      {
+        asyncState = (HttpWebRequestAsyncState)asyncResult.AsyncState;
+        webResponse = asyncState.HttpWebRequest.EndGetResponse(asyncResult);
+        responseStream = webResponse.GetResponseStream();
+        var webRequestCallbackState = <span class="kwrd">new</span> HttpWebRequestCallbackState(responseStream, asyncState.State);
+        asyncState.ResponseCallback(webRequestCallbackState);
+        responseStream.Close();
+        responseStream = <span class="kwrd">null</span>;
+        webResponse.Close();
+        webResponse = <span class="kwrd">null</span>;
+      }
+      <span class="kwrd">catch</span> (Exception ex)
+      {
+        <span class="kwrd">if</span> (asyncState != <span class="kwrd">null</span>)
+          asyncState.ResponseCallback(<span class="kwrd">new</span> HttpWebRequestCallbackState(ex));
+        <span class="kwrd">else</span>
+          <span class="kwrd">throw</span>;
+      }
+      <span class="kwrd">finally</span>
+      {
+        <span class="kwrd">if</span> (responseStream != <span class="kwrd">null</span>)
+          responseStream.Close();
+        <span class="kwrd">if</span> (webResponse != <span class="kwrd">null</span>)
+          webResponse.Close();
+      }
+    }
+
+    <span class="rem">/// &lt;summary&gt;</span>
+    <span class="rem">/// If the response from a remote server is in text form</span>
+    <span class="rem">/// you can use this method to get the text from the ResponseStream</span>
+    <span class="rem">/// This method Disposes the stream before it returns</span>
+    <span class="rem">/// &lt;/summary&gt;</span>
+    <span class="rem">/// &lt;param name="responseStream"&gt;The responseStream that was provided in the callback delegate's HttpWebRequestCallbackState parameter&lt;/param&gt;</span>
+    <span class="rem">/// &lt;returns&gt;&lt;/returns&gt;</span>
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">string</span> GetResponseText(Stream responseStream)
+    {
+      <span class="kwrd">using</span> (var reader = <span class="kwrd">new</span> StreamReader(responseStream))
+      {
+        <span class="kwrd">return</span> reader.ReadToEnd();
+      }
+    }
+
+    <span class="rem">/// &lt;summary&gt;</span>
+    <span class="rem">/// This method uses the DataContractJsonSerializer to</span>
+    <span class="rem">/// Deserialize the contents of a stream to an instance</span>
+    <span class="rem">/// of an object of type T.</span>
+    <span class="rem">/// This method disposes the stream before returning</span>
+    <span class="rem">/// &lt;/summary&gt;</span>
+    <span class="rem">/// &lt;typeparam name="T"&gt;&lt;/typeparam&gt;</span>
+    <span class="rem">/// &lt;param name="stream"&gt;A Stream. Typically the ResponseStream&lt;/param&gt;</span>
+    <span class="rem">/// &lt;returns&gt;An instance of an object of type T&lt;/returns&gt;</span>
+    <span class="kwrd">static</span> T DeSerializeToJson&lt;T&gt;(Stream stream)
+    {
+      <span class="kwrd">using</span> (stream)
+      {
+        var deserializer = <span class="kwrd">new</span> DataContractJsonSerializer(<span class="kwrd">typeof</span>(T));
+        <span class="kwrd">return</span> (T)deserializer.ReadObject(stream);
+      }
+    }
+
+    <span class="rem">/// &lt;summary&gt;</span>
+    <span class="rem">/// This method does an Http POST sending any post parameters to the url provided</span>
+    <span class="rem">/// &lt;/summary&gt;</span>
+    <span class="rem">/// &lt;param name="url"&gt;The url to make an Http POST to&lt;/param&gt;</span>
+    <span class="rem">/// &lt;param name="postParameters"&gt;The form parameters if any that need to be POSTed&lt;/param&gt;</span>
+    <span class="rem">/// &lt;param name="responseCallback"&gt;The callback delegate that should be called when the response returns from the remote server&lt;/param&gt;</span>
+    <span class="rem">/// &lt;param name="state"&gt;Any state information you need to pass along to be available in the callback method when it is called&lt;/param&gt;</span>
+    <span class="rem">/// &lt;param name="contentType"&gt;The Content-Type of the Http request&lt;/param&gt;</span>
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> PostAsync(<span class="kwrd">string</span> url, NameValueCollection postParameters,
+      Action&lt;HttpWebRequestCallbackState&gt; responseCallback, <span class="kwrd">object</span> state = <span class="kwrd">null</span>,
+      <span class="kwrd">string</span> contentType = <span class="str">"application/x-www-form-urlencoded"</span>)
+    {
+      var httpWebRequest = CreateHttpWebRequest(url, <span class="str">"POST"</span>, contentType);
+      var requestBytes = GetRequestBytes(postParameters);
+      httpWebRequest.ContentLength = requestBytes.Length;
+
+      httpWebRequest.BeginGetRequestStream(BeginGetRequestStreamCallback,
+        <span class="kwrd">new</span> HttpWebRequestAsyncState()
+        {
+          RequestBytes = requestBytes,
+          HttpWebRequest = httpWebRequest,
+          ResponseCallback = responseCallback,  
+          State = state
+        });
+    }
+
+    <span class="rem">/// &lt;summary&gt;</span>
+    <span class="rem">/// This method does an Http GET to the provided url and calls the responseCallback delegate</span>
+    <span class="rem">/// providing it with the response returned from the remote server.</span>
+    <span class="rem">/// &lt;/summary&gt;</span>
+    <span class="rem">/// &lt;param name="url"&gt;The url to make an Http GET to&lt;/param&gt;</span>
+    <span class="rem">/// &lt;param name="responseCallback"&gt;The callback delegate that should be called when the response returns from the remote server&lt;/param&gt;</span>
+    <span class="rem">/// &lt;param name="state"&gt;Any state information you need to pass along to be available in the callback method when it is called&lt;/param&gt;</span>
+    <span class="rem">/// &lt;param name="contentType"&gt;The Content-Type of the Http request&lt;/param&gt;</span>
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> GetAsync(<span class="kwrd">string</span> url, Action&lt;HttpWebRequestCallbackState&gt; responseCallback,
+      <span class="kwrd">object</span> state = <span class="kwrd">null</span>, <span class="kwrd">string</span> contentType = <span class="str">"application/x-www-form-urlencoded"</span>)
+    {
+      var httpWebRequest = CreateHttpWebRequest(url, <span class="str">"GET"</span>, contentType);
+
+      httpWebRequest.BeginGetResponse(BeginGetResponseCallback,
+        <span class="kwrd">new</span> HttpWebRequestAsyncState()
+        {
+          HttpWebRequest = httpWebRequest,
+          ResponseCallback = responseCallback,
+          State = state
+        });
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> PostAsyncTask(<span class="kwrd">string</span> url, NameValueCollection postParameters,
+      Action&lt;HttpWebRequestCallbackState&gt; responseCallback, <span class="kwrd">object</span> state = <span class="kwrd">null</span>,
+      <span class="kwrd">string</span> contentType = <span class="str">"application/x-www-form-urlencoded"</span>)
+    {
+      var httpWebRequest = CreateHttpWebRequest(url, <span class="str">"POST"</span>, contentType);
+      var requestBytes = GetRequestBytes(postParameters);
+      httpWebRequest.ContentLength = requestBytes.Length;
+
+      var asyncState = <span class="kwrd">new</span> HttpWebRequestAsyncState()
+      {
+        RequestBytes = requestBytes,
+        HttpWebRequest = httpWebRequest,
+        ResponseCallback = responseCallback,
+        State = state
+      };
+
+      Task.Factory.FromAsync&lt;Stream&gt;(httpWebRequest.BeginGetRequestStream,
+        httpWebRequest.EndGetRequestStream, asyncState, TaskCreationOptions.None)
+        .ContinueWith&lt;HttpWebRequestAsyncState&gt;(task =&gt;
+        {
+          var asyncState2 = (HttpWebRequestAsyncState)task.AsyncState;
+          <span class="kwrd">using</span> (var requestStream = task.Result)
+          {
+            requestStream.Write(asyncState2.RequestBytes, 0, asyncState2.RequestBytes.Length);
+          }          
+          <span class="kwrd">return</span> asyncState2;
+        })
+        .ContinueWith(task =&gt;
+        {
+          var httpWebRequestAsyncState2 = (HttpWebRequestAsyncState)task.Result;
+          var hwr2 = httpWebRequestAsyncState2.HttpWebRequest;
+          Task.Factory.FromAsync&lt;WebResponse&gt;(hwr2.BeginGetResponse,
+            hwr2.EndGetResponse, httpWebRequestAsyncState2, TaskCreationOptions.None)
+            .ContinueWith(task2 =&gt;
+            {
+              WebResponse webResponse = <span class="kwrd">null</span>;
+              Stream responseStream = <span class="kwrd">null</span>;
+              <span class="kwrd">try</span>
+              {
+                var asyncState3 = (HttpWebRequestAsyncState)task2.AsyncState;
+                webResponse = task2.Result;
+                responseStream = webResponse.GetResponseStream();
+                responseCallback(<span class="kwrd">new</span> HttpWebRequestCallbackState(responseStream, asyncState3));
+              }
+              <span class="kwrd">finally</span>
+              {
+                <span class="kwrd">if</span> (responseStream != <span class="kwrd">null</span>)
+                  responseStream.Close();
+                <span class="kwrd">if</span> (webResponse != <span class="kwrd">null</span>)
+                  webResponse.Close();
+              }
+            });
+        });
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> GetAsyncTask(<span class="kwrd">string</span> url, Action&lt;HttpWebRequestCallbackState&gt; responseCallback,
+      <span class="kwrd">object</span> state = <span class="kwrd">null</span>, <span class="kwrd">string</span> contentType = <span class="str">"application/x-www-form-urlencoded"</span>)
+    {
+      var httpWebRequest = CreateHttpWebRequest(url, <span class="str">"GET"</span>, contentType);
+      Task.Factory.FromAsync&lt;WebResponse&gt;(httpWebRequest.BeginGetResponse,
+        httpWebRequest.EndGetResponse, <span class="kwrd">null</span>).ContinueWith(task =&gt;
+          {
+            var webResponse = task.Result;
+            var responseStream = webResponse.GetResponseStream();
+            responseCallback(<span class="kwrd">new</span> HttpWebRequestCallbackState(webResponse.GetResponseStream(), state));
+            responseStream.Close();
+            webResponse.Close();
+          });
+    }
+  }
+
+  <span class="rem">/// &lt;summary&gt;</span>
+  <span class="rem">/// This class is used to pass on "state" between each Begin/End call</span>
+  <span class="rem">/// It also carries the user supplied "state" object all the way till</span>
+  <span class="rem">/// the end where is then hands off the state object to the</span>
+  <span class="rem">/// HttpWebRequestCallbackState object.</span>
+  <span class="rem">/// &lt;/summary&gt;</span>
+  <span class="kwrd">class</span> HttpWebRequestAsyncState
+  {
+    <span class="kwrd">public</span> <span class="kwrd">byte</span>[] RequestBytes { get; set; }
+    <span class="kwrd">public</span> HttpWebRequest HttpWebRequest { get; set; }
+    <span class="kwrd">public</span> Action&lt;HttpWebRequestCallbackState&gt; ResponseCallback { get; set; }
+    <span class="kwrd">public</span> Object State { get; set; }
+  }
+
+  <span class="rem">/// &lt;summary&gt;</span>
+  <span class="rem">/// This class is passed on to the user supplied callback method</span>
+  <span class="rem">/// as a parameter. If there was an exception during the process</span>
+  <span class="rem">/// then the Exception property will not be null and will hold</span>
+  <span class="rem">/// a reference to the Exception that was raised.</span>
+  <span class="rem">/// The ResponseStream property will be not null in the case of</span>
+  <span class="rem">/// a sucessful request/response cycle. Use this stream to</span>
+  <span class="rem">/// exctract the response.</span>
+  <span class="rem">/// &lt;/summary&gt;</span>
+  <span class="kwrd">public</span> <span class="kwrd">class</span> HttpWebRequestCallbackState
+  {
+    <span class="kwrd">public</span> Stream ResponseStream { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> Exception Exception { get; <span class="kwrd">private</span> set; }
+    <span class="kwrd">public</span> Object State { get; set; }
+
+    <span class="kwrd">public</span> HttpWebRequestCallbackState(Stream responseStream, <span class="kwrd">object</span> state)
+    {
+      ResponseStream = responseStream;
+      State = state;
+    }
+
+    <span class="kwrd">public</span> HttpWebRequestCallbackState(Exception exception)
+    {
+      Exception = exception;
+    }
+  }
+}</pre>
+<h3>Code List 1: Showing the Complete HttpSocket class</h3></div>
+<h2>Using HttpWebRequests in Asynchronous Workflows</h2>
+<p>Using any of the methods in the HttpSocket class for asynchronous workflows is really simple. You call one of the Postxxx or Getxxx methods passing it some parameters and the callback delegate as shown in the <a href="#codelisting2">Code Listing 2</a> below.</p>
+<p>In this case we're using the PostAsyn method. We send in the url and since it is a POST (rather than a GET) we send in the postParameters as well. Each of these methods also requires a callback delegate that is called back with the response of the http call. In the example below we've used a lambda as the callback. The response call back is an</p><pre class="csharpcode"><span class="identifier">Action</span>&lt;<span class="identifier">HttpWebRequestCallbackState</span>&gt;
+</pre>
+<p>&nbsp;</p>
+<p>The <code>HttpWebRequestCallbackState</code> is a custom class that holds a bunch of state information including the Response Stream (that contains the response). You can find that class in <a href="#codelisting1">Code Listing 1</a> above. </p>
+<p>What's important to realize here is that the loop finishes almost instantly. We don't block the main thread and we're not spawning additional threads. The callback will be called for each response, as and when a response is received and we simply continue on with processing the response as we see fit. In the example, we're simply writing out the response to the console. Another thing to keep in mind is that the responses will not arrive in the order in which requests were made. This is quite normal and if our workflow is truly asynchronous then this shouldn't be a problem.</p>
+<div class="panel">
+<h3 class="note">A Note ServicePointManager</h3>If you are making multiple http requests to the same domain, you'll find that only two concurrent requests are actually being made. This is because the DefaultConnectionLimit (per domain) is 2. If you're making multiple concurrent requests to different domains, then you don't need to modify this limit. If you do modify the limit (because you're making multiple calls to the same domain) then be sure to test various numbers to see what works best. Please also keep in mind that the server being called will be heavily loaded and if the work the server side needs to do is "long running", then you could potentially stress the server more than it can handle, or because you're stressing the server the performance of your application starts to degrade rather than improve. </div>
+<p>&nbsp;<a name="codelisting2"></a></p>
+<div class="panel code content/images/csharp.png" title="Simple useage scenario with Asynchronous Workflow" id="code_22258"><div class="codeHeading" style="background-image: url(/web/20240809051734/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Simple useage scenario with Asynchronous Workflow</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">      <span class="identifier">ServicePointManager</span>.DefaultConnectionLimit = 50;
+      <span class="kwrd">var</span> url = <span class="str">"http://localhost/HttpTaskServer/default.aspx"</span>;
+
+      var iterations = 1000;
+      <span class="kwrd">for</span> (<span class="kwrd">int</span> i = 0; i &lt; iterations; i++)
+      {
+        var postParameters = <span class="kwrd">new</span> NameValueCollection();
+        postParameters.Add(<span class="str">"data"</span>, i.ToString());
+        HttpSocket.PostAsync(url, postParameters, callbackState =&gt;
+          {
+            <span class="kwrd">if</span> (callbackState.Exception != <span class="kwrd">null</span>)
+              <span class="kwrd">throw</span> callbackState.Exception;
+            Console.WriteLine(HttpSocket.GetResponseText(callbackState.ResponseStream));
+          });
+      }
+</pre>
+<h3>Code Listing 2: Using the PostAsync method of the HttpSocket class</h3></div>
+<h2>Making Multiple Concurrent Requests and Waiting on All</h2>
+<p>Sometimes, we can't use an asynchronous workflow but we'd like to fire multiple requests as fast as possible and then wait till all jobs have complete before we continue on to process the responses. There are many ways in which to tackle this kind of problem. In this post we'll be looking at 5 different ways in which we can accomplish this kind of thing.</p>
+<p>Each one has it's merits (ease of use versus complexity) and performance and resource utilization metrics.</p>
+<div class="panel">
+<h3 class="note">Using the techniques presented here for other kinds of work</h3>
+<p>The techniques shown here can be used for work other than Http requests such as:</p>
+<ul>
+<li>Sending bulk Emails 
+</li><li>Processing Files on a disk 
+</li><li>Sending/Receiving files over Ftp 
+</li><li>Pretty much and I/O bound work</li></ul>
+<p>If you do use these techniques for other work, be sure to do your own testing if performance/throughput is a primary concern. If performance is not a major criteria, then any one of these methods can be used.</p></div>
+<ol>
+<li>Use Tasks to make synchronous Http requests and wait on all tasks to complete before proceeding. The method <code>CallHttpWebRequestTaskAndWaitOnAll</code> in <a href="#codelisting4">Code Listing 4</a> below demonstrates this. 
+</li><li>We could spawn <code><i>n</i></code> number of threads and in each thread make synchronous Http requests and as soon as a thread completes, spawn another thread and keep doing this till all work items have finished. In other word, we put a cap on the number of threads we spawn and therefore the number of threads executing at any given point in time but ensure that at all times there are n threads busy doing work rather than sitting idle. The method <code>CallHttpWebRequestSyncAndWaitOnAll</code> in <a href="#codelisting5">Code Listing 5</a> below demonstrates this. 
+</li><li>We could do the actual Http requests asynchronously and somehow collect the results of each response as they complete while blocking the main thread till all asynchronous jobs have completed. This technique is demonstrated in the method <code>CallHttpWebRequestAsyncAndWaitOnAll</code> in <a href="#codelisting6">Code Listing 6</a> below. 
+</li><li>A variation on the previous theme is that we could use a combination of a parallel programming technique called <a href="https://web.archive.org/web/20240809051734/http://www.matlus.com/data-parallel-parallel-programming-in-net/" target="_blank">Data Parallel</a>, where the work items are partitioned in chunks and then each chunk is processed by a thread. Within each thread we make asynchronous Http requests collecting the responses as they come in and wait for all threads to complete before returning. The method <code>CallHttpWebRequestASyncDataParallelAndWaitOnAll</code> shown in <a href="#codelisting7">Code Listing 7</a> below demonstrates this. 
+</li><li>We could use another construct available to us as part of the .NET 4.0 framework, the <code>Parallel</code>, class. This class essentially uses the <a href="https://web.archive.org/web/20240809051734/http://www.matlus.com/data-parallel-parallel-programming-in-net/" target="_blank">Data Parallel</a> technique as well but the it has the advantage of being able to use new features of the .NET 4.0 thread pool. Using the <code>Parallel</code> class is really simple as you you'll see. Within the <code>Parallel.ForEach</code> loop, we'll make synchronous Http calls and store the responses for each request and wait till all work items have been processed. The Parallel class makes it simple to "wait on all" because it finishes when all work items have finished. The method <code>CallHttpWebRequestSyncParallelForEachAndWaitOnAll</code> in <a href="#codelisting8">Code Listing 8</a> below shows such an implementation.</li></ol>
+<p>Some explanation as to how some of this works (in the way these methods are being used in these tests) is in order. In <a href="#codelisting3">Code Listing 3</a> below you can see We initialize the <code>DefaultConnectionLimit</code> to 100. We then initialize an array of <code>Work</code> object instances (100 elements in the array) that we'll be passing to each of these methods as the "work load". The <code>Work</code> class is also shown in <a href="#codelisting3">Code Listing 3</a> below.</p>
+<p>&nbsp;</p><a name="codelisting3"></a>
+<div class="panel code content/images/csharp.png" title="Initialization code" id="code_48920"><div class="codeHeading" style="background-image: url(/web/20240809051734/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Initialization code</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">    <span class="kwrd">static</span> <span class="kwrd">void</span> <span class="identifier">Main</span>(<span class="kwrd">string</span>[] args)
+    {
+      ServicePointManager.DefaultConnectionLimit = 100;
+      var url = <span class="str">"http://localhost/HttpTaskServer/default.aspx"</span>;
+      var iterations = 10;
+
+      var workItems = (from w <span class="kwrd">in</span> Enumerable.Range(0, 100)
+                       let postParameters = <span class="kwrd">new</span> NameValueCollection { { <span class="str">"data"</span>, w.ToString() } }
+                       select <span class="kwrd">new</span> Work() { Id = w, PostParameters = postParameters }).ToArray();
+
+      Thread.Sleep(1000);
+      Benchmarker.MeasureExecutionTime(<span class="str">"ParallelForEach              "</span>, iterations, CallHttpWebRequestASyncParallelForEachAndWaitOnAll, url, workItems);
+      Benchmarker.MeasureExecutionTime(<span class="str">"AsyncAndWaitOnAll            "</span>, iterations, CallHttpWebRequestAsyncAndWaitOnAll, url, workItems);
+      Benchmarker.MeasureExecutionTime(<span class="str">"ASyncDataParallelAndWaitOnAll"</span>, iterations, CallHttpWebRequestASyncDataParallelAndWaitOnAll, url, workItems);
+      Benchmarker.MeasureExecutionTime(<span class="str">"TaskAndWaitOnAll             "</span>, iterations, CallHttpWebRequestTaskAndWaitOnAll, url, workItems);
+      Benchmarker.MeasureExecutionTime(<span class="str">"SyncAndWaitOnAll             "</span>, iterations, CallHttpWebRequestSyncAndWaitOnAll, url, workItems);
+      Console.WriteLine(<span class="str">"All work Done."</span>);      
+      Console.ReadLine();
+    }
+
+  <span class="kwrd">class</span> <span class="identifier">Work</span>
+  {
+    <span class="kwrd">public</span> <span class="kwrd">int</span> Id { get; set; }
+    <span class="kwrd">public</span> NameValueCollection PostParameters { get; set; }
+    <span class="kwrd">public</span> <span class="kwrd">string</span> ResponseData { get; set; }
+    <span class="kwrd">public</span> Exception Exception { get; set; }
+  }
+</pre>
+<h3>Code Listing 3: Showing the initialization and calls to each of the methods</h3></div>
+<p>While initializing the work object instances we initialize the <code>Id</code> property of each instance to the "index" of the array element. So the first element's <code>Id</code> property is set to 1, the second's to 2 and so on. We also initialize the PostParameters property to an instance containing the name and value of "data" and "1" for the first element and "data" and "2" for the second element and so on. This is essentially the data that is POSTed to the remote server. In other words the Http content for each http request will be</p>
+<p>data=x</p>
+<p>Where "x" is different for each request and will be the same as the Id of the work item. Of course you'll change this to suit your particular needs.</p>
+<p>Next, you should notice that the Work class has a <code>ResonseData</code> property. This is the property that holds the response of each http request we make. Again, in this case the response is a string but you can change this to be any other type to suite your response (like a JSON object for example).</p>
+<p>The key point to notice here is that each work item contains the data required to make the request and then the response that comes back for each request. So after each of these methods returns, iterating over the array of work items and accessing the <code>ResponseData</code> property of each element will yield the response that each work item got back from the remote server.</p>
+<p>The Benchmarker class simply calls a method n times and profiles it. In this case there are 100 items on our workItems array and we call each method 10 times. So effectively, each method makes a total 1,000 Http Requests but in batches of 10. We could increase the number of items in our workItems array to 1000 and do only one iteration as well.</p><a name="codelisting4"></a>
+<div class="panel code content/images/csharp.png" title="Using Tasks and Task.WaitAll" id="code_31729"><div class="codeHeading" style="background-image: url(/web/20240809051734/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Using Tasks and Task.WaitAll</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">    <span class="rem">/// &lt;summary&gt;</span>
+    <span class="rem">/// This method makes a bunch (workItems.Count()) of HttpRequests using Tasks</span>
+    <span class="rem">/// The work each task performs is a synchronous Http request. Essentially each</span>
+    <span class="rem">/// Task is performed on a different thread and when all threads have completed</span>
+    <span class="rem">/// this method returns</span>
+    <span class="rem">/// &lt;/summary&gt;</span>
+    <span class="rem">/// &lt;param name="url"&gt;&lt;/param&gt;</span>
+    <span class="rem">/// &lt;param name="workItems"&gt;&lt;/param&gt;</span>
+    <span class="kwrd">static</span> <span class="kwrd">void</span> CallHttpWebRequestTaskAndWaitOnAll(<span class="kwrd">string</span> url, IEnumerable&lt;Work&gt; workItems)
+    {      
+      var tasks = <span class="kwrd">new</span> List&lt;Task&gt;();
+      <span class="kwrd">foreach</span> (var workItem <span class="kwrd">in</span> workItems)
+      {
+        tasks.Add(Task.Factory.StartNew(wk =&gt;
+        {
+          var wrkItem = (Work)wk;
+          wrkItem.ResponseData = GetWebResponse(url, wrkItem.PostParameters);
+        }, workItem));
+      }
+      Task.WaitAll(tasks.ToArray());
+    }
+</pre>
+<h3>Code Listing 4: Showing the CallHttpWebRequestTaskAndWaitOnAll method</h3></div><a name="codelisting5"></a>
+<div class="panel code content/images/csharp.png" title="Using the ThreadPool and putting a cap on the number of threads" id="code_38895"><div class="codeHeading" style="background-image: url(/web/20240809051734/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Using the ThreadPool and putting a cap on the number of threads</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">    <span class="rem">/// &lt;summary&gt;</span>
+    <span class="rem">/// This method makes a bunch (workItems.Count()) of HttpRequests synchronously</span>
+    <span class="rem">/// using a pool of threads with a certain cap on the number of threads.</span>
+    <span class="rem">/// As soon as a thread finishes a now job is started till no more work items are left.</span>
+    <span class="rem">/// After all http requests are complete, this method returns</span>
+    <span class="rem">/// &lt;/summary&gt;</span>
+    <span class="rem">/// &lt;param name="url"&gt;&lt;/param&gt;</span>
+    <span class="rem">/// &lt;param name="workItems"&gt;&lt;/param&gt;</span>
+    <span class="kwrd">static</span> <span class="kwrd">void</span> CallHttpWebRequestSyncAndWaitOnAll(<span class="kwrd">string</span> url, IEnumerable&lt;Work&gt; workItems)
+    {
+      <span class="rem">//Since the threads will be blocked for the most part (not using the CPU)</span>
+      <span class="rem">//We're using 4 times as many threads as there are cores on the machine.</span>
+      <span class="rem">//Play with this number to ensure you get the performance you keeping an</span>
+      <span class="rem">//eye on resource utlization as well.</span>
+      <span class="kwrd">int</span> maxThreadCount = Environment.ProcessorCount * 4;
+      <span class="kwrd">int</span> executingThreads = 0;
+      <span class="rem">//This variable is used to throttle the number of threads</span>
+      <span class="rem">//created to the maxThreadCount</span>
+      <span class="kwrd">object</span> lockObj = <span class="kwrd">new</span> <span class="kwrd">object</span>();
+
+      <span class="kwrd">foreach</span> (var workItem <span class="kwrd">in</span> workItems)
+      {
+        ThreadPool.QueueUserWorkItem((state) =&gt;
+          {
+            var work = (Work)state;
+            <span class="kwrd">try</span>
+            {
+              work.ResponseData = GetWebResponse(url, work.PostParameters);
+              Interlocked.Decrement(<span class="kwrd">ref</span> executingThreads);
+            }
+            <span class="kwrd">catch</span> (Exception ex)
+            {
+              work.Exception = ex;
+              Interlocked.Decrement(<span class="kwrd">ref</span> executingThreads);
+            }
+
+          }, workItem);
+
+        <span class="rem">//If maxThreadCount threads have been spawned</span>
+        <span class="rem">//then wait for any of them to finish before</span>
+        <span class="rem">//spawning additional threads. Therby limiting</span>
+        <span class="rem">//the number of executing (and spawned)</span>
+        <span class="rem">//threads to maxThreadCount</span>
+        <span class="kwrd">lock</span> (lockObj)
+        {
+          executingThreads++;
+          <span class="kwrd">while</span> (executingThreads == maxThreadCount)
+            Thread.Sleep(1);
+        }
+      }
+
+      <span class="rem">//Wait on all executing threads to complete</span>
+      <span class="kwrd">while</span> (executingThreads != 0)
+        Thread.Sleep(1);
+    }
+</pre>
+<h3>Code Listing 5: Showing the CallHttpWebRequestSyncAndWaitOnAll method </h3></div><a name="codelisting6"></a>
+<div class="panel code content/images/csharp.png" title="Using Asynchronous Http Requests and waiting on all" id="code_90479"><div class="codeHeading" style="background-image: url(/web/20240809051734/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Using Asynchronous Http Requests and waiting on all</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">    <span class="rem">/// &lt;summary&gt;</span>
+    <span class="rem">/// This method makes a bunch (workItems.Count()) of HttpRequests asynchronously</span>
+    <span class="rem">/// The main thread is blocked until all asynchronous jobs are complete.</span>
+    <span class="rem">/// After all http requests are complete, this method returns</span>
+    <span class="rem">/// &lt;/summary&gt;</span>
+    <span class="rem">/// &lt;param name="url"&gt;&lt;/param&gt;</span>
+    <span class="rem">/// &lt;param name="workItems"&gt;&lt;/param&gt;</span>
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">void</span> CallHttpWebRequestAsyncAndWaitOnAll(<span class="kwrd">string</span> url, IEnumerable&lt;Work&gt; workItems)
+    {
+      var pending = workItems.Count();
+      <span class="kwrd">using</span> (var mre = <span class="kwrd">new</span> ManualResetEvent(<span class="kwrd">false</span>))
+      {
+        <span class="kwrd">foreach</span> (var workItem <span class="kwrd">in</span> workItems)
+        {
+          HttpSocket.PostAsync(url, workItem.PostParameters, callbackState =&gt;
+          {
+            var hwrcbs = (HttpWebRequestCallbackState)callbackState;
+            <span class="kwrd">using</span> (var responseStream = hwrcbs.ResponseStream)
+            {
+              var reader = <span class="kwrd">new</span> StreamReader(responseStream);
+              ((Work)hwrcbs.State).ResponseData = reader.ReadToEnd();
+              <span class="kwrd">if</span> (Interlocked.Decrement(<span class="kwrd">ref</span> pending) == 0)
+                mre.Set();
+            }
+          }, workItem);
+        }
+        mre.WaitOne();
+      }
+    }
+</pre>
+<h3>Code Listing 6: Showing the CallHttpWebRequestAsyncAndWaitOnAll method</h3></div><a name="codelisting7"></a>
+<div class="panel code content/images/csharp.png" title="Using a combination of Data Parallel and Asynchronous Http Requests" id="code_80619"><div class="codeHeading" style="background-image: url(/web/20240809051734/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Using a combination of Data Parallel and Asynchronous Http Requests</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">    <span class="rem">/// &lt;summary&gt;</span>
+    <span class="rem">/// This method makes a bunch (workItems.Count()) of HttpRequests asynchronously</span>
+    <span class="rem">/// but partitions the workItem into chunks. The number of chunks is determined</span>
+    <span class="rem">/// by the number of cores in the machine. The main thread is blocked</span>
+    <span class="rem">/// until all asynchronous jobs are complete</span>
+    <span class="rem">/// After all http requests are complete, this method returns</span>
+    <span class="rem">/// &lt;/summary&gt;</span>
+    <span class="rem">/// &lt;param name="url"&gt;&lt;/param&gt;</span>
+    <span class="rem">/// &lt;param name="workItems"&gt;&lt;/param&gt;</span>
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">void</span> CallHttpWebRequestASyncDataParallelAndWaitOnAll(<span class="kwrd">string</span> url, IEnumerable&lt;Work&gt; workItems)
+    {
+      var coreCount = Environment.ProcessorCount;
+      var itemCount = workItems.Count();
+      var batchSize = itemCount / coreCount;
+
+      var pending = itemCount;
+      <span class="kwrd">using</span> (var mre = <span class="kwrd">new</span> ManualResetEvent(<span class="kwrd">false</span>))
+      {
+        <span class="kwrd">for</span> (<span class="kwrd">int</span> batchCount = 0; batchCount &lt; coreCount; batchCount++)
+        {
+          var lower = batchCount * batchSize;
+          var upper = (batchCount == coreCount - 1) ? itemCount : lower + batchSize;
+          var workItemsChunk = workItems.Skip(lower).Take(upper).ToArray();
+
+          <span class="kwrd">foreach</span> (var workItem <span class="kwrd">in</span> workItemsChunk)
+          {
+            HttpSocket.PostAsync(url, workItem.PostParameters, callbackState =&gt;
+              {
+                var hwrcbs = (HttpWebRequestCallbackState)callbackState;
+                <span class="kwrd">using</span> (var responseStream = hwrcbs.ResponseStream)
+                {
+                  var reader = <span class="kwrd">new</span> StreamReader(responseStream);
+                  ((Work)hwrcbs.State).ResponseData = reader.ReadToEnd();
+                  <span class="kwrd">if</span> (Interlocked.Decrement(<span class="kwrd">ref</span> pending) == 0)
+                    mre.Set();
+                }
+              }, workItem);
+          }
+        }
+        mre.WaitOne();
+      }
+    }
+</pre>
+<h3>Code Listing 7: Showing the CallHttpWebRequestASyncDataParallelAndWaitOnAll method</h3></div><a name="codelisting8"></a>
+<div class="panel code content/images/csharp.png" title="Using the Parallel.ForEach method to make synchronous Http calls in parallel" id="code_66411"><div class="codeHeading" style="background-image: url(/web/20240809051734/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Using the Parallel.ForEach method to make synchronous Http calls in parallel</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">    <span class="rem">/// &lt;summary&gt;</span>
+    <span class="rem">/// This method makes a bunch (workItems.Count()) of HttpRequests synchronously</span>
+    <span class="rem">/// using Parallel.ForEach. Behind the scenes Parallel.ForEach partitions the</span>
+    <span class="rem">/// workItem into chunks (Data Parallel). The main thread is blocked</span>
+    <span class="rem">/// until all workItems have been processed.</span>
+    <span class="rem">/// After all http requests are complete, this method returns</span>
+    <span class="rem">/// &lt;/summary&gt;</span>
+    <span class="rem">/// &lt;param name="url"&gt;&lt;/param&gt;</span>
+    <span class="rem">/// &lt;param name="workItems"&gt;&lt;/param&gt;</span>
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">void</span> CallHttpWebRequestSyncParallelForEachAndWaitOnAll(<span class="kwrd">string</span> url, IEnumerable&lt;Work&gt; workItems)
+    {
+      <span class="identifier">Parallel</span>.ForEach(workItems, work =&gt;
+      {
+        <span class="kwrd">try</span>
+        {
+          work.ResponseData = GetWebResponse(url, work.PostParameters);
+        }
+        <span class="kwrd">catch</span> (Exception ex)
+        {
+          work.Exception = ex;
+        }
+      });
+    }
+</pre>
+<h3>Code Listing 8: Showing the CallHttpWebRequestSyncParallelForEachAndWaitOnAll method</h3></div>
+<p>The table below shows the timing results of each of the methods listed above. The results are shown in the order for fastest first. As you can see the method that does Not use threads is the fastest. The next is the method that uses as many threads as there are CPU cores on the machine (The machine used to perform these tests has 4 cores) but all work is done asynchronously (on 4 threads).</p>
+<p>The hand crafted method SyncAndWaitOnAll comes in, in 3rd place and very close in 4th place is the Parralel.ForEach and last is the method that uses Tasks.</p>
+<p>I should note that I performed <strong>each test by itself multiple times</strong>, and during these test the SyncAndWaitOnAll and the Parallel.ForEach methods were extremely close, frequently swapping places and you can see from their timings that they were in fact very close. The TaskAndWaitOnAll method wasn't too far behind most times either.</p>
+<p>The reason the results turned out the way they did is because the workload is an I/O bound workload and I/O bound workloads don't benefit by spawning threads. In fact spawning threads for I/O bound work only hurts performance due to the thread management and context switching overheads. Keep in mind also that the results here are for making 1000 http requests and even then the results are not that different.</p>
+<p>In the real world it may not be possible to use an asynchronous workflow, especially if you are trying to back-fit it into already existing synchronous workflows. So any of the methods resented here will work just as well.</p>
+<p><b>All times are in milliseconds</b> </p>
+<table style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid">
+<tbody>
+<tr>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; font-weight: bold; border-right: #cccccc 1px solid; padding-top: 2px">Method</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; font-weight: bold; border-right: #cccccc 1px solid; padding-top: 2px">Total</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; font-weight: bold; border-right: #cccccc 1px solid; padding-top: 2px">Average</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; font-weight: bold; border-right: #cccccc 1px solid; padding-top: 2px">Min</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; font-weight: bold; border-right: #cccccc 1px solid; padding-top: 2px">Max</td></tr>
+<tr>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; font-weight: bold; border-right: #cccccc 1px solid; padding-top: 2px">AsyncAndWaitOnAll</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">20114.2131</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">2011.4213</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">2004.7027</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">2055.6508</td></tr>
+<tr>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; font-weight: bold; border-right: #cccccc 1px solid; padding-top: 2px">ASyncDataParallelAndWaitOnAll</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">21306.043</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">21306.043</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">2005.8313</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">2412.8763</td></tr>
+<tr>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; font-weight: bold; border-right: #cccccc 1px solid; padding-top: 2px">SyncAndWaitOnAll</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">23136.3949</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">2313.6394</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">2011.8277</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">2603.461</td></tr>
+<tr>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; font-weight: bold; border-right: #cccccc 1px solid; padding-top: 2px">ParallelForEach</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">23438.7341</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">2343.8734</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">2010.1335</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">3154.8706</td></tr>
+<tr>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; font-weight: bold; border-right: #cccccc 1px solid; padding-top: 2px">TaskAndWaitOnAll</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">27978.052</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">2797.8052</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">2211.2131</td>
+<td style="border-bottom: #cccccc 1px solid; border-left: #cccccc 1px solid; padding-bottom: 2px; padding-left: 2px; padding-right: 2px; border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; padding-top: 2px">4459.7625</td></tr></tbody></table>
+<p>&nbsp;</p>
+<p>The method shown in <a href="#codelisting9">Code Listing 9</a> below is the method some of the methods listed above call. It makes synchronous Http requests and returns after receiving the response.</p><a name="codelisting9"></a>
+<div class="panel code content/images/csharp.png" title="The GetWebResponse (Synchronous) method that some of the other methods use." id="code_23475"><div class="codeHeading" style="background-image: url(/web/20240809051734/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">The GetWebResponse (Synchronous) method that some of the other methods use.</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">    <span class="kwrd">static</span> <span class="kwrd">string</span> GetWebResponse(<span class="kwrd">string</span> url, NameValueCollection parameters)
+    {
+      var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
+      httpWebRequest.ContentType = <span class="str">"application/x-www-form-urlencoded"</span>;
+      httpWebRequest.Method = <span class="str">"POST"</span>;
+
+      var sb = <span class="kwrd">new</span> StringBuilder();
+      <span class="kwrd">foreach</span> (var key <span class="kwrd">in</span> parameters.AllKeys)
+        sb.Append(key + <span class="str">"="</span> + parameters[key] + <span class="str">"&amp;"</span>);
+      sb.Length = sb.Length - 1;
+
+      <span class="kwrd">byte</span>[] requestBytes = Encoding.UTF8.GetBytes(sb.ToString());
+      httpWebRequest.ContentLength = requestBytes.Length;
+
+      <span class="kwrd">using</span> (var requestStream = httpWebRequest.GetRequestStream())
+      {
+        requestStream.Write(requestBytes, 0, requestBytes.Length);
+      }
+
+      Task&lt;WebResponse&gt; responseTask = Task.Factory.FromAsync&lt;WebResponse&gt;(httpWebRequest.BeginGetResponse, httpWebRequest.EndGetResponse, <span class="kwrd">null</span>);
+      <span class="kwrd">using</span> (var responseStream = responseTask.Result.GetResponseStream())
+      {
+        var reader = <span class="kwrd">new</span> StreamReader(responseStream);
+        <span class="kwrd">return</span> reader.ReadToEnd();
+      }
+    }
+</pre>
+<h3>Code Listing 9: Showing the GetWebResponse method that is called from some of the other methods</h3></div>Here is the Benchmark class that was used for the performance tests. 
+<div class="panel code content/images/csharp.png" title="The Benchmark class used for these Performance Tests" id="code_68166"><div class="codeHeading" style="background-image: url(/web/20240809051734/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">The Benchmark class used for these Performance Tests</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode"><span class="kwrd">using</span> System;
+<span class="kwrd">using</span> System.Collections.Generic;
+<span class="kwrd">using</span> System.Linq;
+<span class="kwrd">using</span> System.Text;
+<span class="kwrd">using</span> System.Diagnostics;
+
+<span class="kwrd">namespace</span> Diagnostics.Performance
+{
+  <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">class</span> Benchmarker
+  {
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">void</span> WarmUp(Action action)
+    {
+      action();
+      GC.Collect();
+    }
+
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">void</span> DisplayResults(<span class="kwrd">string</span> benchmarkName, TimeSpan totalTime, TimeSpan averageTime, TimeSpan minTime, TimeSpan maxTime)
+    {
+      Console.WriteLine(<span class="str">"---------------------------------"</span>);
+      Console.WriteLine(benchmarkName);
+      Console.WriteLine(<span class="str">"\tTotal time  : "</span> + totalTime.TotalMilliseconds + <span class="str">"ms"</span>);
+      Console.WriteLine(<span class="str">"\tAverage time: "</span> + averageTime.TotalMilliseconds + <span class="str">"ms"</span>);
+      Console.WriteLine(<span class="str">"\tMin time    : "</span> + minTime.TotalMilliseconds + <span class="str">"ms"</span>);
+      Console.WriteLine(<span class="str">"\tMax time    : "</span> + maxTime.TotalMilliseconds + <span class="str">"ms"</span>);
+      Console.WriteLine(<span class="str">"---------------------------------"</span>);
+      Console.WriteLine();
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> MeasureExecutionTime(<span class="kwrd">string</span> benchmarkName, <span class="kwrd">int</span> noOfIterations, Action action)
+    {
+      var totalTime = <span class="kwrd">new</span> TimeSpan(0);
+      var averageTime = <span class="kwrd">new</span> TimeSpan(0);
+      var minTime = TimeSpan.MaxValue;
+      var maxTime = TimeSpan.MinValue;
+
+      WarmUp(action);
+      GC.Collect();
+      GC.WaitForPendingFinalizers();
+      GC.Collect();
+
+      var total = <span class="kwrd">new</span> TimeSpan(0);
+      var sw = Stopwatch.StartNew(); 
+      <span class="kwrd">for</span> (<span class="kwrd">int</span> i = 0; i &lt; noOfIterations; i++)
+      {
+        sw.Restart();
+        action();
+        sw.Stop();
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+
+        var thisIteration = sw.Elapsed;
+        total += thisIteration;
+
+        <span class="kwrd">if</span> (thisIteration &gt; maxTime)
+          maxTime = thisIteration;
+        <span class="kwrd">if</span> (thisIteration &lt; minTime)
+          minTime = thisIteration;
+      }
+
+      totalTime = total;
+      averageTime = <span class="kwrd">new</span> TimeSpan(total.Ticks / noOfIterations);
+
+      DisplayResults(benchmarkName, totalTime, averageTime, minTime, maxTime);
+    }
+  }
+}
+</pre>
+<h3>The Benchmarker Class</h3></div>
+<p>I hope you've found this post and the information and data I've presented here useful.</p>  
+        </div></body></html>

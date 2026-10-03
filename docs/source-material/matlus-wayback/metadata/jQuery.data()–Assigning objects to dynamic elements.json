@@ -1,0 +1,409 @@
+{
+  "body": "The jQuery documentation for the data() method explains how to use this method to stuff arbitrary “data” (simple data types or objects) into DOM elements. In the examples, these elements pre-exist or once they’ve been created you select the element in question and then stuff your data into DOM element using the jQuery.data() method. So far so good.\n\nHowever, most times I find I need to stuff an object into a DOM element while I’m creating the element, usually as a string. That is, I’m constructing the html of the element and that’s when I want to assign an object to the same DOM element (Which is not really a DOM element yet!).\n\nAs an example, let’s say we had person object that had the following properties:\n\nfirstName\nlastName\nusername\nemail\n\nLet’s also assume we had an array of such objects and that we were dynamically creating an html list of these persons showing the first and last names, while “storing” the additional information with the element in question.\n\nHtml 5 custom data attributes\n\nOne way to do this is to use the Html 5 custom data attributes, so you create elements that have data-* attributes for each of the properties of the person object. So for example the html of the constructed list would look like this:\n\nList of Presidents\n  <ul>\n    <li data-firstName=\"George\" data-lastName=\"Washington\" data-username=\"gwashington\" data-email=\"gwashington@whitehouse.us.gov\">George Washington</li>\n    <li data-firstName=\"John\" data-lastName=\"Adams\" data-username=\"jadams\" data-email=\"jadams@whitehouse.us.gov\">John Adams</li>\n    <li data-firstName=\"Thomas\" data-lastName=\"Jefferson\" data-username=\"tjefferson\" data-email=\"tjefferson@whitehouse.us.gov\">Thomas Jefferson</li>\n    <li data-firstName=\"James\" data-lastName=\"Madison\" data-username=\"jmadison\" data-email=\"jmadison@whitehouse.us.gov\">James Madison</li>\n    <li data-firstName=\"James\" data-lastName=\"Monroe\" data-username=\"jmonroe\" data-email=\"jmonroe@whitehouse.us.gov\">James Monroe</li>\n    <li data-firstName=\"John Quincy\" data-lastName=\"Adams\" data-username=\"jqadams\" data-email=\"jqadams@whitehouse.us.gov\">John Quincy Adams</li>\n    <li data-firstName=\"Andrew\" data-lastName=\"Jackson\" data-username=\"ajackson\" data-email=\"ajackson@whitehouse.us.gov\">Andrew Jackson</li>\n  </ul>\n\nShowing the html where each element has additional data-* attributes\n\nThat’s easy enough to do since at the time of constructing your html since it is just string concatenation. The problems with this approach are:\n\nIf you add/remove properties to the person object, you’ll need to modify the code that constructs the html to either include or remove the additional properties.\nIn places where you want to use the additional information, you have to extract each property from specific attributes. Again, not only is this a pain, but if you add or remove properties, you’ll need to modify this code as well.\n\nStuffing objects in data-* attributes of dynamic elements\n\nThe simple answer to this is we assign the JSON object to the data-* attribute. So let’s say we wanted to call our attribute data-person, we’d like to assign a JSON object to this attribute at the time of creating each element (As strings). So it boils down to string concatenation really, but you’ll very likely stumble a few times before you get it right if you don’t give up before you get there.\n\nOf course you’ll need to “stringify” (Thanks a lots Douglas) your object. That part is obvious. What’s not obvious is that which quotes you use matter!\n\nAnyway, the below html/JavaScript shows you how to stuff objects into dynamically created elements as well as how to extract those objects.\n\nHtml Page containg complete code\n<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\" />\n  <title>US Presidents</title>\n  <script type=\"text/javascript\" src=\"http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js\"></script>\n</head>\n<body>\n  <div id=\"presidents\"></div>\n  <form id=\"presidentForm\">\n  <fieldset>\n    <legend>President</legend>\n    <ul>\n      <li>\n        <label for=\"firstName\" title=\"First Name\">First Name</label>\n        <input type=\"text\" id=\"firstName\" name=\"firstName\" />\n      </li>\n      <li>\n        <label for=\"lastName\" title=\"Last Name\">Last Name</label>\n        <input type=\"text\" id=\"lastName\" name=\"lastName\" />\n      </li>\n      <li>\n        <label for=\"username\" title=\"Username\">Username</label>\n        <input type=\"text\" id=\"username\" name=\"username\" />\n      </li>\n      <li>\n        <label for=\"email\" title=\"Email Address\">Email</label>\n        <input type=\"text\" id=\"email\" name=\"email\" />\n      </li>\n    </ul>\n  </fieldset>\n  </form>\n  \n  <script type=\"text/javascript\">\n    var people =\n    [\n      { \"email\": \"gwashington@whitehouse.us.gov\", \"firstName\": \"George\", \"id\": 1, \"lastName\": \"Washington\", \"username\": \"gwashington\" },\n      { \"email\": \"jadams@whitehouse.us.gov\", \"firstName\": \"John\", \"id\": 2, \"lastName\": \"Adams\", \"username\": \"jadams\" },\n      { \"email\": \"tjefferson@whitehouse.us.gov\", \"firstName\": \"Thomas\", \"id\": 3, \"lastName\": \"Jefferson\", \"username\": \"tjefferson\" },\n      { \"email\": \"jmadison@whitehouse.us.gov\", \"firstName\": \"James\", \"id\": 4, \"lastName\": \"Madison\", \"username\": \"jmadison\" },\n      { \"email\": \"jmonroe@whitehouse.us.gov\", \"firstName\": \"James\", \"id\": 5, \"lastName\": \"Monroe\", \"username\": \"jmonroe\" },\n      { \"email\": \"jqadams@whitehouse.us.gov\", \"firstName\": \"John Quincy\", \"id\": 6, \"lastName\": \"Adams\", \"username\": \"jqadams\" },\n      { \"email\": \"ajackson@whitehouse.us.gov\", \"firstName\": \"Andrew\", \"id\": 7, \"lastName\": \"Jackson\", \"username\": \"ajackson\" }\n    ];\n\n    $(function () {\n      //construct an unordered list of presedents\n      var items = [];\n      $.each(people, function (index, value) {\n        items.push('<li data-person=\\'' + JSON.stringify(value) + '\\'>' + value.firstName + ' ' + value.lastName + '</i>');\n      });\n\n      //add all <li> items to a <ul> element\n      $(\"<ul />\", {\n        \"id\": \"presidentsList\",\n        \"class\": \"list\",\n        html: items.join(\"\")\n      }).appendTo(\"#presidents\");\n\n      //assign a click event to the ul element\n      $(\"#presidentsList\").click(function (e) {\n        var person = $(e.target).data(\"person\");\n        assignFormFieldValues(\"presidentForm\", person);\n      });\n    });\n\n    function assignFormFieldValues(formId, obj) {\n      var fields = $(\"#\" + formId).serializeArray();\n      $.each(fields, function (index, field) {\n        var f = $(\"[name=\" + field.name + \"]\").val(obj[field.name]);\n      });\n    }\n  </script>\n</body>\n</html>\nThe Html and JavaScript showing the solution",
+  "bodyLinks": [
+    {
+      "text": "jQuery documentation for the data() method",
+      "url": "https://web.archive.org/web/20240915032819/http://api.jquery.com/jQuery.data/"
+    }
+  ],
+  "code": [
+    "  <ul>\n    <li data-firstName=\"George\" data-lastName=\"Washington\" data-username=\"gwashington\" data-email=\"gwashington@whitehouse.us.gov\">George Washington</li>\n    <li data-firstName=\"John\" data-lastName=\"Adams\" data-username=\"jadams\" data-email=\"jadams@whitehouse.us.gov\">John Adams</li>\n    <li data-firstName=\"Thomas\" data-lastName=\"Jefferson\" data-username=\"tjefferson\" data-email=\"tjefferson@whitehouse.us.gov\">Thomas Jefferson</li>\n    <li data-firstName=\"James\" data-lastName=\"Madison\" data-username=\"jmadison\" data-email=\"jmadison@whitehouse.us.gov\">James Madison</li>\n    <li data-firstName=\"James\" data-lastName=\"Monroe\" data-username=\"jmonroe\" data-email=\"jmonroe@whitehouse.us.gov\">James Monroe</li>\n    <li data-firstName=\"John Quincy\" data-lastName=\"Adams\" data-username=\"jqadams\" data-email=\"jqadams@whitehouse.us.gov\">John Quincy Adams</li>\n    <li data-firstName=\"Andrew\" data-lastName=\"Jackson\" data-username=\"ajackson\" data-email=\"ajackson@whitehouse.us.gov\">Andrew Jackson</li>\n  </ul>\n",
+    "<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\" />\n  <title>US Presidents</title>\n  <script type=\"text/javascript\" src=\"http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js\"></script>\n</head>\n<body>\n  <div id=\"presidents\"></div>\n  <form id=\"presidentForm\">\n  <fieldset>\n    <legend>President</legend>\n    <ul>\n      <li>\n        <label for=\"firstName\" title=\"First Name\">First Name</label>\n        <input type=\"text\" id=\"firstName\" name=\"firstName\" />\n      </li>\n      <li>\n        <label for=\"lastName\" title=\"Last Name\">Last Name</label>\n        <input type=\"text\" id=\"lastName\" name=\"lastName\" />\n      </li>\n      <li>\n        <label for=\"username\" title=\"Username\">Username</label>\n        <input type=\"text\" id=\"username\" name=\"username\" />\n      </li>\n      <li>\n        <label for=\"email\" title=\"Email Address\">Email</label>\n        <input type=\"text\" id=\"email\" name=\"email\" />\n      </li>\n    </ul>\n  </fieldset>\n  </form>\n  \n  <script type=\"text/javascript\">\n    var people =\n    [\n      { \"email\": \"gwashington@whitehouse.us.gov\", \"firstName\": \"George\", \"id\": 1, \"lastName\": \"Washington\", \"username\": \"gwashington\" },\n      { \"email\": \"jadams@whitehouse.us.gov\", \"firstName\": \"John\", \"id\": 2, \"lastName\": \"Adams\", \"username\": \"jadams\" },\n      { \"email\": \"tjefferson@whitehouse.us.gov\", \"firstName\": \"Thomas\", \"id\": 3, \"lastName\": \"Jefferson\", \"username\": \"tjefferson\" },\n      { \"email\": \"jmadison@whitehouse.us.gov\", \"firstName\": \"James\", \"id\": 4, \"lastName\": \"Madison\", \"username\": \"jmadison\" },\n      { \"email\": \"jmonroe@whitehouse.us.gov\", \"firstName\": \"James\", \"id\": 5, \"lastName\": \"Monroe\", \"username\": \"jmonroe\" },\n      { \"email\": \"jqadams@whitehouse.us.gov\", \"firstName\": \"John Quincy\", \"id\": 6, \"lastName\": \"Adams\", \"username\": \"jqadams\" },\n      { \"email\": \"ajackson@whitehouse.us.gov\", \"firstName\": \"Andrew\", \"id\": 7, \"lastName\": \"Jackson\", \"username\": \"ajackson\" }\n    ];\n\n    $(function () {\n      //construct an unordered list of presedents\n      var items = [];\n      $.each(people, function (index, value) {\n        items.push('<li data-person=\\'' + JSON.stringify(value) + '\\'>' + value.firstName + ' ' + value.lastName + '</i>');\n      });\n\n      //add all <li> items to a <ul> element\n      $(\"<ul />\", {\n        \"id\": \"presidentsList\",\n        \"class\": \"list\",\n        html: items.join(\"\")\n      }).appendTo(\"#presidents\");\n\n      //assign a click event to the ul element\n      $(\"#presidentsList\").click(function (e) {\n        var person = $(e.target).data(\"person\");\n        assignFormFieldValues(\"presidentForm\", person);\n      });\n    });\n\n    function assignFormFieldValues(formId, obj) {\n      var fields = $(\"#\" + formId).serializeArray();\n      $.each(fields, function (index, field) {\n        var f = $(\"[name=\" + field.name + \"]\").val(obj[field.name]);\n      });\n    }\n  </script>\n</body>\n</html>"
+  ],
+  "header": "jQuery.data()–Assigning objects to dynamic elements\nPosted by Shiv Kumar on 29th March, 2012\nCategorized Under: jQuery Snippet\nTagged With: JSON Snippet \nCode Gem: Snippets \n  ",
+  "html": "<div class=\"articleText\">\n        <p>The <a href=\"https://web.archive.org/web/20240915032819/http://api.jquery.com/jQuery.data/\" target=\"_blank\">jQuery documentation for the data() method</a> explains how to use this method to stuff arbitrary “data” (simple data types or objects) into DOM elements. In the examples, these elements pre-exist or once they’ve been created you select the element in question and then stuff your data into DOM element using the jQuery.data() method. So far so good.</p> <p>However, most times I find I need to stuff an object into a DOM element while I’m creating the element, usually as a string. That is, I’m constructing the html of the element and that’s when I want to assign an object to the same DOM element (Which is not really a DOM element yet!).</p> <p>As an example, let’s say we had person object that had the following properties:</p> <ul> <li>firstName  </li><li>lastName  </li><li>username  </li><li>email</li></ul> <p>Let’s also assume we had an array of such objects and that we were dynamically creating an html list of these persons showing the first and last names, while “storing” the additional information with the element in question.</p> <h2>Html 5 custom data attributes</h2> <p>One way to do this is to use the Html 5 custom data attributes, so you create elements that have data-* attributes for each of the properties of the person object. So for example the html of the constructed list would look like this:</p> <div class=\"panel code content/images/csharp.png\" title=\"List of Presidents\" id=\"code_33655\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240915032819/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">List of Presidents</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">  <span class=\"kwrd\">&lt;</span><span class=\"html\">ul</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span> <span class=\"attr\">data-firstName</span><span class=\"kwrd\">=\"George\"</span> <span class=\"attr\">data-lastName</span><span class=\"kwrd\">=\"Washington\"</span> <span class=\"attr\">data-username</span><span class=\"kwrd\">=\"gwashington\"</span> <span class=\"attr\">data-email</span><span class=\"kwrd\">=\"gwashington@whitehouse.us.gov\"</span><span class=\"kwrd\">&gt;</span>George Washington<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span> <span class=\"attr\">data-firstName</span><span class=\"kwrd\">=\"John\"</span> <span class=\"attr\">data-lastName</span><span class=\"kwrd\">=\"Adams\"</span> <span class=\"attr\">data-username</span><span class=\"kwrd\">=\"jadams\"</span> <span class=\"attr\">data-email</span><span class=\"kwrd\">=\"jadams@whitehouse.us.gov\"</span><span class=\"kwrd\">&gt;</span>John Adams<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span> <span class=\"attr\">data-firstName</span><span class=\"kwrd\">=\"Thomas\"</span> <span class=\"attr\">data-lastName</span><span class=\"kwrd\">=\"Jefferson\"</span> <span class=\"attr\">data-username</span><span class=\"kwrd\">=\"tjefferson\"</span> <span class=\"attr\">data-email</span><span class=\"kwrd\">=\"tjefferson@whitehouse.us.gov\"</span><span class=\"kwrd\">&gt;</span>Thomas Jefferson<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span> <span class=\"attr\">data-firstName</span><span class=\"kwrd\">=\"James\"</span> <span class=\"attr\">data-lastName</span><span class=\"kwrd\">=\"Madison\"</span> <span class=\"attr\">data-username</span><span class=\"kwrd\">=\"jmadison\"</span> <span class=\"attr\">data-email</span><span class=\"kwrd\">=\"jmadison@whitehouse.us.gov\"</span><span class=\"kwrd\">&gt;</span>James Madison<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span> <span class=\"attr\">data-firstName</span><span class=\"kwrd\">=\"James\"</span> <span class=\"attr\">data-lastName</span><span class=\"kwrd\">=\"Monroe\"</span> <span class=\"attr\">data-username</span><span class=\"kwrd\">=\"jmonroe\"</span> <span class=\"attr\">data-email</span><span class=\"kwrd\">=\"jmonroe@whitehouse.us.gov\"</span><span class=\"kwrd\">&gt;</span>James Monroe<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span> <span class=\"attr\">data-firstName</span><span class=\"kwrd\">=\"John Quincy\"</span> <span class=\"attr\">data-lastName</span><span class=\"kwrd\">=\"Adams\"</span> <span class=\"attr\">data-username</span><span class=\"kwrd\">=\"jqadams\"</span> <span class=\"attr\">data-email</span><span class=\"kwrd\">=\"jqadams@whitehouse.us.gov\"</span><span class=\"kwrd\">&gt;</span>John Quincy Adams<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span> <span class=\"attr\">data-firstName</span><span class=\"kwrd\">=\"Andrew\"</span> <span class=\"attr\">data-lastName</span><span class=\"kwrd\">=\"Jackson\"</span> <span class=\"attr\">data-username</span><span class=\"kwrd\">=\"ajackson\"</span> <span class=\"attr\">data-email</span><span class=\"kwrd\">=\"ajackson@whitehouse.us.gov\"</span><span class=\"kwrd\">&gt;</span>Andrew Jackson<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">ul</span><span class=\"kwrd\">&gt;</span>\n</pre>\n<h3>Showing the html where each element has additional data-* attributes</h3></div>\n<p>That’s easy enough to do since at the time of constructing your html since it is just string concatenation. The problems with this approach are:</p>\n<ul>\n<li>If you add/remove properties to the person object, you’ll need to modify the code that constructs the html to either include or remove the additional properties. \n</li><li>In places where you want to use the additional information, you have to extract each property from specific attributes. Again, not only is this a pain, but if you add or remove properties, you’ll need to modify this code as well.</li></ul>\n<p>Stuffing objects in data-* attributes of dynamic elements</p>\n<p>The simple answer to this is we assign the JSON object to the data-* attribute. So let’s say we wanted to call our attribute data-person, we’d like to assign a JSON object to this attribute at the time of creating each element (As strings). So it boils down to string concatenation really, but you’ll very likely stumble a few times before you get it right if you don’t give up before you get there.</p>\n<p>Of course you’ll need to “stringify” (Thanks a lots Douglas) your object. That part is obvious. What’s not obvious is that which quotes you use matter!</p>\n<p>Anyway, the below html/JavaScript shows you how to stuff objects into dynamically created elements as well as how to extract those objects.</p>\n<div class=\"panel code content/images/csharp.png\" title=\"Html Page containg complete code\" id=\"code_56716\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240915032819/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Html Page containg complete code</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">&lt;!</span><span class=\"html\">DOCTYPE</span> <span class=\"attr\">html</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;</span><span class=\"html\">html</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;</span><span class=\"html\">head</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">meta</span> <span class=\"attr\">charset</span><span class=\"kwrd\">=\"utf-8\"</span> <span class=\"kwrd\">/&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">title</span><span class=\"kwrd\">&gt;</span>US Presidents<span class=\"kwrd\">&lt;/</span><span class=\"html\">title</span><span class=\"kwrd\">&gt;</span>\n  <span class=\"kwrd\">&lt;</span><span class=\"html\">script</span> <span class=\"attr\">type</span><span class=\"kwrd\">=\"text/javascript\"</span> <span class=\"attr\">src</span><span class=\"kwrd\">=\"http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js\"</span><span class=\"kwrd\">&gt;&lt;/</span><span class=\"html\">script</span><span class=\"kwrd\">&gt;</span>\n&lt;/head&gt;\n&lt;body&gt;\n  &lt;div id=<span class=\"str\">\"presidents\"</span>&gt;&lt;/div&gt;\n  &lt;form id=<span class=\"str\">\"presidentForm\"</span>&gt;\n  &lt;fieldset&gt;\n    &lt;legend&gt;President&lt;/legend&gt;\n    &lt;ul&gt;\n      &lt;li&gt;\n        &lt;label <span class=\"kwrd\">for</span>=<span class=\"str\">\"firstName\"</span> title=<span class=\"str\">\"First Name\"</span>&gt;First Name&lt;/label&gt;\n        &lt;input type=<span class=\"str\">\"text\"</span> id=<span class=\"str\">\"firstName\"</span> name=<span class=\"str\">\"firstName\"</span> /&gt;\n      &lt;/li&gt;\n      &lt;li&gt;\n        &lt;label <span class=\"kwrd\">for</span>=<span class=\"str\">\"lastName\"</span> title=<span class=\"str\">\"Last Name\"</span>&gt;Last Name&lt;/label&gt;\n        &lt;input type=<span class=\"str\">\"text\"</span> id=<span class=\"str\">\"lastName\"</span> name=<span class=\"str\">\"lastName\"</span> /&gt;\n      &lt;/li&gt;\n      &lt;li&gt;\n        &lt;label <span class=\"kwrd\">for</span>=<span class=\"str\">\"username\"</span> title=<span class=\"str\">\"Username\"</span>&gt;Username&lt;/label&gt;\n        &lt;input type=<span class=\"str\">\"text\"</span> id=<span class=\"str\">\"username\"</span> name=<span class=\"str\">\"username\"</span> /&gt;\n      &lt;/li&gt;\n      &lt;li&gt;\n        &lt;label <span class=\"kwrd\">for</span>=<span class=\"str\">\"email\"</span> title=<span class=\"str\">\"Email Address\"</span>&gt;Email&lt;/label&gt;\n        &lt;input type=<span class=\"str\">\"text\"</span> id=<span class=\"str\">\"email\"</span> name=<span class=\"str\">\"email\"</span> /&gt;\n      &lt;/li&gt;\n    &lt;/ul&gt;\n  &lt;/fieldset&gt;\n  &lt;/form&gt;\n  \n  &lt;script type=<span class=\"str\">\"text/javascript\"</span>&gt;\n    <span class=\"kwrd\">var</span> people =\n    [\n      { <span class=\"str\">\"email\"</span>: <span class=\"str\">\"gwashington@whitehouse.us.gov\"</span>, <span class=\"str\">\"firstName\"</span>: <span class=\"str\">\"George\"</span>, <span class=\"str\">\"id\"</span>: 1, <span class=\"str\">\"lastName\"</span>: <span class=\"str\">\"Washington\"</span>, <span class=\"str\">\"username\"</span>: <span class=\"str\">\"gwashington\"</span> },\n      { <span class=\"str\">\"email\"</span>: <span class=\"str\">\"jadams@whitehouse.us.gov\"</span>, <span class=\"str\">\"firstName\"</span>: <span class=\"str\">\"John\"</span>, <span class=\"str\">\"id\"</span>: 2, <span class=\"str\">\"lastName\"</span>: <span class=\"str\">\"Adams\"</span>, <span class=\"str\">\"username\"</span>: <span class=\"str\">\"jadams\"</span> },\n      { <span class=\"str\">\"email\"</span>: <span class=\"str\">\"tjefferson@whitehouse.us.gov\"</span>, <span class=\"str\">\"firstName\"</span>: <span class=\"str\">\"Thomas\"</span>, <span class=\"str\">\"id\"</span>: 3, <span class=\"str\">\"lastName\"</span>: <span class=\"str\">\"Jefferson\"</span>, <span class=\"str\">\"username\"</span>: <span class=\"str\">\"tjefferson\"</span> },\n      { <span class=\"str\">\"email\"</span>: <span class=\"str\">\"jmadison@whitehouse.us.gov\"</span>, <span class=\"str\">\"firstName\"</span>: <span class=\"str\">\"James\"</span>, <span class=\"str\">\"id\"</span>: 4, <span class=\"str\">\"lastName\"</span>: <span class=\"str\">\"Madison\"</span>, <span class=\"str\">\"username\"</span>: <span class=\"str\">\"jmadison\"</span> },\n      { <span class=\"str\">\"email\"</span>: <span class=\"str\">\"jmonroe@whitehouse.us.gov\"</span>, <span class=\"str\">\"firstName\"</span>: <span class=\"str\">\"James\"</span>, <span class=\"str\">\"id\"</span>: 5, <span class=\"str\">\"lastName\"</span>: <span class=\"str\">\"Monroe\"</span>, <span class=\"str\">\"username\"</span>: <span class=\"str\">\"jmonroe\"</span> },\n      { <span class=\"str\">\"email\"</span>: <span class=\"str\">\"jqadams@whitehouse.us.gov\"</span>, <span class=\"str\">\"firstName\"</span>: <span class=\"str\">\"John Quincy\"</span>, <span class=\"str\">\"id\"</span>: 6, <span class=\"str\">\"lastName\"</span>: <span class=\"str\">\"Adams\"</span>, <span class=\"str\">\"username\"</span>: <span class=\"str\">\"jqadams\"</span> },\n      { <span class=\"str\">\"email\"</span>: <span class=\"str\">\"ajackson@whitehouse.us.gov\"</span>, <span class=\"str\">\"firstName\"</span>: <span class=\"str\">\"Andrew\"</span>, <span class=\"str\">\"id\"</span>: 7, <span class=\"str\">\"lastName\"</span>: <span class=\"str\">\"Jackson\"</span>, <span class=\"str\">\"username\"</span>: <span class=\"str\">\"ajackson\"</span> }\n    ];\n\n    $(<span class=\"kwrd\">function</span> () {\n      <span class=\"rem\">//construct an unordered list of presedents</span>\n      <span class=\"kwrd\">var</span> items = [];\n      $.each(people, <span class=\"kwrd\">function</span> (index, value) {\n        items.push(<span class=\"str\">'&lt;li data-person=\\''</span> + JSON.stringify(value) + <span class=\"str\">'\\'&gt;'</span> + value.firstName + <span class=\"str\">' '</span> + value.lastName + <span class=\"str\">'&lt;/i&gt;'</span>);\n      });\n\n      <span class=\"rem\">//add all &lt;li&gt; items to a &lt;ul&gt; element</span>\n      $(<span class=\"str\">\"&lt;ul /&gt;\"</span>, {\n        <span class=\"str\">\"id\"</span>: <span class=\"str\">\"presidentsList\"</span>,\n        <span class=\"str\">\"class\"</span>: <span class=\"str\">\"list\"</span>,\n        html: items.join(<span class=\"str\">\"\"</span>)\n      }).appendTo(<span class=\"str\">\"#presidents\"</span>);\n\n      <span class=\"rem\">//assign a click event to the ul element</span>\n      $(<span class=\"str\">\"#presidentsList\"</span>).click(<span class=\"kwrd\">function</span> (e) {\n        <span class=\"kwrd\">var</span> person = $(e.target).data(<span class=\"str\">\"person\"</span>);\n        assignFormFieldValues(<span class=\"str\">\"presidentForm\"</span>, person);\n      });\n    });\n\n    <span class=\"kwrd\">function</span> assignFormFieldValues(formId, obj) {\n      <span class=\"kwrd\">var</span> fields = $(<span class=\"str\">\"#\"</span> + formId).serializeArray();\n      $.each(fields, <span class=\"kwrd\">function</span> (index, field) {\n        <span class=\"kwrd\">var</span> f = $(<span class=\"str\">\"[name=\"</span> + field.name + <span class=\"str\">\"]\"</span>).val(obj[field.name]);\n      });\n    }\n  <span class=\"kwrd\">&lt;/</span><span class=\"html\">script</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">body</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">html</span><span class=\"kwrd\">&gt;</span></pre>\n<h3>The Html and JavaScript showing the solution</h3></div>  \n        </div>",
+  "images": [],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/category/jquery/snippet/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240915032819/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2fjquery-data-assigning-objects-to-dynamic-elements%2f&text=jQuery.data()%e2%80%93Assigning+objects+to+dynamic+elements"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240915032819/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2fjquery-data-assigning-objects-to-dynamic-elements%2f&t=jQuery.data()%e2%80%93Assigning+objects+to+dynamic+elements"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240915032819/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2fjquery-data-assigning-objects-to-dynamic-elements%2f&text=jQuery.data()%e2%80%93Assigning+objects+to+dynamic+elements"
+    },
+    {
+      "text": "jQuery documentation for the data() method",
+      "url": "https://web.archive.org/web/20240915032819/http://api.jquery.com/jQuery.data/"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "jQuery.data()–Assigning objects to dynamic elements",
+  "url": "https://web.archive.org/web/20240915032819/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+}

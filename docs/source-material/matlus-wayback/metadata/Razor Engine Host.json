@@ -1,0 +1,494 @@
+{
+  "body": "The new Razor View Engine that is part of ASP.NET MVC 3 can be hosted outside of any Web related stuff. In other words, the Razor Engine is not dependent on IIS and can be sued in a non-Web application such as a GUI or console app. This makes a whole lot of things possible, since you can use the Razor syntax in any kind of template and generate some text output. This output could be a mail-merged text document or a code file that in turn is compiled into your application. In this post, I'm simply going to provide you with a class that wraps the Razor Engine Host making it really simple for you to use in any kind of project, including a GUI project that is targeted to the Client profile of .Net 4.0. Your project will need to reference the System.Web.Razor assembly that's part of (currently) ASP.NET MVC 3 Beta. \n\n \n\nRazor Engine Host Wrapper\nCode listing 1 below, is the listing of the entire class. It has just one public method called ParseAndCompileTemplate that returns a compiled assembly that contains the newly generated class.\nRazorEngineHostWrapper.cs\nusing System;\nusing System.CodeDom.Compiler;\nusing System.IO;\nusing System.Reflection;\nusing System.Text;\nusing System.Web.Razor;\nusing Microsoft.CSharp;\n\nnamespace RazorHost\n{\n  /// <summary>\n  /// This class is a wrapper around the Razor Engine and Razor Engine Host\n  /// </summary>\n  public class RazorEngineHostWrapper\n  {\n    private RazorTemplateEngine InitializeRazorEngine(Type baseClassType, string namespaceOfGeneratedClass, string generatedClassName)\n    {\n      RazorEngineHost host = new RazorEngineHost(new CSharpRazorCodeLanguage());\n      host.DefaultBaseClass = baseClassType.FullName;\n      host.DefaultClassName = generatedClassName;\n      host.DefaultNamespace = namespaceOfGeneratedClass;\n      host.NamespaceImports.Add(\"System\");\n      host.NamespaceImports.Add(\"System.Collections.Generic\");\n      host.NamespaceImports.Add(\"System.Linq\");\n      return new RazorTemplateEngine(host);\n    }\n\n    /// <summary>\n    /// This method Parses and compiles the source code into an Assembly and returns it\n    /// </summary>\n    /// <param name=\"baseClassType\">The Type of the Base class the generated class descends from</param>\n    /// <param name=\"namespaceOfGeneratedClass\">The Namespace of the generated class</param>\n    /// <param name=\"generatedClassName\">The Class Name of the generated class</param>\n    /// <param name=\"ReferencedAssemblies\">Assembly refereces that may be required in order to compile the generated class</param>\n    /// <param name=\"sourceCodeReader\">A Text reader that is a warpper around the \"Template\" that is to be parsed and compiled</param>\n    /// <returns>An instance of a generated assembly that contains the generated class</returns>\n    public Assembly ParseAndCompileTemplate(Type baseClassType, string namespaceOfGeneratedClass, string generatedClassName, string[] ReferencedAssemblies, TextReader sourceCodeReader)\n    {\n      RazorTemplateEngine engine = InitializeRazorEngine(baseClassType, namespaceOfGeneratedClass, generatedClassName);\n      GeneratorResults razorResults = engine.GenerateCode(sourceCodeReader);\n\n      CSharpCodeProvider codeProvider = new CSharpCodeProvider();\n      CodeGeneratorOptions options = new CodeGeneratorOptions();\n\n      string generatedCode = null;\n      using (StringWriter writer = new StringWriter())\n      {\n        codeProvider.GenerateCodeFromCompileUnit(razorResults.GeneratedCode, writer, options);\n        generatedCode = writer.GetStringBuilder().ToString();\n      }\n\n      var outputAssemblyName = Path.GetTempPath() + Guid.NewGuid().ToString(\"N\") + \".dll\";\n      CompilerParameters compilerParameters = new CompilerParameters(ReferencedAssemblies, outputAssemblyName);\n      compilerParameters.ReferencedAssemblies.Add(\"System.dll\");\n      compilerParameters.ReferencedAssemblies.Add(\"System.Core.dll\");\n      compilerParameters.ReferencedAssemblies.Add(Assembly.GetExecutingAssembly().CodeBase.Substring(8));\n      compilerParameters.GenerateInMemory = false;\n\n      CompilerResults compilerResults = codeProvider.CompileAssemblyFromDom(compilerParameters, razorResults.GeneratedCode);\n      if (compilerResults.Errors.Count > 0)\n      {\n        var compileErrors = new StringBuilder();\n        foreach (System.CodeDom.Compiler.CompilerError compileError in compilerResults.Errors)\n          compileErrors.Append(String.Format(\"Line: {0}\\t Col: {1}\\t Error: {2}\\r\\n\", compileError.Line, compileError.Column, compileError.ErrorText));\n\n        throw new Exception(compileErrors.ToString() + generatedCode);\n      }\n\n      return compilerResults.CompiledAssembly;\n    }\n  }\n}\nCode Listing 1: RazorEngineHostWrapper.cs\nUsing the Razor Engine Wrapper\nCode Listing 2 shows you a sampling of how you would use the RazorEngineHost Wrapper. The class TemplateBase that you see referenced in Code listing 2 is sort of specific to this project but you'll need a similar class in your own projects. The base class of the class that is generated using the Razor Engine must have the following two methods with functional implementations (as shown in Code Listing 3):\npublic virtual void Write(object value)\npublic virtual void WriteLiteral(object value)\nThis base class must also have a virtual (or abstract) method called Execute(). So your classes can descend from any class of your choosing so long it it meets the above requirements. The class that is generated then descends from that class.\nUsing the RazorEngineHostWrapper\n    private void button1_Click(object sender, EventArgs e)\n    {\n      TextReader sourceCodeReader = new StringReader(textBox1.Text);\n      string[] referencesAssemblies = new String[]\n      {\n        @\"System.dll\",\n        @\"System.Core.dll\"\n      };\n      RazorEngineHostWrapper razorEngineHostWrapper = new RazorHost.RazorEngineHostWrapper();\n      var generatedAssembly = razorEngineHostWrapper.ParseAndCompileTemplate(typeof(TemplateBase), \"RazorHost\", \"MyTemplate\", referencesAssemblies, sourceCodeReader);\n\n      Type type = generatedAssembly.GetType(\"RazorHost.MyTemplate\");\n      var instance = (TemplateBase)Activator.CreateInstance(type);\n      object result = type.InvokeMember(\"Execute\", BindingFlags.InvokeMethod, null, instance, null);\n      textBox2.Text = instance.Buffer.ToString();\n    }\n\nTemplateBase.cs\n  public abstract class TemplateBase\n  {\n    public StringBuilder Buffer { get; private set; }\n    private TextWriter writer;\n    private TextWriter Writer { get { return writer; } }\n\n    public List<Customer> Customers { get; set; }\n\n    public TemplateBase()\n    {\n      Buffer = new StringBuilder();\n      writer = new StringWriter(Buffer);\n      Customers = new List<Customer>()\n      {\n        new Customer() { FirstName=\"Bill\", LastName=\"Gates\" },\n        new Customer() { FirstName=\"Steve\", LastName=\"Jobs\" },\n        new Customer() { FirstName=\"Larry\", LastName=\" Ellison\" },\n        new Customer() { FirstName=\"Samuel\", LastName=\"Palmisano\" }\n      };\n    }\n\n    public virtual void Write(object value)\n    {\n      Writer.Write(value);\n    }\n\n    public virtual void WriteLiteral(object value)\n    {\n      Writer.Write(value);\n    }\n\n    public abstract void Execute();\n  }\n\n  public class Customer\n  {\n    public string FirstName { get; set; }\n    public string LastName { get; set; }\n  }\n\nCode Listing 3: The TemplateBase class\nA Sample Template\nCode Listing 4 shows you a sample template that you can use. Note that the template itself is specific to the code in Code Listing 2 and Code Listing 3, in that the template references Customers. The generated output is shown Code Listing 5.\nTemplate using Razor Syntax\n@functions {\n  string GetCustomerFullName(Customer customer)\n  {\n    return customer.FirstName + \" \" + customer.LastName;\n  }\n}\n<ul>\n@foreach(var customer in Customers)\n{\n    <li>@customer.FirstName @customer.LastName</li>\n    <li>Full Name: @GetCustomerFullName(customer)</li>\n}\n</ul>\nCode Listing 4: A Sample Template using the Razor Syntax\nGenerated Output\n<ul>\n    <li>Bill Gates</li>\n    <li>Full Name: Bill Gates</li>\n    <li>Steve Jobs</li>\n    <li>Full Name: Steve Jobs</li>\n    <li>Larry  Ellison</li>\n    <li>Full Name: Larry  Ellison</li>\n    <li>Samuel Palmisano</li>\n    <li>Full Name: Samuel Palmisano</li>\n</ul>\nCode Listing 5: The Generated Output",
+  "bodyLinks": [
+    {
+      "text": "Razor View Engine",
+      "url": "https://web.archive.org/web/20240414162309/http://weblogs.asp.net/scottgu/archive/2010/07/02/introducing-razor.aspx"
+    },
+    {
+      "text": "ASP.NET MVC 3",
+      "url": "https://web.archive.org/web/20240414162309/http://www.asp.net/mvc/mvc3"
+    },
+    {
+      "text": "Code listing 1",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing1"
+    },
+    {
+      "text": "Code Listing 2",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing2"
+    },
+    {
+      "text": "Code listing 2",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing2"
+    },
+    {
+      "text": "Code Listing 3",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing3"
+    },
+    {
+      "text": "Code Listing 4",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing4"
+    },
+    {
+      "text": "Code Listing 2",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing2"
+    },
+    {
+      "text": "Code Listing 3",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing3"
+    },
+    {
+      "text": "Code Listing 5",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing5"
+    }
+  ],
+  "code": [
+    "using System;\nusing System.CodeDom.Compiler;\nusing System.IO;\nusing System.Reflection;\nusing System.Text;\nusing System.Web.Razor;\nusing Microsoft.CSharp;\n\nnamespace RazorHost\n{\n  /// <summary>\n  /// This class is a wrapper around the Razor Engine and Razor Engine Host\n  /// </summary>\n  public class RazorEngineHostWrapper\n  {\n    private RazorTemplateEngine InitializeRazorEngine(Type baseClassType, string namespaceOfGeneratedClass, string generatedClassName)\n    {\n      RazorEngineHost host = new RazorEngineHost(new CSharpRazorCodeLanguage());\n      host.DefaultBaseClass = baseClassType.FullName;\n      host.DefaultClassName = generatedClassName;\n      host.DefaultNamespace = namespaceOfGeneratedClass;\n      host.NamespaceImports.Add(\"System\");\n      host.NamespaceImports.Add(\"System.Collections.Generic\");\n      host.NamespaceImports.Add(\"System.Linq\");\n      return new RazorTemplateEngine(host);\n    }\n\n    /// <summary>\n    /// This method Parses and compiles the source code into an Assembly and returns it\n    /// </summary>\n    /// <param name=\"baseClassType\">The Type of the Base class the generated class descends from</param>\n    /// <param name=\"namespaceOfGeneratedClass\">The Namespace of the generated class</param>\n    /// <param name=\"generatedClassName\">The Class Name of the generated class</param>\n    /// <param name=\"ReferencedAssemblies\">Assembly refereces that may be required in order to compile the generated class</param>\n    /// <param name=\"sourceCodeReader\">A Text reader that is a warpper around the \"Template\" that is to be parsed and compiled</param>\n    /// <returns>An instance of a generated assembly that contains the generated class</returns>\n    public Assembly ParseAndCompileTemplate(Type baseClassType, string namespaceOfGeneratedClass, string generatedClassName, string[] ReferencedAssemblies, TextReader sourceCodeReader)\n    {\n      RazorTemplateEngine engine = InitializeRazorEngine(baseClassType, namespaceOfGeneratedClass, generatedClassName);\n      GeneratorResults razorResults = engine.GenerateCode(sourceCodeReader);\n\n      CSharpCodeProvider codeProvider = new CSharpCodeProvider();\n      CodeGeneratorOptions options = new CodeGeneratorOptions();\n\n      string generatedCode = null;\n      using (StringWriter writer = new StringWriter())\n      {\n        codeProvider.GenerateCodeFromCompileUnit(razorResults.GeneratedCode, writer, options);\n        generatedCode = writer.GetStringBuilder().ToString();\n      }\n\n      var outputAssemblyName = Path.GetTempPath() + Guid.NewGuid().ToString(\"N\") + \".dll\";\n      CompilerParameters compilerParameters = new CompilerParameters(ReferencedAssemblies, outputAssemblyName);\n      compilerParameters.ReferencedAssemblies.Add(\"System.dll\");\n      compilerParameters.ReferencedAssemblies.Add(\"System.Core.dll\");\n      compilerParameters.ReferencedAssemblies.Add(Assembly.GetExecutingAssembly().CodeBase.Substring(8));\n      compilerParameters.GenerateInMemory = false;\n\n      CompilerResults compilerResults = codeProvider.CompileAssemblyFromDom(compilerParameters, razorResults.GeneratedCode);\n      if (compilerResults.Errors.Count > 0)\n      {\n        var compileErrors = new StringBuilder();\n        foreach (System.CodeDom.Compiler.CompilerError compileError in compilerResults.Errors)\n          compileErrors.Append(String.Format(\"Line: {0}\\t Col: {1}\\t Error: {2}\\r\\n\", compileError.Line, compileError.Column, compileError.ErrorText));\n\n        throw new Exception(compileErrors.ToString() + generatedCode);\n      }\n\n      return compilerResults.CompiledAssembly;\n    }\n  }\n}",
+    "    private void button1_Click(object sender, EventArgs e)\n    {\n      TextReader sourceCodeReader = new StringReader(textBox1.Text);\n      string[] referencesAssemblies = new String[]\n      {\n        @\"System.dll\",\n        @\"System.Core.dll\"\n      };\n      RazorEngineHostWrapper razorEngineHostWrapper = new RazorHost.RazorEngineHostWrapper();\n      var generatedAssembly = razorEngineHostWrapper.ParseAndCompileTemplate(typeof(TemplateBase), \"RazorHost\", \"MyTemplate\", referencesAssemblies, sourceCodeReader);\n\n      Type type = generatedAssembly.GetType(\"RazorHost.MyTemplate\");\n      var instance = (TemplateBase)Activator.CreateInstance(type);\n      object result = type.InvokeMember(\"Execute\", BindingFlags.InvokeMethod, null, instance, null);\n      textBox2.Text = instance.Buffer.ToString();\n    }\n",
+    "  public abstract class TemplateBase\n  {\n    public StringBuilder Buffer { get; private set; }\n    private TextWriter writer;\n    private TextWriter Writer { get { return writer; } }\n\n    public List<Customer> Customers { get; set; }\n\n    public TemplateBase()\n    {\n      Buffer = new StringBuilder();\n      writer = new StringWriter(Buffer);\n      Customers = new List<Customer>()\n      {\n        new Customer() { FirstName=\"Bill\", LastName=\"Gates\" },\n        new Customer() { FirstName=\"Steve\", LastName=\"Jobs\" },\n        new Customer() { FirstName=\"Larry\", LastName=\" Ellison\" },\n        new Customer() { FirstName=\"Samuel\", LastName=\"Palmisano\" }\n      };\n    }\n\n    public virtual void Write(object value)\n    {\n      Writer.Write(value);\n    }\n\n    public virtual void WriteLiteral(object value)\n    {\n      Writer.Write(value);\n    }\n\n    public abstract void Execute();\n  }\n\n  public class Customer\n  {\n    public string FirstName { get; set; }\n    public string LastName { get; set; }\n  }\n",
+    "@functions {\n  string GetCustomerFullName(Customer customer)\n  {\n    return customer.FirstName + \" \" + customer.LastName;\n  }\n}\n<ul>\n@foreach(var customer in Customers)\n{\n    <li>@customer.FirstName @customer.LastName</li>\n    <li>Full Name: @GetCustomerFullName(customer)</li>\n}\n</ul>",
+    "<ul>\n    <li>Bill Gates</li>\n    <li>Full Name: Bill Gates</li>\n    <li>Steve Jobs</li>\n    <li>Full Name: Steve Jobs</li>\n    <li>Larry  Ellison</li>\n    <li>Full Name: Larry  Ellison</li>\n    <li>Samuel Palmisano</li>\n    <li>Full Name: Samuel Palmisano</li>\n</ul>"
+  ],
+  "header": "Razor Engine Host\nPosted by Shiv Kumar on 5th November, 2010\nCategorized Under: Programming C#\nTagged With: CodeGen Razor Razor Host Templating Engine \n  ",
+  "html": "<div class=\"articleText\">\n        <p>The new <a href=\"https://web.archive.org/web/20240414162309/http://weblogs.asp.net/scottgu/archive/2010/07/02/introducing-razor.aspx\">Razor View Engine</a> that is part of <a href=\"https://web.archive.org/web/20240414162309/http://www.asp.net/mvc/mvc3\">ASP.NET MVC 3</a> can be hosted outside of any Web related stuff. In other words, the Razor Engine is not dependent on IIS and can be sued in a non-Web application such as a GUI or console app. This makes a whole lot of things possible, since you can use the Razor syntax in any kind of template and generate some text output. This output could be a mail-merged text document or a code file that in turn is compiled into your application. In this post, I'm simply going to provide you with a class that wraps the Razor Engine Host making it really simple for you to use in any kind of project, including a GUI project that is targeted to the Client profile of .Net 4.0. <b>Your project will need to reference the System.Web.Razor assembly that's part of (currently) ASP.NET MVC 3 Beta.</b>&nbsp;</p> <p>&nbsp;<img style=\"background-image: none; border-right-width: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px\" title=\"RazorEngineHostApp\" border=\"0\" alt=\"RazorEngineHostApp\" src=\"https://web.archive.org/web/20240414162309im_/http://www.matlus.com/content/uploads/2011/01/RazorEngineHostApp_f2491d0f-d745-4f2d-aa71-d6e1c22f1121.jpg\" width=\"612\" height=\"559\"></p> <h2>Razor Engine Host Wrapper</h2><a href=\"#codeListing1\">Code listing 1</a> below, is the listing of the entire class. It has just one public method called <code>ParseAndCompileTemplate</code> that returns a compiled assembly that contains the newly generated class. <a name=\"codeListing1\"></a> <div class=\"panel code content/images/csharp.png\" title=\"RazorEngineHostWrapper.cs\" id=\"code_51629\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414162309/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">RazorEngineHostWrapper.cs</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">using</span> System;\n<span class=\"kwrd\">using</span> System.CodeDom.Compiler;\n<span class=\"kwrd\">using</span> System.IO;\n<span class=\"kwrd\">using</span> System.Reflection;\n<span class=\"kwrd\">using</span> System.Text;\n<span class=\"kwrd\">using</span> System.Web.Razor;\n<span class=\"kwrd\">using</span> Microsoft.CSharp;\n\n<span class=\"kwrd\">namespace</span> RazorHost\n{\n  <span class=\"rem\">/// &lt;summary&gt;</span>\n  <span class=\"rem\">/// This class is a wrapper around the Razor Engine and Razor Engine Host</span>\n  <span class=\"rem\">/// &lt;/summary&gt;</span>\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> RazorEngineHostWrapper\n  {\n    <span class=\"kwrd\">private</span> RazorTemplateEngine InitializeRazorEngine(Type baseClassType, <span class=\"kwrd\">string</span> namespaceOfGeneratedClass, <span class=\"kwrd\">string</span> generatedClassName)\n    {\n      RazorEngineHost host = <span class=\"kwrd\">new</span> RazorEngineHost(<span class=\"kwrd\">new</span> CSharpRazorCodeLanguage());\n      host.DefaultBaseClass = baseClassType.FullName;\n      host.DefaultClassName = generatedClassName;\n      host.DefaultNamespace = namespaceOfGeneratedClass;\n      host.NamespaceImports.Add(<span class=\"str\">\"System\"</span>);\n      host.NamespaceImports.Add(<span class=\"str\">\"System.Collections.Generic\"</span>);\n      host.NamespaceImports.Add(<span class=\"str\">\"System.Linq\"</span>);\n      <span class=\"kwrd\">return</span> <span class=\"kwrd\">new</span> RazorTemplateEngine(host);\n    }\n\n    <span class=\"rem\">/// &lt;summary&gt;</span>\n    <span class=\"rem\">/// This method Parses and compiles the source code into an Assembly and returns it</span>\n    <span class=\"rem\">/// &lt;/summary&gt;</span>\n    <span class=\"rem\">/// &lt;param name=\"baseClassType\"&gt;The Type of the Base class the generated class descends from&lt;/param&gt;</span>\n    <span class=\"rem\">/// &lt;param name=\"namespaceOfGeneratedClass\"&gt;The Namespace of the generated class&lt;/param&gt;</span>\n    <span class=\"rem\">/// &lt;param name=\"generatedClassName\"&gt;The Class Name of the generated class&lt;/param&gt;</span>\n    <span class=\"rem\">/// &lt;param name=\"ReferencedAssemblies\"&gt;Assembly refereces that may be required in order to compile the generated class&lt;/param&gt;</span>\n    <span class=\"rem\">/// &lt;param name=\"sourceCodeReader\"&gt;A Text reader that is a warpper around the \"Template\" that is to be parsed and compiled&lt;/param&gt;</span>\n    <span class=\"rem\">/// &lt;returns&gt;An instance of a generated assembly that contains the generated class&lt;/returns&gt;</span>\n    <span class=\"kwrd\">public</span> Assembly ParseAndCompileTemplate(Type baseClassType, <span class=\"kwrd\">string</span> namespaceOfGeneratedClass, <span class=\"kwrd\">string</span> generatedClassName, <span class=\"kwrd\">string</span>[] ReferencedAssemblies, TextReader sourceCodeReader)\n    {\n      RazorTemplateEngine engine = InitializeRazorEngine(baseClassType, namespaceOfGeneratedClass, generatedClassName);\n      GeneratorResults razorResults = engine.GenerateCode(sourceCodeReader);\n\n      CSharpCodeProvider codeProvider = <span class=\"kwrd\">new</span> CSharpCodeProvider();\n      CodeGeneratorOptions options = <span class=\"kwrd\">new</span> CodeGeneratorOptions();\n\n      <span class=\"kwrd\">string</span> generatedCode = <span class=\"kwrd\">null</span>;\n      <span class=\"kwrd\">using</span> (StringWriter writer = <span class=\"kwrd\">new</span> StringWriter())\n      {\n        codeProvider.GenerateCodeFromCompileUnit(razorResults.GeneratedCode, writer, options);\n        generatedCode = writer.GetStringBuilder().ToString();\n      }\n\n      var outputAssemblyName = Path.GetTempPath() + Guid.NewGuid().ToString(<span class=\"str\">\"N\"</span>) + <span class=\"str\">\".dll\"</span>;\n      CompilerParameters compilerParameters = <span class=\"kwrd\">new</span> CompilerParameters(ReferencedAssemblies, outputAssemblyName);\n      compilerParameters.ReferencedAssemblies.Add(<span class=\"str\">\"System.dll\"</span>);\n      compilerParameters.ReferencedAssemblies.Add(<span class=\"str\">\"System.Core.dll\"</span>);\n      compilerParameters.ReferencedAssemblies.Add(Assembly.GetExecutingAssembly().CodeBase.Substring(8));\n      compilerParameters.GenerateInMemory = <span class=\"kwrd\">false</span>;\n\n      CompilerResults compilerResults = codeProvider.CompileAssemblyFromDom(compilerParameters, razorResults.GeneratedCode);\n      <span class=\"kwrd\">if</span> (compilerResults.Errors.Count &gt; 0)\n      {\n        var compileErrors = <span class=\"kwrd\">new</span> StringBuilder();\n        <span class=\"kwrd\">foreach</span> (System.CodeDom.Compiler.CompilerError compileError <span class=\"kwrd\">in</span> compilerResults.Errors)\n          compileErrors.Append(String.Format(<span class=\"str\">\"Line: {0}\\t Col: {1}\\t Error: {2}\\r\\n\"</span>, compileError.Line, compileError.Column, compileError.ErrorText));\n\n        <span class=\"kwrd\">throw</span> <span class=\"kwrd\">new</span> Exception(compileErrors.ToString() + generatedCode);\n      }\n\n      <span class=\"kwrd\">return</span> compilerResults.CompiledAssembly;\n    }\n  }\n}</pre></div>\n<h3>Code Listing 1: RazorEngineHostWrapper.cs</h3>\n<h2>Using the Razor Engine Wrapper</h2><a href=\"#codeListing2\">Code Listing 2</a> shows you a sampling of how you would use the RazorEngineHost Wrapper. The class <code>TemplateBase</code> that you see referenced in <a href=\"#codeListing2\">Code listing 2</a> is sort of specific to this project but you'll need a similar class in your own projects. The base class of the class that is generated using the Razor Engine must have the following two methods with functional implementations (as shown in <a href=\"#codeListing3\">Code Listing 3</a>): \n<ul>\n<li><code>public virtual void Write(object value)</code> \n</li><li><code>public virtual void WriteLiteral(object value)</code> </li></ul>This base class must also have a virtual (or abstract) method called <code>Execute()</code>. So your classes can descend from any class of your choosing so long it it meets the above requirements. The class that is generated then descends from that class. <a name=\"codeListing2\"></a>\n<div class=\"panel code content/images/csharp.png\" title=\"Using the RazorEngineHostWrapper\" id=\"code_33898\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414162309/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Using the RazorEngineHostWrapper</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">    <span class=\"kwrd\">private</span> <span class=\"kwrd\">void</span> button1_Click(<span class=\"kwrd\">object</span> sender, EventArgs e)\n    {\n      TextReader sourceCodeReader = <span class=\"kwrd\">new</span> StringReader(textBox1.Text);\n      <span class=\"kwrd\">string</span>[] referencesAssemblies = <span class=\"kwrd\">new</span> String[]\n      {\n        <span class=\"str\">@\"System.dll\"</span>,\n        <span class=\"str\">@\"System.Core.dll\"</span>\n      };\n      RazorEngineHostWrapper razorEngineHostWrapper = <span class=\"kwrd\">new</span> RazorHost.RazorEngineHostWrapper();\n      var generatedAssembly = razorEngineHostWrapper.ParseAndCompileTemplate(<span class=\"kwrd\">typeof</span>(TemplateBase), <span class=\"str\">\"RazorHost\"</span>, <span class=\"str\">\"MyTemplate\"</span>, referencesAssemblies, sourceCodeReader);\n\n      Type type = generatedAssembly.GetType(<span class=\"str\">\"RazorHost.MyTemplate\"</span>);\n      var instance = (TemplateBase)Activator.CreateInstance(type);\n      <span class=\"kwrd\">object</span> result = type.InvokeMember(<span class=\"str\">\"Execute\"</span>, BindingFlags.InvokeMethod, <span class=\"kwrd\">null</span>, instance, <span class=\"kwrd\">null</span>);\n      textBox2.Text = instance.Buffer.ToString();\n    }\n</pre></div><a name=\"codeListing3\"></a>\n<div class=\"panel code content/images/csharp.png\" title=\"TemplateBase.cs\" id=\"code_17376\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414162309/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">TemplateBase.cs</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">  <span class=\"kwrd\">public</span> <span class=\"kwrd\">abstract</span> <span class=\"kwrd\">class</span> TemplateBase\n  {\n    <span class=\"kwrd\">public</span> StringBuilder Buffer { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">private</span> TextWriter writer;\n    <span class=\"kwrd\">private</span> TextWriter Writer { get { <span class=\"kwrd\">return</span> writer; } }\n\n    <span class=\"kwrd\">public</span> List&lt;Customer&gt; Customers { get; set; }\n\n    <span class=\"kwrd\">public</span> TemplateBase()\n    {\n      Buffer = <span class=\"kwrd\">new</span> StringBuilder();\n      writer = <span class=\"kwrd\">new</span> StringWriter(Buffer);\n      Customers = <span class=\"kwrd\">new</span> List&lt;Customer&gt;()\n      {\n        <span class=\"kwrd\">new</span> Customer() { FirstName=<span class=\"str\">\"Bill\"</span>, LastName=<span class=\"str\">\"Gates\"</span> },\n        <span class=\"kwrd\">new</span> Customer() { FirstName=<span class=\"str\">\"Steve\"</span>, LastName=<span class=\"str\">\"Jobs\"</span> },\n        <span class=\"kwrd\">new</span> Customer() { FirstName=<span class=\"str\">\"Larry\"</span>, LastName=<span class=\"str\">\" Ellison\"</span> },\n        <span class=\"kwrd\">new</span> Customer() { FirstName=<span class=\"str\">\"Samuel\"</span>, LastName=<span class=\"str\">\"Palmisano\"</span> }\n      };\n    }\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">virtual</span> <span class=\"kwrd\">void</span> Write(<span class=\"kwrd\">object</span> <span class=\"kwrd\">value</span>)\n    {\n      Writer.Write(<span class=\"kwrd\">value</span>);\n    }\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">virtual</span> <span class=\"kwrd\">void</span> WriteLiteral(<span class=\"kwrd\">object</span> <span class=\"kwrd\">value</span>)\n    {\n      Writer.Write(<span class=\"kwrd\">value</span>);\n    }\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">abstract</span> <span class=\"kwrd\">void</span> Execute();\n  }\n\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> Customer\n  {\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">string</span> FirstName { get; set; }\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">string</span> LastName { get; set; }\n  }\n</pre></div>\n<h3>Code Listing 3: The TemplateBase class</h3>\n<h2>A Sample Template</h2><a href=\"#codeListing4\">Code Listing 4</a> shows you a sample template that you can use. Note that the template itself is specific to the code in <a href=\"#codeListing2\">Code Listing 2</a> and <a href=\"#codeListing3\">Code Listing 3</a>, in that the template references <code>Customers</code>. The generated output is shown <a href=\"#codeListing5\">Code Listing 5</a>. <a name=\"codeListing4\"></a>\n<div class=\"panel code content/images/csharp.png\" title=\"Template using Razor Syntax\" id=\"code_44347\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414162309/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Template using Razor Syntax</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">@functions {\n  <span class=\"kwrd\">string</span> GetCustomerFullName(Customer customer)\n  {\n    <span class=\"kwrd\">return</span> customer.FirstName + <span class=\"str\">\" \"</span> + customer.LastName;\n  }\n}\n&lt;ul&gt;\n@<span class=\"kwrd\">foreach</span>(var customer <span class=\"kwrd\">in</span> Customers)\n{\n    &lt;li&gt;@customer.FirstName @customer.LastName&lt;/li&gt;\n    &lt;li&gt;Full Name: @GetCustomerFullName(customer)&lt;/li&gt;\n}\n&lt;/ul&gt;</pre></div>\n<h3>Code Listing 4: A Sample Template using the Razor Syntax</h3><a name=\"codeListing5\"></a>\n<div class=\"panel code content/images/html.png\" title=\"Generated Output\" id=\"code_97834\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414162309/http://www.matlus.com/content/images/html.png);\"><h3 class=\"codeTitle\">Generated Output</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">&lt;</span><span class=\"html\">ul</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>Bill Gates<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>Full Name: Bill Gates<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>Steve Jobs<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>Full Name: Steve Jobs<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>Larry  Ellison<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>Full Name: Larry  Ellison<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>Samuel Palmisano<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n    <span class=\"kwrd\">&lt;</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>Full Name: Samuel Palmisano<span class=\"kwrd\">&lt;/</span><span class=\"html\">li</span><span class=\"kwrd\">&gt;</span>\n<span class=\"kwrd\">&lt;/</span><span class=\"html\">ul</span><span class=\"kwrd\">&gt;</span></pre></div>\n<h3>Code Listing 5: The Generated Output</h3>  \n        </div>",
+  "images": [
+    {
+      "alt": "RazorEngineHostApp",
+      "loaded": false,
+      "url": "https://web.archive.org/web/20240414162309im_/http://www.matlus.com/content/uploads/2011/01/RazorEngineHostApp_f2491d0f-d745-4f2d-aa71-d6e1c22f1121.jpg"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "C#",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/category/programming/c/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162309/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2frazor-engine-host%2f&text=Razor+Engine+Host"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162309/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2frazor-engine-host%2f&t=Razor+Engine+Host"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162309/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2frazor-engine-host%2f&text=Razor+Engine+Host"
+    },
+    {
+      "text": "Razor View Engine",
+      "url": "https://web.archive.org/web/20240414162309/http://weblogs.asp.net/scottgu/archive/2010/07/02/introducing-razor.aspx"
+    },
+    {
+      "text": "ASP.NET MVC 3",
+      "url": "https://web.archive.org/web/20240414162309/http://www.asp.net/mvc/mvc3"
+    },
+    {
+      "text": "Code listing 1",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing1"
+    },
+    {
+      "text": "Code Listing 2",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing2"
+    },
+    {
+      "text": "Code listing 2",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing2"
+    },
+    {
+      "text": "Code Listing 3",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing3"
+    },
+    {
+      "text": "Code Listing 4",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing4"
+    },
+    {
+      "text": "Code Listing 2",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing2"
+    },
+    {
+      "text": "Code Listing 3",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing3"
+    },
+    {
+      "text": "Code Listing 5",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/#codeListing5"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "Razor Engine Host",
+  "url": "https://web.archive.org/web/20240414162309/http://www.matlus.com/razor-engine-host/"
+}

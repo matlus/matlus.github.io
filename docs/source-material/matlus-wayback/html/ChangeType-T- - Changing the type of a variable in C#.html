@@ -1,0 +1,674 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>ChangeType&lt;T&gt; - Changing the type of a variable in C#</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>ChangeType&lt;T&gt; - Changing the type of a variable in C#</h1><p class="recovery">ChangeType&lt;T&gt; - Changing the type of a variable in C#<br>Posted by Shiv Kumar on 8th November, 2010<br>Categorized Under: Programming C#<br>Tagged With: Change Type TypeConverter <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20240415161728/http://matlus.com/changetypet-changing-the-type-of-a-variable-in-c/">this Wayback capture</a>.</p><div class="articleText">
+        Working on Web applications invariably means you need to change the data received (which is generally in the form of a string) into some other data type such as <code>Int32</code> or <code>Double</code> etc. In the .NET framework there are a few ways in which you can accomplish this (sort of):  <ul> <li>Using the <code><a href="https://web.archive.org/web/20240415161728/http://msdn.microsoft.com/en-us/library/system.convert(v=VS.100).aspx" target="_blank">Convert</a></code> static class  </li><li>Using the <code><a href="https://web.archive.org/web/20240415161728/http://msdn.microsoft.com/en-us/library/dtb69x08.aspx" target="_blank">Convert.ChangeType</a></code> method if your types implement the<code><a href="https://web.archive.org/web/20240415161728/http://msdn.microsoft.com/en-us/library/system.iconvertible.aspx" target="_blank">IConvertible</a></code> interface  </li><li>Using the <code><a href="https://web.archive.org/web/20240415161728/http://msdn.microsoft.com/en-us/library/ms171819.aspx" target="_blank">Type Descriptor</a></code> Architecture that's part of the .NET framework (typically used by visual controls at design time) </li></ul> <h2>Converting from String to ValueTypes</h2>Typically, converting from a string to <code>ValueTypes</code> is fairly simple since you can either use the <code>Convert.ToXXX</code> or use the <code>XXX.Parse()</code> methods. In fact on the face of it this doesn't seem like a problem that needs a solution since the solutions already exist. However, when you're building an application, you don't want keep repeating your code, and as it applies Web applications, this is a need you have in every page of your website. That is, there are some Form fields or QueryStrings that you're interested in that need to be converted from a string to another data type. And because there is no real framework in place that can handle this very common scenario you end up writing the same code over and over.  <h2>A Solution to the ChangeType problem</h2>Let me start with stating the problem clearly. You've got data coming to you in the form of a string, typically in the form of a <code>NameValueCollection</code>, since the <code>Request</code> object provides the <code>Form</code> fields and <code>QueryString</code> in the form of NameValueCollections. You want to extract the values from these collections to assign them to variables or properties you've defined in your class. This data is typically user input data so you need to accommodate the various styles in which a user may input data. So let's look at a specific case. We have a variable or property of type <code>Int32</code> called <code>Price</code>. The user may input this data in the form in one of the following ways:  <ol> <li>4236  </li><li>$4236  </li><li>4,236  </li><li>$4,236 </li></ol>Or leave the field blank. Another common scenario is a form field that accepts tag that are comma separated, such as: <code>C#,ASP.NET,Http</code> and you need to convert these values to a string[] in your code. Ideally, you'd want one method in a class within your framework that can do all this for you. Let's call this method <code>ChangeType</code>, since this method needs to return different kinds of types it could either return an <code>Object</code> type or we could have a generic method in the form <pre>public T ChangeType&lt;T&gt;(string parameterName, T defaultValue = default(T))
+</pre>You'll quickly realize that implementing this method is really not that simple. The reason is that you can't convert the return type of this method to be a specific type even though you know the type parameter is that type. In other words the code below won't compile with the error, "Cannot convert type int to 'T'" or "Cannot implicitly convert type int to 'T'". <pre class="csharpcode"><span class="kwrd">public</span> T ChangeType&lt;T&gt;(<span class="kwrd">string</span> parameterName, T defaultValue = <span class="kwrd">default</span>(T))
+{
+  Type typeOft = <span class="kwrd">typeof</span>(T);
+  var <span class="kwrd">value</span> = Request.Form[parameterName];
+
+  <span class="kwrd">if</span> (typeOft == <span class="kwrd">typeof</span>(Int32))
+    <span class="kwrd">return</span> (T)Int32.Parse(<span class="kwrd">value</span>);
+  <span class="kwrd">else</span> <span class="kwrd">if</span> (typeOft == <span class="kwrd">typeof</span>(Int64))
+    <span class="kwrd">return</span> (T)Int64.Parse(<span class="kwrd">value</span>);
+}</pre>
+<h3>A Simple Solution</h3>A simple (non extensible) solution would be to have this method call out to other methods that return an <code>Object</code> type and you can then cast it to <code>T</code> in this method and return it. Like so. <pre class="csharpcode"><span class="kwrd">public</span> T ChangeType&lt;T&gt;(<span class="kwrd">string</span> parameterName, T defaultValue = <span class="kwrd">default</span>(T))
+{
+  Type typeOft = <span class="kwrd">typeof</span>(T);
+  var <span class="kwrd">value</span> = Request.Form[parameterName];
+
+  <span class="kwrd">if</span> (String.IsNullOrEmpty(<span class="kwrd">value</span>.Trim()))
+    <span class="kwrd">return</span> <span class="kwrd">default</span>(T);
+  <span class="kwrd">if</span> (typeOft == <span class="kwrd">typeof</span>(Int32))
+    <span class="kwrd">return</span> (T)ConvertToInt32(<span class="kwrd">value</span>);
+  <span class="kwrd">else</span> <span class="kwrd">if</span> (typeOft == <span class="kwrd">typeof</span>(Int64))
+    <span class="kwrd">return</span> (T)ConvertToInt64(<span class="kwrd">value</span>);
+  <span class="kwrd">else</span> <span class="kwrd">if</span> (typeOft == <span class="kwrd">typeof</span>(Double))
+    <span class="kwrd">return</span> (T)ConvertToDouble(<span class="kwrd">value</span>);
+  <span class="kwrd">else</span> <span class="kwrd">if</span> (typeOft == <span class="kwrd">typeof</span>(Decimal))
+    <span class="kwrd">return</span> (T)ConvertToDecimal(<span class="kwrd">value</span>);
+  <span class="kwrd">return</span> <span class="kwrd">default</span>(T);
+}
+</pre>And the implementations of the secondary methods might look like this: <pre class="csharpcode"><span class="kwrd">private</span> <span class="kwrd">object</span> ConvertToInt32(<span class="kwrd">string</span> <span class="kwrd">value</span>)
+{
+  <span class="kwrd">return</span> Int32.Parse(<span class="kwrd">value</span>,
+    NumberStyles.Currency ^ NumberStyles.AllowDecimalPoint);
+}
+
+<span class="kwrd">private</span> <span class="kwrd">object</span> ConvertToInt64(<span class="kwrd">string</span> <span class="kwrd">value</span>)
+{
+  <span class="kwrd">return</span> Int64.Parse(<span class="kwrd">value</span>,
+    NumberStyles.Currency ^ NumberStyles.AllowDecimalPoint);
+}
+
+<span class="kwrd">private</span> <span class="kwrd">object</span> ConvertToDouble(<span class="kwrd">string</span> <span class="kwrd">value</span>)
+{
+  <span class="kwrd">return</span> Double.Parse(<span class="kwrd">value</span>, NumberStyles.Currency);
+}
+
+<span class="kwrd">private</span> <span class="kwrd">object</span> ConvertToDecimal(<span class="kwrd">string</span> <span class="kwrd">value</span>)
+{
+  <span class="kwrd">return</span> Decimal.Parse(<span class="kwrd">value</span>, NumberStyles.Currency);
+}</pre>
+<h2>An Extensible solution for ChangeType&lt;T&gt;</h2>The solution I present is an extensible solution, in that you can add your own binders for types (custom types) that you'd like to handle. The way you'd use the solution is really simple. In your page class for example, you'd call this method like so: <pre>int amount = ChangeType&lt;int&gt;("Amount");
+</pre>If you wanted to specify a default value (other than zero in this case) in case that field was not entered by the user then you could do this: <pre>int amount = ChangeType&lt;int&gt;("Amount", -1);
+</pre>In the case of the tags field that needs to be converted to a string[] <pre>string[] tags = ChangeType&lt;string[]&gt;("tags");
+</pre>There are 3 parts to this solution. 
+<ol>
+<li>And Interface called <code>IRequestBinder</code>. Your custom binders will implement this interface (just one method) 
+</li><li>The <code>RequestBinder</code> class that maintains a list of registered binders and issues the appropriate binder 
+</li><li>A Generic method <code>ChangeType&lt;T&gt;</code> that does all the hard work of abstracting all of this and allows you to write code like that shown above. </li></ol>So first, lets take a look at the <code>IRequestBinder</code> interface <pre class="csharpcode"><span class="kwrd">public</span> <span class="kwrd">interface</span> IRequestBinder
+{
+  <span class="kwrd">object</span> Bind(HttpContextBase httpContext, Type convertToType,
+    <span class="kwrd">string</span> parameterName = <span class="kwrd">null</span>, <span class="kwrd">object</span> defaultValue = <span class="kwrd">null</span>);
+}
+</pre>The <code>RequestBinder</code> is the class you register your binders with by using the <code>Add</code> method. If you have binders that you want your system to handle out of the box, then you can register those binders in the static constructor of this class as you can see the the code listing below. Because the class is a static class you can register a binder from anywhere in your system as well. As a result, you don't have to modify the class in order to register new binders. Simply call the <code>Add</code> static method of the class from anywhere in your application. The <code>RequestBinder</code> class handles all of the registration as well as instantiation of your binder classes for you. Furthermore, once it has created an instance of your binder class, if maintains that instance in a dictionary so it doesn't have to keep creating instances each time you need a binder for the same type again. <pre class="csharpcode"><span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">class</span> RequestBinder
+{
+  <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">readonly</span> Dictionary&lt;<span class="kwrd">string</span>, RuntimeTypeHandle&gt;
+    registeredBinders = <span class="kwrd">new</span> Dictionary&lt;<span class="kwrd">string</span>, RuntimeTypeHandle&gt;();
+  <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">readonly</span> Dictionary&lt;<span class="kwrd">string</span>, IRequestBinder&gt;
+    instantiatedBinders = <span class="kwrd">new</span> Dictionary&lt;<span class="kwrd">string</span>, IRequestBinder&gt;();
+
+  <span class="kwrd">static</span> RequestBinder()
+  {
+    Add(<span class="kwrd">typeof</span>(String), <span class="kwrd">typeof</span>(StringRequestBinder));
+    Add(<span class="kwrd">typeof</span>(Int32), <span class="kwrd">typeof</span>(Int32RequestBinder));
+    Add(<span class="kwrd">typeof</span>(Int64), <span class="kwrd">typeof</span>(Int64RequestBinder));
+    Add(<span class="kwrd">typeof</span>(Double), <span class="kwrd">typeof</span>(DoubleRequestBinder));
+    Add(<span class="kwrd">typeof</span>(DateTime), <span class="kwrd">typeof</span>(DateTimeRequestBinder));
+    Add(<span class="kwrd">typeof</span>(Boolean), <span class="kwrd">typeof</span>(BooleanRequestBinder));
+    Add(<span class="kwrd">typeof</span>(Decimal), <span class="kwrd">typeof</span>(DecimalRequestBinder));
+    Add(<span class="kwrd">typeof</span>(Int32[]), <span class="kwrd">typeof</span>(Int32ArrayRequestBinder));
+    Add(<span class="kwrd">typeof</span>(String[]), <span class="kwrd">typeof</span>(StringArrayRequestBinder));
+    Add(<span class="kwrd">typeof</span>(Double[]), <span class="kwrd">typeof</span>(DoubleArrayRequestBinder));
+    Add(<span class="kwrd">typeof</span>(Enum), <span class="kwrd">typeof</span>(EnumRequestBinder));
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> Add(Type binderForType, Type requestBinderType)
+  {
+    Type interfaceType = requestBinderType.GetInterface(<span class="str">"IRequestBinder"</span>);
+    <span class="kwrd">if</span> (interfaceType != <span class="kwrd">null</span>)
+    {
+      var fullName = binderForType.FullName;
+      <span class="kwrd">if</span> (registeredBinders.ContainsKey(fullName))
+        registeredBinders.Remove(fullName);
+      registeredBinders.Add(fullName, requestBinderType.TypeHandle);
+    }
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">bool</span> Contains(Type type)
+  {
+    <span class="kwrd">return</span> registeredBinders.ContainsKey(type.FullName);
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">static</span> IRequestBinder GetBinder(Type type)
+  {
+    var fullName = type.FullName;
+    <span class="kwrd">if</span> (!registeredBinders.ContainsKey(fullName))
+      <span class="kwrd">throw</span> <span class="kwrd">new</span> RequestBinderException(
+        <span class="str">"No RequestBinder found for Type: "</span> + fullName);
+    <span class="kwrd">if</span> (instantiatedBinders.ContainsKey(fullName))
+      <span class="kwrd">return</span> instantiatedBinders[fullName];
+    <span class="kwrd">else</span>
+    {
+      var typeHandle = registeredBinders[fullName];
+      IRequestBinder binder = 
+        (IRequestBinder)Activator.CreateInstance(
+        Type.GetTypeFromHandle(typeHandle));
+      instantiatedBinders.Add(fullName, binder);
+      <span class="kwrd">return</span> binder;
+    }
+  }
+}</pre>In order to retrieve a registered binder, you'll use the <code>GetBinder</code> method passng in the <code>Type</code> for which you need a binder. So for example if you need the binder for an <code>Int32</code> type you'll make the following call. <pre>var binder = RequestBinder.GetBinder(typeof(Int32));
+Int32 value = (Int32)binder.Bind(HttpContext, type, parameterName, defaultValue);
+</pre>In order to make all of this a lot easier to use we can have our ChangeType&lt;T&gt; method do all the work like so. <pre class="csharpcode"><span class="kwrd">protected</span> T ChangeType&lt;T&gt;(<span class="kwrd">string</span> parameterName,
+  T defaultValue = <span class="kwrd">default</span>(T))
+{
+  Type type = <span class="kwrd">typeof</span>(T);
+  <span class="kwrd">if</span> (RequestBinder.Contains(type))
+    <span class="kwrd">return</span> (T)RequestBinder
+      .GetBinder(type)
+      .Bind(HttpContext, type, parameterName, defaultValue);
+  <span class="kwrd">else</span> <span class="kwrd">if</span> (type.IsEnum)
+    <span class="kwrd">return</span> (T)RequestBinder
+      .GetBinder(<span class="kwrd">typeof</span>(Enum))
+      .Bind(HttpContext, type, parameterName, defaultValue);
+  <span class="kwrd">else</span>
+    <span class="kwrd">return</span> defaultValue;        
+}</pre>
+<h2>Handling Custom Types</h2>What if you wanted the <code>RequestBinder</code> to be able to handle your custom types? Well, it's a simple matter of registering a binder for your custom type. However the ChangeType&lt;T&gt; method probably needs an overload since you don't need to send it the name of a parameter since typically, the custom object binds to multiple fields in your form. So the overloaded method would look like this: <pre class="csharpcode"><span class="kwrd">protected</span> T ChangeType&lt;T&gt;() <span class="kwrd">where</span> T : <span class="kwrd">class</span>, <span class="kwrd">new</span>()
+{
+  Type type = <span class="kwrd">typeof</span>(T);
+  <span class="kwrd">if</span> (RequestBinder.Contains(type))
+    <span class="kwrd">return</span> (T)RequestBinder.GetBinder(type).Bind(HttpContext, type);
+  <span class="kwrd">else</span>
+    <span class="kwrd">return</span> <span class="kwrd">default</span>(T);
+}</pre>
+<h2>the Complete Solution</h2>The code listing below is a listing on the <code>RequetBinder</code> class along with various custom binders that handle the default scenarios for the most part. There is a base class called <code>RequestBinderBase</code> that has some common functionality the other binders use. But you don't need to have your binders descend from this base class unless you need that functionality. 
+<div class="panel code content/images/csharp.png" title="RequestBinder and others" id="code_6370"><div class="codeHeading" style="background-image: url(/web/20240415161728/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle">RequestBinder and others</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode"><span class="kwrd">using</span> System;
+<span class="kwrd">using</span> System.Collections.Generic;
+<span class="kwrd">using</span> System.Collections.Specialized;
+<span class="kwrd">using</span> System.Globalization;
+<span class="kwrd">using</span> System.Web;
+<span class="kwrd">using</span> Matlus.Web.Builder.Exceptions;
+
+<span class="kwrd">namespace</span> Matlus.Web.Builder
+{
+  <span class="kwrd">public</span> <span class="kwrd">interface</span> IRequestBinder
+  {
+    <span class="kwrd">object</span> Bind(HttpContextBase httpContext, Type convertToType,
+      <span class="kwrd">string</span> parameterName = <span class="kwrd">null</span>, <span class="kwrd">object</span> defaultValue = <span class="kwrd">null</span>);
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">class</span> RequestBinder
+  {
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">readonly</span> Dictionary&lt;<span class="kwrd">string</span>, RuntimeTypeHandle&gt;
+      registeredBinders = <span class="kwrd">new</span> Dictionary&lt;<span class="kwrd">string</span>, RuntimeTypeHandle&gt;();
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">readonly</span> Dictionary&lt;<span class="kwrd">string</span>, IRequestBinder&gt;
+      instantiatedBinders = <span class="kwrd">new</span> Dictionary&lt;<span class="kwrd">string</span>, IRequestBinder&gt;();
+
+    <span class="kwrd">static</span> RequestBinder()
+    {
+      Add(<span class="kwrd">typeof</span>(String), <span class="kwrd">typeof</span>(StringRequestBinder));
+      Add(<span class="kwrd">typeof</span>(Int32), <span class="kwrd">typeof</span>(Int32RequestBinder));
+      Add(<span class="kwrd">typeof</span>(Int64), <span class="kwrd">typeof</span>(Int64RequestBinder));
+      Add(<span class="kwrd">typeof</span>(Double), <span class="kwrd">typeof</span>(DoubleRequestBinder));
+      Add(<span class="kwrd">typeof</span>(DateTime), <span class="kwrd">typeof</span>(DateTimeRequestBinder));
+      Add(<span class="kwrd">typeof</span>(Boolean), <span class="kwrd">typeof</span>(BooleanRequestBinder));
+      Add(<span class="kwrd">typeof</span>(Decimal), <span class="kwrd">typeof</span>(DecimalRequestBinder));
+      Add(<span class="kwrd">typeof</span>(Int32[]), <span class="kwrd">typeof</span>(Int32ArrayRequestBinder));
+      Add(<span class="kwrd">typeof</span>(String[]), <span class="kwrd">typeof</span>(StringArrayRequestBinder));
+      Add(<span class="kwrd">typeof</span>(Double[]), <span class="kwrd">typeof</span>(DoubleArrayRequestBinder));
+      Add(<span class="kwrd">typeof</span>(Enum), <span class="kwrd">typeof</span>(EnumRequestBinder));
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> Add(Type binderForType, Type requestBinderType)
+    {
+      Type interfaceType = requestBinderType.GetInterface(<span class="str">"IRequestBinder"</span>);
+      <span class="kwrd">if</span> (interfaceType != <span class="kwrd">null</span>)
+      {
+        var fullName = binderForType.FullName;
+        <span class="kwrd">if</span> (registeredBinders.ContainsKey(fullName))
+          registeredBinders.Remove(fullName);
+        registeredBinders.Add(fullName, requestBinderType.TypeHandle);
+      }
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">bool</span> Contains(Type type)
+    {
+      <span class="kwrd">return</span> registeredBinders.ContainsKey(type.FullName);
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> IRequestBinder GetBinder(Type type)
+    {
+      var fullName = type.FullName;
+      <span class="kwrd">if</span> (!registeredBinders.ContainsKey(fullName))
+        <span class="kwrd">throw</span> <span class="kwrd">new</span> RequestBinderException(
+          <span class="str">"No RequestBinder found for Type: "</span> + fullName);
+      <span class="kwrd">if</span> (instantiatedBinders.ContainsKey(fullName))
+        <span class="kwrd">return</span> instantiatedBinders[fullName];
+      <span class="kwrd">else</span>
+      {
+        var typeHandle = registeredBinders[fullName];
+        IRequestBinder binder =
+          (IRequestBinder)Activator.CreateInstance(
+          Type.GetTypeFromHandle(typeHandle));
+        instantiatedBinders.Add(fullName, binder);
+        <span class="kwrd">return</span> binder;
+      }
+    }
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">abstract</span> <span class="kwrd">class</span> RequestBinderBase : IRequestBinder
+  {
+    <span class="kwrd">protected</span> <span class="kwrd">static</span> NameValueCollection GetRequestNameValueCollection(HttpContextBase httpContext)
+    {
+      var combinedNameValueCollection = <span class="kwrd">new</span> NameValueCollection();
+      <span class="kwrd">foreach</span> (<span class="kwrd">string</span> key <span class="kwrd">in</span> httpContext.Request.Form.Keys)
+      {
+        var <span class="kwrd">value</span> = httpContext.Request.Form[key];
+        <span class="kwrd">if</span> (<span class="kwrd">value</span> != <span class="kwrd">null</span>)
+          combinedNameValueCollection.Add(key, <span class="kwrd">value</span>);
+      }
+
+      <span class="kwrd">foreach</span> (<span class="kwrd">string</span> key <span class="kwrd">in</span> httpContext.Request.QueryString.Keys)
+      {
+        var <span class="kwrd">value</span> = httpContext.Request.QueryString[key];
+        <span class="kwrd">if</span> (<span class="kwrd">value</span> != <span class="kwrd">null</span>)
+          combinedNameValueCollection.Add(key, <span class="kwrd">value</span>);
+      }
+      <span class="kwrd">return</span> combinedNameValueCollection;
+    }
+
+    <span class="preproc">#region</span> IRequestBinder Members
+
+    <span class="kwrd">public</span> <span class="kwrd">abstract</span> <span class="kwrd">object</span> Bind(HttpContextBase httpContext, Type convertToType, <span class="kwrd">string</span> parameterName = <span class="kwrd">null</span>, <span class="kwrd">object</span> defaultValue = <span class="kwrd">null</span>);
+
+    <span class="preproc">#endregion</span>
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">sealed</span> <span class="kwrd">class</span> Int32RequestBinder : RequestBinderBase
+  {
+    <span class="kwrd">public</span> <span class="kwrd">override</span> <span class="kwrd">object</span> Bind(HttpContextBase httpContext, Type convertToType, <span class="kwrd">string</span> parameterName = <span class="kwrd">null</span>, <span class="kwrd">object</span> defaultValue = <span class="kwrd">null</span>)
+    {
+      var <span class="kwrd">value</span> = GetRequestNameValueCollection(httpContext)[parameterName];
+      <span class="kwrd">if</span> (!String.IsNullOrEmpty(<span class="kwrd">value</span>))
+      {
+        <span class="kwrd">return</span> Int32.Parse(<span class="kwrd">value</span>, NumberStyles.Currency ^ NumberStyles.AllowDecimalPoint);
+      }
+      <span class="kwrd">else</span>
+        <span class="kwrd">return</span> defaultValue;
+    }
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">sealed</span> <span class="kwrd">class</span> StringRequestBinder : RequestBinderBase
+  {
+    <span class="kwrd">public</span> <span class="kwrd">override</span> <span class="kwrd">object</span> Bind(HttpContextBase httpContext, Type convertToType, <span class="kwrd">string</span> parameterName = <span class="kwrd">null</span>, <span class="kwrd">object</span> defaultValue = <span class="kwrd">null</span>)
+    {
+      var <span class="kwrd">value</span> = GetRequestNameValueCollection(httpContext)[parameterName];
+      <span class="kwrd">if</span> (!String.IsNullOrEmpty(<span class="kwrd">value</span>))
+        <span class="kwrd">return</span> <span class="kwrd">value</span>;
+      <span class="kwrd">else</span>
+        <span class="kwrd">return</span> defaultValue;
+    }
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">sealed</span> <span class="kwrd">class</span> Int64RequestBinder : RequestBinderBase
+  {
+    <span class="kwrd">public</span> <span class="kwrd">override</span> <span class="kwrd">object</span> Bind(HttpContextBase httpContext, Type convertToType, <span class="kwrd">string</span> parameterName = <span class="kwrd">null</span>, <span class="kwrd">object</span> defaultValue = <span class="kwrd">null</span>)
+    {
+      var <span class="kwrd">value</span> = GetRequestNameValueCollection(httpContext)[parameterName];
+      <span class="kwrd">if</span> (!String.IsNullOrEmpty(<span class="kwrd">value</span>))
+      {
+        <span class="kwrd">return</span> Int64.Parse(<span class="kwrd">value</span>, NumberStyles.Currency ^ NumberStyles.AllowDecimalPoint);
+      }
+      <span class="kwrd">else</span>
+        <span class="kwrd">return</span> defaultValue;
+    }
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">sealed</span> <span class="kwrd">class</span> DoubleRequestBinder : RequestBinderBase
+  {
+    <span class="kwrd">public</span> <span class="kwrd">override</span> <span class="kwrd">object</span> Bind(HttpContextBase httpContext, Type convertToType, <span class="kwrd">string</span> parameterName = <span class="kwrd">null</span>, <span class="kwrd">object</span> defaultValue = <span class="kwrd">null</span>)
+    {
+      var <span class="kwrd">value</span> = GetRequestNameValueCollection(httpContext)[parameterName];
+      <span class="kwrd">if</span> (!String.IsNullOrEmpty(<span class="kwrd">value</span>))
+      {
+        <span class="kwrd">return</span> Double.Parse(<span class="kwrd">value</span>, NumberStyles.Currency);
+      }
+      <span class="kwrd">else</span>
+        <span class="kwrd">return</span> defaultValue;
+    }
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">sealed</span> <span class="kwrd">class</span> DateTimeRequestBinder : RequestBinderBase
+  {
+    <span class="kwrd">public</span> <span class="kwrd">override</span> <span class="kwrd">object</span> Bind(HttpContextBase httpContext, Type convertToType, <span class="kwrd">string</span> parameterName = <span class="kwrd">null</span>, <span class="kwrd">object</span> defaultValue = <span class="kwrd">null</span>)
+    {
+      var <span class="kwrd">value</span> = GetRequestNameValueCollection(httpContext)[parameterName];
+      <span class="kwrd">if</span> (!String.IsNullOrEmpty(<span class="kwrd">value</span>))
+      {
+        <span class="kwrd">return</span> DateTime.Parse(<span class="kwrd">value</span>);
+      }
+      <span class="kwrd">else</span>
+        <span class="kwrd">return</span> defaultValue;
+    }
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">sealed</span> <span class="kwrd">class</span> DecimalRequestBinder : RequestBinderBase
+  {
+    <span class="kwrd">public</span> <span class="kwrd">override</span> <span class="kwrd">object</span> Bind(HttpContextBase httpContext, Type convertToType, <span class="kwrd">string</span> parameterName = <span class="kwrd">null</span>, <span class="kwrd">object</span> defaultValue = <span class="kwrd">null</span>)
+    {
+      var <span class="kwrd">value</span> = GetRequestNameValueCollection(httpContext)[parameterName];
+      <span class="kwrd">if</span> (!String.IsNullOrEmpty(<span class="kwrd">value</span>))
+      {
+        <span class="kwrd">return</span> Decimal.Parse(<span class="kwrd">value</span>, NumberStyles.Currency);
+      }
+      <span class="kwrd">else</span>
+        <span class="kwrd">return</span> defaultValue;
+    }
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">sealed</span> <span class="kwrd">class</span> BooleanRequestBinder : RequestBinderBase
+  {
+    <span class="kwrd">public</span> <span class="kwrd">override</span> <span class="kwrd">object</span> Bind(HttpContextBase httpContext, Type convertToType, <span class="kwrd">string</span> parameterName = <span class="kwrd">null</span>, <span class="kwrd">object</span> defaultValue = <span class="kwrd">null</span>)
+    {
+      var <span class="kwrd">value</span> = GetRequestNameValueCollection(httpContext)[parameterName];
+      <span class="kwrd">if</span> (!String.IsNullOrEmpty(<span class="kwrd">value</span>))
+      {
+        <span class="kwrd">switch</span> (<span class="kwrd">value</span>.ToString().Trim())
+        {
+          <span class="kwrd">case</span> <span class="str">"False"</span>:
+          <span class="kwrd">case</span> <span class="str">"false"</span>:
+          <span class="kwrd">case</span> <span class="str">"0"</span>:
+          <span class="kwrd">case</span> <span class="str">"off"</span>:
+          <span class="kwrd">case</span> <span class="str">""</span>:
+            <span class="kwrd">return</span> <span class="kwrd">false</span>;
+          <span class="kwrd">case</span> <span class="str">"True"</span>:
+          <span class="kwrd">case</span> <span class="str">"true"</span>:
+          <span class="kwrd">case</span> <span class="str">"1"</span>:
+          <span class="kwrd">case</span> <span class="str">"on"</span>:
+            <span class="kwrd">return</span> <span class="kwrd">true</span>;
+          <span class="kwrd">default</span>:
+            <span class="kwrd">return</span> <span class="kwrd">false</span>;
+        }
+      }
+      <span class="kwrd">else</span>
+        <span class="kwrd">return</span> defaultValue;
+    }
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">sealed</span> <span class="kwrd">class</span> StringArrayRequestBinder : RequestBinderBase
+  {
+    <span class="kwrd">public</span> <span class="kwrd">override</span> <span class="kwrd">object</span> Bind(HttpContextBase httpContext, Type convertToType, <span class="kwrd">string</span> parameterName = <span class="kwrd">null</span>, <span class="kwrd">object</span> defaultValue = <span class="kwrd">null</span>)
+    {
+      var <span class="kwrd">value</span> = GetRequestNameValueCollection(httpContext)[parameterName];
+      <span class="kwrd">if</span> (!String.IsNullOrEmpty(<span class="kwrd">value</span>))
+      {
+        <span class="kwrd">value</span> = <span class="kwrd">value</span>.Trim();
+        <span class="kwrd">if</span> (<span class="kwrd">value</span>.Length == 0)
+          <span class="kwrd">return</span> Activator.CreateInstance(convertToType, <span class="kwrd">new</span> <span class="kwrd">object</span>[] { 0 });
+        <span class="kwrd">else</span>
+        {
+          var values = <span class="kwrd">value</span>.Split(<span class="kwrd">new</span> <span class="kwrd">char</span>[] { <span class="str">','</span> }, StringSplitOptions.RemoveEmptyEntries);
+          var strArray = <span class="kwrd">new</span> String[values.Length];
+          <span class="kwrd">for</span> (<span class="kwrd">int</span> i = 0; i &lt; values.Length; i++)
+            strArray[i] = values[i];
+          <span class="kwrd">return</span> strArray;
+        }
+      }
+      <span class="kwrd">return</span> defaultValue;
+    }
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">sealed</span> <span class="kwrd">class</span> Int32ArrayRequestBinder : RequestBinderBase
+  {
+    <span class="preproc">#region</span> IRequestBinder Members
+
+    <span class="kwrd">public</span> <span class="kwrd">override</span> <span class="kwrd">object</span> Bind(HttpContextBase httpContext, Type convertToType, <span class="kwrd">string</span> parameterName = <span class="kwrd">null</span>, <span class="kwrd">object</span> defaultValue = <span class="kwrd">null</span>)
+    {
+      var <span class="kwrd">value</span> = GetRequestNameValueCollection(httpContext)[parameterName];
+      <span class="kwrd">if</span> (!String.IsNullOrEmpty(<span class="kwrd">value</span>))
+      {
+        <span class="kwrd">value</span> = <span class="kwrd">value</span>.Trim();
+        <span class="kwrd">if</span> (<span class="kwrd">value</span>.Length == 0)
+          <span class="kwrd">return</span> Activator.CreateInstance(convertToType, <span class="kwrd">new</span> <span class="kwrd">object</span>[] { 0 });
+        <span class="kwrd">else</span>
+        {
+          var values = <span class="kwrd">value</span>.Split(<span class="kwrd">new</span> <span class="kwrd">char</span>[] { <span class="str">','</span> }, StringSplitOptions.RemoveEmptyEntries);
+          var intArray = <span class="kwrd">new</span> Int32[values.Length];
+          <span class="kwrd">for</span> (<span class="kwrd">int</span> i = 0; i &lt; values.Length; i++)
+            intArray[i] = Int32.Parse(values[i]);
+          <span class="kwrd">return</span> intArray;
+        }
+      }
+      <span class="kwrd">return</span> defaultValue;
+    }
+
+    <span class="preproc">#endregion</span>
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">sealed</span> <span class="kwrd">class</span> DoubleArrayRequestBinder : RequestBinderBase
+  {
+    <span class="preproc">#region</span> IRequestBinder Members
+
+    <span class="kwrd">public</span> <span class="kwrd">override</span> <span class="kwrd">object</span> Bind(HttpContextBase httpContext, Type convertToType, <span class="kwrd">string</span> parameterName = <span class="kwrd">null</span>, <span class="kwrd">object</span> defaultValue = <span class="kwrd">null</span>)
+    {
+      var <span class="kwrd">value</span> = GetRequestNameValueCollection(httpContext)[parameterName];
+      <span class="kwrd">if</span> (!String.IsNullOrEmpty(<span class="kwrd">value</span>))
+      {
+        <span class="kwrd">value</span> = <span class="kwrd">value</span>.Trim();
+        <span class="kwrd">if</span> (<span class="kwrd">value</span>.Length == 0)
+          <span class="kwrd">return</span> Activator.CreateInstance(convertToType, <span class="kwrd">new</span> <span class="kwrd">object</span>[] { 0 });
+        <span class="kwrd">else</span>
+        {
+          var values = <span class="kwrd">value</span>.Split(<span class="kwrd">new</span> <span class="kwrd">char</span>[] { <span class="str">','</span> }, StringSplitOptions.RemoveEmptyEntries);
+          var dblArray = <span class="kwrd">new</span> Double[values.Length];
+          <span class="kwrd">for</span> (<span class="kwrd">int</span> i = 0; i &lt; values.Length; i++)
+            dblArray[i] = Double.Parse(values[i]);
+          <span class="kwrd">return</span> dblArray;
+        }
+      }
+      <span class="kwrd">return</span> defaultValue;
+    }
+
+    <span class="preproc">#endregion</span>
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">sealed</span> <span class="kwrd">class</span> EnumRequestBinder : RequestBinderBase
+  {
+    <span class="kwrd">public</span> <span class="kwrd">override</span> <span class="kwrd">object</span> Bind(HttpContextBase httpContext, Type convertToType, <span class="kwrd">string</span> parameterName = <span class="kwrd">null</span>, <span class="kwrd">object</span> defaultValue = <span class="kwrd">null</span>)
+    {
+      var <span class="kwrd">value</span> = GetRequestNameValueCollection(httpContext)[parameterName];
+      <span class="kwrd">if</span> (!String.IsNullOrEmpty(<span class="kwrd">value</span>))
+      {
+        <span class="kwrd">return</span> Enum.Parse(convertToType, <span class="kwrd">value</span>);
+      }
+      <span class="kwrd">else</span>
+        <span class="kwrd">return</span> defaultValue;
+    }
+  }
+
+}</pre></div>
+<h2>Handling Custom classes (DTOs)</h2>The class <code>DtoBinder</code> listed below can handle most DTO type classes, including properties that are arrays or <code>Int32</code> or <code>string</code>. 
+<div class="panel code content/images/csharp.png" title="DtoBinder.cs" id="code_76730"><div class="codeHeading" style="background-image: url(/web/20240415161728/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle">DtoBinder.cs</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode"><span class="kwrd">using</span> System;
+<span class="kwrd">using</span> System.Collections.Generic;
+<span class="kwrd">using</span> System.Globalization;
+<span class="kwrd">using</span> System.Reflection;
+<span class="kwrd">using</span> System.Web;
+
+<span class="kwrd">namespace</span> Matlus.Web.Builder
+{
+  <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">class</span> DtoBinder
+  {
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">readonly</span> BindingFlags PROP_BINDING_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase;
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">readonly</span> BindingFlags PROP_SET_BINDING_FLAGS = BindingFlags.SetProperty | BindingFlags.SetField | BindingFlags.IgnoreCase;
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">object</span> GetPropertyValue(<span class="kwrd">object</span> dtoObject, <span class="kwrd">string</span> propertyName)
+    {
+      PropertyInfo propInfo = dtoObject.GetType().GetProperty(propertyName, PROP_BINDING_FLAGS);
+      <span class="kwrd">if</span> (propInfo != <span class="kwrd">null</span>)
+        <span class="kwrd">return</span> propInfo.GetValue(dtoObject, <span class="kwrd">null</span>);
+      <span class="kwrd">else</span>
+        <span class="kwrd">return</span> <span class="kwrd">null</span>;
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> Dictionary&lt;<span class="kwrd">string</span>, PropertyInfo&gt; GetPropertyInfos(<span class="kwrd">object</span> dtoObject)
+    {
+      var properties = <span class="kwrd">new</span> Dictionary&lt;<span class="kwrd">string</span>, PropertyInfo&gt;();
+      <span class="kwrd">foreach</span> (var propInfo <span class="kwrd">in</span> dtoObject.GetType().GetProperties(PROP_BINDING_FLAGS))
+        properties.Add(propInfo.Name, propInfo);
+      <span class="kwrd">return</span> properties;
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> T CreateInstanceFromRequest&lt;T&gt;(HttpRequestBase request) <span class="kwrd">where</span> T : <span class="kwrd">new</span>()
+    {      
+      Type t = <span class="kwrd">typeof</span>(T);
+      var propertyInfos = t.GetProperties(PROP_BINDING_FLAGS);
+      var instance = <span class="kwrd">new</span> T();
+      
+      <span class="kwrd">foreach</span> (var propInfo <span class="kwrd">in</span> propertyInfos)
+      {
+        var <span class="kwrd">value</span> = request.Form[propInfo.Name];
+        <span class="kwrd">if</span> (<span class="kwrd">value</span> == <span class="kwrd">null</span>)
+          <span class="kwrd">value</span> = request.QueryString[propInfo.Name];
+        <span class="kwrd">if</span> (<span class="kwrd">value</span> != <span class="kwrd">null</span>)
+          SetPropertyValue(instance, propInfo, <span class="kwrd">value</span>);
+      }
+      <span class="kwrd">return</span> instance;
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> SetPropertyValue(<span class="kwrd">object</span> dtoObject, <span class="kwrd">string</span> propertyName, <span class="kwrd">object</span> propertyValue)
+    {
+      var propInfo = dtoObject.GetType().GetProperty(propertyName, PROP_BINDING_FLAGS);
+      SetPropertyValue(dtoObject, propInfo, propertyValue);
+    }
+
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">void</span> CleanUpPropertyValue&lt;TResult&gt;(<span class="kwrd">ref</span> <span class="kwrd">object</span> propertyValue) <span class="kwrd">where</span> TResult : <span class="kwrd">struct</span>
+    {
+      var <span class="kwrd">value</span> = propertyValue <span class="kwrd">as</span> String;
+      <span class="kwrd">if</span> (<span class="kwrd">value</span> != <span class="kwrd">null</span>)
+      {
+        var trimmed = <span class="kwrd">value</span>.Trim();
+        <span class="kwrd">if</span> (trimmed.Length == 0)
+          propertyValue = <span class="kwrd">default</span>(TResult);
+        <span class="kwrd">else</span>
+        {
+          Type resultType = <span class="kwrd">typeof</span>(TResult);
+
+          <span class="kwrd">if</span> (resultType == <span class="kwrd">typeof</span>(Int32))
+            propertyValue = ConvertToInt32(trimmed);
+          <span class="kwrd">else</span> <span class="kwrd">if</span> (resultType == <span class="kwrd">typeof</span>(Int64))
+            propertyValue = ConvertToInt64(trimmed);
+          <span class="kwrd">else</span> <span class="kwrd">if</span> (resultType == <span class="kwrd">typeof</span>(Double))
+            propertyValue = ConvertToDouble(trimmed);
+          <span class="kwrd">else</span> <span class="kwrd">if</span> (resultType == <span class="kwrd">typeof</span>(Decimal))
+            propertyValue = ConvertToDecimal(trimmed);
+          <span class="kwrd">else</span>
+            propertyValue = trimmed;
+        }
+      }
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> SetPropertyValue(<span class="kwrd">object</span> dtoObject, PropertyInfo propInfo, <span class="kwrd">object</span> propertyValue)
+    {
+      Type propType = propInfo.PropertyType;
+      var typeCode = Type.GetTypeCode(propertyValue.GetType());
+
+      <span class="kwrd">if</span> (propType == <span class="kwrd">typeof</span>(String))
+        propInfo.SetValue(dtoObject, propertyValue, PROP_SET_BINDING_FLAGS, <span class="kwrd">null</span>, <span class="kwrd">null</span>, CultureInfo.CurrentCulture);
+      <span class="kwrd">else</span> <span class="kwrd">if</span> (propType == <span class="kwrd">typeof</span>(Int32))
+      {
+        CleanUpPropertyValue&lt;Int32&gt;(<span class="kwrd">ref</span> propertyValue);        
+        propInfo.SetValue(dtoObject, propertyValue, PROP_SET_BINDING_FLAGS, <span class="kwrd">null</span>, <span class="kwrd">null</span>, CultureInfo.CurrentCulture);
+      }
+      <span class="kwrd">else</span> <span class="kwrd">if</span> (propType == <span class="kwrd">typeof</span>(Int64))
+      {
+        CleanUpPropertyValue&lt;Int64&gt;(<span class="kwrd">ref</span> propertyValue);
+        propInfo.SetValue(dtoObject, propertyValue, PROP_SET_BINDING_FLAGS, <span class="kwrd">null</span>, <span class="kwrd">null</span>, CultureInfo.CurrentCulture);
+      }
+      <span class="kwrd">else</span> <span class="kwrd">if</span> (propType == <span class="kwrd">typeof</span>(Boolean))
+        propInfo.SetValue(dtoObject, ConvertToBool(propertyValue), PROP_SET_BINDING_FLAGS, <span class="kwrd">null</span>, <span class="kwrd">null</span>, CultureInfo.CurrentCulture);
+      <span class="kwrd">else</span> <span class="kwrd">if</span> (propType == <span class="kwrd">typeof</span>(DateTime))
+      {
+        CleanUpPropertyValue&lt;DateTime&gt;(<span class="kwrd">ref</span> propertyValue);
+        propInfo.SetValue(dtoObject, Convert.ToDateTime(propertyValue), PROP_SET_BINDING_FLAGS, <span class="kwrd">null</span>, <span class="kwrd">null</span>, CultureInfo.CurrentCulture);
+      }
+      <span class="kwrd">else</span> <span class="kwrd">if</span> (propType == <span class="kwrd">typeof</span>(Double))
+      {
+        CleanUpPropertyValue&lt;Double&gt;(<span class="kwrd">ref</span> propertyValue);
+        propInfo.SetValue(dtoObject, propertyValue, PROP_SET_BINDING_FLAGS, <span class="kwrd">null</span>, <span class="kwrd">null</span>, CultureInfo.CurrentCulture);
+      }
+      <span class="kwrd">else</span> <span class="kwrd">if</span> (propType == <span class="kwrd">typeof</span>(Decimal))
+      {
+        CleanUpPropertyValue&lt;Decimal&gt;(<span class="kwrd">ref</span> propertyValue);
+        propInfo.SetValue(dtoObject, Convert.ToDecimal(propertyValue), PROP_SET_BINDING_FLAGS, <span class="kwrd">null</span>, <span class="kwrd">null</span>, CultureInfo.CurrentCulture);
+      }
+      <span class="kwrd">else</span> <span class="kwrd">if</span> (propType.IsEnum)
+        propInfo.SetValue(dtoObject, Enum.Parse(propType, Convert.ToString(propertyValue), <span class="kwrd">true</span>), PROP_SET_BINDING_FLAGS, <span class="kwrd">null</span>, <span class="kwrd">null</span>, CultureInfo.CurrentCulture);
+      <span class="kwrd">else</span> <span class="kwrd">if</span> (propType == <span class="kwrd">typeof</span>(Array))
+        propInfo.SetValue(dtoObject, propertyValue, PROP_SET_BINDING_FLAGS, <span class="kwrd">null</span>, <span class="kwrd">null</span>, CultureInfo.CurrentCulture);
+      <span class="kwrd">else</span> <span class="kwrd">if</span> (propType == <span class="kwrd">typeof</span>(String[]))
+      {
+        <span class="kwrd">if</span> (propertyValue <span class="kwrd">is</span> String)
+        {
+          var propertyValueAsString = propertyValue.ToString().Trim();
+          <span class="kwrd">if</span> (propertyValueAsString.Length == 0)
+            propertyValue = <span class="kwrd">new</span> <span class="kwrd">string</span>[0];
+          <span class="kwrd">else</span>
+            propertyValue = propertyValueAsString.Split(<span class="kwrd">new</span> <span class="kwrd">char</span>[] { <span class="str">','</span> }, StringSplitOptions.RemoveEmptyEntries);
+        }
+        propInfo.SetValue(dtoObject, propertyValue, PROP_SET_BINDING_FLAGS, <span class="kwrd">null</span>, <span class="kwrd">null</span>, CultureInfo.CurrentCulture);
+      }
+      <span class="kwrd">else</span> <span class="kwrd">if</span> (propType == <span class="kwrd">typeof</span>(Int32[]) || propType == <span class="kwrd">typeof</span>(Int64[]))
+      {
+        <span class="kwrd">if</span> (propertyValue <span class="kwrd">is</span> String)
+        {
+          var propertyValueAsString = propertyValue.ToString().Trim();
+          <span class="kwrd">if</span> (propertyValueAsString.Length == 0)
+            propertyValue = Activator.CreateInstance(propType, <span class="kwrd">new</span> <span class="kwrd">object</span>[] { 0 });
+          <span class="kwrd">else</span>
+          {
+            var values = propertyValueAsString.Split(<span class="kwrd">new</span> <span class="kwrd">char</span>[] { <span class="str">','</span> }, StringSplitOptions.RemoveEmptyEntries);
+            <span class="kwrd">if</span> (propType == <span class="kwrd">typeof</span>(Int32[]))
+            {
+              var intArray = <span class="kwrd">new</span> Int32[values.Length];
+              <span class="kwrd">for</span> (<span class="kwrd">int</span> i = 0; i &lt; values.Length; i++)
+                intArray[i] = Int32.Parse(values[i]);
+              propertyValue = intArray;
+            }
+            <span class="kwrd">else</span>
+            {
+              var intArray = <span class="kwrd">new</span> Int64[values.Length];
+              <span class="kwrd">for</span> (<span class="kwrd">int</span> i = 0; i &lt; values.Length; i++)
+                intArray[i] = Int64.Parse(values[i]);
+              propertyValue = intArray;
+            }
+          }
+        }
+        propInfo.SetValue(dtoObject, propertyValue, PROP_SET_BINDING_FLAGS, <span class="kwrd">null</span>, <span class="kwrd">null</span>, CultureInfo.CurrentCulture);
+      }
+    }
+
+    <span class="kwrd">private</span> <span class="kwrd">static</span> Int32 ConvertToInt32(<span class="kwrd">string</span> <span class="kwrd">value</span>)
+    {
+      <span class="kwrd">return</span> Int32.Parse(<span class="kwrd">value</span>, NumberStyles.Currency ^ NumberStyles.AllowDecimalPoint);
+    }
+
+    <span class="kwrd">private</span> <span class="kwrd">static</span> Int64 ConvertToInt64(<span class="kwrd">string</span> <span class="kwrd">value</span>)
+    {
+      <span class="kwrd">return</span> Int64.Parse(<span class="kwrd">value</span>, NumberStyles.Currency ^ NumberStyles.AllowDecimalPoint);
+    }
+
+    <span class="kwrd">private</span> <span class="kwrd">static</span> Double ConvertToDouble(<span class="kwrd">string</span> <span class="kwrd">value</span>)
+    {
+      <span class="kwrd">return</span> Double.Parse(<span class="kwrd">value</span>, NumberStyles.Currency);
+    }
+
+    <span class="kwrd">private</span> <span class="kwrd">static</span> Decimal ConvertToDecimal(<span class="kwrd">string</span> <span class="kwrd">value</span>)
+    {
+      <span class="kwrd">return</span> Decimal.Parse(<span class="kwrd">value</span>, NumberStyles.Currency);
+    }
+
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">bool</span> ConvertToBool(<span class="kwrd">object</span> objBool)
+    {
+      <span class="kwrd">switch</span> (objBool.ToString().Trim())
+      {
+        <span class="kwrd">case</span> <span class="str">"False"</span>:
+        <span class="kwrd">case</span> <span class="str">"false"</span>:
+        <span class="kwrd">case</span> <span class="str">"0"</span>:
+        <span class="kwrd">case</span> <span class="str">"off"</span>:
+        <span class="kwrd">case</span> <span class="str">""</span>:
+          <span class="kwrd">return</span> <span class="kwrd">false</span>;
+        <span class="kwrd">case</span> <span class="str">"True"</span>:
+        <span class="kwrd">case</span> <span class="str">"true"</span>:
+        <span class="kwrd">case</span> <span class="str">"1"</span>:
+        <span class="kwrd">case</span> <span class="str">"on"</span>:
+          <span class="kwrd">return</span> <span class="kwrd">true</span>;
+        <span class="kwrd">default</span>:
+          <span class="kwrd">return</span> <span class="kwrd">false</span>;
+      }
+    }
+  }
+}</pre></div>Then in order to invoke the DtoBinder from the <code>ChangeType&lt;T&gt;</code> method, you'll need to make a small modification to its implementation. The complete implementations are shown below: 
+<div class="panel code content/images/csharp.png" title="ChangeType&lt;T&gt; methods" id="code_99842"><div class="codeHeading" style="background-image: url(/web/20240415161728/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle">ChangeType<t> methods</t></h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode"><span class="kwrd">protected</span> T ChangeType&lt;T&gt;() <span class="kwrd">where</span> T : <span class="kwrd">class</span>, <span class="kwrd">new</span>()
+{
+  Type type = <span class="kwrd">typeof</span>(T);
+  <span class="kwrd">if</span> (RequestBinder.Contains(type))
+    <span class="kwrd">return</span> (T)RequestBinder.GetBinder(type).Bind(HttpContext, type);
+  <span class="kwrd">else</span> <span class="kwrd">if</span> (!type.IsValueType)
+    <span class="kwrd">return</span> DtoBinder.CreateInstanceFromRequest&lt;T&gt;(Request);
+  <span class="kwrd">else</span>
+    <span class="kwrd">return</span> <span class="kwrd">default</span>(T);
+}
+
+<span class="kwrd">protected</span> T ChangeType&lt;T&gt;(<span class="kwrd">string</span> parameterName, T defaultValue = <span class="kwrd">default</span>(T))
+{
+  Type type = <span class="kwrd">typeof</span>(T);
+  <span class="kwrd">if</span> (RequestBinder.Contains(type))
+    <span class="kwrd">return</span> (T)RequestBinder.GetBinder(type).Bind(HttpContext, type, parameterName, defaultValue);
+  <span class="kwrd">else</span> <span class="kwrd">if</span> (type.IsEnum)
+    <span class="kwrd">return</span> (T)RequestBinder.GetBinder(<span class="kwrd">typeof</span>(Enum)).Bind(HttpContext, type, parameterName, defaultValue);
+  <span class="kwrd">else</span>
+    <span class="kwrd">return</span> defaultValue;        
+}</pre></div>  
+        </div></body></html>

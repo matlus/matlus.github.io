@@ -1,0 +1,566 @@
+{
+  "body": "The genesis of Quartz for ASP.NET was what I felt were some Problems with ASP.NET MVC Framework Design. Quartz for ASP.NET can be used in conjunction with ASP.NET MVC or in regular ASP.NET WebApplication/Website projects (without any WebForms). It works the same either way.\n\n \n\nVideos and Downloads\n\nThere are a few Videos in the Videos section below, that you may want to watch.\n\nIn the Downloads you can find the following:\n\nThe Complete source code (.Net 4.0 compatible only at the moment)\nA Sample Project\nA New Quartz Project Item - for VS 2010\nA New Quarts Builder Item - for VS 2010\nA New Quartz View Item - for VS 2010\n\n \n\nQuartz for ASP.NET is the most intuitive way to build dynamic web pages, using a powerful combination of class Composition and Inheritance. Today’s dynamic pages are rarely simple, so you need something that gives you more control over how your pages are composed. With Quartz for ASP.NET you continue to get the loose coupling and separation of concerns that the MVC design pattern provides and in addition you also get\n\nLoose coupling between Views and Template\nTemplates are Html. That is there is no html+code OR code+html\nViews can be treated as real classes - inheritance/polymorphism and you write code in a.cs file\nStrong typing and F12 navigation\nPlug-able Websites/applications\n\nHowever, the primary driver for Quartz for ASP.NET was the way in which you build pages in ASP.NET MVC and the problems with that design. Figure 1 below, shows the relationship and flow of control in the ASP.NET MVC design, between a Controller and a View, Partial View and Master Page/Layout Page.\n\nFigure 1: ASP.NET MVC - relationship between a Controller and \"views\"\n\nYou'll notice that the process of building a page is akin to a chain reaction. That wouldn't be so bad if it weren't for the fact that the controller is not really controlling anything besides starting off a specific chain reaction (everything to the left of the Controller on the right in Figure1).\n\nHow Quartz for ASP.NET Works\n\nFigure 2 shows the relationship and flow of control between the Builder and the Views and Master Page Template.\n\n \n\nFigure 2: Quartz for ASP.NET - relationship between a Builder and Views\nIn Quartz for ASP.NET you use composition to build your pages. That is, a page is a composition of multiple View objects. The Builder orchestrates the entire composition. The way it works is this:\nThe Builder picks a Master Template (an Html file). This template usually has spots that need to be filled in, as shown in Figure 2 above, the \"Page\"\nIt then picks the appropriate views for each of these spots (a base class (of the Builder) could enlist some views to do the \"common\" parts and the descendant Builder could choose to override these choices)\nSince the Builder has access to instances of each of the views enlisted to render the page, it can talk directly to these views to hand them the data each of them will need to do their part.\nAgain, since the Builder has access to views as objects instances it can treat views polymorphic-ally if required or use inheritance or both\nOnce it has done the above, each of the views go off and do their part (generate html) and a page is produced.\nSince views are regular .NET classes you have the full might of the .NET framework at your disposal. And since their only job is to produce html in conjunction with the Request Context (of the current request) and the data they’ve been handed by the Builder, it’s totally up to you, how you do that. The Quartz framework does provide some options out of the box, and they are:\nSimply generate html using just code and data, writing directly to the output\nUse html templates (with placeholder tags – parser included with the framework) to render html directly to the output. This method has the added advantage that you have no html in code and templates can be re-used across multiple views and/or a view can use multiple templates or decide to use a different template conditionally\nUse any other mechanism to generate html, such as T4 Templates.\n\nThe code listing below is a sample of the code you'd write in a Builder's BuildPage() method.\n\nSample Code\nprotected override void BuildPage(HttpContextBase httpContext, object model)\n{\n    var featuresAllPageViewModel = (FeaturesAllPageViewModel)model;\n\n    TitleView.Title = \"Quartz for ASP.NET - Features\";\n    AdBoxTopView.BoxTitle = \"Highlights\";\n    AdBoxTopView.Model = featuresAllPageViewModel.AdBoxModel;\n\n    RegisterView(\"Body\", new FeaturesAllView(httpContext, this, featuresAllPageViewModel.Features));\n  }\n}\n\nComposing Pages with Quartz for ASP.NET\n\nTraditionally, web application frameworks work in a inside-out fashion. That is, when you field a request for a page, you’re really starting with the inner most part of the page and working your way out (by calling RenderAction or RenderPartial in MVC parlance). In Quartz for ASP.NET you start with a template and compose your page using multiple views. It’s really a lot more intuitive to think and work this way, than inside-out.\n\nFigure 3: Quartz for ASP.NET - Composing Pages in an intuitive manner\nMore Features of Quartz for ASP.NET\n\nSince all templates are html, your designer can build templates using the html design tool of her choice, and both you and the designer can live an uncluttered life (no more html+code or code+html)\nViews are completely unaware of the Builder that enlisted them or any other Builders for that matter. In Quartz for ASP.NET, Views are the \"leaf nodes\". There is only one loosely coupled linkage, that between the Builder and the views it enlists.\nAll the code you write is strongly typed so you get all the benefits of strong typing and the IDE can help you navigate your classes and methods (F12).\nBlazingly FAST!\nRazor Views\nIn the Quartz framework, templates are really just html templates. This keeps your templates clean, reusable and designable by web designers. However, since the Razor syntax is so cool, there is an experimental RazorView that you can try out. At the moment the view template is compiled each time the view is rendered. I'm not sure this feature will go too far since it kind of goes against the grain. But it's there...\nQuartz for ASP.NET - Quick-Dive Video\nIn the video below I attempt to give you a really good overview of what the Quartz framework is and how you would use it. So please take a look at the video since not only will you get a really good sense of what Quartz for ASP.NET is but I'm sure a lot of your questions will be answered as well.\n\n \n\n \n\nQuartz for ASP.NET - Data Binding\nThis is a short video that shows you how data binding works. We use the Repeater in this demo as well so you'll also get to see how the Repeater can be used along with templates.\n\n \n\nDownloads\nThe downloadable .zip files contains the following files\nThe Complete source code (.Net 4.0 compatible only at the moment)\nA Sample Project\nA New Quartz Project Item - for VS 2010\nA New Quartz Builder Item - for VS 2010\nA New Quartz View Item - for VS 2010\nQuartz For ASP.NET Source\nInstalling Project and Item Templates in VS.NET\n\nIf you've not installed project and item templates in Visual Studio before, please follow these steps:\n\nExtract the files from the downloaded zip file to a temporary folder.\n\nFirst we'll installed the Project Item Template.\n\nLocate the file called – Quartz Web Application.zip\nNavigate to the Visual Studio Project Templates (C#) folder. On my machine this folder is located at:\nC:\\Program Files (x86)\\Microsoft Visual Studio 10.0\\Common7\\IDE\\ProjectTemplates\\CSharp\\\nCreate a folder called Quartz under the CSharp folder as shown in Figure 4 below\nCopy the Quartz Web Application.zip into this folder\nFollow the steps listed in the Rebuilding the Visual Studio Cache section below in order to rebuild the VS.NET cache.\nStart Visual Studio (rebuild the cache first!) and create a new project.\nYou'll notice a Quartz folder in Installed Templates ree view on the left (as seen in Figure 5 below) and when you select it, you'll see the Quartz Web Application project item template and shown in Figure 5 below\n\n \n\nFigure 4: Creating the Quartz Project Template folder\n\n \n\nFigure 5: Quartz Web Application Project Item\n\n \n\nThe steps involved in installing the Item Templates in Visual Studio are similar to the steps we followed earlier for installing the Project Item Template. This time you need to create a folder under a different hive.\n\nYou'll need to create a folder under the ItemTemplates\\CSharp folder, which on my machine is:\nC:\\Program Files (x86)\\Microsoft Visual Studio 10.0\\Common7\\IDE\\ItemTemplates\\CSharp\nLike before, create a folder called Quartz under this folder as shown in Figure 6 below.\nCopy the QuartzBuilder.zip and QuartzView.zip files into this new folder\nRebuild the Visual Studio cache again using the steps listed in the Rebuilding the Visual Studio Cache section below.\nAfter you've done that, you'll see item templates for a Quartz Builder and Quartz View when you add an item to your Quartz Web Application project, as shown in Figure 7 below\n\nFigure 6: Showing the Quartz folder under the ItemTemplates\\CSharp folder\n\n \n\nFigure 7: Showing the Quartz Builder and View items in the Add new Item dialog\nRebuilding the Visual Studio Cache\n\nOnce installed the item templates into VS.NET, you'll need to get Visual Studio to rebuild its cache. You do that by doing the following:\n\nClose all instances of Visual Studio\nOpen a Visual Studio Command Prompt (i.e. Start | All Programs | Microsoft Visual Studio 2010 | Visual Studio Tools | Visual Studio Command Prompt)\nExecute the following command: devenv /installvstemplates",
+  "bodyLinks": [
+    {
+      "text": "Problems with ASP.NET MVC Framework Design",
+      "url": "https://web.archive.org/web/20240809182901/http://www.matlus.com/problems-with-asp-net-mvc-framework-design/"
+    },
+    {
+      "text": "Videos section",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#videos"
+    },
+    {
+      "text": "Downloads",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#downloads"
+    },
+    {
+      "text": "Figure1",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#figure1"
+    },
+    {
+      "text": "Figure 2 above",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#figure2"
+    },
+    {
+      "text": "Quartz For ASP.NET Source",
+      "url": "https://web.archive.org/web/20240809182901/http://www.matlus.com/content/uploads/Quartz/Matlus.Quartz.zip"
+    },
+    {
+      "text": "Figure 4",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#figure4"
+    },
+    {
+      "text": "Rebuilding the Visual Studio Cache",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#rebuildingvscache"
+    },
+    {
+      "text": "Figure 5",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#figure5"
+    },
+    {
+      "text": "Figure 6",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#figure6"
+    },
+    {
+      "text": "Rebuilding the Visual Studio Cache",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#rebuildingvscache"
+    },
+    {
+      "text": "Figure 7",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#figure7"
+    }
+  ],
+  "code": [
+    "protected override void BuildPage(HttpContextBase httpContext, object model)\n{\n    var featuresAllPageViewModel = (FeaturesAllPageViewModel)model;\n\n    TitleView.Title = \"Quartz for ASP.NET - Features\";\n    AdBoxTopView.BoxTitle = \"Highlights\";\n    AdBoxTopView.Model = featuresAllPageViewModel.AdBoxModel;\n\n    RegisterView(\"Body\", new FeaturesAllView(httpContext, this, featuresAllPageViewModel.Features));\n  }\n}\n",
+    "C:\\Program Files (x86)\\Microsoft Visual Studio 10.0\\Common7\\IDE\\ProjectTemplates\\CSharp\\",
+    "C:\\Program Files (x86)\\Microsoft Visual Studio 10.0\\Common7\\IDE\\ItemTemplates\\CSharp"
+  ],
+  "header": "Quartz for ASP.NET\nPosted by Shiv Kumar on 10th November, 2010\nCategorized Under: Programming ASP.NET\nTagged With: MVC Performance Quartz for ASP.NET \nLicensing:MIT License \n  ",
+  "html": "<div class=\"articleText\">\n        <p>The genesis of <b>Quartz for ASP.NET</b> was what I felt were some <a href=\"https://web.archive.org/web/20240809182901/http://www.matlus.com/problems-with-asp-net-mvc-framework-design/\">Problems with ASP.NET MVC Framework Design</a>. Quartz for ASP.NET can be used in conjunction with ASP.NET MVC or in regular ASP.NET WebApplication/Website projects (without any WebForms). It works the same either way. </p> <p>&nbsp;</p> <div class=\"panel\"> <h3 class=\"note\">Videos and Downloads</h3> <p>There are a few Videos in the <a href=\"#videos\">Videos section</a> below, that you may want to watch. </p> <p>In the <a href=\"#downloads\">Downloads</a> you can find the following:  </p><ol> <li>The Complete source code (.Net 4.0 compatible only at the moment)  </li><li>A Sample Project  </li><li>A New Quartz Project Item - for VS 2010  </li><li>A New Quarts Builder Item - for VS 2010  </li><li>A New Quartz View Item - for VS 2010 </li></ol></div> <p>&nbsp;</p> <p>Quartz for ASP.NET is the most intuitive way to build dynamic web pages, using a powerful combination of class Composition and Inheritance. Today’s dynamic pages are rarely simple, so you need something that gives you more control over how your pages are composed. With Quartz for ASP.NET you continue to get the <b>loose coupling</b> and <b>separation of concerns</b> that the MVC design pattern provides and in addition you also get  </p><ul> <li>Loose coupling between Views and Template  </li><li>Templates are Html. That is there is no html+code OR code+html  </li><li>Views can be treated as real classes - inheritance/polymorphism and you write code in a.cs file  </li><li>Strong typing and F12 navigation  </li><li>Plug-able Websites/applications </li></ul> <p>However, the primary driver for Quartz for ASP.NET was the way in which you build pages in ASP.NET MVC and the problems with that design. Figure 1 below, shows the relationship and flow of control in the ASP.NET MVC design, between a Controller and a View, Partial View and Master Page/Layout Page. </p><a name=\"figure1\"></a><img title=\"Quartz Design And Control Flow\" style=\"border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px\" border=\"0\" alt=\"Quartz Design And Control Flow\" src=\"https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/BuilderDesignAndControlFlow_8873aee6-9745-4fcf-a5b3-49b4e1d9070e.jpg\" width=\"421\" height=\"282\">  <h4>Figure 1: ASP.NET MVC - relationship between a Controller and \"views\"</h4> <div class=\"mgntop10\"></div> <p>You'll notice that the process of building a page is akin to a chain reaction. That wouldn't be so bad if it weren't for the fact that the controller is not really controlling anything besides starting off a specific chain reaction (everything to the left of the Controller on the right in <a href=\"#figure1\">Figure1</a>). </p> <h2 class=\"sectionheading\">How Quartz for ASP.NET Works</h2> <p>Figure 2 shows the relationship and flow of control between the <code>Builder</code> and the Views and Master Page Template. <a name=\"figure2\"></a> </p><p><img title=\"Quartz For ASP.NET - Build By Composition\" style=\"border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px\" border=\"0\" alt=\"Quartz For ASP.NET Build By Composition\" src=\"https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/BuilderForASPNETBuildByComposition_970bef33-dcda-4898-86fd-f96df20651c5.jpg\" width=\"547\" height=\"312\">&nbsp; </p><h4>Figure 2: Quartz for ASP.NET - relationship between a Builder and Views</h4> <div class=\"mgntop10\"></div>In Quartz for ASP.NET you use composition to build your pages. That is, a page is a composition of multiple View objects. The <code>Builder</code> orchestrates the entire composition. The way it works is this:  <ol> <li>The Builder picks a Master Template (an Html file). This template usually has spots that need to be filled in, as shown in <a href=\"#figure2\">Figure 2 above</a>, the \"Page\"  </li><li>It then picks the appropriate views for each of these spots (a base class (of the Builder) could enlist some views to do the \"common\" parts and the descendant Builder could choose to override these choices)  </li><li>Since the Builder has access to instances of each of the views enlisted to render the page, it can talk directly to these views to hand them the data each of them will need to do their part.  </li><li>Again, since the Builder has access to views as objects instances it can treat views polymorphic-ally if required or use inheritance or both  </li><li>Once it has done the above, each of the views go off and do their part (generate html) and a page is produced.  </li><li>Since views are regular .NET classes you have the full might of the .NET framework at your disposal. And since their only job is to produce html in conjunction with the Request Context (of the current request) and the data they’ve been handed by the Builder, it’s totally up to you, how you do that. The Quartz framework does provide some options out of the box, and they are:  <ul> <li>Simply generate html using just code and data, writing directly to the output  </li><li>Use html templates (with placeholder tags – parser included with the framework) to render html directly to the output. This method has the added advantage that you have no html in code and templates can be re-used across multiple views and/or a view can use multiple templates or decide to use a different template conditionally  </li><li>Use any other mechanism to generate html, such as T4 Templates. </li></ul></li></ol> <p>The code listing below is a sample of the code you'd write in a <code>Builder</code>'s <code>BuildPage()</code> method.  </p><div title=\"Sample Code\" class=\"panel code content/images/csharp.png\" id=\"code_63920\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240809182901/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Sample Code</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">protected</span> <span class=\"kwrd\">override</span> <span class=\"kwrd\">void</span> BuildPage(HttpContextBase httpContext, <span class=\"kwrd\">object</span> model)\n{\n    var featuresAllPageViewModel = (<span class=\"identifier\">FeaturesAllPageViewModel</span>)model;\n\n    TitleView.Title = <span class=\"str\">\"Quartz for ASP.NET - Features\"</span>;\n    AdBoxTopView.BoxTitle = <span class=\"str\">\"Highlights\"</span>;\n    AdBoxTopView.Model = featuresAllPageViewModel.AdBoxModel;\n\n    RegisterView(<span class=\"str\">\"Body\"</span>, <span class=\"kwrd\">new</span> <span class=\"identifier\">FeaturesAllView</span>(httpContext, <span class=\"kwrd\">this</span>, featuresAllPageViewModel.Features));\n  }\n}\n</pre></div>\n<h2 class=\"sectionheading\">Composing Pages with Quartz for ASP.NET</h2>\n<p>Traditionally, web application frameworks work in a inside-out fashion. That is, when you field a request for a page, you’re really starting with the inner most part of the page and working your way out (by calling <code>RenderAction</code> or <code>RenderPartial</code> in MVC parlance). In Quartz for ASP.NET you start with a template and compose your page using multiple views. It’s really a lot more intuitive to think and work this way, than inside-out.</p>\n<p><img title=\"InsideOutFlow\" style=\"border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px\" border=\"0\" alt=\"InsideOutFlow\" src=\"https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/InsideOutFlow_e8aa0001-1671-4c15-9a88-fddb80b7753e.jpg\" width=\"640\" height=\"480\"></p>\n<h3>Figure 3: Quartz for ASP.NET - Composing Pages in an intuitive manner</h3>\n<h2 class=\"sectionheading\">More Features of Quartz for ASP.NET</h2>\n<p>\n</p><ul class=\"list\">\n<li>Since all templates are html, your designer can build templates using the html design tool of her choice, and both you and the designer can live an uncluttered life (no more html+code or code+html) \n</li><li>Views are completely unaware of the Builder that enlisted them or any other Builders for that matter. In Quartz for ASP.NET, Views are the \"leaf nodes\". There is only one loosely coupled linkage, that between the Builder and the views it enlists. \n</li><li>All the code you write is strongly typed so you get all the benefits of strong typing and the IDE can help you navigate your classes and methods (F12). \n</li><li>Blazingly FAST! </li></ul>\n<div class=\"panel\">\n<h3 class=\"note\">Razor Views</h3>In the Quartz framework, templates are really just html templates. This keeps your templates clean, reusable and designable by web designers. However, since the Razor syntax is so cool, there is an <b><i>experimental</i></b> RazorView that you can try out. At the moment the view template is compiled each time the view is rendered. I'm not sure this feature will go too far since it kind of goes against the grain. But it's there... </div><a name=\"videos\"></a>\n<h2>Quartz for ASP.NET - Quick-Dive Video</h2>In the video below I attempt to give you a really good overview of what the Quartz framework is and how you would use it. So please take a look at the video since not only will you get a really good sense of what Quartz for ASP.NET is but I'm sure a lot of your questions will be answered as well. \n<p>&nbsp;</p>\n\n\n<p>&nbsp;</p>\n<h2>Quartz for ASP.NET - Data Binding</h2>This is a short video that shows you how data binding works. We use the <code>Repeater</code> in this demo as well so you'll also get to see how the <code>Repeater</code> can be used along with templates. \n\n\n<p>&nbsp;</p>\n<p><a name=\"downloads\"></a>\n</p><h2>Downloads</h2>The downloadable .zip files contains the following files \n<ol>\n<li>The Complete source code (.Net 4.0 compatible only at the moment) \n</li><li>A Sample Project \n</li><li>A New Quartz Project Item - for VS 2010 \n</li><li>A New Quartz Builder Item - for VS 2010 \n</li><li>A New Quartz View Item - for VS 2010 </li></ol><a href=\"https://web.archive.org/web/20240809182901/http://www.matlus.com/content/uploads/Quartz/Matlus.Quartz.zip\">Quartz For ASP.NET Source</a> \n<h2>Installing Project and Item Templates in VS.NET</h2>\n<p>If you've not installed project and item templates in Visual Studio before, please follow these steps:</p>\n<p>Extract the files from the downloaded zip file to a temporary folder.</p>\n<p>First we'll installed the <strong>Project Item Template</strong>.</p>\n<ol>\n<li>Locate the file called – <code>Quartz Web Application.zip</code> \n</li><li>Navigate to the Visual Studio Project Templates (C#) folder. On my machine this folder is located at: \n</li><li><pre>C:\\Program Files (x86)\\Microsoft Visual Studio 10.0\\Common7\\IDE\\ProjectTemplates\\CSharp\\</pre>\n</li><li>Create a folder called <code>Quartz</code> under the <code>CSharp</code> folder as shown in <a href=\"#figure4\">Figure 4</a> below \n</li><li>Copy the <code>Quartz Web Application.zip</code> into this folder \n</li><li>Follow the steps listed in the <a href=\"#rebuildingvscache\">Rebuilding the Visual Studio Cache</a> section below in order to rebuild the VS.NET cache. \n</li><li>Start Visual Studio (rebuild the cache first!) and create a new project. \n</li><li>You'll notice a <code>Quartz</code> folder in <code>Installed Templates</code> ree view on the left (as seen in <a href=\"#figure5\">Figure 5</a> below) and when you select it, you'll see the Quartz Web Application project item template and shown in Figure 5 below</li></ol>\n<p>&nbsp;</p><a name=\"figure4\"></a>\n<p><img title=\"CreatingTheQuartzProjectItemFolder\" style=\"border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px\" border=\"0\" alt=\"CreatingTheQuartzProjectItemFolder\" src=\"https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/CreatingTheQuartzProjectItemFolder_1940c44b-7133-4db9-90ca-288e50e2e1f6.jpg\" width=\"615\" height=\"455\"></p>\n<h3>Figure 4: Creating the Quartz Project Template folder </h3>\n<p>&nbsp;</p><a name=\"figure5\"></a>\n<p><img title=\"QuartzNewProjectDialog\" style=\"border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px\" border=\"0\" alt=\"QuartzNewProjectDialog\" src=\"https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/QuartzNewProjectDialog_1041fdb7-162a-4b89-aa0a-c36ee4830e87.jpg\" width=\"620\" height=\"381\"></p>\n<h3>Figure 5: Quartz Web Application Project Item</h3>\n<p>&nbsp;</p>\n<p>The steps involved in installing the Item Templates in Visual Studio are similar to the steps we followed earlier for installing the Project Item Template. This time you need to create a folder under a different hive.</p>\n<ol>\n<li>You'll need to create a folder under the <code>ItemTemplates\\CSharp</code> folder, which on my machine is: \n</li><li><pre>C:\\Program Files (x86)\\Microsoft Visual Studio 10.0\\Common7\\IDE\\ItemTemplates\\CSharp</pre>\n</li><li>Like before, create a folder called <code>Quartz</code> under this folder as shown in <a href=\"#figure6\">Figure 6</a> below. \n</li><li>Copy the <code>QuartzBuilder.zip</code> and <code>QuartzView.zip</code> files into this new folder \n</li><li>Rebuild the Visual Studio cache again using the steps listed in the <a href=\"#rebuildingvscache\">Rebuilding the Visual Studio Cache</a> section below. \n</li><li>After you've done that, you'll see item templates for a Quartz Builder and Quartz View when you add an item to your Quartz Web Application project, as shown in <a href=\"#figure7\">Figure 7</a> below </li></ol><a name=\"figure6\"></a>\n<p><img title=\"CreatingTheQuartzItemTemplateFolder\" style=\"border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px\" border=\"0\" alt=\"CreatingTheQuartzItemTemplateFolder\" src=\"https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/CreatingTheQuartzItemTemplateFolder_2de25e85-d46c-4adc-b68b-5d9358ba94a8.jpg\" width=\"615\" height=\"453\"></p>\n<h3>Figure 6: Showing the Quartz folder under the ItemTemplates\\CSharp folder</h3>\n<p>&nbsp;</p><a name=\"figure7\"></a>\n<p><img title=\"QuartzAddNewItemShowingBuilderAndView\" style=\"border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px\" border=\"0\" alt=\"QuartzAddNewItemShowingBuilderAndView\" src=\"https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/QuartzAddNewItemShowingBuilderAndView_e91d1d44-9cee-4458-b51f-8db7123c347b.jpg\" width=\"640\" height=\"360\"></p>\n<h3>Figure 7: Showing the Quartz Builder and View items in the Add new Item dialog</h3><a name=\"rebuildingvscache\"></a>\n<h2>Rebuilding the Visual Studio Cache</h2>\n<p>Once installed the item templates into VS.NET, you'll need to get Visual Studio to rebuild its cache. You do that by doing the following:</p>\n<ol>\n<li>Close all instances of Visual Studio \n</li><li>Open a <code>Visual Studio Command Prompt</code> (i.e. Start | All Programs | Microsoft Visual Studio 2010 | Visual Studio Tools | Visual Studio Command Prompt) \n</li><li>Execute the following command: <code>devenv /installvstemplates</code></li></ol>  \n        </div>",
+  "images": [
+    {
+      "alt": "Quartz Design And Control Flow",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/BuilderDesignAndControlFlow_8873aee6-9745-4fcf-a5b3-49b4e1d9070e.jpg"
+    },
+    {
+      "alt": "Quartz For ASP.NET Build By Composition",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/BuilderForASPNETBuildByComposition_970bef33-dcda-4898-86fd-f96df20651c5.jpg"
+    },
+    {
+      "alt": "InsideOutFlow",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/InsideOutFlow_e8aa0001-1671-4c15-9a88-fddb80b7753e.jpg"
+    },
+    {
+      "alt": "CreatingTheQuartzProjectItemFolder",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/CreatingTheQuartzProjectItemFolder_1940c44b-7133-4db9-90ca-288e50e2e1f6.jpg"
+    },
+    {
+      "alt": "QuartzNewProjectDialog",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/QuartzNewProjectDialog_1041fdb7-162a-4b89-aa0a-c36ee4830e87.jpg"
+    },
+    {
+      "alt": "CreatingTheQuartzItemTemplateFolder",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/CreatingTheQuartzItemTemplateFolder_2de25e85-d46c-4adc-b68b-5d9358ba94a8.jpg"
+    },
+    {
+      "alt": "QuartzAddNewItemShowingBuilderAndView",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240809182901im_/http://www.matlus.com/content/uploads/2011/01/QuartzAddNewItemShowingBuilderAndView_e91d1d44-9cee-4458-b51f-8db7123c347b.jpg"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240809182901/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "ASP.NET",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/category/programming/asp-net/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240809182901/https://twitter.com/share?url=http%3a%2f%2fmatlus.com%2fquartz-for-aspnet%2f&text=Quartz+for+ASP.NET"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240809182901/http://www.facebook.com/sharer.php?u=http%3a%2f%2fmatlus.com%2fquartz-for-aspnet%2f&t=Quartz+for+ASP.NET"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240809182901/https://plus.google.com/share?url=http%3a%2f%2fmatlus.com%2fquartz-for-aspnet%2f&text=Quartz+for+ASP.NET"
+    },
+    {
+      "text": "Problems with ASP.NET MVC Framework Design",
+      "url": "https://web.archive.org/web/20240809182901/http://www.matlus.com/problems-with-asp-net-mvc-framework-design/"
+    },
+    {
+      "text": "Videos section",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#videos"
+    },
+    {
+      "text": "Downloads",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#downloads"
+    },
+    {
+      "text": "Figure1",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#figure1"
+    },
+    {
+      "text": "Figure 2 above",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#figure2"
+    },
+    {
+      "text": "Quartz For ASP.NET Source",
+      "url": "https://web.archive.org/web/20240809182901/http://www.matlus.com/content/uploads/Quartz/Matlus.Quartz.zip"
+    },
+    {
+      "text": "Figure 4",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#figure4"
+    },
+    {
+      "text": "Rebuilding the Visual Studio Cache",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#rebuildingvscache"
+    },
+    {
+      "text": "Figure 5",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#figure5"
+    },
+    {
+      "text": "Figure 6",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#figure6"
+    },
+    {
+      "text": "Rebuilding the Visual Studio Cache",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#rebuildingvscache"
+    },
+    {
+      "text": "Figure 7",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/#figure7"
+    },
+    {
+      "text": "Shawn Mclean",
+      "url": "https://web.archive.org/web/20240809182901/http://www.shawndev.com/"
+    },
+    {
+      "text": "Shawn Mclean",
+      "url": "https://web.archive.org/web/20240809182901/http://www.shawndev.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240809182901/http://www.matlus.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240809182901/http://www.matlus.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240809182901/http://www.matlus.com/"
+    },
+    {
+      "text": "Earl Z",
+      "url": "https://web.archive.org/web/20240809182901/http://earlz.biz.tm/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240809182901/http://www.matlus.com/"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240809182901/http://matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240809182901/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "Quartz for ASP.NET",
+  "url": "https://web.archive.org/web/20240809182901/http://matlus.com/quartz-for-aspnet/"
+}

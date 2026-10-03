@@ -1,0 +1,414 @@
+{
+  "body": "Have you ever needed to use LocalDB to run Unit Tests on your CI Build Server in Visual Studio Online? If so and you've been banging your head against a wall, this post will get you to that goal. Here are the steps you'll need to take.\nCreate a batch file that Creates a named instance of LocalDB and starts it up\nThis batch file also Publishes your database (the dacpac)\nSave this batch file in your Solution\nModify your Build Definition to tell it to use this batch file as a Pre Test Script\nQueue a Build\n\nIt will probably take you a few tried to get the paths and relative paths for your build server correct, but hopefully, I'll cover most of the gotcha so you don't have the same head scratching moments (or hours) that I had.\n\nI assume that\n\nYou use LocalDB for your tests on your local machine\nYou have a Database Project in your solution\nYou Publish your LocalDB (if needed) and then run your tests\nYou have a Post Deployment script that seeds your database with any data your tests will need\nYou have your tests working on your local machine against this LocalDB instance\n\nBatch File\n\nThe CI build servers in Visual Studio Online come pre-installed with SqlLocalDB. This is a utility that allows you to configure LocalDB and spin it up. If the instance is already there and configured and started there is no harm in running these commands again. However, in Visual Studio Online, your CI build servers are freshly installed and spun up VMs, so you’re always starting from a “fresh” installation so you’re not technically running these scripts “again”.\n\nPlease take Note of the Paths\nSqlLocalDB is installed in the Program Files directory\nSqlPackage is installed in Program Files (x86) directory\nMake sure you use the paths I mention. On your local machine these tools may be found in other directories as well. But on the CI Build servers in Azure, these tools will only be found in the paths mentioned. Also, as of this writing the version number of LocalDB on these boxes is 120 and Visual Studio is 12 (Which is really Visual Studio 2013).\n\n \n\nBatch File\n\"%ProgramFiles%\\Microsoft SQL Server\\120\\Tools\\Binn\\SqlLocalDB.exe\" create \"ProjectsV12\" 12.0 -s\n\"%ProgramFiles(x86)%\\Microsoft Visual Studio 12.0\\Common7\\IDE\\Extensions\\Microsoft\\SQLDB\\DAC\\120\\SqlPackage.exe\" /Action:Publish /SourceFile:\"%TF_BUILD_BINARIESDIRECTORY%\\OoblxDb.dacpac\" /Profile:\"%TF_BUILD_SOURCESDIRECTORY%\\Dev\\vNext\\Ooblx.Web\\Database\\OoblxDb\\OoblxDb.publish.xml\"\nCreateLocalDBInstance.bat\n\nThe first line in the batch file above - SqlLocalDB Utility - SqlLocalDB.exe can be found in the Program Files folder (and not the Program Files (x86) folder). The rest of the command line creates a localDB instance named “ProjectsV12” with an instace version of “12.0” and starts it. More information on SqlLocalDB Utility can be found here SqlLocalDB Utility\n\nIt is important to note that I have \"ProjectsV12\" as the instance name because the connection string I'm using has it in there. Here is what my connection string looks like\n\nConnection String\nconnectionString=\"Data Source=(localdb)\\ProjectsV12;Initial Catalog=Ooblx;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False\"\nThe Connection String I use in my Unit Test Project\n\nThe second line in the batch file - This is where you'll probably get tripped up. Essentially we need to Publish our database and in order to do so, there are a few pre-requisites:\n\nYou will typically have a Database Project (of course) that produces your database and seeds it with any data you'll need in order to run your tests\nThe output of this Database Project is a *.dacpac. You should double check the name of this dacpac file\nYou don't have to, but it is best to have a Publish Profile - a publish.xml file in order to keep the Publishing step simple\n\nTeam Foundation Build environment variables Team Foundation Build environment variables\nBuild Definition\nYou’ll need to configure your build definition. In the “Process” Tab, expand the “Test” node and then expand “Advanced” under this node set the value for the “Pre Test Script Path” item to path and name of the batch file we created earlier, by browsing to it. In my solution I have a batch file called CreateLocalDBInstance.bat in the root folder of the solution (this is where the .sln file is found. For me the path looks like so: $/Ooblx/Dev/vNext/Ooblx.Web/CreateLocalDBInstance.bat",
+  "bodyLinks": [
+    {
+      "text": "SqlLocalDB Utility",
+      "url": "https://web.archive.org/web/20240809192335/http://msdn.microsoft.com/en-us/library/hh212961.aspx"
+    },
+    {
+      "text": "Team Foundation Build environment variables",
+      "url": "https://web.archive.org/web/20240809192335/http://msdn.microsoft.com/en-us/library/hh850448.aspx"
+    }
+  ],
+  "code": [
+    "\"%ProgramFiles%\\Microsoft SQL Server\\120\\Tools\\Binn\\SqlLocalDB.exe\" create \"ProjectsV12\" 12.0 -s",
+    "\"%ProgramFiles(x86)%\\Microsoft Visual Studio 12.0\\Common7\\IDE\\Extensions\\Microsoft\\SQLDB\\DAC\\120\\SqlPackage.exe\" /Action:Publish /SourceFile:\"%TF_BUILD_BINARIESDIRECTORY%\\OoblxDb.dacpac\" /Profile:\"%TF_BUILD_SOURCESDIRECTORY%\\Dev\\vNext\\Ooblx.Web\\Database\\OoblxDb\\OoblxDb.publish.xml\"",
+    "connectionString=\"Data Source=(localdb)\\ProjectsV12;Initial Catalog=Ooblx;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False\""
+  ],
+  "header": "Using LocalDB in Visual Studio Online\nPosted by Shiv Kumar on 2nd December, 2014\nCategorized Under: Programming Build Definition\nTagged With: LocalDB TFS \n  ",
+  "html": "<div class=\"articleText\">\n        Have you ever needed to use LocalDB to run Unit Tests on your CI Build Server in Visual Studio Online? If so and you've been banging your head against a wall, this post will get you to that goal. Here are the steps you'll need to take.  <ol> <li>Create a batch file that Creates a named instance of LocalDB and starts it up  </li><li>This batch file also Publishes your database (the dacpac)  </li><li>Save this batch file in your Solution  </li><li>Modify your Build Definition to tell it to use this batch file as a Pre Test Script  </li><li>Queue a Build </li></ol> <p>It will probably take you a few tried to get the paths and relative paths for your build server correct, but hopefully, I'll cover most of the gotcha so you don't have the same head scratching moments (or hours) that I had. </p> <p><b>I assume that</b>  </p><ul> <li>You use LocalDB for your tests on your local machine  </li><li>You have a Database Project in your solution  </li><li>You Publish your LocalDB (if needed) and then run your tests  </li><li>You have a Post Deployment script that seeds your database with any data your tests will need  </li><li>You have your tests working on your local machine against this LocalDB instance </li></ul> <p></p> <h2>Batch File</h2> <p>The CI build servers in Visual Studio Online come pre-installed with SqlLocalDB. This is a utility that allows you to configure LocalDB and spin it up. If the instance is already there and configured and started there is no harm in running these commands again. However, in Visual Studio Online, your CI build servers are freshly installed and spun up VMs, so you’re always starting from a “fresh” installation so you’re not technically running these scripts “again”.</p> <div class=\"panel\"> <h3 class=\"note\">Please take Note of the Paths</h3> <ul> <li>SqlLocalDB is installed in the Program Files directory  </li><li>SqlPackage is installed in Program Files (x86) directory </li></ul>Make sure you use the paths I mention. On your local machine these tools may be found in other directories as well. But on the CI Build servers in Azure, these tools will only be found in the paths mentioned. Also, as of this writing the version number of LocalDB on these boxes is 120 and Visual Studio is 12 (Which is really Visual Studio 2013). </div> <p>&nbsp;</p> <div title=\"Batch File\" class=\"panel code content/images/csharp.png\" id=\"code_40735\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240809192335/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Batch File</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre>\"%ProgramFiles%\\Microsoft SQL Server\\120\\Tools\\Binn\\SqlLocalDB.exe\" create \"ProjectsV12\" 12.0 -s</pre><pre>\"%ProgramFiles(x86)%\\Microsoft Visual Studio 12.0\\Common7\\IDE\\Extensions\\Microsoft\\SQLDB\\DAC\\120\\SqlPackage.exe\" /Action:Publish /SourceFile:\"%TF_BUILD_BINARIESDIRECTORY%\\OoblxDb.dacpac\" /Profile:\"%TF_BUILD_SOURCESDIRECTORY%\\Dev\\vNext\\Ooblx.Web\\Database\\OoblxDb\\OoblxDb.publish.xml\"</pre>\n<h3>CreateLocalDBInstance.bat</h3></div>\n<p>The first line in the batch file above - <b>SqlLocalDB Utility</b> - SqlLocalDB.exe can be found in the Program Files folder (and not the Program Files (x86) folder). The rest of the command line creates a localDB instance named “ProjectsV12” with an instace version of “12.0” and starts it. More information on SqlLocalDB Utility can be found here <a href=\"https://web.archive.org/web/20240809192335/http://msdn.microsoft.com/en-us/library/hh212961.aspx\" target=\"_blank\">SqlLocalDB Utility</a> \n</p><p>It is important to note that I have \"ProjectsV12\" as the instance name because the connection string I'm using has it in there. Here is what my connection string looks like \n</p><div title=\"Connection String\" class=\"panel code content/images/csharp.png\" id=\"code_6904\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240809192335/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Connection String</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre>connectionString=\"Data Source=(localdb)\\ProjectsV12;Initial Catalog=Ooblx;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False\"</pre>\n<h3>The Connection String I use in my Unit Test Project</h3></div>\n<p></p>\n<p></p>\n<p>The second line in the batch file - This is where you'll probably get tripped up. Essentially we need to Publish our database and in order to do so, there are a few pre-requisites: \n</p><ol>\n<li>You will typically have a Database Project (of course) that produces your database and seeds it with any data you'll need in order to run your tests \n</li><li>The output of this Database Project is a *.dacpac. You should double check the name of this dacpac file \n</li><li>You don't have to, but it is best to have a Publish Profile - a publish.xml file in order to keep the Publishing step simple</li></ol>\n\n\n<p></p>Team Foundation Build environment variables <a href=\"https://web.archive.org/web/20240809192335/http://msdn.microsoft.com/en-us/library/hh850448.aspx\" target=\"_blank\">Team Foundation Build environment variables</a> \n<h2>Build Definition</h2>You’ll need to configure your build definition. In the “Process” Tab, expand the “Test” node and then expand “Advanced” under this node set the value for the “Pre Test Script Path” item to path and name of the batch file we created earlier, by browsing to it. In my solution I have a batch file called CreateLocalDBInstance.bat in the root folder of the solution (this is where the .sln file is found. For me the path looks like so: $/Ooblx/Dev/vNext/Ooblx.Web/CreateLocalDBInstance.bat \n  \n        </div>",
+  "images": [],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240809192335/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "Build Definition",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/category/programming/build-definition/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/localdb/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/tfs/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240809192335/https://twitter.com/share?url=http%3a%2f%2fmatlus.com%2fusing-localdb-in-visual-studio-online%2f&text=Using+LocalDB+in+Visual+Studio+Online"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240809192335/http://www.facebook.com/sharer.php?u=http%3a%2f%2fmatlus.com%2fusing-localdb-in-visual-studio-online%2f&t=Using+LocalDB+in+Visual+Studio+Online"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240809192335/https://plus.google.com/share?url=http%3a%2f%2fmatlus.com%2fusing-localdb-in-visual-studio-online%2f&text=Using+LocalDB+in+Visual+Studio+Online"
+    },
+    {
+      "text": "SqlLocalDB Utility",
+      "url": "https://web.archive.org/web/20240809192335/http://msdn.microsoft.com/en-us/library/hh212961.aspx"
+    },
+    {
+      "text": "Team Foundation Build environment variables",
+      "url": "https://web.archive.org/web/20240809192335/http://msdn.microsoft.com/en-us/library/hh850448.aspx"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240809192335/http://matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240809192335/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "Using LocalDB in Visual Studio Online",
+  "url": "https://web.archive.org/web/20240809192335/http://matlus.com/using-localdb-in-visual-studio-online/"
+}

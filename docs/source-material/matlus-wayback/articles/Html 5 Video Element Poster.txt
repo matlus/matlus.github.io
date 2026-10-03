@@ -1,0 +1,28 @@
+Html 5 Video Element Poster
+===========================
+
+Html 5 Video Element Poster
+Posted by Shiv Kumar on 1st September, 2010
+Categorized Under: Html 5 Video Tag
+Tagged With: Poster Video 
+  
+
+Original URL: http://matlus.com/html-5-video-element-poster/
+Wayback capture: https://web.archive.org/web/20240415154330/http://matlus.com/html-5-video-element-poster/
+
+During the source of developing an html 5 video player I came across the really stupid specification and that is the poster attribute of the video element (new to Html 5). It seems that the poster is only shown till the browser has been able to download the first frame of the video in question. Which in most cases is a split second or so. After that it shows the first frame. That is really stupid considering that every video hosting website gives people the ability to choose between one or more frames of the video for which they've created thumbnail images, or in some cases allow you to upload an image that best represents the video and yet in some cases (unique to ExposureRoom only so far) go as far as providing all of the above options plus two more:
+
+Allow you to provide a time code for the frame you'd like to use as the thumbnail
+Allow you to play your video and create a thumbnail at any frame of your choosing
+So just to re-iterate, typically you have between 2 to 4 ways in which to determine the poster fame of your video on these sites. That tells me, that picking a poster frame is really important for content producers. So don't people who come up with the specs know this? Do they think that all of the videos they see on the Internet magically have the first frame to be these spectacular images that best represent the video in question? I mean in most cases the first frame is black, for Pete's sake! And what would it really have taken for them to leave the poster in place till someone clicks the play button? Maybe we should all look forward to seeing videos across the Internet that have black images instead of interesting images that not only tell something about what you're going to see, but also the production quality and picture quality of the video.
+Edit -September 25, 2010
+Since writing this post, I've been working with WHATWG and a few browser vendors and it looks like this is going to change.
+
+--- Links in the article ---
+ExposureRoom
+https://web.archive.org/web/20240415154330/http://exposureroom.com/
+
+--- Images referenced in the article ---
+Html5VideoPosterFrame1
+https://web.archive.org/web/20240415154330im_/http://www.matlus.com/content/uploads/2011/01/Html5VideoPosterFrame1_90b56724-b87d-4b57-b246-d214fe715d05.jpg
+Local file: images/00cf5187ef7f4dd6-Html5VideoPosterFrame1_90b56724-b87d-4b57-b246-d214fe715d05.jpg

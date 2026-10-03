@@ -1,5 +1,44 @@
 # Handoff
 
+## Recovered articles and blog-writing skill, October 3, 2026
+
+The 53 recovered Matlus articles are preserved under
+`docs/source-material/matlus-wayback/`, with text, HTML, original capture metadata,
+55 images, a manifest, and checksums. Four image references remain unrecovered.
+The archive is source material for possible republication and evidence of Shiv's
+writing voice. Original prose and code stay unchanged; grammar edits belong in
+publication copies. No posts have been added to the published collection.
+
+Shiv requested a separate blog-writing skill that adds his voice and teaching
+flow to the professional-writing clarity principles. The repository skill lives
+at `.agents/skills/blog-writing/`; professional-writing stays unchanged. Preserve
+opinions, conviction, and purposeful questions. Introduce concepts when readers
+need them and develop examples in an intelligible order. Pronoun choice follows
+meaning rather than a prescribed pattern.
+
+The skill is generalized across blog subjects and formats. The recovered corpus
+provides the foundation, with transcript samples adding voice evidence. Keep
+subject-specific positions in supporting examples and derive reusable guidance
+about explanation, pacing, questions, distinctions, and conviction. Forceful
+rule teaching is one aspect of the voice; practical notes and patient tutorials
+also inform it.
+
+The skill also draws on a focused sample of the raw Programming To Exceptions
+and Separate State from Behavior transcripts in Drive. Shiv clarified that strong
+rules should keep their force: teach the principle and its reasoning, then explain
+a justified exception when it matters to the example. Keep essential scope and
+meaningful qualifications without burying the point under hypothetical caveats.
+See the skill's `references/spoken-teaching.md` for the source observations.
+His follow-up distinguishes genuine special cases, such as a creation command
+returning an identifier, from separate operations: get promises an entity or an
+exception, while search allows no match. Search is not a caveat to get. Preserve
+these contracts and introduce each operation at the right point in the lesson.
+
+These articles have no associated videos or GitHub repositories for publication.
+Retain historical references in the source archive. Future publication uses new
+hero art and recovered inline images as references, while keeping the original
+content, code, and displayed dates. See the archive README for the recovery limits.
+
 ## Programming to Exceptions consolidation, October 2, 2026
 
 The shared series now has three parts: method contracts, exception design and

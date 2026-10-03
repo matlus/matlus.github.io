@@ -1,0 +1,455 @@
+{
+  "body": "Why use a class factory?\nThere are many scenarios in software design where a factory comes in handy. Essentially, when you use a family of classes polymorphic-ally, you could benefit from using a Factory. Typically a factory provides the following benefits:\nDecouples the client code (your code that uses these classes) from knowing how to create instances of concrete types\nDecouples the client code from knowledge of the concrete classes themselves. That is the client code knows only of the abstract base class or an interface but not the derived or concrete class\n\nAn important facet of system design is how objects are created. Most frameworks (including the .NET framework) make it extremely simple to create instances of classes and rightly so. However, what is not apparent is that you introduce coupling between the class that has been created and the class that uses the object. In small systems this coupling is not a problem but in large systems coupling between classes makes the system inflexible or rigid making changes over time more difficult to accommodate. The Factory design pattern helps alleviate this coupling.\n\n \n\n \n\n \n\nThere are many ways in which to implement a factory. Ranging from simple to exotic. But essentially their implementations differ in the following area:\n\nHow the decision is made as to which class to instantiate\nHow an instance of a class is actually created\nIn this article I'll show you an implementation that makes it really simple to use the factory design pattern while at the same time providing incredible performance. A high performance class factory comes in handy when you are creating hundreds of instances of your classes (typically in a server application scenario) and you need to squeeze out performance from core areas of your framework or application. I use this technique in the Quartz for ASP.NET framework as it is critical that framework level code is high performance. Those of you who know what a factory is and when you'd use it can jump right to High Performance Factory\nUnderstanding the use of a Factory\nBy way of an example, lets say we have a bunch of employees and each Employee has a property called EmployeeType that specifies how the employee is paid. As you can see in the code listing below the EmployeeType enum has 3 possible values. The system uses this information to process the payment for each employee.\nEmployee Class\nenum EmployeeType { Salaried, Commission, Hourly }\n\nclass Employee\n{\n  public int Id { get; private set; }\n  public string Name { get; private set; }\n  public EmployeeType EmployeeType { get; private set; }\n\n  public Employee(int id, string name, EmployeeType employeeType)\n  {\n    Id = id;\n    Name = name;\n    EmployeeType = employeeType;\n  }\n}\nThen the code you'd write in order to process payments for each employee might look like this:\nSample Code\nvar employees = new List<Employee>\n  {\n    new Employee(1, \"Employee One\", EmployeeType.Commission),\n    new Employee(2, \"Employee Two\", EmployeeType.Hourly),\n    new Employee(3, \"Employee Three\", EmployeeType.Salaried),\n    new Employee(4, \"Employee Four\", EmployeeType.Salaried)\n  };\n\n  foreach (var employee in employees)\n  {\n    switch (employee.EmployeeType)\n    {\n      case EmployeeType.Salaried:\n        //Process payment for salaried employee\n        break;\n      case EmployeeType.Commission:\n        //Process payment for commision employee\n        break;\n      case EmployeeType.Hourly:\n        //Process payment for hourly employee\n        break;\n    }\n  }\n\nNow in order to help with the payment processing, let's say we had a family of classes (one class for each EmployeeType that all descend from an abstract base class, like that shown below:\nPayment Processor classes\nabstract class PaymentProcessorBase\n{\n  public abstract void ProcessPayment(Employee employee);\n}\n\nclass SalariedPaymentProcessor : PaymentProcessorBase\n{\n  public override void ProcessPayment(Employee employee)\n  {\n    Console.WriteLine(employee.Name + \"'s Payment was processed using Salaried Payment Processor\");\n  }\n}\n\nclass CommissionPaymentProcessor : PaymentProcessorBase\n{\n  public override void ProcessPayment(Employee employee)\n  {\n    Console.WriteLine(employee.Name + \"'s Payment was processed using Commission Payment Processor\");\n  }\n}\n\nclass HourlyPaymentProcessor : PaymentProcessorBase\n{\n  public override void ProcessPayment(Employee employee)\n  {\n    Console.WriteLine(employee.Name + \"'s Payment was processed using Hourly Payment Processor\");\n  }\n}\nWe could then alter our code to use these classes like so:\nSample Code\nPaymentProcessorBase processor = null;\n\nforeach (var employee in employees)\n{\n  switch (employee.EmployeeType)\n  {\n    case EmployeeType.Salaried:\n      processor = new SalariedPaymentProcessor();\n      break;\n    case EmployeeType.Commission:\n      processor = new CommissionPaymentProcessor();\n      break;\n    case EmployeeType.Hourly:\n      processor = new HourlyPaymentProcessor();\n      break;\n  }\n  processor.ProcessPayment(employee);\n}\n\nThis code works as expected, however there are two problems with this design.\nThe client code is tightly coupled to the various concrete classes and has intimate knowledge of how to create them\nIf you add a new EmployeeType you would have to alter this code to account for the new EmployeeType.\n\n \n\n \nFactory - Simple implementation\nThe simplest implementation of a factory might look something like that shown below\nSimple Factory\nclass SimplePaymentProcessorFactory\n{\n  public PaymentProcessorBase CreateFactory(string identifier)\n  {\n    if (identifier == \"SalariedPaymentProcessor\")\n      return new SalariedPaymentProcessor();\n    else if (identifier == \"CommissionPaymentProcessor\")\n      return new CommissionPaymentProcessor();\n    else if (identifier == \"HourlyPaymentProcessor\")\n      return new HourlyPaymentProcessor();\n    throw new ArgumentException(\"The identifier: \" + identifier + \", is not a valid identifier\", identifier);\n  }\n}\n\nThis design works well and the performance you get is unbeatable. However the implementation suffers from the following:\nAdding new classes means the code in the factory now need to be modified. So you shifted \"the problem\" from the client code to the factory.\nIf you're dealing with a lot of classes then this code could get pretty unwieldy\nThis design won't work in situations where you don't know the classes up front. Say in a plug-in scenario or similar, where all descendants current and future won't be known at the time of compiling this code.\nSo what we need then is a way to allow some client code to register classes with the factory and then the way we create instances of the required classes has to resort to using Reflection since we don't know the types at compile time so we couldn't possible write code that instantiates an instance of a class we don't know about. The most common way to create an instance of a class using Reflection is\nActivator.CreateInstance()\n\nand one of it's many overloads. This solution works really well but it can end up being slow if you're creating hundreds or thousands of classes in rapid succession (for example, in an ASP.NET application, your pages and handlers and controllers are created in Rapid succession). If you've got business rules that need to process thousands or millions of products items that the factory could end up being a bottle neck.\nHigh Performance Factory\nThe key difference in the Factory presented in this article is that the creation of an instance of a class uses a delegate. Which means the performance is as good as calling a delegate which is as fast as calling a virtual method (in .NET). Considering the circumstances (that you don't know of the class you're going to be creating an instance of at the time of compiling your code) that is as good as it can get. Further, the factory automatically registers classes for you, so you don't have to register the classes you want the factory to create. You could easily modify the implementation such that classes need to register themselves with the factory. The implementation uses DynamicMethod and ILGenerator and then use the CreateDelegate method of DynamicMethod to create and instance of a delegate that really references the constructor of the class you intend to create. Onces it creates a delegate instance it caches it so, so the next time it simply calls the delegate. The entire class is listed in the code listing below\nFactory class - Using the default constructor of your classes\nFactory Class - Default Constructor\nusing System;\nusing System.Collections.Concurrent;\nusing System.Linq;\nusing System.Reflection;\nusing System.Reflection.Emit;\n\nnamespace Factory\n{\n  static class PaymentProcessorFactory\n  {\n    private static Type classType = typeof(PaymentProcessorBase);\n    private static Type[] constructorArgs = new Type[] { };\n\n    private static readonly ConcurrentDictionary<string, Type> classRegistry = new ConcurrentDictionary<string, Type>();\n    private static readonly ConcurrentDictionary<string, ConstructorDelegate> classConstructors = new ConcurrentDictionary<string, ConstructorDelegate>();\n\n    delegate PaymentProcessorBase ConstructorDelegate();\n\n    static PaymentProcessorFactory()\n    {\n      var sw = System.Diagnostics.Stopwatch.StartNew();\n      \n      var paymentProcessors = from b in Assembly.GetEntryAssembly().GetTypes()\n                             where b.IsSubclassOf(classType)\n                             select b;\n\n      foreach (var type in paymentProcessors)\n        classRegistry.TryAdd(type.Name, type);\n    }\n\n\n    public static PaymentProcessorBase Create(string identifier)\n    {\n      if (String.IsNullOrEmpty(identifier))\n        throw new ArgumentException(\"identifier can not be null or empty\", identifier);\n      if (!classRegistry.ContainsKey(identifier))\n        throw new ArgumentException(\"No PaymentProcessor has been registered with the identifier: \" + identifier);\n\n      return Create(classRegistry[identifier]);\n    }\n\n    private static PaymentProcessorBase Create(Type type)\n    {\n      ConstructorDelegate del;\n\n      if (classConstructors.TryGetValue(type.Name, out del))\n        return del();\n\n      DynamicMethod dynamicMethod = new DynamicMethod(\"CreateInstance\", type, constructorArgs, classType);\n      ILGenerator ilGenerator = dynamicMethod.GetILGenerator();\n\n      ilGenerator.Emit(OpCodes.Newobj, type.GetConstructor(constructorArgs));\n      ilGenerator.Emit(OpCodes.Ret);\n\n      del = (ConstructorDelegate)dynamicMethod.CreateDelegate(typeof(ConstructorDelegate));\n      classConstructors.TryAdd(type.Name, del);\n      return del();\n    }\n  }\n}\n\n \n\nNow with our factory in place, then code that does the payment processing would become as simple as:\nCode using the Factory\nforeach (var employee in employees)\n{\n  var paymentProcessor = PaymentProcessorFactory.Create(employee.EmployeeType.ToString() + \"PaymentProcessor\");\n  paymentProcessor.ProcessPayment(employee);\n}\n\n\n \n\nNotice that the \"client code\" (the code that uses the PaymentProcessor classes and the Factory is completely decoupled from any knowledge of the actual classes that help with the payment processing of the different types. Thus when you need to add new payment processor types, it's a matter of defining a class the descends from the base class and implementing it. The Factory will automatically find the new class and register it and your client code will not have to change one bit. Now if your classes require say two parameters in their constructor then there are a few modifications you'll need to do. Let's say your class requires an Employee and an int parameter in it's constructor. I've provided a complete listing on the Factory class that includes the changes you'll need to make.\nFactory class - Handling two parameters in the constructor of your classes\nFactory Class - 2 constructor parameters\nusing System;\nusing System.Collections.Concurrent;\nusing System.Linq;\nusing System.Reflection;\nusing System.Reflection.Emit;\n\nnamespace Factory\n{\n  static class PaymentProcessorFactory\n  {\n    private static Type classType = typeof(PaymentProcessorBase);\n    private static Type[] constructorArgs = new Type[] { typeof(Employee), typeof(int) };\n\n    private static readonly ConcurrentDictionary<string, Type> classRegistry = new ConcurrentDictionary<string, Type>();\n    private static readonly ConcurrentDictionary<string, ConstructorDelegate> classConstructors = new ConcurrentDictionary<string, ConstructorDelegate>();\n\n    delegate PaymentProcessorBase ConstructorDelegate(Employee employee, int intParam);\n\n    static PaymentProcessorFactory()\n    {\n      var sw = System.Diagnostics.Stopwatch.StartNew();\n      \n      var paymentProcessors = from b in Assembly.GetEntryAssembly().GetTypes()\n                             where b.IsSubclassOf(classType)\n                             select b;\n\n      foreach (var type in paymentProcessors)\n        classRegistry.TryAdd(type.Name, type);\n    }\n\n\n    public static PaymentProcessorBase Create(string identifier, Employee employee, int intParam)\n    {\n      if (String.IsNullOrEmpty(identifier))\n        throw new ArgumentException(\"identifier can not be null or empty\", identifier);\n      if (!classRegistry.ContainsKey(identifier))\n        throw new ArgumentException(\"No PaymentProcessor has been registered with the identifier: \" + identifier);\n\n      return Create(classRegistry[identifier], employee, intParam);\n    }\n\n    private static PaymentProcessorBase Create(Type type, Employee employee, int intParam)\n    {\n      ConstructorDelegate del;\n\n      if (classConstructors.TryGetValue(type.Name, out del))\n        return del(employee, intParam);\n\n      DynamicMethod dynamicMethod = new DynamicMethod(\"CreateInstance\", type, constructorArgs, classType);\n      ILGenerator ilGenerator = dynamicMethod.GetILGenerator();\n\n      ilGenerator.Emit(OpCodes.Ldarg_0);\n      ilGenerator.Emit(OpCodes.Ldarg_1);\n      ilGenerator.Emit(OpCodes.Newobj, type.GetConstructor(constructorArgs));\n      ilGenerator.Emit(OpCodes.Ret);\n\n      del = (ConstructorDelegate)dynamicMethod.CreateDelegate(typeof(ConstructorDelegate));\n      classConstructors.TryAdd(type.Name, del);\n      return del(employee, intParam);\n    }\n  }\n}\nIf you classes require only 1 parameter in their constructor, you'll need to make the appropriate changes, and you'll need to remove the line:\nilGenerator.Emit(OpCodes.Ldarg_1);\n\nThat brings us to the end of this article. I hope you found it useful.",
+  "bodyLinks": [
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/quartz-for-aspnet/"
+    },
+    {
+      "text": "High Performance Factory",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/high-performance-class-factory/#highperformancefactory"
+    },
+    {
+      "text": "DynamicMethod",
+      "url": "https://web.archive.org/web/20220812180808/http://msdn.microsoft.com/en-us/library/system.reflection.emit.dynamicmethod.aspx"
+    },
+    {
+      "text": "ILGenerator",
+      "url": "https://web.archive.org/web/20220812180808/http://msdn.microsoft.com/en-us/library/system.reflection.emit.ilgenerator.aspx"
+    },
+    {
+      "text": "CreateDelegate",
+      "url": "https://web.archive.org/web/20220812180808/http://msdn.microsoft.com/en-us/library/cye39zsf.aspx"
+    }
+  ],
+  "code": [
+    "enum EmployeeType { Salaried, Commission, Hourly }\n\nclass Employee\n{\n  public int Id { get; private set; }\n  public string Name { get; private set; }\n  public EmployeeType EmployeeType { get; private set; }\n\n  public Employee(int id, string name, EmployeeType employeeType)\n  {\n    Id = id;\n    Name = name;\n    EmployeeType = employeeType;\n  }\n}",
+    "var employees = new List<Employee>\n  {\n    new Employee(1, \"Employee One\", EmployeeType.Commission),\n    new Employee(2, \"Employee Two\", EmployeeType.Hourly),\n    new Employee(3, \"Employee Three\", EmployeeType.Salaried),\n    new Employee(4, \"Employee Four\", EmployeeType.Salaried)\n  };\n\n  foreach (var employee in employees)\n  {\n    switch (employee.EmployeeType)\n    {\n      case EmployeeType.Salaried:\n        //Process payment for salaried employee\n        break;\n      case EmployeeType.Commission:\n        //Process payment for commision employee\n        break;\n      case EmployeeType.Hourly:\n        //Process payment for hourly employee\n        break;\n    }\n  }\n",
+    "abstract class PaymentProcessorBase\n{\n  public abstract void ProcessPayment(Employee employee);\n}\n\nclass SalariedPaymentProcessor : PaymentProcessorBase\n{\n  public override void ProcessPayment(Employee employee)\n  {\n    Console.WriteLine(employee.Name + \"'s Payment was processed using Salaried Payment Processor\");\n  }\n}\n\nclass CommissionPaymentProcessor : PaymentProcessorBase\n{\n  public override void ProcessPayment(Employee employee)\n  {\n    Console.WriteLine(employee.Name + \"'s Payment was processed using Commission Payment Processor\");\n  }\n}\n\nclass HourlyPaymentProcessor : PaymentProcessorBase\n{\n  public override void ProcessPayment(Employee employee)\n  {\n    Console.WriteLine(employee.Name + \"'s Payment was processed using Hourly Payment Processor\");\n  }\n}",
+    "PaymentProcessorBase processor = null;\n\nforeach (var employee in employees)\n{\n  switch (employee.EmployeeType)\n  {\n    case EmployeeType.Salaried:\n      processor = new SalariedPaymentProcessor();\n      break;\n    case EmployeeType.Commission:\n      processor = new CommissionPaymentProcessor();\n      break;\n    case EmployeeType.Hourly:\n      processor = new HourlyPaymentProcessor();\n      break;\n  }\n  processor.ProcessPayment(employee);\n}\n",
+    "class SimplePaymentProcessorFactory\n{\n  public PaymentProcessorBase CreateFactory(string identifier)\n  {\n    if (identifier == \"SalariedPaymentProcessor\")\n      return new SalariedPaymentProcessor();\n    else if (identifier == \"CommissionPaymentProcessor\")\n      return new CommissionPaymentProcessor();\n    else if (identifier == \"HourlyPaymentProcessor\")\n      return new HourlyPaymentProcessor();\n    throw new ArgumentException(\"The identifier: \" + identifier + \", is not a valid identifier\", identifier);\n  }\n}\n",
+    "Activator.CreateInstance()\n",
+    "using System;\nusing System.Collections.Concurrent;\nusing System.Linq;\nusing System.Reflection;\nusing System.Reflection.Emit;\n\nnamespace Factory\n{\n  static class PaymentProcessorFactory\n  {\n    private static Type classType = typeof(PaymentProcessorBase);\n    private static Type[] constructorArgs = new Type[] { };\n\n    private static readonly ConcurrentDictionary<string, Type> classRegistry = new ConcurrentDictionary<string, Type>();\n    private static readonly ConcurrentDictionary<string, ConstructorDelegate> classConstructors = new ConcurrentDictionary<string, ConstructorDelegate>();\n\n    delegate PaymentProcessorBase ConstructorDelegate();\n\n    static PaymentProcessorFactory()\n    {\n      var sw = System.Diagnostics.Stopwatch.StartNew();\n      \n      var paymentProcessors = from b in Assembly.GetEntryAssembly().GetTypes()\n                             where b.IsSubclassOf(classType)\n                             select b;\n\n      foreach (var type in paymentProcessors)\n        classRegistry.TryAdd(type.Name, type);\n    }\n\n\n    public static PaymentProcessorBase Create(string identifier)\n    {\n      if (String.IsNullOrEmpty(identifier))\n        throw new ArgumentException(\"identifier can not be null or empty\", identifier);\n      if (!classRegistry.ContainsKey(identifier))\n        throw new ArgumentException(\"No PaymentProcessor has been registered with the identifier: \" + identifier);\n\n      return Create(classRegistry[identifier]);\n    }\n\n    private static PaymentProcessorBase Create(Type type)\n    {\n      ConstructorDelegate del;\n\n      if (classConstructors.TryGetValue(type.Name, out del))\n        return del();\n\n      DynamicMethod dynamicMethod = new DynamicMethod(\"CreateInstance\", type, constructorArgs, classType);\n      ILGenerator ilGenerator = dynamicMethod.GetILGenerator();\n\n      ilGenerator.Emit(OpCodes.Newobj, type.GetConstructor(constructorArgs));\n      ilGenerator.Emit(OpCodes.Ret);\n\n      del = (ConstructorDelegate)dynamicMethod.CreateDelegate(typeof(ConstructorDelegate));\n      classConstructors.TryAdd(type.Name, del);\n      return del();\n    }\n  }\n}",
+    "foreach (var employee in employees)\n{\n  var paymentProcessor = PaymentProcessorFactory.Create(employee.EmployeeType.ToString() + \"PaymentProcessor\");\n  paymentProcessor.ProcessPayment(employee);\n}\n",
+    "using System;\nusing System.Collections.Concurrent;\nusing System.Linq;\nusing System.Reflection;\nusing System.Reflection.Emit;\n\nnamespace Factory\n{\n  static class PaymentProcessorFactory\n  {\n    private static Type classType = typeof(PaymentProcessorBase);\n    private static Type[] constructorArgs = new Type[] { typeof(Employee), typeof(int) };\n\n    private static readonly ConcurrentDictionary<string, Type> classRegistry = new ConcurrentDictionary<string, Type>();\n    private static readonly ConcurrentDictionary<string, ConstructorDelegate> classConstructors = new ConcurrentDictionary<string, ConstructorDelegate>();\n\n    delegate PaymentProcessorBase ConstructorDelegate(Employee employee, int intParam);\n\n    static PaymentProcessorFactory()\n    {\n      var sw = System.Diagnostics.Stopwatch.StartNew();\n      \n      var paymentProcessors = from b in Assembly.GetEntryAssembly().GetTypes()\n                             where b.IsSubclassOf(classType)\n                             select b;\n\n      foreach (var type in paymentProcessors)\n        classRegistry.TryAdd(type.Name, type);\n    }\n\n\n    public static PaymentProcessorBase Create(string identifier, Employee employee, int intParam)\n    {\n      if (String.IsNullOrEmpty(identifier))\n        throw new ArgumentException(\"identifier can not be null or empty\", identifier);\n      if (!classRegistry.ContainsKey(identifier))\n        throw new ArgumentException(\"No PaymentProcessor has been registered with the identifier: \" + identifier);\n\n      return Create(classRegistry[identifier], employee, intParam);\n    }\n\n    private static PaymentProcessorBase Create(Type type, Employee employee, int intParam)\n    {\n      ConstructorDelegate del;\n\n      if (classConstructors.TryGetValue(type.Name, out del))\n        return del(employee, intParam);\n\n      DynamicMethod dynamicMethod = new DynamicMethod(\"CreateInstance\", type, constructorArgs, classType);\n      ILGenerator ilGenerator = dynamicMethod.GetILGenerator();\n\n      ilGenerator.Emit(OpCodes.Ldarg_0);\n      ilGenerator.Emit(OpCodes.Ldarg_1);\n      ilGenerator.Emit(OpCodes.Newobj, type.GetConstructor(constructorArgs));\n      ilGenerator.Emit(OpCodes.Ret);\n\n      del = (ConstructorDelegate)dynamicMethod.CreateDelegate(typeof(ConstructorDelegate));\n      classConstructors.TryAdd(type.Name, del);\n      return del(employee, intParam);\n    }\n  }\n}",
+    "ilGenerator.Emit(OpCodes.Ldarg_1);\n"
+  ],
+  "header": "C# Class Factory - High Performance\nPosted by Shiv Kumar on 23rd November, 2010\nCategorized Under: Programming C#\nTagged With: Design Pattern Factory Performance \n  ",
+  "html": "<div class=\"articleText\">\n        <h2>Why use a class factory?</h2>There are many scenarios in software design where a factory comes in handy. Essentially, when you use a family of classes polymorphic-ally, you could benefit from using a Factory. Typically a factory provides the following benefits:  <ol> <li>Decouples the client code (your code that uses these classes) from knowing how to create instances of concrete types </li><li>Decouples the client code from knowledge of the concrete classes themselves. That is the client code knows only of the abstract base class or an interface but not the derived or concrete class</li></ol> <p>An important facet of system design is how objects are created. Most frameworks (including the .NET framework) make it extremely simple to create instances of classes and rightly so. However, what is not apparent is that you introduce coupling between the class that has been created and the class that uses the object. In small systems this coupling is not a problem but in large systems coupling between classes makes the system inflexible or rigid making changes over time more difficult to accommodate. The Factory design pattern helps alleviate this coupling.</p> <p>&nbsp;</p> <p><img style=\"background-image: none; border-bottom: 0px; border-left: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px\" title=\"FactoryDesignPattern\" border=\"0\" alt=\"FactoryDesignPattern\" src=\"https://web.archive.org/web/20220812180808im_/http://www.matlus.com/content/uploads/2011/02/FactoryDesignPattern_41e6373b-9f78-413f-9163-bf7b1f3563aa.jpg\" width=\"640\" height=\"295\">&nbsp;</p> <p>&nbsp;</p> <p>There are many ways in which to implement a factory. Ranging from simple to exotic. But essentially their implementations differ in the following area: </p> <ol> <li>How the decision is made as to which class to instantiate  </li><li>How an instance of a class is actually created </li></ol>In this article I'll show you an implementation that makes it really simple to use the factory design pattern while at the same time providing incredible performance. A high performance class factory comes in handy when you are creating hundreds of instances of your classes (typically in a server application scenario) and you need to squeeze out performance from core areas of your framework or application. I use this technique in the <a href=\"https://web.archive.org/web/20220812180808/http://www.matlus.com/quartz-for-aspnet/\">Quartz for ASP.NET</a> framework as it is critical that framework level code is high performance. Those of you who know what a factory is and when you'd use it can jump right to <a href=\"#highperformancefactory\">High Performance Factory</a>  <h2>Understanding the use of a Factory</h2>By way of an example, lets say we have a bunch of employees and each <code>Employee</code> has a property called <code>EmployeeType</code> that specifies how the employee is paid. As you can see in the code listing below the <code>EmployeeType</code> enum has 3 possible values. The system uses this information to process the payment for each employee.  <div class=\"panel code content/images/csharp.png\" title=\"Employee Class\" id=\"code_83702\"><div class=\"codeHeading\" style=\"background-image: url(/web/20220812180808/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Employee Class</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">enum</span> EmployeeType { Salaried, Commission, Hourly }\n\n<span class=\"kwrd\">class</span> Employee\n{\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">int</span> Id { get; <span class=\"kwrd\">private</span> set; }\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">string</span> Name { get; <span class=\"kwrd\">private</span> set; }\n  <span class=\"kwrd\">public</span> EmployeeType EmployeeType { get; <span class=\"kwrd\">private</span> set; }\n\n  <span class=\"kwrd\">public</span> Employee(<span class=\"kwrd\">int</span> id, <span class=\"kwrd\">string</span> name, EmployeeType employeeType)\n  {\n    Id = id;\n    Name = name;\n    EmployeeType = employeeType;\n  }\n}</pre></div>Then the code you'd write in order to process payments for each employee might look like this: \n<div class=\"panel code content/images/csharp.png\" title=\"Sample Code\" id=\"code_41305\"><div class=\"codeHeading\" style=\"background-image: url(/web/20220812180808/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Sample Code</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">var employees = <span class=\"kwrd\">new</span> List&lt;Employee&gt;\n  {\n    <span class=\"kwrd\">new</span> Employee(1, <span class=\"str\">\"Employee One\"</span>, EmployeeType.Commission),\n    <span class=\"kwrd\">new</span> Employee(2, <span class=\"str\">\"Employee Two\"</span>, EmployeeType.Hourly),\n    <span class=\"kwrd\">new</span> Employee(3, <span class=\"str\">\"Employee Three\"</span>, EmployeeType.Salaried),\n    <span class=\"kwrd\">new</span> Employee(4, <span class=\"str\">\"Employee Four\"</span>, EmployeeType.Salaried)\n  };\n\n  <span class=\"kwrd\">foreach</span> (var employee <span class=\"kwrd\">in</span> employees)\n  {\n    <span class=\"kwrd\">switch</span> (employee.EmployeeType)\n    {\n      <span class=\"kwrd\">case</span> EmployeeType.Salaried:\n        <span class=\"rem\">//Process payment for salaried employee</span>\n        <span class=\"kwrd\">break</span>;\n      <span class=\"kwrd\">case</span> EmployeeType.Commission:\n        <span class=\"rem\">//Process payment for commision employee</span>\n        <span class=\"kwrd\">break</span>;\n      <span class=\"kwrd\">case</span> EmployeeType.Hourly:\n        <span class=\"rem\">//Process payment for hourly employee</span>\n        <span class=\"kwrd\">break</span>;\n    }\n  }\n</pre></div>Now in order to help with the payment processing, let's say we had a family of classes (one class for each <code>EmployeeType</code> that all descend from an abstract base class, like that shown below: \n<div class=\"panel code content/images/csharp.png\" title=\"Payment Processor classes\" id=\"code_9686\"><div class=\"codeHeading\" style=\"background-image: url(/web/20220812180808/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Payment Processor classes</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">abstract</span> <span class=\"kwrd\">class</span> PaymentProcessorBase\n{\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">abstract</span> <span class=\"kwrd\">void</span> ProcessPayment(Employee employee);\n}\n\n<span class=\"kwrd\">class</span> SalariedPaymentProcessor : PaymentProcessorBase\n{\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">override</span> <span class=\"kwrd\">void</span> ProcessPayment(Employee employee)\n  {\n    Console.WriteLine(employee.Name + <span class=\"str\">\"'s Payment was processed using Salaried Payment Processor\"</span>);\n  }\n}\n\n<span class=\"kwrd\">class</span> CommissionPaymentProcessor : PaymentProcessorBase\n{\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">override</span> <span class=\"kwrd\">void</span> ProcessPayment(Employee employee)\n  {\n    Console.WriteLine(employee.Name + <span class=\"str\">\"'s Payment was processed using Commission Payment Processor\"</span>);\n  }\n}\n\n<span class=\"kwrd\">class</span> HourlyPaymentProcessor : PaymentProcessorBase\n{\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">override</span> <span class=\"kwrd\">void</span> ProcessPayment(Employee employee)\n  {\n    Console.WriteLine(employee.Name + <span class=\"str\">\"'s Payment was processed using Hourly Payment Processor\"</span>);\n  }\n}</pre></div>We could then alter our code to use these classes like so: \n<div class=\"panel code content/images/csharp.png\" title=\"Sample Code\" id=\"code_12608\"><div class=\"codeHeading\" style=\"background-image: url(/web/20220812180808/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Sample Code</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">PaymentProcessorBase processor = <span class=\"kwrd\">null</span>;\n\n<span class=\"kwrd\">foreach</span> (var employee <span class=\"kwrd\">in</span> employees)\n{\n  <span class=\"kwrd\">switch</span> (employee.EmployeeType)\n  {\n    <span class=\"kwrd\">case</span> EmployeeType.Salaried:\n      processor = <span class=\"kwrd\">new</span> SalariedPaymentProcessor();\n      <span class=\"kwrd\">break</span>;\n    <span class=\"kwrd\">case</span> EmployeeType.Commission:\n      processor = <span class=\"kwrd\">new</span> CommissionPaymentProcessor();\n      <span class=\"kwrd\">break</span>;\n    <span class=\"kwrd\">case</span> EmployeeType.Hourly:\n      processor = <span class=\"kwrd\">new</span> HourlyPaymentProcessor();\n      <span class=\"kwrd\">break</span>;\n  }\n  processor.ProcessPayment(employee);\n}\n</pre></div>This code works as expected, however there are two problems with this design. \n<ol>\n<li>The client code is tightly coupled to the various concrete classes and has intimate knowledge of how to create them\n</li><li>If you add a new EmployeeType you would have to alter this code to account for the new EmployeeType.</li></ol>\n<p>&nbsp;</p>\n<h2>&nbsp;</h2>\n<h2>Factory - Simple implementation</h2>The simplest implementation of a factory might look something like that shown below \n<div class=\"panel code content/images/csharp.png\" title=\"Simple Factory\" id=\"code_92355\"><div class=\"codeHeading\" style=\"background-image: url(/web/20220812180808/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Simple Factory</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">class</span> SimplePaymentProcessorFactory\n{\n  <span class=\"kwrd\">public</span> PaymentProcessorBase CreateFactory(<span class=\"kwrd\">string</span> identifier)\n  {\n    <span class=\"kwrd\">if</span> (identifier == <span class=\"str\">\"SalariedPaymentProcessor\"</span>)\n      <span class=\"kwrd\">return</span> <span class=\"kwrd\">new</span> SalariedPaymentProcessor();\n    <span class=\"kwrd\">else</span> <span class=\"kwrd\">if</span> (identifier == <span class=\"str\">\"CommissionPaymentProcessor\"</span>)\n      <span class=\"kwrd\">return</span> <span class=\"kwrd\">new</span> CommissionPaymentProcessor();\n    <span class=\"kwrd\">else</span> <span class=\"kwrd\">if</span> (identifier == <span class=\"str\">\"HourlyPaymentProcessor\"</span>)\n      <span class=\"kwrd\">return</span> <span class=\"kwrd\">new</span> HourlyPaymentProcessor();\n    <span class=\"kwrd\">throw</span> <span class=\"kwrd\">new</span> ArgumentException(<span class=\"str\">\"The identifier: \"</span> + identifier + <span class=\"str\">\", is not a valid identifier\"</span>, identifier);\n  }\n}\n</pre></div>This design works well and the performance you get is unbeatable. However the implementation suffers from the following: \n<ol>\n<li>Adding new classes means the code in the factory now need to be modified. So you shifted \"the problem\" from the client code to the factory. \n</li><li>If you're dealing with a lot of classes then this code could get pretty unwieldy \n</li><li>This design won't work in situations where you don't know the classes up front. Say in a plug-in scenario or similar, where all descendants current and future won't be known at the time of compiling this code. </li></ol>So what we need then is a way to allow some client code to register classes with the factory and then the way we create instances of the required classes has to resort to using Reflection since we don't know the types at compile time so we couldn't possible write code that instantiates an instance of a class we don't know about. The most common way to create an instance of a class using Reflection is <pre class=\"csharpcode\"><span class=\"identifier\">Activator</span>.CreateInstance()\n</pre>and one of it's many overloads. This solution works really well but it can end up being slow if you're creating hundreds or thousands of classes in rapid succession (for example, in an ASP.NET application, your pages and handlers and controllers are created in Rapid succession). If you've got business rules that need to process thousands or millions of products items that the factory could end up being a bottle neck. <a name=\"highperformancefactory\"></a>\n<h2>High Performance Factory</h2>The key difference in the Factory presented in this article is that the creation of an instance of a class uses a delegate. Which means the performance is as good as calling a delegate which is as fast as calling a virtual method (in .NET). Considering the circumstances (that you don't know of the class you're going to be creating an instance of at the time of compiling your code) that is as good as it can get. Further, the factory automatically registers classes for you, so you don't have to register the classes you want the factory to create. You could easily modify the implementation such that classes need to register themselves with the factory. The implementation uses <a href=\"https://web.archive.org/web/20220812180808/http://msdn.microsoft.com/en-us/library/system.reflection.emit.dynamicmethod.aspx\" target=\"_blank\">DynamicMethod</a> and <a href=\"https://web.archive.org/web/20220812180808/http://msdn.microsoft.com/en-us/library/system.reflection.emit.ilgenerator.aspx\" target=\"_blank\">ILGenerator</a> and then use the <a href=\"https://web.archive.org/web/20220812180808/http://msdn.microsoft.com/en-us/library/cye39zsf.aspx\" target=\"_blank\">CreateDelegate</a> method of <code>DynamicMethod</code> to create and instance of a delegate that really references the constructor of the class you intend to create. Onces it creates a delegate instance it caches it so, so the next time it simply calls the delegate. The entire class is listed in the code listing below \n<h3>Factory class - Using the default constructor of your classes</h3>\n<div class=\"panel code content/images/csharp.png\" title=\"Factory Class - Default Constructor\" id=\"code_31955\"><div class=\"codeHeading\" style=\"background-image: url(/web/20220812180808/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Factory Class - Default Constructor</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">using</span> System;\n<span class=\"kwrd\">using</span> System.Collections.Concurrent;\n<span class=\"kwrd\">using</span> System.Linq;\n<span class=\"kwrd\">using</span> System.Reflection;\n<span class=\"kwrd\">using</span> System.Reflection.Emit;\n\n<span class=\"kwrd\">namespace</span> Factory\n{\n  <span class=\"kwrd\">static</span> <span class=\"kwrd\">class</span> PaymentProcessorFactory\n  {\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> Type classType = <span class=\"kwrd\">typeof</span>(PaymentProcessorBase);\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> Type[] constructorArgs = <span class=\"kwrd\">new</span> Type[] { };\n\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">readonly</span> ConcurrentDictionary&lt;<span class=\"kwrd\">string</span>, Type&gt; classRegistry = <span class=\"kwrd\">new</span> ConcurrentDictionary&lt;<span class=\"kwrd\">string</span>, Type&gt;();\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">readonly</span> ConcurrentDictionary&lt;<span class=\"kwrd\">string</span>, ConstructorDelegate&gt; classConstructors = <span class=\"kwrd\">new</span> ConcurrentDictionary&lt;<span class=\"kwrd\">string</span>, ConstructorDelegate&gt;();\n\n    <span class=\"kwrd\">delegate</span> PaymentProcessorBase ConstructorDelegate();\n\n    <span class=\"kwrd\">static</span> PaymentProcessorFactory()\n    {\n      var sw = System.Diagnostics.Stopwatch.StartNew();\n      \n      var paymentProcessors = from b <span class=\"kwrd\">in</span> Assembly.GetEntryAssembly().GetTypes()\n                             <span class=\"kwrd\">where</span> b.IsSubclassOf(classType)\n                             select b;\n\n      <span class=\"kwrd\">foreach</span> (var type <span class=\"kwrd\">in</span> paymentProcessors)\n        classRegistry.TryAdd(type.Name, type);\n    }\n\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">static</span> PaymentProcessorBase Create(<span class=\"kwrd\">string</span> identifier)\n    {\n      <span class=\"kwrd\">if</span> (String.IsNullOrEmpty(identifier))\n        <span class=\"kwrd\">throw</span> <span class=\"kwrd\">new</span> ArgumentException(<span class=\"str\">\"identifier can not be null or empty\"</span>, identifier);\n      <span class=\"kwrd\">if</span> (!classRegistry.ContainsKey(identifier))\n        <span class=\"kwrd\">throw</span> <span class=\"kwrd\">new</span> ArgumentException(<span class=\"str\">\"No PaymentProcessor has been registered with the identifier: \"</span> + identifier);\n\n      <span class=\"kwrd\">return</span> Create(classRegistry[identifier]);\n    }\n\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> PaymentProcessorBase Create(Type type)\n    {\n      ConstructorDelegate del;\n\n      <span class=\"kwrd\">if</span> (classConstructors.TryGetValue(type.Name, <span class=\"kwrd\">out</span> del))\n        <span class=\"kwrd\">return</span> del();\n\n      <span class=\"identifier\">DynamicMethod</span> dynamicMethod = <span class=\"kwrd\">new</span> <span class=\"identifier\">DynamicMethod</span>(<span class=\"str\">\"CreateInstance\"</span>, type, constructorArgs, classType);\n      <span class=\"identifier\">ILGenerator</span> ilGenerator = dynamicMethod.GetILGenerator();\n\n      ilGenerator.Emit(<span class=\"identifier\">OpCodes</span>.Newobj, type.GetConstructor(constructorArgs));\n      ilGenerator.Emit(<span class=\"identifier\">OpCodes</span>.Ret);\n\n      del = (ConstructorDelegate)dynamicMethod.CreateDelegate(<span class=\"kwrd\">typeof</span>(ConstructorDelegate));\n      classConstructors.TryAdd(type.Name, del);\n      <span class=\"kwrd\">return</span> del();\n    }\n  }\n}</pre></div>\n<p>&nbsp;</p>Now with our factory in place, then code that does the payment processing would become as simple as: \n<div class=\"panel code content/images/csharp.png\" title=\"Code using the Factory\" id=\"code_44059\"><div class=\"codeHeading\" style=\"background-image: url(/web/20220812180808/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Code using the Factory</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">foreach</span> (var employee <span class=\"kwrd\">in</span> employees)\n{\n  var paymentProcessor = PaymentProcessorFactory.Create(employee.EmployeeType.ToString() + <span class=\"str\">\"PaymentProcessor\"</span>);\n  paymentProcessor.ProcessPayment(employee);\n}\n</pre></div>\n<p>&nbsp;</p>Notice that the \"client code\" (the code that uses the <code>PaymentProcessor</code> classes and the <code>Factory</code> is completely decoupled from any knowledge of the actual classes that help with the payment processing of the different types. Thus when you need to add new payment processor types, it's a matter of defining a class the descends from the base class and implementing it. The Factory will automatically find the new class and register it and your client code will not have to change one bit. Now if your classes require say two parameters in their constructor then there are a few modifications you'll need to do. Let's say your class requires an <code>Employee</code> and an <code>int</code> parameter in it's constructor. I've provided a complete listing on the Factory class that includes the changes you'll need to make. \n<h3>Factory class - Handling two parameters in the constructor of your classes</h3>\n<div class=\"panel code content/images/csharp.png\" title=\"Factory Class - 2 constructor parameters\" id=\"code_26509\"><div class=\"codeHeading\" style=\"background-image: url(/web/20220812180808/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Factory Class - 2 constructor parameters</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">using</span> System;\n<span class=\"kwrd\">using</span> System.Collections.Concurrent;\n<span class=\"kwrd\">using</span> System.Linq;\n<span class=\"kwrd\">using</span> System.Reflection;\n<span class=\"kwrd\">using</span> System.Reflection.Emit;\n\n<span class=\"kwrd\">namespace</span> Factory\n{\n  <span class=\"kwrd\">static</span> <span class=\"kwrd\">class</span> PaymentProcessorFactory\n  {\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> Type classType = <span class=\"kwrd\">typeof</span>(PaymentProcessorBase);\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> Type[] constructorArgs = <span class=\"kwrd\">new</span> Type[] { <span class=\"kwrd\">typeof</span>(Employee), <span class=\"kwrd\">typeof</span>(<span class=\"kwrd\">int</span>) };\n\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">readonly</span> ConcurrentDictionary&lt;<span class=\"kwrd\">string</span>, Type&gt; classRegistry = <span class=\"kwrd\">new</span> ConcurrentDictionary&lt;<span class=\"kwrd\">string</span>, Type&gt;();\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">readonly</span> ConcurrentDictionary&lt;<span class=\"kwrd\">string</span>, ConstructorDelegate&gt; classConstructors = <span class=\"kwrd\">new</span> ConcurrentDictionary&lt;<span class=\"kwrd\">string</span>, ConstructorDelegate&gt;();\n\n    <span class=\"kwrd\">delegate</span> PaymentProcessorBase ConstructorDelegate(Employee employee, <span class=\"kwrd\">int</span> intParam);\n\n    <span class=\"kwrd\">static</span> PaymentProcessorFactory()\n    {\n      var sw = System.Diagnostics.Stopwatch.StartNew();\n      \n      var paymentProcessors = from b <span class=\"kwrd\">in</span> Assembly.GetEntryAssembly().GetTypes()\n                             <span class=\"kwrd\">where</span> b.IsSubclassOf(classType)\n                             select b;\n\n      <span class=\"kwrd\">foreach</span> (var type <span class=\"kwrd\">in</span> paymentProcessors)\n        classRegistry.TryAdd(type.Name, type);\n    }\n\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">static</span> PaymentProcessorBase Create(<span class=\"kwrd\">string</span> identifier, Employee employee, <span class=\"kwrd\">int</span> intParam)\n    {\n      <span class=\"kwrd\">if</span> (String.IsNullOrEmpty(identifier))\n        <span class=\"kwrd\">throw</span> <span class=\"kwrd\">new</span> ArgumentException(<span class=\"str\">\"identifier can not be null or empty\"</span>, identifier);\n      <span class=\"kwrd\">if</span> (!classRegistry.ContainsKey(identifier))\n        <span class=\"kwrd\">throw</span> <span class=\"kwrd\">new</span> ArgumentException(<span class=\"str\">\"No PaymentProcessor has been registered with the identifier: \"</span> + identifier);\n\n      <span class=\"kwrd\">return</span> Create(classRegistry[identifier], employee, intParam);\n    }\n\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> PaymentProcessorBase Create(Type type, Employee employee, <span class=\"kwrd\">int</span> intParam)\n    {\n      ConstructorDelegate del;\n\n      <span class=\"kwrd\">if</span> (classConstructors.TryGetValue(type.Name, <span class=\"kwrd\">out</span> del))\n        <span class=\"kwrd\">return</span> del(employee, intParam);\n\n      <span class=\"identifier\">DynamicMethod</span> dynamicMethod = <span class=\"kwrd\">new</span> <span class=\"identifier\">DynamicMethod</span>(<span class=\"str\">\"CreateInstance\"</span>, type, constructorArgs, classType);\n      <span class=\"identifier\">ILGenerator</span> ilGenerator = dynamicMethod.GetILGenerator();\n\n      ilGenerator.Emit(<span class=\"identifier\">OpCodes</span>.Ldarg_0);\n      ilGenerator.Emit(<span class=\"identifier\">OpCodes</span>.Ldarg_1);\n      ilGenerator.Emit(<span class=\"identifier\">OpCodes</span>.Newobj, type.GetConstructor(constructorArgs));\n      ilGenerator.Emit(<span class=\"identifier\">OpCodes</span>.Ret);\n\n      del = (ConstructorDelegate)dynamicMethod.CreateDelegate(<span class=\"kwrd\">typeof</span>(ConstructorDelegate));\n      classConstructors.TryAdd(type.Name, del);\n      <span class=\"kwrd\">return</span> del(employee, intParam);\n    }\n  }\n}</pre></div>If you classes require only 1 parameter in their constructor, you'll need to make the appropriate changes, and you'll need to remove the line: <pre class=\"csharpcode\">ilGenerator.Emit(<span class=\"identifier\">OpCodes</span>.Ldarg_1);\n</pre>That brings us to the end of this article. I hope you found it useful. \n\n  \n        </div>",
+  "images": [
+    {
+      "alt": "FactoryDesignPattern",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20220812180808im_/http://www.matlus.com/content/uploads/2011/02/FactoryDesignPattern_41e6373b-9f78-413f-9163-bf7b1f3563aa.jpg"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "C#",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/category/programming/c/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20220812180808/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2fhigh-performance-class-factory%2f&text=C%23+Class+Factory+-+High+Performance"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20220812180808/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2fhigh-performance-class-factory%2f&t=C%23+Class+Factory+-+High+Performance"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20220812180808/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2fhigh-performance-class-factory%2f&text=C%23+Class+Factory+-+High+Performance"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/quartz-for-aspnet/"
+    },
+    {
+      "text": "High Performance Factory",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/high-performance-class-factory/#highperformancefactory"
+    },
+    {
+      "text": "DynamicMethod",
+      "url": "https://web.archive.org/web/20220812180808/http://msdn.microsoft.com/en-us/library/system.reflection.emit.dynamicmethod.aspx"
+    },
+    {
+      "text": "ILGenerator",
+      "url": "https://web.archive.org/web/20220812180808/http://msdn.microsoft.com/en-us/library/system.reflection.emit.ilgenerator.aspx"
+    },
+    {
+      "text": "CreateDelegate",
+      "url": "https://web.archive.org/web/20220812180808/http://msdn.microsoft.com/en-us/library/cye39zsf.aspx"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "C# Class Factory - High Performance",
+  "url": "https://web.archive.org/web/20220812180808/http://www.matlus.com/high-performance-class-factory/"
+}

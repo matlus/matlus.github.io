@@ -1,0 +1,397 @@
+{
+  "body": "There are two code snippets presented in this post. Both of them deal with starting and stopping Windows Services. One option is to use the net start/stop command line option via C# and System.Diagnostics.Process so as to make the usage of this code more object oriented while the other option is to use the ServiceController class that's part of the .NET framework.\n\nNothing spectacular really, but the purpose of me posting these code snippets is so its out there for those who are trying to figure this out and for me if/when I need to do this kind of thing again.\n\nSome features of the code presented below are:\n\nRe-Directs the Standard output stream using RedirectStandardOutput = true\nRe-Directs the Standard Error stream using RedirectStandardError = true\nWaits for the process to complete. In this case it waits for two processes to complete. The process that stops and then the process that starts.\nAsynchronously read from the Standard output and Standard Error streams\n\n \n\nUsing System.Diagnostics.Process\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text;\nusing System.Diagnostics;\nusing System.Runtime.Serialization;\n\nnamespace ResetService\n{\n  enum NetOperation { STOP, START };\n\n  public static class ServiceBounce\n  {\n    private static StringBuilder errorMessage = new StringBuilder();\n    private static StringBuilder outputMessage = new StringBuilder();\n\n    public static int TIMEOUT = 60000;\n\n    private static int ExecuteNetProcess(NetOperation operation, string instanceName)\n    {\n      using (var process = new Process())\n      {\n        process.StartInfo = new ProcessStartInfo(\"net\", operation.ToString() + \" \" + instanceName);\n        process.StartInfo.UseShellExecute = false;\n        process.StartInfo.RedirectStandardOutput = true;\n        process.StartInfo.RedirectStandardError = true;\n        process.OutputDataReceived += new DataReceivedEventHandler(OnOutputDataReceived);\n        process.ErrorDataReceived += new DataReceivedEventHandler(OnErrorDataReceived);\n        process.Start();\n        process.BeginOutputReadLine();\n        process.BeginErrorReadLine();\n        process.WaitForExit(TIMEOUT);\n        int exitCode = process.ExitCode;\n        process.Close();\n        return exitCode;\n      }\n    }\n\n    private static void ClearMessages()\n    {\n      outputMessage.Length = 0;\n      errorMessage.Length = 0;    \n    }\n\n    public static void Restart(string serviceName)\n    {\n      Stop(serviceName);\n      Start(serviceName);\n    }\n\n    public static void Stop(string serviceName)\n    {\n      ClearMessages();\n      string errMessage = null;\n\n      var exitCodeStop = ExecuteNetProcess(NetOperation.STOP, serviceName);\n      if (exitCodeStop != 0)\n      {\n        errMessage = errorMessage.ToString();\n        if (!errMessage.Contains(\"service is not started\"))\n          throw new MSSQLServiceBounceException(errorMessage.ToString());\n      }\n    }\n\n    public static void Start(string serviceName)\n    {\n      ClearMessages();\n      string errMessage = null;\n\n      var exitCodeStart = ExecuteNetProcess(NetOperation.START, serviceName);\n      Console.ForegroundColor = ConsoleColor.White;\n      if (exitCodeStart != 0)\n      {\n        errMessage = errorMessage.ToString();\n        if (!errMessage.Contains(\"The requested service has already been started\"))\n          throw new MSSQLServiceBounceException(errMessage);\n      }\n    }\n\n    private static void OnOutputDataReceived(object sender, DataReceivedEventArgs e)\n    {\n      outputMessage.Append(e.Data);\n      Console.ForegroundColor = ConsoleColor.DarkGreen;\n      Console.WriteLine(e.Data);\n    }\n\n    private static void OnErrorDataReceived(object sender, DataReceivedEventArgs e)\n    {\n      errorMessage.Append(e.Data);\n      Console.ForegroundColor = ConsoleColor.DarkRed;\n      Console.WriteLine(e.Data);\n    }\n  }\n\n  public class MSSQLServiceBounceException : Exception\n  {\n    public MSSQLServiceBounceException(string message)\n      :base(message)\n    {\n    }\n\n    public MSSQLServiceBounceException(string message, Exception innerException)\n      : base(message, innerException)\n    {\n    }\n\n    public MSSQLServiceBounceException(SerializationInfo serializationInfo, StreamingContext context)\n      : base(serializationInfo, context)\n    {\n    }\n  }\n}\n\n \n\nThe class shown in the code listing below uses the ServiceController class from the System.ServiceProcess assembly. This is a pure .NET solution to working with Windows Services. The ServiceController class makes it simple to make \"synchronous\" calls to stop and start services using the WaitForStatus method as you can see in the code listing below. The next code listing (the one below this one) shows you sample code of how you might use this class.\n\nThe features of the class presented below are:\n\nThe methods provide synchronous calls. That is the calls don't return until the service is either stopped or stated or stop/started as the case may be. If you do required asynchronous behavior, it's easy enough to modify the code since the normal behavior of the ServiceController class is async.\n\n \n\nUsing System.ServiceProcess.ServiceController\n  public static class WindowsServiceBounce\n  {\n    public static IEnumerable<ServiceController> FindService(Func<ServiceController, bool> predicate)\n    {\n      ServiceController[] services = ServiceController.GetServices();\n      var servicesFound = from s in services\n                          where predicate(s)\n                          select s;\n      return servicesFound;\n    }\n\n    public static void Restart(ServiceController service)\n    {\n      Restart(service, new TimeSpan(0, 1, 0));\n    }\n\n    public static void Restart(ServiceController service, TimeSpan waitTimeout)\n    {\n      Stop(service, waitTimeout);\n      Start(service, waitTimeout);\n    }\n\n    public static void Stop(ServiceController service, TimeSpan waitTimeout)\n    {\n      if (service.Status == ServiceControllerStatus.StartPending)\n        service.WaitForStatus(ServiceControllerStatus.StartPending, waitTimeout);\n      \n      if (service.Status == ServiceControllerStatus.Running)\n      {\n        service.Stop();\n        service.WaitForStatus(ServiceControllerStatus.Stopped, waitTimeout);\n      }\n    }\n\n    public static void Start(ServiceController service, TimeSpan waitTimeout)\n    {\n      if (service.Status == ServiceControllerStatus.StopPending)\n        service.WaitForStatus(ServiceControllerStatus.StopPending, waitTimeout);\n\n      if (service.Status == ServiceControllerStatus.Stopped)\n      {\n        service.Start();\n        service.WaitForStatus(ServiceControllerStatus.Running, waitTimeout);\n      }\n    }\n  }\n\n \n\nThe code listing below shows and sample of how you might use the class presented in the previous code listing.\n\n \n\n      var services = WindowsServiceBounce.FindService(s => String.Compare(s.ServiceName, \"MSSQL$SQLEXPRESS\", StringComparison.OrdinalIgnoreCase) == 0);\n      \n      foreach (var service in services)\n        WindowsServiceBounce.Restart(service, new TimeSpan(0, 1, 0));\n      foreach (var service in services)\n        service.Dispose();\n",
+  "bodyLinks": [],
+  "code": [
+    "using System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text;\nusing System.Diagnostics;\nusing System.Runtime.Serialization;\n\nnamespace ResetService\n{\n  enum NetOperation { STOP, START };\n\n  public static class ServiceBounce\n  {\n    private static StringBuilder errorMessage = new StringBuilder();\n    private static StringBuilder outputMessage = new StringBuilder();\n\n    public static int TIMEOUT = 60000;\n\n    private static int ExecuteNetProcess(NetOperation operation, string instanceName)\n    {\n      using (var process = new Process())\n      {\n        process.StartInfo = new ProcessStartInfo(\"net\", operation.ToString() + \" \" + instanceName);\n        process.StartInfo.UseShellExecute = false;\n        process.StartInfo.RedirectStandardOutput = true;\n        process.StartInfo.RedirectStandardError = true;\n        process.OutputDataReceived += new DataReceivedEventHandler(OnOutputDataReceived);\n        process.ErrorDataReceived += new DataReceivedEventHandler(OnErrorDataReceived);\n        process.Start();\n        process.BeginOutputReadLine();\n        process.BeginErrorReadLine();\n        process.WaitForExit(TIMEOUT);\n        int exitCode = process.ExitCode;\n        process.Close();\n        return exitCode;\n      }\n    }\n\n    private static void ClearMessages()\n    {\n      outputMessage.Length = 0;\n      errorMessage.Length = 0;    \n    }\n\n    public static void Restart(string serviceName)\n    {\n      Stop(serviceName);\n      Start(serviceName);\n    }\n\n    public static void Stop(string serviceName)\n    {\n      ClearMessages();\n      string errMessage = null;\n\n      var exitCodeStop = ExecuteNetProcess(NetOperation.STOP, serviceName);\n      if (exitCodeStop != 0)\n      {\n        errMessage = errorMessage.ToString();\n        if (!errMessage.Contains(\"service is not started\"))\n          throw new MSSQLServiceBounceException(errorMessage.ToString());\n      }\n    }\n\n    public static void Start(string serviceName)\n    {\n      ClearMessages();\n      string errMessage = null;\n\n      var exitCodeStart = ExecuteNetProcess(NetOperation.START, serviceName);\n      Console.ForegroundColor = ConsoleColor.White;\n      if (exitCodeStart != 0)\n      {\n        errMessage = errorMessage.ToString();\n        if (!errMessage.Contains(\"The requested service has already been started\"))\n          throw new MSSQLServiceBounceException(errMessage);\n      }\n    }\n\n    private static void OnOutputDataReceived(object sender, DataReceivedEventArgs e)\n    {\n      outputMessage.Append(e.Data);\n      Console.ForegroundColor = ConsoleColor.DarkGreen;\n      Console.WriteLine(e.Data);\n    }\n\n    private static void OnErrorDataReceived(object sender, DataReceivedEventArgs e)\n    {\n      errorMessage.Append(e.Data);\n      Console.ForegroundColor = ConsoleColor.DarkRed;\n      Console.WriteLine(e.Data);\n    }\n  }\n\n  public class MSSQLServiceBounceException : Exception\n  {\n    public MSSQLServiceBounceException(string message)\n      :base(message)\n    {\n    }\n\n    public MSSQLServiceBounceException(string message, Exception innerException)\n      : base(message, innerException)\n    {\n    }\n\n    public MSSQLServiceBounceException(SerializationInfo serializationInfo, StreamingContext context)\n      : base(serializationInfo, context)\n    {\n    }\n  }\n}",
+    "  public static class WindowsServiceBounce\n  {\n    public static IEnumerable<ServiceController> FindService(Func<ServiceController, bool> predicate)\n    {\n      ServiceController[] services = ServiceController.GetServices();\n      var servicesFound = from s in services\n                          where predicate(s)\n                          select s;\n      return servicesFound;\n    }\n\n    public static void Restart(ServiceController service)\n    {\n      Restart(service, new TimeSpan(0, 1, 0));\n    }\n\n    public static void Restart(ServiceController service, TimeSpan waitTimeout)\n    {\n      Stop(service, waitTimeout);\n      Start(service, waitTimeout);\n    }\n\n    public static void Stop(ServiceController service, TimeSpan waitTimeout)\n    {\n      if (service.Status == ServiceControllerStatus.StartPending)\n        service.WaitForStatus(ServiceControllerStatus.StartPending, waitTimeout);\n      \n      if (service.Status == ServiceControllerStatus.Running)\n      {\n        service.Stop();\n        service.WaitForStatus(ServiceControllerStatus.Stopped, waitTimeout);\n      }\n    }\n\n    public static void Start(ServiceController service, TimeSpan waitTimeout)\n    {\n      if (service.Status == ServiceControllerStatus.StopPending)\n        service.WaitForStatus(ServiceControllerStatus.StopPending, waitTimeout);\n\n      if (service.Status == ServiceControllerStatus.Stopped)\n      {\n        service.Start();\n        service.WaitForStatus(ServiceControllerStatus.Running, waitTimeout);\n      }\n    }\n  }",
+    "      var services = WindowsServiceBounce.FindService(s => String.Compare(s.ServiceName, \"MSSQL$SQLEXPRESS\", StringComparison.OrdinalIgnoreCase) == 0);\n      \n      foreach (var service in services)\n        WindowsServiceBounce.Restart(service, new TimeSpan(0, 1, 0));\n      foreach (var service in services)\n        service.Dispose();\n"
+  ],
+  "header": "Stop/Start Windows Service\nPosted by Shiv Kumar on 2nd February, 2011\nCategorized Under: Programming C#\nTagged With: Windows Services \nCode Gem: Snippets \n  ",
+  "html": "<div class=\"articleText\">\n        <p>There are two code snippets presented in this post. Both of them deal with starting and stopping Windows Services. One option is to use the <code>net start/stop</code> command line option via C# and <code>System.Diagnostics.Process</code> so as to make the usage of this code more object oriented while the other option is to use the <code>ServiceController</code> class that's part of the .NET framework.</p> <p>Nothing spectacular really, but the purpose of me posting these code snippets is so its out there for those who are trying to figure this out and for me if/when I need to do this kind of thing again.</p> <p>Some features of the code presented below are:</p> <ol> <li>Re-Directs the Standard output stream using RedirectStandardOutput = true  </li><li>Re-Directs the Standard Error stream using RedirectStandardError = true  </li><li>Waits for the process to complete. In this case it waits for two processes to complete. The process that stops and then the process that starts.  </li><li>Asynchronously read from the Standard output and Standard Error streams</li></ol> <p>&nbsp;</p> <div class=\"panel code content/images/csharp.png\" title=\"Using System.Diagnostics.Process\" id=\"code_79140\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415160246/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Using System.Diagnostics.Process</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">using</span> System;\n<span class=\"kwrd\">using</span> System.Collections.Generic;\n<span class=\"kwrd\">using</span> System.Linq;\n<span class=\"kwrd\">using</span> System.Text;\n<span class=\"kwrd\">using</span> System.Diagnostics;\n<span class=\"kwrd\">using</span> System.Runtime.Serialization;\n\n<span class=\"kwrd\">namespace</span> ResetService\n{\n  <span class=\"kwrd\">enum</span> NetOperation { STOP, START };\n\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">class</span> ServiceBounce\n  {\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> StringBuilder errorMessage = <span class=\"kwrd\">new</span> StringBuilder();\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> StringBuilder outputMessage = <span class=\"kwrd\">new</span> StringBuilder();\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">int</span> TIMEOUT = 60000;\n\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">int</span> ExecuteNetProcess(NetOperation operation, <span class=\"kwrd\">string</span> instanceName)\n    {\n      <span class=\"kwrd\">using</span> (var process = <span class=\"kwrd\">new</span> Process())\n      {\n        process.StartInfo = <span class=\"kwrd\">new</span> ProcessStartInfo(<span class=\"str\">\"net\"</span>, operation.ToString() + <span class=\"str\">\" \"</span> + instanceName);\n        process.StartInfo.UseShellExecute = <span class=\"kwrd\">false</span>;\n        process.StartInfo.RedirectStandardOutput = <span class=\"kwrd\">true</span>;\n        process.StartInfo.RedirectStandardError = <span class=\"kwrd\">true</span>;\n        process.OutputDataReceived += <span class=\"kwrd\">new</span> DataReceivedEventHandler(OnOutputDataReceived);\n        process.ErrorDataReceived += <span class=\"kwrd\">new</span> DataReceivedEventHandler(OnErrorDataReceived);\n        process.Start();\n        process.BeginOutputReadLine();\n        process.BeginErrorReadLine();\n        process.WaitForExit(TIMEOUT);\n        <span class=\"kwrd\">int</span> exitCode = process.ExitCode;\n        process.Close();\n        <span class=\"kwrd\">return</span> exitCode;\n      }\n    }\n\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> ClearMessages()\n    {\n      outputMessage.Length = 0;\n      errorMessage.Length = 0;    \n    }\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> Restart(<span class=\"kwrd\">string</span> serviceName)\n    {\n      Stop(serviceName);\n      Start(serviceName);\n    }\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> Stop(<span class=\"kwrd\">string</span> serviceName)\n    {\n      ClearMessages();\n      <span class=\"kwrd\">string</span> errMessage = <span class=\"kwrd\">null</span>;\n\n      var exitCodeStop = ExecuteNetProcess(NetOperation.STOP, serviceName);\n      <span class=\"kwrd\">if</span> (exitCodeStop != 0)\n      {\n        errMessage = errorMessage.ToString();\n        <span class=\"kwrd\">if</span> (!errMessage.Contains(<span class=\"str\">\"service is not started\"</span>))\n          <span class=\"kwrd\">throw</span> <span class=\"kwrd\">new</span> MSSQLServiceBounceException(errorMessage.ToString());\n      }\n    }\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> Start(<span class=\"kwrd\">string</span> serviceName)\n    {\n      ClearMessages();\n      <span class=\"kwrd\">string</span> errMessage = <span class=\"kwrd\">null</span>;\n\n      var exitCodeStart = ExecuteNetProcess(NetOperation.START, serviceName);\n      Console.ForegroundColor = ConsoleColor.White;\n      <span class=\"kwrd\">if</span> (exitCodeStart != 0)\n      {\n        errMessage = errorMessage.ToString();\n        <span class=\"kwrd\">if</span> (!errMessage.Contains(<span class=\"str\">\"The requested service has already been started\"</span>))\n          <span class=\"kwrd\">throw</span> <span class=\"kwrd\">new</span> MSSQLServiceBounceException(errMessage);\n      }\n    }\n\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> OnOutputDataReceived(<span class=\"kwrd\">object</span> sender, DataReceivedEventArgs e)\n    {\n      outputMessage.Append(e.Data);\n      Console.ForegroundColor = ConsoleColor.DarkGreen;\n      Console.WriteLine(e.Data);\n    }\n\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> OnErrorDataReceived(<span class=\"kwrd\">object</span> sender, DataReceivedEventArgs e)\n    {\n      errorMessage.Append(e.Data);\n      Console.ForegroundColor = ConsoleColor.DarkRed;\n      Console.WriteLine(e.Data);\n    }\n  }\n\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> MSSQLServiceBounceException : Exception\n  {\n    <span class=\"kwrd\">public</span> MSSQLServiceBounceException(<span class=\"kwrd\">string</span> message)\n      :<span class=\"kwrd\">base</span>(message)\n    {\n    }\n\n    <span class=\"kwrd\">public</span> MSSQLServiceBounceException(<span class=\"kwrd\">string</span> message, Exception innerException)\n      : <span class=\"kwrd\">base</span>(message, innerException)\n    {\n    }\n\n    <span class=\"kwrd\">public</span> MSSQLServiceBounceException(SerializationInfo serializationInfo, StreamingContext context)\n      : <span class=\"kwrd\">base</span>(serializationInfo, context)\n    {\n    }\n  }\n}</pre></div>\n<p>&nbsp;</p>\n<p>The class shown in the code listing below uses the <code>ServiceController</code> class from the <code>System.ServiceProcess</code> assembly. This is a pure .NET solution to working with Windows Services. The <code>ServiceController</code> class makes it simple to make \"synchronous\" calls to stop and start services using the <code>WaitForStatus</code> method as you can see in the code listing below. The next code listing (the one below this one) shows you sample code of how you might use this class.</p>\n<p>The features of the class presented below are:</p>\n<p>The methods provide synchronous calls. That is the calls don't return until the service is either stopped or stated or stop/started as the case may be. If you do required asynchronous behavior, it's easy enough to modify the code since the normal behavior of the ServiceController class is async.</p>\n<p>&nbsp;</p>\n<div class=\"panel code content/images/csharp.png\" title=\"Using System.ServiceProcess.ServiceController\" id=\"code_11075\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415160246/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Using System.ServiceProcess.ServiceController</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">  <span class=\"kwrd\">public</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">class</span> WindowsServiceBounce\n  {\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">static</span> IEnumerable&lt;ServiceController&gt; FindService(Func&lt;ServiceController, <span class=\"kwrd\">bool</span>&gt; predicate)\n    {\n      ServiceController[] services = ServiceController.GetServices();\n      var servicesFound = from s <span class=\"kwrd\">in</span> services\n                          <span class=\"kwrd\">where</span> predicate(s)\n                          select s;\n      <span class=\"kwrd\">return</span> servicesFound;\n    }\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> Restart(ServiceController service)\n    {\n      Restart(service, <span class=\"kwrd\">new</span> TimeSpan(0, 1, 0));\n    }\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> Restart(ServiceController service, TimeSpan waitTimeout)\n    {\n      Stop(service, waitTimeout);\n      Start(service, waitTimeout);\n    }\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> Stop(ServiceController service, TimeSpan waitTimeout)\n    {\n      <span class=\"kwrd\">if</span> (service.Status == ServiceControllerStatus.StartPending)\n        service.WaitForStatus(ServiceControllerStatus.StartPending, waitTimeout);\n      \n      <span class=\"kwrd\">if</span> (service.Status == ServiceControllerStatus.Running)\n      {\n        service.Stop();\n        service.WaitForStatus(ServiceControllerStatus.Stopped, waitTimeout);\n      }\n    }\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> Start(ServiceController service, TimeSpan waitTimeout)\n    {\n      <span class=\"kwrd\">if</span> (service.Status == ServiceControllerStatus.StopPending)\n        service.WaitForStatus(ServiceControllerStatus.StopPending, waitTimeout);\n\n      <span class=\"kwrd\">if</span> (service.Status == ServiceControllerStatus.Stopped)\n      {\n        service.Start();\n        service.WaitForStatus(ServiceControllerStatus.Running, waitTimeout);\n      }\n    }\n  }</pre></div>\n<p>&nbsp;</p>\n<p>The code listing below shows and sample of how you might use the class presented in the previous code listing. </p>\n<p>&nbsp;</p>\n<div class=\"panel code content/images/csharp.png\" title=\"\" id=\"code_34650\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240415160246/http://matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\"></h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\">      <span class=\"kwrd\">var</span> services = WindowsServiceBounce.FindService(s =&gt; String.Compare(s.ServiceName, <span class=\"str\">\"MSSQL$SQLEXPRESS\"</span>, StringComparison.OrdinalIgnoreCase) == 0);\n      \n      <span class=\"kwrd\">foreach</span> (var service <span class=\"kwrd\">in</span> services)\n        WindowsServiceBounce.Restart(service, <span class=\"kwrd\">new</span> TimeSpan(0, 1, 0));\n      <span class=\"kwrd\">foreach</span> (var service <span class=\"kwrd\">in</span> services)\n        service.Dispose();\n</pre></div>  \n        </div>",
+  "images": [],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240415160246/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/category/programming/"
+    },
+    {
+      "text": "C#",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/category/programming/c/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415160246/https://twitter.com/share?url=http%3a%2f%2fmatlus.com%2fstopstart-windows-service%2f&text=Stop%2fStart+Windows+Service"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415160246/http://www.facebook.com/sharer.php?u=http%3a%2f%2fmatlus.com%2fstopstart-windows-service%2f&t=Stop%2fStart+Windows+Service"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415160246/https://plus.google.com/share?url=http%3a%2f%2fmatlus.com%2fstopstart-windows-service%2f&text=Stop%2fStart+Windows+Service"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240415160246/http://matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240415160246/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "Stop/Start Windows Service",
+  "url": "https://web.archive.org/web/20240415160246/http://matlus.com/stopstart-windows-service/"
+}

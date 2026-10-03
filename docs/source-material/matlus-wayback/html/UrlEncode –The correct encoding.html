@@ -1,0 +1,159 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>UrlEncode –The correct encoding</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>UrlEncode –The correct encoding</h1><p class="recovery">UrlEncode –The correct encoding<br>Posted by Shiv Kumar on 3rd February, 2011<br>Categorized Under: Programming C#<br>Tagged With: Http <br>Code Gem: Snippets <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20230331000205/http://www.matlus.com/urlencode-the-correct-encoding/">this Wayback capture</a>.</p><div class="articleText">
+        <p>While developing the <a href="https://web.archive.org/web/20230331000205/http://www.matlus.com/oauth-c-library/">OAuth C# Lubrary</a> I discovered that the <code>HttpUtility</code> class that's available in the <code>System.Web</code> assembly in .NET (in particular the <code>HttpUtility.UrlEncode()</code> method) doesn't quite do it correctly. So I had to develop my own method that did the encoding correctly. I used <a href="https://web.archive.org/web/20230331000205/http://en.wikipedia.org/wiki/Percent-encoding">this wiki page</a> as a reference.</p> <p>Notice the <code>UrlEncode()</code> method in the code listing below, that's the method I present in this post. The outputs of the <code>HttpUtility.UrlEncode()</code> method any my <code>UrlEncode()</code> method are listed below such that you can compare the two outputs.</p> <div class="panel code content/images/csharp.png" title="UrlEncoding a string in C# the correct way" id="code_34627"><div class="codeHeading" style="background-image: url(/web/20230331000205/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">UrlEncoding a string in C# the correct way</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">  <span class="kwrd">class</span> Program
+  {
+    <span class="kwrd">private</span> <span class="kwrd">readonly</span> <span class="kwrd">static</span> <span class="kwrd">string</span> unreservedCharacters = <span class="str">"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~"</span>;
+
+    <span class="kwrd">static</span> <span class="kwrd">void</span> Main(<span class="kwrd">string</span>[] args)
+    {
+      var url = <span class="str">"!*'();:@&amp;=+$,/?#[] &lt;&gt;~.\"{}|\\-`_^%"</span>;
+
+      Console.WriteLine(<span class="str">"Using HttpUtility: "</span> + HttpUtility.UrlEncode(url));
+      Console.WriteLine(<span class="str">"Using UrlEncode:   "</span> + UrlEncode(url));
+      Console.WriteLine(HttpUtility.UrlDecode(UrlEncode(url)));
+
+      Console.ReadLine();
+    }
+
+    <span class="rem">/// &lt;summary&gt;</span>
+    <span class="rem">/// This method is the correct implementation of UrlEncode.</span>
+    <span class="rem">/// Given a string, it returns a UrlEncoded version on the string.</span>
+    <span class="rem">/// &lt;/summary&gt;</span>
+    <span class="rem">/// &lt;param name="value"&gt;the string/url to be UrlEncoded&lt;/param&gt;</span>
+    <span class="rem">/// &lt;returns&gt;The UrlEncoded string&lt;/returns&gt;</span>
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">string</span> UrlEncode(<span class="kwrd">string</span> <span class="kwrd">value</span>)
+    {
+      <span class="kwrd">if</span> (String.IsNullOrEmpty(<span class="kwrd">value</span>))
+        <span class="kwrd">return</span> String.Empty;
+
+      var sb = <span class="kwrd">new</span> StringBuilder();
+
+      <span class="kwrd">foreach</span> (<span class="kwrd">char</span> @<span class="kwrd">char</span> <span class="kwrd">in</span> <span class="kwrd">value</span>)
+      {
+        <span class="kwrd">if</span> (unreservedCharacters.IndexOf(@<span class="kwrd">char</span>) != -1)
+          sb.Append(@<span class="kwrd">char</span>);
+        <span class="kwrd">else</span>
+          sb.AppendFormat(<span class="str">"%{0:x2}"</span>, (<span class="kwrd">int</span>)@<span class="kwrd">char</span>);
+      }
+      <span class="kwrd">return</span> sb.ToString();
+    }
+  }
+</pre></div>
+<p>&nbsp;</p>
+<table style="border-bottom: #ccc 1px solid; text-align: center; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" border="0" cellspacing="3" cellpadding="3">
+<tbody>
+<tr>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">&nbsp;</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">!</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">*</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">'</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">(</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">)</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">;</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">:</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">@</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">&amp;</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">=</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">+</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">$</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">,</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">/</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">?</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">#</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">[</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">]</td></tr>
+<tr>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">HttpUtility<br></td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">!</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">*</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%27</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">(</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">)</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%3b</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%3a</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%40</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%26</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%3d</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%2b</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%24</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%2c</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%2f</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%3f</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%23</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%5b</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%5d</td></tr>
+<tr>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">UrlEncode</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%21</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%2a</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%27</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%28</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%29</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%3b</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%3a</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%40</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%26</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%3d</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%2b</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%24</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%2c</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%2f</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%3f</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%23</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%5b</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%5d</td></tr></tbody></table>
+<p>&nbsp;</p>
+<table style="border-bottom: #ccc 1px solid; text-align: center; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" border="0" cellspacing="3" cellpadding="3">
+<tbody>
+<tr>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">&nbsp;</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">&lt;</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">&gt;</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">~</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">.</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">"</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">{</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">}</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">|</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">\</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">-</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">`</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">_</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">^</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">space</td></tr>
+<tr>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">HttpUtility</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%3c</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%3e</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%7e</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">.</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%22</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%7b</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%7d</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%7c</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%5c</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">-</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%60</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">_</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%5e</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%25</td>
+<td valign="top">+</td></tr>
+<tr>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">UrlEncode</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%3c</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%3e</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">~</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">.</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%22</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%7b</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%7d</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%7c</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%5c</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">-</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%60</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">_</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%5e</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%25</td>
+<td style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; border-top: #ccc 1px solid; border-right: #ccc 1px solid" valign="top">%20</td></tr></tbody></table>  
+        </div></body></html>

@@ -14,9 +14,15 @@ decisions, and the reasoning behind choices that look arbitrary without it.
 
 ## Standing rules
 
-**All site copy goes through the professional-writing skill**, then through
-`tools/audit-copy.py`. Shiv specifically objects to the antithesis tic ("it's not
-this, it's that"), which the skill's own audit misses in its bare form. Run both,
+**Blog articles use the [blog-writing skill](.agents/skills/blog-writing/SKILL.md)**
+to preserve Shiv's voice and teaching flow. It includes the shared clarity
+principles and adds guidance from the 53 recovered originals in
+`docs/source-material/matlus-wayback/`. Keep those originals unchanged; edit
+publication copies. Preserve opinions and purposeful questions in context.
+Other site copy uses the professional-writing skill, which remains unchanged.
+Run the applicable writing audit and `tools/audit-copy.py` on authored copy.
+Shiv specifically objects to the antithesis tic ("it's not
+this, it's that"), which the professional-writing audit misses in its bare form. Run both,
 read every flag, and expect to act on maybe a fifth. A recurring refrain is not a
 tic; a document can declare one with `<!-- audit-allow: phrase -->`.
 

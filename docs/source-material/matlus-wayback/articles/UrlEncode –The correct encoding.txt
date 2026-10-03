@@ -1,0 +1,80 @@
+UrlEncode –The correct encoding
+===============================
+
+UrlEncode –The correct encoding
+Posted by Shiv Kumar on 3rd February, 2011
+Categorized Under: Programming C#
+Tagged With: Http 
+Code Gem: Snippets 
+  
+
+Original URL: http://matlus.com/urlencode-the-correct-encoding/
+Wayback capture: https://web.archive.org/web/20230331000205/http://www.matlus.com/urlencode-the-correct-encoding/
+
+While developing the OAuth C# Lubrary I discovered that the HttpUtility class that's available in the System.Web assembly in .NET (in particular the HttpUtility.UrlEncode() method) doesn't quite do it correctly. So I had to develop my own method that did the encoding correctly. I used this wiki page as a reference.
+
+Notice the UrlEncode() method in the code listing below, that's the method I present in this post. The outputs of the HttpUtility.UrlEncode() method any my UrlEncode() method are listed below such that you can compare the two outputs.
+
+UrlEncoding a string in C# the correct way
+  class Program
+  {
+    private readonly static string unreservedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~";
+
+    static void Main(string[] args)
+    {
+      var url = "!*'();:@&=+$,/?#[] <>~.\"{}|\\-`_^%";
+
+      Console.WriteLine("Using HttpUtility: " + HttpUtility.UrlEncode(url));
+      Console.WriteLine("Using UrlEncode:   " + UrlEncode(url));
+      Console.WriteLine(HttpUtility.UrlDecode(UrlEncode(url)));
+
+      Console.ReadLine();
+    }
+
+    /// <summary>
+    /// This method is the correct implementation of UrlEncode.
+    /// Given a string, it returns a UrlEncoded version on the string.
+    /// </summary>
+    /// <param name="value">the string/url to be UrlEncoded</param>
+    /// <returns>The UrlEncoded string</returns>
+    public static string UrlEncode(string value)
+    {
+      if (String.IsNullOrEmpty(value))
+        return String.Empty;
+
+      var sb = new StringBuilder();
+
+      foreach (char @char in value)
+      {
+        if (unreservedCharacters.IndexOf(@char) != -1)
+          sb.Append(@char);
+        else
+          sb.AppendFormat("%{0:x2}", (int)@char);
+      }
+      return sb.ToString();
+    }
+  }
+
+
+ 
+
+ 	!	*	'	(	)	;	:	@	&	=	+	$	,	/	?	#	[	]
+HttpUtility
+	!	*	%27	(	)	%3b	%3a	%40	%26	%3d	%2b	%24	%2c	%2f	%3f	%23	%5b	%5d
+UrlEncode	%21	%2a	%27	%28	%29	%3b	%3a	%40	%26	%3d	%2b	%24	%2c	%2f	%3f	%23	%5b	%5d
+
+ 
+
+ 	<	>	~	.	"	{	}	|	\	-	`	_	^	%	space
+HttpUtility	%3c	%3e	%7e	.	%22	%7b	%7d	%7c	%5c	-	%60	_	%5e	%25	+
+UrlEncode	%3c	%3e	~	.	%22	%7b	%7d	%7c	%5c	-	%60	_	%5e	%25	%20
+
+--- Links in the article ---
+OAuth C# Lubrary
+https://web.archive.org/web/20230331000205/http://www.matlus.com/oauth-c-library/
+
+this wiki page
+https://web.archive.org/web/20230331000205/http://en.wikipedia.org/wiki/Percent-encoding
+
+--- Images referenced in the article ---
+

@@ -1,0 +1,109 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>HttpClient .NET 4.5</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>HttpClient .NET 4.5</h1><p class="recovery">HttpClient .NET 4.5<br>Posted by Shiv Kumar on 20th February, 2012<br>Categorized Under: Programming WCF<br>Tagged With: Http JSON REST Web API <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20240712143051/http://www.matlus.com/httpclient-net-4-5/">this Wayback capture</a>.</p><div class="articleText">
+        <p><a href="https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx" target="_blank"><code></code></a><code><a href="https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.110).aspx" target="_blank">HttpClient</a></code> has been around for quite some time now. It originally appeared as part of the REST Starter Kit in 2009. Since then it has gone through a huge number of changes and improvements (or over engineering some might argue) and a ton of breaking changes as well. Nonetheless, it’s intent was and still is to simplify client side Http programming and I think it does that quite well.</p> <p>The new <code>HttpClient </code>has only async methods. That is you can’t make synchronous calls. You can make async calls synchronous (but I would advise against it). However, in this post the code you see is synchronous. Please also keep in mind that all of the code in this post and other posts is intentionally simple (that is not very object oriented) so as to help those who are learning something new stay sane. Once you’ve got the grasp of things, you should structure you code better and introduce exception handling etc.</p> <p>One other thing that <code>HttpClient</code> does not do is throw exceptions when it receives Http Status code of the 500 and 400 series. The is a method on the <code><a href="https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpresponsemessage(v=vs.110).aspx" target="_blank">HttpResponseMessage</a></code> called <code>EnsureSuccessStatusCode</code> which throws an exception if the IsSuccessStatusCode property for the HTTP response is false.</p> <h2>Client for the service in a previous post</h2> <p>In this post we’re essentially building a very simple Http client for the WEB API Self hosted application we built in a previous post <a href="https://web.archive.org/web/20240712143051/http://www.matlus.com/self-host-asp-net-web-api/">Self Host ASP.NET Web API</a>. </p> <p>Start a new Console application and overwrite the contents of the Program.cs file with the code listing below.</p> <div class="panel code content/images/csharp.png" title="HttpClientRESTFul" id="code_92168"><div class="codeHeading" style="background-image: url(/web/20240712143051/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">HttpClientRESTFul</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre><span class="Keyword">using</span> System;
+<span class="Keyword">using</span> System.Collections;
+<span class="Keyword">using</span> System.Collections.Generic;
+<span class="Keyword">using</span> System.Net.Http;
+<span class="Keyword">using</span> System.Net.Http.Formatting;
+<span class="Keyword">using</span> System.Net.Http.Headers;
+<span class="Keyword">using</span> SelfHostedAspNetWebApi;
+
+<span class="Comment">/* Requires the following package from NuGet
+   
+   ASP.NET Web API (Beta) 4.0.20126.16343
+   http://nuget.org/packages/aspnetwebapi
+   Package Manager Console Command line: Install-Package HttpClient -Version 0.6.0
+   
+   System.Net.Http.Formatting
+   http://nuget.org/packages/System.Net.Http.Formatting
+   Package Manager Console Command line: Install-Package System.Net.Http.Formatting
+ */</span>
+
+<span class="Keyword">namespace</span> HttpClientRESTFul
+{
+    <span class="Keyword">class</span> <span class="Identifier">Program</span>
+    {
+        <span class="Keyword">static</span> <span class="Keyword">void</span> Main(<span class="Keyword">string</span>[] args)
+        {
+            <span class="Keyword">var</span> serverAddress = <span class="StringLiteral">"http://localhost:8080"</span>;
+
+            <span class="Keyword">using</span> (<span class="Keyword">var</span> httpClient = <span class="Keyword">new</span> <span class="Identifier">HttpClient</span>() { BaseAddress = <span class="Keyword">new</span> <span class="Identifier">Uri</span>(serverAddress) })
+            {
+                <span class="Comment">//GET all customers</span>
+                <span class="Keyword">var</span> response = httpClient.GetStringAsync(<span class="StringLiteral">"api/customers"</span>).Result;
+                <span class="Identifier">Console</span>.WriteLine(<span class="StringLiteral">"Response From Server:\r\n\r\n{0}"</span>, response);
+
+                <span class="Keyword">var</span> newCustomer = <span class="Keyword">new</span> <span class="Identifier">Customer</span> { Name = <span class="StringLiteral">"George Washington Jr."</span>, Phone = <span class="StringLiteral">"1-202-555-0100"</span>, Email = <span class="StringLiteral">"gwjr@whitehouse.gov"</span> };
+                <span class="Keyword">var</span> requestMessage = <span class="Keyword">new</span> <span class="Identifier">HttpRequestMessage</span>();
+                <span class="Keyword">var</span> objectContent = requestMessage.CreateContent&lt;<span class="Identifier">Customer</span>&gt;(
+                    newCustomer,
+                    <span class="Identifier">MediaTypeHeaderValue</span>.Parse(<span class="StringLiteral">"application/json"</span>),
+                    <span class="Keyword">new</span> MediaTypeFormatter[] { <span class="Keyword">new</span> <span class="Identifier">JsonMediaTypeFormatter</span>() },
+                    <span class="Keyword">new</span> <span class="Identifier">FormatterSelector</span>());
+
+                <span class="Comment">//POST new customer</span>
+                <span class="Keyword">var</span> responseMessage = httpClient.PostAsync(<span class="StringLiteral">"api/customers"</span>, objectContent).Result;
+                <span class="Keyword">var</span> newlyCreatedCustomer = responseMessage.Content.ReadAsAsync&lt;<span class="Identifier">Customer</span>&gt;().Result;
+                <span class="Identifier">Console</span>.WriteLine(<span class="StringLiteral">"Created (POST) new customer. New Customer Id is: "</span> + newlyCreatedCustomer.Id.ToString());
+
+                newlyCreatedCustomer.Name = <span class="StringLiteral">"George Washington III"</span>;
+                objectContent = requestMessage.CreateContent&lt;<span class="Identifier">Customer</span>&gt;(
+                    newlyCreatedCustomer,
+                    <span class="Identifier">MediaTypeHeaderValue</span>.Parse(<span class="StringLiteral">"application/json"</span>),
+                    <span class="Keyword">new</span> MediaTypeFormatter[] { <span class="Keyword">new</span> <span class="Identifier">JsonMediaTypeFormatter</span>() },
+                    <span class="Keyword">new</span> <span class="Identifier">FormatterSelector</span>());
+
+                <span class="Comment">//PUT newly created customer</span>
+                responseMessage = httpClient.PutAsync(<span class="StringLiteral">"api/customers/"</span> + newlyCreatedCustomer.Id.ToString(), objectContent).Result;
+                <span class="Identifier">Console</span>.WriteLine(<span class="StringLiteral">"Updated (PUT) newly created customer"</span>);
+
+                <span class="Comment">//DELETE the newly created customer</span>
+                <span class="Keyword">var</span> r = httpClient.DeleteAsync(<span class="StringLiteral">"api/customers/"</span> + newlyCreatedCustomer.Id.ToString()).Result;
+                <span class="Identifier">Console</span>.WriteLine(<span class="StringLiteral">"Deleted (DELETE) newly created customer"</span>);
+            }
+
+            <span class="Identifier">Console</span>.ReadLine();
+        }
+    }
+}
+
+</pre>
+<h3>The RESTFul client using HttpClient</h3></div>
+<p>You’ll need a couple of NuGet packages in order to be able to compile and run this application. I’ve provided links to them in the code listing above, at the very top.</p>
+<p>You’ll also need the <code>CustomerController</code> class from the <a href="https://web.archive.org/web/20240712143051/http://www.matlus.com/self-host-asp-net-web-api/">Self Host ASP.NET Web API</a> project. This class in contained in the CustomerController.cs file code listing.</p>
+<p>Before you run this application, make sure serverAddress matches the base address of your server application. Then run the server app first and then run this client application.</p>
+<p>The code essentially executes GET,POST,PUT and DELETE methods on the service. The code is completely functional, but I’ve kept it really simply.</p>
+<p>At this point you’re essentially done building the client application, however there are some points I’d like to make about the code that I think you should read.</p>
+<h3>Receiving <code>IEnumerable&lt;Customer&gt;</code> instead of a string of JSON objects</h3>
+<p>Ideally, rather than receiving a list of customers as a string of JSON objects, you’d like to receive them as say an <code>IEnumerable&lt;Customer&gt;</code>. The HttpClient class makes this fairly simple to do. Take a look at the following code listing:</p>
+<div class="panel code content/images/csharp.png" title="GetCustomers Method" id="code_89612"><div class="codeHeading" style="background-image: url(/web/20240712143051/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">GetCustomers Method</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre><span class="Keyword">private</span> <span class="Keyword">static</span> IEnumerable&lt;<span class="Identifier">Customer</span>&gt; GetCustomers(<span class="Identifier">HttpClient</span> httpClient)
+{
+    <span class="Keyword">var</span> responseMessage = httpClient.GetAsync(<span class="StringLiteral">"api/customers/"</span>).Result;
+    responseMessage.EnsureSuccessStatusCode();
+    <span class="Keyword">var</span> customers = responseMessage.Content.ReadAsAsync&lt;<span class="Identifier">IEnumerable</span>&lt;<span class="Identifier">Customer</span>&gt;&gt;().Result;
+    <span class="Keyword">return</span> customers;
+}
+</pre>
+<h3>The GetCustomers method returning an IEnumerable<customer></customer></h3></div>
+<p>You’ll notice that we do a similar thing when we receive the result of POSTing a new Customer, in order to receive an instance of the newly created customer as an instance of Customer (instead of a string). Except here, we’re receiving a sequence of Customers rather than a single.</p>
+<h2>ObjectContent constructor changed</h2>
+<p>If you look carefully at the code the “assembles” an instance of an HttpRequestMessage prior to calling the POST method on the server, you’ll notice we’re stuffing an instance of a (new) Customer instance into the “content”, before we make the http request. In other words, an instance of a customer it sent across the wire as a JSON object so the server side can create this new customer.</p>
+<p>The way the HttpClient class works is that the HttpContent (The payload if you will) is abstracted into a class called <a href="https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.httpcontent(v=vs.110).aspx" target="_blank">HttpContent</a>. This is an abstract class. However, out of the box, there are a number of descendants of this class that we could (have) used.</p>
+<ol>
+<li><a href="https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.stringcontent(v=vs.110).aspx" target="_blank">StringContent</a> 
+</li><li><a href="https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.bytearraycontent(v=vs.110).aspx" target="_blank">ByteArrayContent</a> 
+</li><li><a href="https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.multipartcontent(v=vs.110).aspx" target="_blank">MultipartContent</a> 
+</li><li><a href="https://web.archive.org/web/20240712143051/http://msdn.microsoft.com/en-us/library/system.net.http.streamcontent(v=vs.110).aspx" target="_blank">StreamContent</a></li></ol>
+<p>To keep things really simple, we could have just used the <code>StringContent</code> class, stuffed a JSON representation of our new customer (that we wanted POSTed to the server) and be done with it.</p>
+<p>But I wanted this example to be a bit more real-world and so I wanted to use the ObjectContent type. The ASP.NET team has changed the constructor to internal. Not sure why. But what’s worse is not sure how else to use the ObjectContent. We could use a StreamContent and serialize of object instance to a stream, but that’s a lot more work.</p>
+<p>So as it happens, I found a round-a-bout way of creating an instance of this class, as you can see in the very first code listing as well as below.</p>
+<div class="panel code content/images/csharp.png" title="Using ObjectContent to send an object instance" id="code_14809"><div class="codeHeading" style="background-image: url(/web/20240712143051/http://www.matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Using ObjectContent to send an object instance</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre>                <span class="Identifier">var</span> requestMessage = <span class="Keyword">new</span> <span class="Identifier">HttpRequestMessage</span>();
+                <span class="Identifier">var</span> objectContent = requestMessage.CreateContent&lt;<span class="Identifier">Customer</span>&gt;(
+                    newCustomer,
+                    <span class="Identifier">MediaTypeHeaderValue</span>.Parse(<span class="StringLiteral">"application/json"</span>),
+                    <span class="Keyword">new</span> MediaTypeFormatter[] { <span class="Keyword">new</span> <span class="Identifier">JsonMediaTypeFormatter</span>() },
+                    <span class="Keyword">new</span> <span class="Identifier">FormatterSelector</span>());
+</pre>
+<h3>Creating an instance of an ObjectContent</h3></div>
+<p>At the time of this writing I couldn’t find any documentation or example of how else to do it, so you may want to keep a watch out for the correct or better way of doing this.</p>  
+        </div></body></html>

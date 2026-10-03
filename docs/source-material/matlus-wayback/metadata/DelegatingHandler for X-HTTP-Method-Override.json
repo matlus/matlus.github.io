@@ -1,0 +1,401 @@
+{
+  "body": "If you have a RESTful Web API exposed in the public domain, it is quite likely, you’ll encounter a few stumbling blocks. A couple in fact come to mind:\n\nNeed to support older browsers that only support HTTP POST and GET\nSome firewalls block any HTTP traffic that is not either a POST or GET\n\nThis poses a problem if you’re using the new ASP.NET Web API framework to build your services since the dispatching to the specific methods in your API Controller is automatic, based on the HTTP method used.\n\nThe basic idea behind the X-HTTP-Method-Override HTTP header is that browsers (typically via JavaScript/XMLHttpRequest can add the X-HTTP-Method-Override HTTP header with a value of either PUT or DELETE (or HEAD) and then make a regular HTTP POST request. On the receiving end, the service will interpret the HTTP method to be either a PUT or DELETE as the case may be, thus circumventing the two issues mentioned above.\n\nDelegating Handlers to the rescue\n\nDelegating handlers essentially allow you to intercept the Request/Response pipeline. Therefore you can use them to modify the request or response (or both) or simply send back a response (thus halting the progression of the request down the remain pipeline). If you’re familiar with ASP.NET HttpModules, then think of DelegatingHandlers similar to HttpModule.\n\nThere is a difference between DelegatingHandlers and HttpModules and that is DelegatingHandlers are chained, such that each DelegatingHandler has a reference to an inner handler and it calls out to its inner handler when it is done. The team responsible for this design as Microsoft call this the delegate pattern. However, I don’t believe this is the delegate pattern. Nonetheless, keep your eye on when you’d use a DelegatingHandler and how they work.\n\nThe XHttpMethodOverrideDelegatingHandler\n\nThe handler itself is really very simple to implement. Take a look at the code listing below. I think the code is pretty self-explanatory. You need to register this class before you can use it.\n\nXHttpMethodOverrideMessageHandler.cs\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Net.Http;\nusing System.Threading;\nusing System.Threading.Tasks;\nusing System.Web;\n\nnamespace Matlus.Web.WebLib.DelegatingHandlers\n{\n    public class XHttpMethodOverrideDelegatingHandler : DelegatingHandler\n    {\n        static readonly string[] httpMethods = { \"PUT\", \"DELETE\" };\n        static readonly string httpMethodOverrideHeader = \"X-HTTP-Method-Override\";\n\n        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)\n        {\n            if (request.Method == HttpMethod.Post && request.Headers.Contains(httpMethodOverrideHeader))\n            {\n                var httpMethod = request.Headers.GetValues(httpMethodOverrideHeader).FirstOrDefault();\n                if (httpMethods.Contains(httpMethod, StringComparer.InvariantCultureIgnoreCase))\n                    request.Method = new HttpMethod(httpMethod);\n            }\n            return base.SendAsync(request, cancellationToken);\n        }\n    }\n}\n\nCode listing of the XHttpMethodOverrideDelegatingHandler class\n\nYou do this in yout HttpApplication’s (Global) Start event like so:\n\nGlobal.asax.cs\n        protected void Application_Start(object sender, EventArgs e)\n        {\n            RegisterRoutes(RouteTable.Routes);\n            GlobalConfiguration.Configuration.MessageHandlers.Add(new XHttpMethodOverrideDelegatingHandler());\n        }\n\nRegistering the XHttpMethodOverrideDelegatingHandler\n\nThat’s all it take to get this working on the server side of things. On the browser side, in JavaScript, you can now add the HTTP Header and make a regual HTTP POST request to your server and see this request get converted to a HTTP PUT request.\n\nBelow is an example of how you would do this in jQuery:\n\n    function putMember() {\n      $.ajax({\n        url: \"http://localhost/api/members/\" + $(\"#username\").val(),\n        type: \"POST\",\n        data: $(\"#newMemberForm\").serialize(),\n        headers: { \"X-HTTP-Method-Override\": \"PUT\" },\n      })\n      .done(function (data) {\n      })\n      .fail(function (e) {\n        alert(e.responseText);\n      })\n      .always(function () { });\n    }\n\n\n\nNote that due to the Sam Origin policy that browsers enforce, you can only use the JavaScript above within the same domain.",
+  "bodyLinks": [],
+  "code": [
+    "using System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Net.Http;\nusing System.Threading;\nusing System.Threading.Tasks;\nusing System.Web;\n\nnamespace Matlus.Web.WebLib.DelegatingHandlers\n{\n    public class XHttpMethodOverrideDelegatingHandler : DelegatingHandler\n    {\n        static readonly string[] httpMethods = { \"PUT\", \"DELETE\" };\n        static readonly string httpMethodOverrideHeader = \"X-HTTP-Method-Override\";\n\n        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)\n        {\n            if (request.Method == HttpMethod.Post && request.Headers.Contains(httpMethodOverrideHeader))\n            {\n                var httpMethod = request.Headers.GetValues(httpMethodOverrideHeader).FirstOrDefault();\n                if (httpMethods.Contains(httpMethod, StringComparer.InvariantCultureIgnoreCase))\n                    request.Method = new HttpMethod(httpMethod);\n            }\n            return base.SendAsync(request, cancellationToken);\n        }\n    }\n}\n",
+    "        protected void Application_Start(object sender, EventArgs e)\n        {\n            RegisterRoutes(RouteTable.Routes);\n            GlobalConfiguration.Configuration.MessageHandlers.Add(new XHttpMethodOverrideDelegatingHandler());\n        }\n",
+    "    function putMember() {\n      $.ajax({\n        url: \"http://localhost/api/members/\" + $(\"#username\").val(),\n        type: \"POST\",\n        data: $(\"#newMemberForm\").serialize(),\n        headers: { \"X-HTTP-Method-Override\": \"PUT\" },\n      })\n      .done(function (data) {\n      })\n      .fail(function (e) {\n        alert(e.responseText);\n      })\n      .always(function () { });\n    }\n\n"
+  ],
+  "header": "DelegatingHandler for X-HTTP-Method-Override\nPosted by Shiv Kumar on 3rd March, 2012\nCategorized Under: Programming ASP.NET\nTagged With: Http REST Web API \n  ",
+  "html": "<div class=\"articleText\">\n        <p>If you have a RESTful Web API exposed in the public domain, it is quite likely, you’ll encounter a few stumbling blocks. A couple in fact come to mind:</p> <ol> <li>Need to support older browsers that only support HTTP POST and GET  </li><li>Some firewalls block any HTTP traffic that is not either a POST or GET</li></ol> <p>This poses a problem if you’re using the new ASP.NET Web API framework to build your services since the dispatching to the specific methods in your API Controller is automatic, based on the HTTP method used.</p> <p>The basic idea behind the <code>X-HTTP-Method-Override</code> HTTP header is that browsers (typically via JavaScript/XMLHttpRequest can add the <code>X-HTTP-Method-Override</code> HTTP header with a value of either PUT or DELETE (or HEAD) and then make a regular HTTP POST request. On the receiving end, the service will interpret the HTTP method to be either a PUT or DELETE as the case may be, thus circumventing the two issues mentioned above.</p> <h2>Delegating Handlers to the rescue</h2> <p>Delegating handlers essentially allow you to intercept the Request/Response pipeline. Therefore you can use them to modify the request or response (or both) or simply send back a response (thus halting the progression of the request down the remain pipeline). If you’re familiar with ASP.NET HttpModules, then think of DelegatingHandlers similar to HttpModule.</p> <p>There is a difference between DelegatingHandlers and HttpModules and that is DelegatingHandlers are chained, such that each DelegatingHandler has a reference to an inner handler and it calls out to its inner handler when it is done. The team responsible for this design as Microsoft call this the delegate pattern. However, I don’t believe this is the delegate pattern. Nonetheless, keep your eye on when you’d use a DelegatingHandler and how they work.</p> <h2>The XHttpMethodOverrideDelegatingHandler</h2> <p>The handler itself is really very simple to implement. Take a look at the code listing below. I think the code is pretty self-explanatory. You need to register this class before you can use it.</p> <div class=\"panel code content/images/csharp.png\" title=\"XHttpMethodOverrideMessageHandler.cs\" id=\"code_28463\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240525153427/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">XHttpMethodOverrideMessageHandler.cs</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre><span class=\"Keyword\">using</span> System;\n<span class=\"Keyword\">using</span> System.Collections.Generic;\n<span class=\"Keyword\">using</span> System.Linq;\n<span class=\"Keyword\">using</span> System.Net.Http;\n<span class=\"Keyword\">using</span> System.Threading;\n<span class=\"Keyword\">using</span> System.Threading.Tasks;\n<span class=\"Keyword\">using</span> System.Web;\n\n<span class=\"Keyword\">namespace</span> Matlus.Web.WebLib.DelegatingHandlers\n{\n    <span class=\"Keyword\">public</span> <span class=\"Keyword\">class</span> <span class=\"Identifier\">XHttpMethodOverrideDelegatingHandler</span> : <span class=\"Identifier\">DelegatingHandler</span>\n    {\n        <span class=\"Keyword\">static</span> <span class=\"Keyword\">readonly</span> <span class=\"Keyword\">string</span>[] httpMethods = { <span class=\"StringLiteral\">\"PUT\"</span>, <span class=\"StringLiteral\">\"DELETE\"</span> };\n        <span class=\"Keyword\">static</span> <span class=\"Keyword\">readonly</span> <span class=\"Keyword\">string</span> httpMethodOverrideHeader = <span class=\"StringLiteral\">\"X-HTTP-Method-Override\"</span>;\n\n        <span class=\"Keyword\">protected</span> <span class=\"Keyword\">override</span> <span class=\"Identifier\">Task</span>&lt;<span class=\"Identifier\">HttpResponseMessage</span>&gt; SendAsync(<span class=\"Identifier\">HttpRequestMessage</span> request, <span class=\"Identifier\">CancellationToken</span> cancellationToken)\n        {\n            <span class=\"Keyword\">if</span> (request.Method == <span class=\"Identifier\">HttpMethod</span>.Post &amp;&amp; request.Headers.Contains(httpMethodOverrideHeader))\n            {\n                <span class=\"Keyword\">var</span> httpMethod = request.Headers.GetValues(httpMethodOverrideHeader).FirstOrDefault();\n                <span class=\"Keyword\">if</span> (httpMethods.Contains(httpMethod, <span class=\"Identifier\">StringComparer</span>.InvariantCultureIgnoreCase))\n                    request.Method = <span class=\"Keyword\">new</span> <span class=\"Identifier\">HttpMethod</span>(httpMethod);\n            }\n            <span class=\"Keyword\">return</span> <span class=\"Keyword\">base</span>.SendAsync(request, cancellationToken);\n        }\n    }\n}\n</pre>\n<h3>Code listing of the XHttpMethodOverrideDelegatingHandler class</h3></div>\n<p>You do this in yout HttpApplication’s (Global) Start event like so:</p>\n<div class=\"panel code content/images/csharp.png\" title=\"Global.asax.cs\" id=\"code_65516\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240525153427/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Global.asax.cs</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre>        <span class=\"Keyword\">protected</span> <span class=\"Keyword\">void</span> Application_Start(<span class=\"Keyword\">object</span> sender, <span class=\"Identifier\">EventArgs</span> e)\n        {\n            RegisterRoutes(<span class=\"Identifier\">RouteTable</span>.Routes);\n            <span class=\"Identifier\">GlobalConfiguration</span>.Configuration.MessageHandlers.Add(<span class=\"Keyword\">new</span> <span class=\"Identifier\">XHttpMethodOverrideDelegatingHandler</span>());\n        }\n</pre>\n<h3>Registering the XHttpMethodOverrideDelegatingHandler</h3></div>\n<p>That’s all it take to get this working on the server side of things. On the browser side, in JavaScript, you can now add the HTTP Header and make a regual HTTP POST request to your server and see this request get converted to a HTTP PUT request.</p>\n<p>Below is an example of how you would do this in jQuery:</p><pre>    <span class=\"Identifier\">function</span> putMember() {\n      $.ajax({\n        url: <span class=\"StringLiteral\">\"http://localhost/api/members/\"</span> + $(<span class=\"StringLiteral\">\"#username\"</span>).val(),\n        type: <span class=\"StringLiteral\">\"POST\"</span>,\n        data: $(<span class=\"StringLiteral\">\"#newMemberForm\"</span>).serialize(),\n        headers: { <span class=\"StringLiteral\">\"X-HTTP-Method-Override\"</span>: <span class=\"StringLiteral\">\"PUT\"</span> },\n      })\n      .done(function (data) {\n      })\n      .fail(function (e) {\n        alert(e.responseText);\n      })\n      .always(function () { });\n    }\n\n</pre>\n<p>Note that due to the Sam Origin policy that browsers enforce, you can only use the JavaScript above within the same domain.</p>  \n        </div>",
+  "images": [],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "ASP.NET",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/category/programming/asp-net/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240525153427/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2fdelegatinghandler-for-x-http-method-override%2f&text=DelegatingHandler+for+X-HTTP-Method-Override"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240525153427/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2fdelegatinghandler-for-x-http-method-override%2f&t=DelegatingHandler+for+X-HTTP-Method-Override"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240525153427/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2fdelegatinghandler-for-x-http-method-override%2f&text=DelegatingHandler+for+X-HTTP-Method-Override"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "DelegatingHandler for X-HTTP-Method-Override",
+  "url": "https://web.archive.org/web/20240525153427/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+}

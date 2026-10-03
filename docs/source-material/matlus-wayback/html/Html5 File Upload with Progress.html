@@ -1,0 +1,178 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Html5 File Upload with Progress</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>Html5 File Upload with Progress</h1><p class="recovery">Html5 File Upload with Progress<br>Posted by Shiv Kumar on 25th September, 2010<br>Categorized Under: Html 5 File Upload<br>Tagged With: File API File Upload XMLHttpRequest <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20240415161255/http://matlus.com/html5-file-upload-with-progress/">this Wayback capture</a>.</p><div class="articleText">
+        Html5 finally solves an age old problem of being able to upload files while also showing the upload progress. Today most websites use Flash Player to achieve this functionality. Some websites continue to use the Html <code>&lt;form&gt; with enctype=multipart/form-data,</code> but with modification on the server side to enable showing users the upload progress. Essentially, what you need to do is hook into the server’s byte stream while it is receiving a file so you know how many bytes you’ve received and somehow convey that information back to the client browser, while it is still in the process of uploading the file. This solution works extremely well and is not fraught with the issues Flash Player causes (especially for large files). However it is fairly complicated and not for the faint of heart because you are essentially taking over the entire server side processing (when you tap into the byte stream) and that includes implementing the <code>multipart/form-data</code> protocol on the server side, along with a bunch of other things.  <h2>Uploading files using Html5</h2>The XMLHttpRequest object has gotten a facelift in the Html5 specifications. Specifically the <a href="https://web.archive.org/web/20240415161255/http://www.w3.org/TR/XMLHttpRequest2/" target="_blank">XMLHttpRequest Level 2</a> specification (currently the latest version) that has included the following new features:  <ol> <li>Handling of byte streams such as File, Blob and FormData objects for uploading and downloading  </li><li>Progress events during uploading and downloading  </li><li>Cross-origin requests  </li><li>Allow making anonymous request - that is not send HTTP Referer  </li><li>The ability to set a Timeout for the Request </li></ol> <p>In this post we’ll look more closely at #1 and #2. In particular, uploading of files using XMLHttpRequest and providing upload progress information to the end-user. Note that this solution <strong>does not require any change to the server side</strong>, at least insofar as handling the multipart/form-data protocol. So existing server side logic should remain unchanged, which makes adapting this technology that much easier. <a name="figure1"></a></p> <p><img style="background-image: none; border-bottom: 0px; border-left: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="Html5FileUpload1" border="0" alt="Html5FileUpload1" src="../images/fc51540959d6a892-Html5FileUpload1_6023e7c1-a2a8-43ee-bb13-c2439888adf9.jpg" width="466" height="269">&nbsp;</p> <h3>Figure 1: Showing the File Upload screen -Upload just started</h3> <p>&nbsp;</p><a name="figure2"></a><img style="background-image: none; border-bottom: 0px; border-left: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="Html5FileUpload2" border="0" alt="Html5FileUpload2" src="../images/213e85c362244f2d-Html5FileUpload2_f8ce435b-691a-4102-97c4-47cf159436e3.jpg" width="466" height="370">  <h3>Figure 2: Showing the File Upload screen with upload completed.</h3> <div class="mgntop20"></div>Notice in the images above the following pieces of information made available to the user:  <ol> <li>Information on the file that has been selected such as  <ul> <li>File Name  </li><li>File Size  </li><li>Mime Type </li></ul> </li><li>A Progress bar with percent complete  </li><li>The upload speed or upload bandwidth  </li><li>The approximate time remaining  </li><li>The bytes uploaded thus far  </li><li>A response from the server side (the organge box) </li></ol>Item #6 above may not sound important, but in fact is quite important in this context because, remember that the user is not navigating away from this page as she normally would after submitting an html form. Because we're using XMLHttpRequest, the uploading is happening in the background. The page the user is on remains intact. Which is a nice feature to have if your business process can work with it.  <h2>Html5 Progress Event</h2>As per the Html5 <a href="https://web.archive.org/web/20240415161255/http://www.w3.org/TR/progress-events/" target="_blank&quot;">Progress Events</a> spec, the Html5 progress event provides the following information relevant to this conversation  <ol> <li><code>total</code> - Total bytes being transferred  </li><li><code>loaded</code> - Bytes uploaded thus far  </li><li><code>lengthComputable</code> - Specifies if the total size of the data/file being uploaded is known </li></ol>You should notice that we need to use these two pieces of information to calculate (figure out) all of the other information we're displaying to the user. It is fairly simple to figure out all of the other information given the above two pieces of information but it does involve quite a bit of extra coding and setting up a timer.  <h2>Html5 Progress Event - What it should have been</h2>Considering that those who go down the route of providing upload progress information to the end user will require to show all of the other information to the end user as well, the Html5 Progress Event specifications should have accounted for this need as well, as it would be fairly simple for browser vendors to provide these additional pieces of information each time the progress event is raised. So I propose that the progress event should be modified to the following:  <ol> <li><code>total</code> - Total bytes being transferred  </li><li><code>loaded</code> - Bytes uploaded thus far  </li><li><code>lengthComputable</code> - Specifies if the total size of the data/file being uploaded is known  </li><li><code>transferSpeed</code> as a <code>long</code>  </li><li><code>timeRemaining</code> as a JavaScript <code>Date</code> object </li></ol> <h2>Html5 Upload using XMLHttpRequest</h2>I've provided a <a href="https://web.archive.org/web/20240415161255/http://exposureroom.biz/upload.aspx" target="_blank">Uploading files using Html5 with Progress indication</a> demo for those who want to jump right to it. All of the JavaScript code required is in the page. However, because the demo is a real world demo there are a number of CSS styles in use, and the layout of the page (the Html) is fairly complex. In this article we work with a minimalistic version of the Html and JavaScript so as to keep things simple and understandable.  <div class="panel"> <h3 class="note">Browser Support for this Feature</h3>At the time of this writing only the following browsers support this feature  <ol> <li>Firefox 4.0 beta 6  </li><li>Chrome 6  </li><li>Safari 5.02 </li></ol>IE 9 Beta and Opera 10.62 do not support this feature </div> <h2>Let's get started</h2>The entire code listing for the minimalistic but functional implementation can be found in <a href="#codeListing6">Code Listing 6</a>. Each aspect of the minimalistic Html/JavaScript is explained in detail in the rest of this article. Below, is a very simple Html form. This Html is no different then the Html you'd use to do a regular Html/HTTP file upload you'd use today (Html4 and pretty much any previous version of Html). <a name="codeListing1"></a> <div class="panel code content/images/html.png" title="The Html Portion" id="code_86036"><div class="codeHeading" style="background-image: url(/web/20240415161255/http://matlus.com/content/images/html.png);"><h3 class="codeTitle">The Html Portion</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode"><span class="kwrd">&lt;!</span><span class="html">DOCTYPE</span> <span class="attr">html</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;</span><span class="html">html</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;</span><span class="html">head</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">title</span><span class="kwrd">&gt;</span>Upload Files using XMLHttpRequest - Minimal<span class="kwrd">&lt;/</span><span class="html">title</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;/</span><span class="html">head</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;</span><span class="html">body</span><span class="kwrd">&gt;</span>
+  <span class="kwrd">&lt;</span><span class="html">form</span> <span class="attr">id</span><span class="kwrd">="form1"</span> <span class="attr">enctype</span><span class="kwrd">="multipart/form-data"</span> <span class="attr">method</span><span class="kwrd">="post"</span> <span class="attr">action</span><span class="kwrd">="Upload.aspx"</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">div</span> <span class="attr">class</span><span class="kwrd">="row"</span><span class="kwrd">&gt;</span>
+      <span class="kwrd">&lt;</span><span class="html">label</span> <span class="attr">for</span><span class="kwrd">="fileToUpload"</span><span class="kwrd">&gt;</span>Select a File to Upload<span class="kwrd">&lt;/</span><span class="html">label</span><span class="kwrd">&gt;&lt;</span><span class="html">br</span> <span class="kwrd">/&gt;</span>
+      <span class="kwrd">&lt;</span><span class="html">input</span> <span class="attr">type</span><span class="kwrd">="file"</span> <span class="attr">name</span><span class="kwrd">="fileToUpload"</span> <span class="attr">id</span><span class="kwrd">="fileToUpload"</span> <span class="attr">onchange</span><span class="kwrd">="fileSelected();"</span><span class="kwrd">/&gt;</span>
+    <span class="kwrd">&lt;/</span><span class="html">div</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">div</span> <span class="attr">id</span><span class="kwrd">="fileName"</span><span class="kwrd">&gt;&lt;/</span><span class="html">div</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">div</span> <span class="attr">id</span><span class="kwrd">="fileSize"</span><span class="kwrd">&gt;&lt;/</span><span class="html">div</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">div</span> <span class="attr">id</span><span class="kwrd">="fileType"</span><span class="kwrd">&gt;&lt;/</span><span class="html">div</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">div</span> <span class="attr">class</span><span class="kwrd">="row"</span><span class="kwrd">&gt;</span>
+      <span class="kwrd">&lt;</span><span class="html">input</span> <span class="attr">type</span><span class="kwrd">="button"</span> <span class="attr">onclick</span><span class="kwrd">="uploadFile()"</span> <span class="attr">value</span><span class="kwrd">="Upload"</span> <span class="kwrd">/&gt;</span>
+    <span class="kwrd">&lt;/</span><span class="html">div</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">div</span> <span class="attr">id</span><span class="kwrd">="progressNumber"</span><span class="kwrd">&gt;&lt;/</span><span class="html">div</span><span class="kwrd">&gt;</span>
+  <span class="kwrd">&lt;/</span><span class="html">form</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;/</span><span class="html">body</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;/</span><span class="html">html</span><span class="kwrd">&gt;</span></pre></div>
+<h3>Code Listing 1: The bare minimum Html Page</h3>
+<div class="mgntop20"></div>Notice that the <code>&lt;input type="file"/&gt;</code> element has the <code><strong>onchange</strong></code> event assigned to a JavaScript method called <code><strong>fileSelected()</strong></code>. So essentially, each time someone selects a file by browsing to a file on their local system, this event is raised. The <code><strong>fileSelected()</strong></code> JavaScript method looks like the following. <a name="codeListing2"></a>
+<div class="panel code content/images/css.png" title="The fileSelected() JavaScript method" id="code_58789"><div class="codeHeading" style="background-image: url(/web/20240415161255/http://matlus.com/content/images/css.png);"><h3 class="codeTitle">The fileSelected() JavaScript method</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">function fileSelected() {
+  var file = document.getElementById(<span class="str">'fileToUpload'</span>).files[0];
+  <span class="kwrd">if</span> (file) {
+    var fileSize = 0;
+    <span class="kwrd">if</span> (file.size &gt; 1024 * 1024)
+      fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + <span class="str">'MB'</span>;
+    <span class="kwrd">else</span>
+      fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + <span class="str">'KB'</span>;
+          
+    document.getElementById(<span class="str">'fileName'</span>).innerHTML = <span class="str">'Name: '</span> + file.name;
+    document.getElementById(<span class="str">'fileSize'</span>).innerHTML = <span class="str">'Size: '</span> + fileSize;
+    document.getElementById(<span class="str">'fileType'</span>).innerHTML = <span class="str">'Type: '</span> + file.type;
+  }
+}</pre></div>
+<h3>Code Listing 2: The fileSelected() JavaScript method</h3>
+<div class="mgntop20"></div>The first line of code in the method is doing something you've not seen or done before. Essentially, once you have a reference to the <code>&lt;input type="file"/&gt;</code> element, you have access to what is called a <code><strong>FileList</strong></code> object which is new in Html5 and is part of the <a href="https://web.archive.org/web/20240415161255/http://www.w3.org/TR/FileAPI/" target="_blank">File API</a> specifications of Html 5. A <code>FileList</code> object is a collection of files. More specifically, it is a collection of <code><strong>File</strong></code> objects. A <code>File</code> object has the following properties. 
+<ol>
+<li><code>name</code> - The name of the file (excluding any path) 
+</li><li><code>type</code> - The MIME type of the file (in lower case) 
+</li><li><code>size</code> - The size of the file in bytes </li></ol>This is already getting interesting isn't it? We have access to this information on the client side! In fact the File API gives us access to the contents of the file (the file stream or bytes) on the client side too, using the <code><strong>FileReader</strong></code> object. We won't be dealing with the <code>FileReader</code> in this example, so I'm not going to overwhelm you with yet another new object. We have a couple of new objects to discuss yet. You could use the information the <code>File</code> object provides you to say, prevent users from uploading files larger than the certain size. Or you could use the <code>type</code> property (MIME type) to figure out the type of file the user is attempting to upload and change the behavior of your form (on the client side of course). The above JavaScript method populates the grey box with grey text (in <a href="#figure2">Figures 1 &amp; 2</a> above) with the information the <code>File</code> object provides us about the selected file. The file size is in bytes, so there is logic in the method to convert the size into a human readable form, such as 15.65MB instead of 15795748864 bytes. After the user has selected a file she'll want to upload the file and so she's going to click on the <strong>Upload</strong> button. Notice in the code listing for the Html form (<a href="#codeListing1">Code Listing 1</a>) that the Upload button has its <code>onclick</code> event assigned to the <code><strong>uploadFile()</strong></code> JavaScript method. <a name="codeListing3"></a>
+<div class="panel code content/images/javascript.png" title="uploadFile() JavaScript method" id="code_29664"><div class="codeHeading" style="background-image: url(/web/20240415161255/http://matlus.com/content/images/javascript.png);"><h3 class="codeTitle">uploadFile() JavaScript method</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">function uploadFile() {
+  var xhr = <span class="kwrd">new</span> XMLHttpRequest();
+  var fd = document.getElementById(<span class="str">'form1'</span>).getFormData();
+
+  <span class="rem">/* event listners */</span>
+  xhr.upload.addEventListener(<span class="str">"progress"</span>, uploadProgress, <span class="kwrd">false</span>);
+  xhr.addEventListener(<span class="str">"load"</span>, uploadComplete, <span class="kwrd">false</span>);
+  xhr.addEventListener(<span class="str">"error"</span>, uploadFailed, <span class="kwrd">false</span>);
+  xhr.addEventListener(<span class="str">"abort"</span>, uploadCanceled, <span class="kwrd">false</span>);
+  <span class="rem">/* Be sure to change the url below to the url of your upload server side script */</span>
+  xhr.open(<span class="str">"POST"</span>, <span class="str">"UploadMinimal.aspx"</span>);
+  xhr.send(fd);
+}</pre></div>
+<h3>Code Listing 3: The uploadFile() JavaScript method</h3>
+<div class="mgntop20"></div>In the second line of this method you'll see another object (<code><a href="https://web.archive.org/web/20240415161255/http://www.w3.org/TR/2010/WD-XMLHttpRequest2-20100907/#the-formdata-interface" target="_blank">FormData</a></code>) that we've never seen nor used before. You're not really seeing it, but we do get a reference to it using the <code><strong>getFormData()</strong></code> method of the <code>&lt;form&gt;</code> element. A <code>FormData</code> object is similar to a dictionary, a collection of name/value pairs. Where the name part is the name of a form field (as defined in the Html page) and the value is the value of this field. The value part can be a string, number or even a <code>File</code> object, as you can see in <a href="#codeListing4">Code listing 4</a>. So when you call the <code>getFormData()</code> method on the form you get a reference to a FormData object that holds a collection of name/value pairs of that form. You can use this reference as the information you want to send to the server side script. This makes it really simple to submit the entire form. Now you could create an instance of a <code>FormData</code> object manually and send that to the server or you could add additional information to the <code>FormData</code> before sending it to the server side script. 
+<div class="panel">
+<h3>A note about FormData</h3>Note that as if this writing Chrome 6 supports uploading files using the new API but does not support the <code>getFormDate()</code> method. It does however, support the <code>FormData</code> object. So the full code listing of the bare minimal code in <a href="#codeListing6">Code Listing 6</a> manually creates a <code>FormData</code> instance as discussed below. Another way to instantiate an instance of FormData is to pass in a reference to a form element. like so: <code>var fd = new FormData(document.getElementById('form1')); </code>This constructor has the advantage of populating the <code>FormData</code> instance with all the form's fields, instead of having to do it manually (similar to the <code>getFormData</code> method of the form element discussed earlier. At the time of this writing, on Firefox supports this method. </div><a href="#codeListing4">Code listing 4</a>, below shows you an example of how you would create an instance of a <code>FormData</code> object, assign some arbitrary fields and their values, including a reference to a <code>File</code> object (the file selected by the user using the <code>&lt;&amp;tl;file type="file"&gt;</code> element. 
+<div class="mgntop20"></div><a name="codeListing4"></a>
+<div class="panel code content/images/javascript.png" title="Manually Creating a FormData object" id="code_37242"><div class="codeHeading" style="background-image: url(/web/20240415161255/http://matlus.com/content/images/javascript.png);"><h3 class="codeTitle">Manually Creating a FormData object</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">var fd = <span class="kwrd">new</span> FormData();
+fd.append(<span class="str">"author"</span>, <span class="str">"Shiv Kumar"</span>);
+fd.append(<span class="str">"name"</span>, <span class="str">"Html 5 File API/FormData"</span>);
+fd.append(<span class="str">"fileToUpload"</span>, document.getElementById(<span class="str">'fileToUpload'</span>).files[0]);</pre></div>
+<h3>Code Listing 4: Manually creating a FormData instance</h3>
+<div class="mgntop20"></div>Going back to <a href="#codeListing3">Code Listing 3</a>, you'll notice we've subscribed to a few events of the XMLHttpRequest object. In particular, pay attention to the first line after the event listners comment in the code. <code>xhr.<strong>upload</strong>.addEventListener("progress", uploadProgress, false);</code> The progress event we subscribe to is not that of the XMLHttpRequest instance, but rather the <code><strong>upload</strong></code> property of the XMLHttpRequest instance, which is an <a href="https://web.archive.org/web/20240415161255/http://dev.w3.org/2006/webapi/XMLHttpRequest-2/#xmlhttprequestupload" target="_blank">XMLHttpRequestUpload</a> type that is really an event target that has a <code><strong>progress</strong></code> event we can subscribe to in order to get progress information on the upload that is taking place. We don't have to worry about this object. Just remember, when using XMLHttpRequest for uploading data to the server, you must subscribe to its <code><strong>upload</strong></code> property's <code><strong>progress</strong></code> event. 
+<div class="mgntop20"></div>
+<div class="panel">
+<h3>A note about Progress Events</h3>The XMLHttpRequest object does have a progress event of it's own and you'll subscribe to that event when you download data from the server (which we are not covering here). </div><a name="codeListing5"></a>
+<div class="panel code content/images/javascript.png" title="The Event handler implementations" id="code_16399"><div class="codeHeading" style="background-image: url(/web/20240415161255/http://matlus.com/content/images/javascript.png);"><h3 class="codeTitle">The Event handler implementations</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">function uploadProgress(evt) {
+  <span class="kwrd">if</span> (evt.lengthComputable) {
+    var percentComplete = Math.round(evt.loaded * 100 / evt.total);
+    document.getElementById(<span class="str">'progressNumber'</span>).innerHTML = percentComplete.toString() + <span class="str">'%'</span>;
+  }
+  <span class="kwrd">else</span> {
+    document.getElementById(<span class="str">'progressNumber'</span>).innerHTML = <span class="str">'unable to compute'</span>;
+  }
+}
+
+function uploadComplete(evt) {
+  <span class="rem">/* This event is raised when the server send back a response */</span>
+  alert(evt.target.responseText);
+}
+
+function uploadFailed(evt) {
+  alert(<span class="str">"There was an error attempting to upload the file."</span>);
+}
+
+function uploadCanceled(evt) {
+  alert(<span class="str">"The upload has been canceled by the user or the browser dropped the connection."</span>);
+}  
+</pre></div>
+<h3>Code Listing 5: The implementation of the various event handlers</h3>
+<div class="mgntop20"></div>The code listing above is pretty self explanatory so there is nothing much to say here. 
+<h2>The Minimalistic Solution</h2>The Code listing below is the entire Html page including the JavaScript and Html required to get a bear minimum File upload with progress indicator working. I've intentionally kept it simple so if you want to do your own layout and information display you can start with this and expand it. Html5 also introduces a <code><b>progress</b></code> element that can be used to show progress. The <code>progress</code> element has <code>max</code> and <code>value</code> and so it makes it really simple to show progress. However, at the time of this writing, only Chrome 6 supports this element so I've not used it in the minimalistic solution. 
+<div class="panel">
+<h3 class="note">Change the Url to the server side script</h3>Be sure to change the url to point to the url of your server side script that handles file uploads. In the code listing below, it is <b>UploadMinimal.aspx</b> in the <code>uploadFile()</code> method: <code><b>xhr.open("POST", "UploadMinimal.aspx");</b></code> </div><a name="codeListing6"></a>
+<div class="panel code content/images/html.png" title="Minimalistic Html and JavaScript" id="code_53863"><div class="codeHeading" style="background-image: url(/web/20240415161255/http://matlus.com/content/images/html.png);"><h3 class="codeTitle">Minimalistic Html and JavaScript</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode"><span class="kwrd">&lt;!</span><span class="html">DOCTYPE</span> <span class="attr">html</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;</span><span class="html">html</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;</span><span class="html">head</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">title</span><span class="kwrd">&gt;</span>Upload Files using XMLHttpRequest - Minimal<span class="kwrd">&lt;/</span><span class="html">title</span><span class="kwrd">&gt;</span>
+
+    <span class="kwrd">&lt;</span><span class="html">script</span> <span class="attr">type</span><span class="kwrd">="text/javascript"</span><span class="kwrd">&gt;</span>
+      <span class="kwrd">function</span> fileSelected() {
+        <span class="kwrd">var</span> file = document.getElementById(<span class="str">'fileToUpload'</span>).files[0];
+        <span class="kwrd">if</span> (file) {
+          <span class="kwrd">var</span> fileSize = 0;
+          <span class="kwrd">if</span> (file.size &gt; 1024 * 1024)
+            fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + <span class="str">'MB'</span>;
+          <span class="kwrd">else</span>
+            fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + <span class="str">'KB'</span>;
+
+          document.getElementById(<span class="str">'fileName'</span>).innerHTML = <span class="str">'Name: '</span> + file.name;
+          document.getElementById(<span class="str">'fileSize'</span>).innerHTML = <span class="str">'Size: '</span> + fileSize;
+          document.getElementById(<span class="str">'fileType'</span>).innerHTML = <span class="str">'Type: '</span> + file.type;
+        }
+      }
+
+      <span class="kwrd">function</span> uploadFile() {
+        <span class="kwrd">var</span> fd = <span class="kwrd">new</span> FormData();
+        fd.append(<span class="str">"fileToUpload"</span>, document.getElementById(<span class="str">'fileToUpload'</span>).files[0]);
+        <span class="kwrd">var</span> xhr = <span class="kwrd">new</span> XMLHttpRequest();
+        xhr.upload.addEventListener(<span class="str">"progress"</span>, uploadProgress, <span class="kwrd">false</span>);
+        xhr.addEventListener(<span class="str">"load"</span>, uploadComplete, <span class="kwrd">false</span>);
+        xhr.addEventListener(<span class="str">"error"</span>, uploadFailed, <span class="kwrd">false</span>);
+        xhr.addEventListener(<span class="str">"abort"</span>, uploadCanceled, <span class="kwrd">false</span>);
+        xhr.open(<span class="str">"POST"</span>, <span class="str">"UploadMinimal.aspx"</span>);
+        xhr.send(fd);
+      }
+
+      <span class="kwrd">function</span> uploadProgress(evt) {
+        <span class="kwrd">if</span> (evt.lengthComputable) {
+          <span class="kwrd">var</span> percentComplete = Math.round(evt.loaded * 100 / evt.total);
+          document.getElementById(<span class="str">'progressNumber'</span>).innerHTML = percentComplete.toString() + <span class="str">'%'</span>;
+        }
+        <span class="kwrd">else</span> {
+          document.getElementById(<span class="str">'progressNumber'</span>).innerHTML = <span class="str">'unable to compute'</span>;
+        }
+      }
+
+      <span class="kwrd">function</span> uploadComplete(evt) {
+        <span class="rem">/* This event is raised when the server send back a response */</span>
+        alert(evt.target.responseText);
+      }
+
+      <span class="kwrd">function</span> uploadFailed(evt) {
+        alert(<span class="str">"There was an error attempting to upload the file."</span>);
+      }
+
+      <span class="kwrd">function</span> uploadCanceled(evt) {
+        alert(<span class="str">"The upload has been canceled by the user or the browser dropped the connection."</span>);
+      }
+    <span class="kwrd">&lt;/</span><span class="html">script</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;/</span><span class="html">head</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;</span><span class="html">body</span><span class="kwrd">&gt;</span>
+  <span class="kwrd">&lt;</span><span class="html">form</span> <span class="attr">id</span><span class="kwrd">="form1"</span> <span class="attr">enctype</span><span class="kwrd">="multipart/form-data"</span> <span class="attr">method</span><span class="kwrd">="post"</span> <span class="attr">action</span><span class="kwrd">="Upload.aspx"</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">div</span> <span class="attr">class</span><span class="kwrd">="row"</span><span class="kwrd">&gt;</span>
+      <span class="kwrd">&lt;</span><span class="html">label</span> <span class="attr">for</span><span class="kwrd">="fileToUpload"</span><span class="kwrd">&gt;</span>Select a File to Upload<span class="kwrd">&lt;/</span><span class="html">label</span><span class="kwrd">&gt;&lt;</span><span class="html">br</span> <span class="kwrd">/&gt;</span>
+      <span class="kwrd">&lt;</span><span class="html">input</span> <span class="attr">type</span><span class="kwrd">="file"</span> <span class="attr">name</span><span class="kwrd">="fileToUpload"</span> <span class="attr">id</span><span class="kwrd">="fileToUpload"</span> <span class="attr">onchange</span><span class="kwrd">="fileSelected();"</span><span class="kwrd">/&gt;</span>
+    <span class="kwrd">&lt;/</span><span class="html">div</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">div</span> <span class="attr">id</span><span class="kwrd">="fileName"</span><span class="kwrd">&gt;&lt;/</span><span class="html">div</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">div</span> <span class="attr">id</span><span class="kwrd">="fileSize"</span><span class="kwrd">&gt;&lt;/</span><span class="html">div</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">div</span> <span class="attr">id</span><span class="kwrd">="fileType"</span><span class="kwrd">&gt;&lt;/</span><span class="html">div</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">div</span> <span class="attr">class</span><span class="kwrd">="row"</span><span class="kwrd">&gt;</span>
+      <span class="kwrd">&lt;</span><span class="html">input</span> <span class="attr">type</span><span class="kwrd">="button"</span> <span class="attr">onclick</span><span class="kwrd">="uploadFile()"</span> <span class="attr">value</span><span class="kwrd">="Upload"</span> <span class="kwrd">/&gt;</span>
+    <span class="kwrd">&lt;/</span><span class="html">div</span><span class="kwrd">&gt;</span>
+    <span class="kwrd">&lt;</span><span class="html">div</span> <span class="attr">id</span><span class="kwrd">="progressNumber"</span><span class="kwrd">&gt;&lt;/</span><span class="html">div</span><span class="kwrd">&gt;</span>
+  <span class="kwrd">&lt;/</span><span class="html">form</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;/</span><span class="html">body</span><span class="kwrd">&gt;</span>
+<span class="kwrd">&lt;/</span><span class="html">html</span><span class="kwrd">&gt;</span></pre></div>
+<h3>Code Listing 6: The Complete but minimalistic code listing</h3>Well, that pretty much covers the minimalistic version of the new Html5 feature. Getting at the other information that you see in <a href="#figure2">Figure2</a> is mathematical really. It is quite a bit of extra work to not only get at the information, but to display and animate etc. For instance to get the rate of upload (the upload speed). We do the following: 1. in the <code>uploadProgress(evt)</code> event, should store the <code>evt.loaded</code> and <code>evt.total</code> in global variables. 2. We set up a timer event to fire every second. 3. In the timer callback we get the difference of the number of bytes transfered between now and the last time the callback was called (so 1 second ago). 4. That gives us the number of bytes per second. Which is the upload speed. Note that in the demo I set up the timer to fire every 500 milliseconds to get more granularity. As a result the difference between the number of bytes is doubled since the number of bytes is really the number of bytes transferred in half a second. I won't go into how to find the time remaining, but it's all there in the demo. Do a "view source" to see the code in the demo's html page. I hope you found this article helpful.
+
+
+  
+        </div></body></html>

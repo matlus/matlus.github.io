@@ -1,0 +1,176 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Stop/Start Windows Service</title><style>body{max-width:1000px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui}pre{overflow:auto;white-space:pre;background:#f3f3f3;padding:16px;font:14px/1.5 monospace}img{max-width:100%;height:auto}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px}.recovery{font-size:14px;color:#555}</style></head><body><h1>Stop/Start Windows Service</h1><p class="recovery">Stop/Start Windows Service<br>Posted by Shiv Kumar on 2nd February, 2011<br>Categorized Under: Programming C#<br>Tagged With: Windows Services <br>Code Gem: Snippets <br>  </p><p class="recovery">Recovered from <a href="https://web.archive.org/web/20240415160246/http://matlus.com/stopstart-windows-service/">this Wayback capture</a>.</p><div class="articleText">
+        <p>There are two code snippets presented in this post. Both of them deal with starting and stopping Windows Services. One option is to use the <code>net start/stop</code> command line option via C# and <code>System.Diagnostics.Process</code> so as to make the usage of this code more object oriented while the other option is to use the <code>ServiceController</code> class that's part of the .NET framework.</p> <p>Nothing spectacular really, but the purpose of me posting these code snippets is so its out there for those who are trying to figure this out and for me if/when I need to do this kind of thing again.</p> <p>Some features of the code presented below are:</p> <ol> <li>Re-Directs the Standard output stream using RedirectStandardOutput = true  </li><li>Re-Directs the Standard Error stream using RedirectStandardError = true  </li><li>Waits for the process to complete. In this case it waits for two processes to complete. The process that stops and then the process that starts.  </li><li>Asynchronously read from the Standard output and Standard Error streams</li></ol> <p>&nbsp;</p> <div class="panel code content/images/csharp.png" title="Using System.Diagnostics.Process" id="code_79140"><div class="codeHeading" style="background-image: url(/web/20240415160246/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Using System.Diagnostics.Process</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode"><span class="kwrd">using</span> System;
+<span class="kwrd">using</span> System.Collections.Generic;
+<span class="kwrd">using</span> System.Linq;
+<span class="kwrd">using</span> System.Text;
+<span class="kwrd">using</span> System.Diagnostics;
+<span class="kwrd">using</span> System.Runtime.Serialization;
+
+<span class="kwrd">namespace</span> ResetService
+{
+  <span class="kwrd">enum</span> NetOperation { STOP, START };
+
+  <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">class</span> ServiceBounce
+  {
+    <span class="kwrd">private</span> <span class="kwrd">static</span> StringBuilder errorMessage = <span class="kwrd">new</span> StringBuilder();
+    <span class="kwrd">private</span> <span class="kwrd">static</span> StringBuilder outputMessage = <span class="kwrd">new</span> StringBuilder();
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">int</span> TIMEOUT = 60000;
+
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">int</span> ExecuteNetProcess(NetOperation operation, <span class="kwrd">string</span> instanceName)
+    {
+      <span class="kwrd">using</span> (var process = <span class="kwrd">new</span> Process())
+      {
+        process.StartInfo = <span class="kwrd">new</span> ProcessStartInfo(<span class="str">"net"</span>, operation.ToString() + <span class="str">" "</span> + instanceName);
+        process.StartInfo.UseShellExecute = <span class="kwrd">false</span>;
+        process.StartInfo.RedirectStandardOutput = <span class="kwrd">true</span>;
+        process.StartInfo.RedirectStandardError = <span class="kwrd">true</span>;
+        process.OutputDataReceived += <span class="kwrd">new</span> DataReceivedEventHandler(OnOutputDataReceived);
+        process.ErrorDataReceived += <span class="kwrd">new</span> DataReceivedEventHandler(OnErrorDataReceived);
+        process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+        process.WaitForExit(TIMEOUT);
+        <span class="kwrd">int</span> exitCode = process.ExitCode;
+        process.Close();
+        <span class="kwrd">return</span> exitCode;
+      }
+    }
+
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">void</span> ClearMessages()
+    {
+      outputMessage.Length = 0;
+      errorMessage.Length = 0;    
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> Restart(<span class="kwrd">string</span> serviceName)
+    {
+      Stop(serviceName);
+      Start(serviceName);
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> Stop(<span class="kwrd">string</span> serviceName)
+    {
+      ClearMessages();
+      <span class="kwrd">string</span> errMessage = <span class="kwrd">null</span>;
+
+      var exitCodeStop = ExecuteNetProcess(NetOperation.STOP, serviceName);
+      <span class="kwrd">if</span> (exitCodeStop != 0)
+      {
+        errMessage = errorMessage.ToString();
+        <span class="kwrd">if</span> (!errMessage.Contains(<span class="str">"service is not started"</span>))
+          <span class="kwrd">throw</span> <span class="kwrd">new</span> MSSQLServiceBounceException(errorMessage.ToString());
+      }
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> Start(<span class="kwrd">string</span> serviceName)
+    {
+      ClearMessages();
+      <span class="kwrd">string</span> errMessage = <span class="kwrd">null</span>;
+
+      var exitCodeStart = ExecuteNetProcess(NetOperation.START, serviceName);
+      Console.ForegroundColor = ConsoleColor.White;
+      <span class="kwrd">if</span> (exitCodeStart != 0)
+      {
+        errMessage = errorMessage.ToString();
+        <span class="kwrd">if</span> (!errMessage.Contains(<span class="str">"The requested service has already been started"</span>))
+          <span class="kwrd">throw</span> <span class="kwrd">new</span> MSSQLServiceBounceException(errMessage);
+      }
+    }
+
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">void</span> OnOutputDataReceived(<span class="kwrd">object</span> sender, DataReceivedEventArgs e)
+    {
+      outputMessage.Append(e.Data);
+      Console.ForegroundColor = ConsoleColor.DarkGreen;
+      Console.WriteLine(e.Data);
+    }
+
+    <span class="kwrd">private</span> <span class="kwrd">static</span> <span class="kwrd">void</span> OnErrorDataReceived(<span class="kwrd">object</span> sender, DataReceivedEventArgs e)
+    {
+      errorMessage.Append(e.Data);
+      Console.ForegroundColor = ConsoleColor.DarkRed;
+      Console.WriteLine(e.Data);
+    }
+  }
+
+  <span class="kwrd">public</span> <span class="kwrd">class</span> MSSQLServiceBounceException : Exception
+  {
+    <span class="kwrd">public</span> MSSQLServiceBounceException(<span class="kwrd">string</span> message)
+      :<span class="kwrd">base</span>(message)
+    {
+    }
+
+    <span class="kwrd">public</span> MSSQLServiceBounceException(<span class="kwrd">string</span> message, Exception innerException)
+      : <span class="kwrd">base</span>(message, innerException)
+    {
+    }
+
+    <span class="kwrd">public</span> MSSQLServiceBounceException(SerializationInfo serializationInfo, StreamingContext context)
+      : <span class="kwrd">base</span>(serializationInfo, context)
+    {
+    }
+  }
+}</pre></div>
+<p>&nbsp;</p>
+<p>The class shown in the code listing below uses the <code>ServiceController</code> class from the <code>System.ServiceProcess</code> assembly. This is a pure .NET solution to working with Windows Services. The <code>ServiceController</code> class makes it simple to make "synchronous" calls to stop and start services using the <code>WaitForStatus</code> method as you can see in the code listing below. The next code listing (the one below this one) shows you sample code of how you might use this class.</p>
+<p>The features of the class presented below are:</p>
+<p>The methods provide synchronous calls. That is the calls don't return until the service is either stopped or stated or stop/started as the case may be. If you do required asynchronous behavior, it's easy enough to modify the code since the normal behavior of the ServiceController class is async.</p>
+<p>&nbsp;</p>
+<div class="panel code content/images/csharp.png" title="Using System.ServiceProcess.ServiceController" id="code_11075"><div class="codeHeading" style="background-image: url(/web/20240415160246/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle">Using System.ServiceProcess.ServiceController</h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">  <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">class</span> WindowsServiceBounce
+  {
+    <span class="kwrd">public</span> <span class="kwrd">static</span> IEnumerable&lt;ServiceController&gt; FindService(Func&lt;ServiceController, <span class="kwrd">bool</span>&gt; predicate)
+    {
+      ServiceController[] services = ServiceController.GetServices();
+      var servicesFound = from s <span class="kwrd">in</span> services
+                          <span class="kwrd">where</span> predicate(s)
+                          select s;
+      <span class="kwrd">return</span> servicesFound;
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> Restart(ServiceController service)
+    {
+      Restart(service, <span class="kwrd">new</span> TimeSpan(0, 1, 0));
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> Restart(ServiceController service, TimeSpan waitTimeout)
+    {
+      Stop(service, waitTimeout);
+      Start(service, waitTimeout);
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> Stop(ServiceController service, TimeSpan waitTimeout)
+    {
+      <span class="kwrd">if</span> (service.Status == ServiceControllerStatus.StartPending)
+        service.WaitForStatus(ServiceControllerStatus.StartPending, waitTimeout);
+      
+      <span class="kwrd">if</span> (service.Status == ServiceControllerStatus.Running)
+      {
+        service.Stop();
+        service.WaitForStatus(ServiceControllerStatus.Stopped, waitTimeout);
+      }
+    }
+
+    <span class="kwrd">public</span> <span class="kwrd">static</span> <span class="kwrd">void</span> Start(ServiceController service, TimeSpan waitTimeout)
+    {
+      <span class="kwrd">if</span> (service.Status == ServiceControllerStatus.StopPending)
+        service.WaitForStatus(ServiceControllerStatus.StopPending, waitTimeout);
+
+      <span class="kwrd">if</span> (service.Status == ServiceControllerStatus.Stopped)
+      {
+        service.Start();
+        service.WaitForStatus(ServiceControllerStatus.Running, waitTimeout);
+      }
+    }
+  }</pre></div>
+<p>&nbsp;</p>
+<p>The code listing below shows and sample of how you might use the class presented in the previous code listing. </p>
+<p>&nbsp;</p>
+<div class="panel code content/images/csharp.png" title="" id="code_34650"><div class="codeHeading" style="background-image: url(/web/20240415160246/http://matlus.com/content/images/csharp.png);"><h3 class="codeTitle"></h3><div class="expand" title="Expand Code Listing"></div><div class="clear"></div></div><pre class="csharpcode">      <span class="kwrd">var</span> services = WindowsServiceBounce.FindService(s =&gt; String.Compare(s.ServiceName, <span class="str">"MSSQL$SQLEXPRESS"</span>, StringComparison.OrdinalIgnoreCase) == 0);
+      
+      <span class="kwrd">foreach</span> (var service <span class="kwrd">in</span> services)
+        WindowsServiceBounce.Restart(service, <span class="kwrd">new</span> TimeSpan(0, 1, 0));
+      <span class="kwrd">foreach</span> (var service <span class="kwrd">in</span> services)
+        service.Dispose();
+</pre></div>  
+        </div></body></html>

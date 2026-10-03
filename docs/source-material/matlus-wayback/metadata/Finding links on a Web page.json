@@ -1,0 +1,401 @@
+{
+  "body": "Let's say you want to either find all links on a certain web page or for a given set of websites, you want to know if they link back to your website. This post is about the later, but essentially you're finding all the links on a website first and then filtering the ones you want. I had a specific need and that was to find figure out which of our registered members was using WordPress for their blog/website, because we want to let them know of WordPress plug-in or updates to plug-ins that will be of interest to them. Since the registration info for each of our members contains the url to their website, we have that info in the database, so it was a matter of iterating over each of them call the code and class presented here. In the real system, this is multi-threaded since we're scanning hundreds of thousands of websites for this info every once in a while. But since something like this will probably function as a scheduled job it makes no difference (besides finishing faster, but taxing the server a lot more too). I use HtmlAgilityPack as the primary html parser. It is truly an awesome html parser and I recommend it highly.\nConsole App showing how the LinkFinder class is used\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text;\nusing HtmlAgilityPack;\nusing System.Net;\n\nnamespace FindingLinkToSpecificDomainOnAWebsite\n{\n  class Program\n  {\n    static void Main(string[] args)\n    {\n      string webpageUrl = \"http://matlus.com\";\n      string targetDomain = \"exposureroom.com\";\n\n      var linkFinder = new LinkFinder();\n\n      var links = linkFinder.FindLinksToDomainOnWebPage(webpageUrl, targetDomain);\n      foreach (var link in links)\n        Console.WriteLine(link);\n\n      Console.ReadLine();\n    }\n  }\n}\n\nThe bulk of the work is done in the LinkFinder class presented below.\nLinkFinder class\nusing System.Collections.Generic;\nusing System.Text;\nusing HtmlAgilityPack;\nusing System.Net;\n\n\nnamespace FindingLinkToSpecificDomainOnAWebsite\n{\n  public class LinkFinder\n  {\n    public IEnumerable<AnchorTag> FindLinksToDomainOnWebPage(string webpageUrl, string targetDomain)\n    {\n      HtmlDocument htmlDocument = new HtmlDocument();\n      htmlDocument.LoadHtml(GetWebsiteHtml(webpageUrl));\n      var anchorTags = htmlDocument.DocumentNode.SelectNodes(\"//a\");\n\n      foreach (var tag in anchorTags)\n      {\n        var hrefValue = tag.GetAttributeValue(\"href\", \"\");\n        var tempHref = hrefValue.ToUpper();\n        var tempTargetDomain = targetDomain.ToUpper();\n        if (tempHref.Contains(tempTargetDomain))\n        {\n          var anchorTag = new AnchorTag();\n          foreach (var attribute in tag.Attributes)\n            anchorTag.Attributes.Add(attribute.Name, attribute.Value);\n\n          anchorTag.InnerText = tag.InnerText;\n          yield return anchorTag;\n        }\n      }\n    }\n\n    private string GetWebsiteHtml(string webpageUrl)\n    {\n      WebClient webClient = new WebClient();\n      byte[] buffer = webClient.DownloadData(webpageUrl);\n      return Encoding.UTF8.GetString(buffer);\n    }\n  }\n\n  public class AnchorTag\n  {\n    public Dictionary<string, string> Attributes { get; private set; }\n    public string InnerText { get; set; }\n\n    public AnchorTag()\n    {\n      Attributes = new Dictionary<string, string>();\n    }\n\n    public override string ToString()\n    {\n      StringBuilder sb = new StringBuilder();\n      sb.AppendLine(\"InnerText: \" + InnerText);\n      sb.AppendLine(\"Attributes:\");\n      foreach (var attribute in Attributes)\n        sb.AppendLine(\"\\t\" + attribute.Key + \"=\" + attribute.Value);\n      return sb.ToString();\n    }\n  }\n}\n",
+  "bodyLinks": [
+    {
+      "text": "HtmlAgilityPack",
+      "url": "https://web.archive.org/web/20240414164426/http://htmlagilitypack.codeplex.com/"
+    }
+  ],
+  "code": [
+    "using System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Text;\nusing HtmlAgilityPack;\nusing System.Net;\n\nnamespace FindingLinkToSpecificDomainOnAWebsite\n{\n  class Program\n  {\n    static void Main(string[] args)\n    {\n      string webpageUrl = \"http://matlus.com\";\n      string targetDomain = \"exposureroom.com\";\n\n      var linkFinder = new LinkFinder();\n\n      var links = linkFinder.FindLinksToDomainOnWebPage(webpageUrl, targetDomain);\n      foreach (var link in links)\n        Console.WriteLine(link);\n\n      Console.ReadLine();\n    }\n  }\n}\n",
+    "using System.Collections.Generic;\nusing System.Text;\nusing HtmlAgilityPack;\nusing System.Net;\n\n\nnamespace FindingLinkToSpecificDomainOnAWebsite\n{\n  public class LinkFinder\n  {\n    public IEnumerable<AnchorTag> FindLinksToDomainOnWebPage(string webpageUrl, string targetDomain)\n    {\n      HtmlDocument htmlDocument = new HtmlDocument();\n      htmlDocument.LoadHtml(GetWebsiteHtml(webpageUrl));\n      var anchorTags = htmlDocument.DocumentNode.SelectNodes(\"//a\");\n\n      foreach (var tag in anchorTags)\n      {\n        var hrefValue = tag.GetAttributeValue(\"href\", \"\");\n        var tempHref = hrefValue.ToUpper();\n        var tempTargetDomain = targetDomain.ToUpper();\n        if (tempHref.Contains(tempTargetDomain))\n        {\n          var anchorTag = new AnchorTag();\n          foreach (var attribute in tag.Attributes)\n            anchorTag.Attributes.Add(attribute.Name, attribute.Value);\n\n          anchorTag.InnerText = tag.InnerText;\n          yield return anchorTag;\n        }\n      }\n    }\n\n    private string GetWebsiteHtml(string webpageUrl)\n    {\n      WebClient webClient = new WebClient();\n      byte[] buffer = webClient.DownloadData(webpageUrl);\n      return Encoding.UTF8.GetString(buffer);\n    }\n  }\n\n  public class AnchorTag\n  {\n    public Dictionary<string, string> Attributes { get; private set; }\n    public string InnerText { get; set; }\n\n    public AnchorTag()\n    {\n      Attributes = new Dictionary<string, string>();\n    }\n\n    public override string ToString()\n    {\n      StringBuilder sb = new StringBuilder();\n      sb.AppendLine(\"InnerText: \" + InnerText);\n      sb.AppendLine(\"Attributes:\");\n      foreach (var attribute in Attributes)\n        sb.AppendLine(\"\\t\" + attribute.Key + \"=\" + attribute.Value);\n      return sb.ToString();\n    }\n  }\n}\n"
+  ],
+  "header": "Finding links on a Web page\nPosted by Shiv Kumar on 31st August, 2010\nCategorized Under: Programming C#\nTagged With: Parsing Html \n  ",
+  "html": "<div class=\"articleText\">\n        Let's say you want to either find all links on a certain web page or for a given set of websites, you want to know if they link back to your website. This post is about the later, but essentially you're finding all the links on a website first and then filtering the ones you want. I had a specific need and that was to find figure out which of our registered members was using WordPress for their blog/website, because we want to let them know of WordPress plug-in or updates to plug-ins that will be of interest to them. Since the registration info for each of our members contains the url to their website, we have that info in the database, so it was a matter of iterating over each of them call the code and class presented here. In the real system, this is multi-threaded since we're scanning hundreds of thousands of websites for this info every once in a while. But since something like this will probably function as a scheduled job it makes no difference (besides finishing faster, but taxing the server a lot more too). I use <code><a href=\"https://web.archive.org/web/20240414164426/http://htmlagilitypack.codeplex.com/\" target=\"_blank\">HtmlAgilityPack</a></code> as the primary html parser. It is truly an awesome html parser and I recommend it highly.  <div class=\"panel code content/images/csharp.png\" title=\"Console App showing how the LinkFinder class is used\" id=\"code_97289\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414164426/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Console App showing how the LinkFinder class is used</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">using</span> System;\n<span class=\"kwrd\">using</span> System.Collections.Generic;\n<span class=\"kwrd\">using</span> System.Linq;\n<span class=\"kwrd\">using</span> System.Text;\n<span class=\"kwrd\">using</span> HtmlAgilityPack;\n<span class=\"kwrd\">using</span> System.Net;\n\n<span class=\"kwrd\">namespace</span> FindingLinkToSpecificDomainOnAWebsite\n{\n  <span class=\"kwrd\">class</span> Program\n  {\n    <span class=\"kwrd\">static</span> <span class=\"kwrd\">void</span> Main(<span class=\"kwrd\">string</span>[] args)\n    {\n      <span class=\"kwrd\">string</span> webpageUrl = <span class=\"str\">\"http://matlus.com\"</span>;\n      <span class=\"kwrd\">string</span> targetDomain = <span class=\"str\">\"exposureroom.com\"</span>;\n\n      var linkFinder = <span class=\"kwrd\">new</span> LinkFinder();\n\n      var links = linkFinder.FindLinksToDomainOnWebPage(webpageUrl, targetDomain);\n      <span class=\"kwrd\">foreach</span> (var link <span class=\"kwrd\">in</span> links)\n        Console.WriteLine(link);\n\n      Console.ReadLine();\n    }\n  }\n}\n</pre></div>The bulk of the work is done in the <code>LinkFinder</code> class presented below. \n<div class=\"panel code content/images/csharp.png\" title=\"LinkFinder class\" id=\"code_22949\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414164426/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">LinkFinder class</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">using</span> System.Collections.Generic;\n<span class=\"kwrd\">using</span> System.Text;\n<span class=\"kwrd\">using</span> HtmlAgilityPack;\n<span class=\"kwrd\">using</span> System.Net;\n\n\n<span class=\"kwrd\">namespace</span> FindingLinkToSpecificDomainOnAWebsite\n{\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> LinkFinder\n  {\n    <span class=\"kwrd\">public</span> IEnumerable&lt;AnchorTag&gt; FindLinksToDomainOnWebPage(<span class=\"kwrd\">string</span> webpageUrl, <span class=\"kwrd\">string</span> targetDomain)\n    {\n      HtmlDocument htmlDocument = <span class=\"kwrd\">new</span> HtmlDocument();\n      htmlDocument.LoadHtml(GetWebsiteHtml(webpageUrl));\n      var anchorTags = htmlDocument.DocumentNode.SelectNodes(<span class=\"str\">\"//a\"</span>);\n\n      <span class=\"kwrd\">foreach</span> (var tag <span class=\"kwrd\">in</span> anchorTags)\n      {\n        var hrefValue = tag.GetAttributeValue(<span class=\"str\">\"href\"</span>, <span class=\"str\">\"\"</span>);\n        var tempHref = hrefValue.ToUpper();\n        var tempTargetDomain = targetDomain.ToUpper();\n        <span class=\"kwrd\">if</span> (tempHref.Contains(tempTargetDomain))\n        {\n          var anchorTag = <span class=\"kwrd\">new</span> AnchorTag();\n          <span class=\"kwrd\">foreach</span> (var attribute <span class=\"kwrd\">in</span> tag.Attributes)\n            anchorTag.Attributes.Add(attribute.Name, attribute.Value);\n\n          anchorTag.InnerText = tag.InnerText;\n          <span class=\"kwrd\">yield</span> <span class=\"kwrd\">return</span> anchorTag;\n        }\n      }\n    }\n\n    <span class=\"kwrd\">private</span> <span class=\"kwrd\">string</span> GetWebsiteHtml(<span class=\"kwrd\">string</span> webpageUrl)\n    {\n      WebClient webClient = <span class=\"kwrd\">new</span> WebClient();\n      <span class=\"kwrd\">byte</span>[] buffer = webClient.DownloadData(webpageUrl);\n      <span class=\"kwrd\">return</span> Encoding.UTF8.GetString(buffer);\n    }\n  }\n\n  <span class=\"kwrd\">public</span> <span class=\"kwrd\">class</span> AnchorTag\n  {\n    <span class=\"kwrd\">public</span> Dictionary&lt;<span class=\"kwrd\">string</span>, <span class=\"kwrd\">string</span>&gt; Attributes { get; <span class=\"kwrd\">private</span> set; }\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">string</span> InnerText { get; set; }\n\n    <span class=\"kwrd\">public</span> AnchorTag()\n    {\n      Attributes = <span class=\"kwrd\">new</span> Dictionary&lt;<span class=\"kwrd\">string</span>, <span class=\"kwrd\">string</span>&gt;();\n    }\n\n    <span class=\"kwrd\">public</span> <span class=\"kwrd\">override</span> <span class=\"kwrd\">string</span> ToString()\n    {\n      StringBuilder sb = <span class=\"kwrd\">new</span> StringBuilder();\n      sb.AppendLine(<span class=\"str\">\"InnerText: \"</span> + InnerText);\n      sb.AppendLine(<span class=\"str\">\"Attributes:\"</span>);\n      <span class=\"kwrd\">foreach</span> (var attribute <span class=\"kwrd\">in</span> Attributes)\n        sb.AppendLine(<span class=\"str\">\"\\t\"</span> + attribute.Key + <span class=\"str\">\"=\"</span> + attribute.Value);\n      <span class=\"kwrd\">return</span> sb.ToString();\n    }\n  }\n}\n</pre></div>  \n        </div>",
+  "images": [],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "C#",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/category/programming/c/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414164426/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2ffinding-links-on-a-web-page%2f&text=Finding+links+on+a+Web+page"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414164426/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2ffinding-links-on-a-web-page%2f&t=Finding+links+on+a+Web+page"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414164426/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2ffinding-links-on-a-web-page%2f&text=Finding+links+on+a+Web+page"
+    },
+    {
+      "text": "HtmlAgilityPack",
+      "url": "https://web.archive.org/web/20240414164426/http://htmlagilitypack.codeplex.com/"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "Finding links on a Web page",
+  "url": "https://web.archive.org/web/20240414164426/http://www.matlus.com/finding-links-on-a-web-page/"
+}

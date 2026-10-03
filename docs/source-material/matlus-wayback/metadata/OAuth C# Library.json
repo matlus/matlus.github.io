@@ -1,0 +1,562 @@
+{
+  "body": "OAuth is a security protocol that enables a user to grant a third-party access to her web resources without sharing her password. OAuth 1.0 was published in December 2007 and quickly become the industry standard for web-based access delegation. Then in June 2008 a minor revision (OAuth 1.0 Revision A) was published, which fixed a security hole in the previous specification.\n\nOAuth 1.0 was based largely on two existing proprietary protocols:\n\nGoogle’s AuthSub\nFlickr’s API Auth\n\nAt the time (due the combined experiences) it was considered the best implementation of a security protocol for the purposes of authenticating third party applications and granting access to limited secured information of the user.\n\nOAuth is a complex protocol with a lot of to and fro between the relying party (the consumer or third party application) and the provider. As a result there are only a few implementation of the protocol that actually work across multiple providers.\n\nIn this post, I'll be presenting you with a C# library that not only works across multiple providers but is also very simple to use and not over engineered like one or two of the other implementations and not so simple that it only works against one provider.\n\nThe library presented has been tested against the following providers\n\nGoogle – OAuth Reference\nTwitter – OAuth Reference\nYahoo! – OAuth Reference\nVimeo – OAuth Reference\n\nThe links above point to documentation on each of those sites so I won't repeat that information here as I believe each one presents the process flow pretty well and there is nothing I can really add to that information except to say that you do need to understand it pretty clearly in order to use any library that simplifies the process for you. Because there is a process involved and you have to code against that process.\n\nYahoo! won't work locally\n\nYou can't test against Yahoo! using your development machine or at least from a non routable IP address. All other services listed above do work using a non routable IP or localhost. The reason is that Yahoo! verifies that your request is truly coming from the domain you registered your application for.\n\nI found that working against Google's OAuth provider really cleaned up the library I present here (and where most other libraries fail) because of the tokens and keys Google sends back (which invariably need to be encoded before that can be used). I also believe that Google's design is the worst of the lot (unnecessarily complicated).\n\nFor those of you just wanting dive right in and get the code, I've started an open source project on Google code, that houses the source code and a very simple ASP.NET application that will help you hit the ground running in no time flat. You can find the source code and sample project here\n\noauth-csharp-dotnet\n\n \n\nI've intentionally kept the code in the sample project really simple so it is easy to grasp how to use the library as well as the sequences of steps involved in the OAuth protocol. Once you understand the process you'll most likely want to re-engineer your application's code for your production systems. The library can be used as is.\n\nThe Sample Project\n\nThe screen shot below shows the default page of the application. If you've signed up with Google for example, then fill in the consumer key and consumer secret in the appropriate places in the code (there are two places you'll need to do this in – if you don't you'll get an exception, letting you know that that's what you need to do).\n\nClicking on the Google icon will take you to Google. And Google will present the log in page where you can enter your Google account credentials. The page on Google will also present you with other information as shown below.\n\nOnce you grant access you will have completed the process and you'll see the screen shot shown below\n\n \n\nOAuth Process\n\nEssentially there are two kinds of application that may need to use OAuth for authentication purposes.\n\nWeb Applications\nInstalled Application\n\nThe library presented here is for Web Application, however the core code should be usable in an installed application as well since the core code handles all of the encryption/decryption (or hashing really) and other nuances of the protocol itself.\n\nIn Web Application (for the purposes of OAuth) we employ what is frequently known as the 3-legged scenario. In word words there are essentially 3 steps to the entire process. It's all explained in the links above.\n\nGetting Started\n\nThe very first step is getting a consumer key and consumer secret (also known as the shared secret). You'll need to sign up with a provider and register your domain and application in order to get these. Each provider will provide you with a consumer key and consumer secret that you'll have to use when communicating with their service.\n\nOnce you have a consumer key and consumer secret, you'll also you're ready to begin. The sample project has code and the urls you'll need for the 4 providers I listed earlier. If you're working with another provider you'll also need the 3 endpoints (the urls) for each of the steps.\n\nOAuthConsumer.cs\n/// <summary>\n/// Step 1 of the oAuth protocol process\n/// Make a request with the provider for a <see cref=\"RequestToken\"/>\n/// </summary>\n/// <param name=\"requestTokenEndpoint\">The url (as per the provider) to use for making a requet for a token</param>\n/// <param name=\"realm\">Typically the url of Your \"application\" or website</param>\n/// <param name=\"consumerKey\">The Consumer Key given to you by the provider</param>\n/// <param name=\"consumerSecret\">The Consumer Secret given to you by the provider</param>\n/// <param name=\"callback\">The url you'd like the provider to call you back on</param>\n/// <param name=\"signatureMethod\">defaults to HMAC-SHA1 - the only signature method currently supported</param>\n/// <returns>An instance of a <see cref=\"RequestToken\" /> class</returns>\npublic RequestToken GetOAuthRequestToken(string requestTokenEndpoint, string realm, string consumerKey, string consumerSecret, string callback, SignatureMethod signatureMethod = SignatureMethod.HMACSHA1)\n{\n  var oAuthUtils = new OAuthUtils();\n  var authorizationHeader = oAuthUtils.GetRequestTokenAuthorizationHeader(requestTokenEndpoint, realm, consumerKey, consumerSecret, callback, signatureMethod);\n  return MakeRequest<RequestToken>(requestTokenEndpoint, authorizationHeader);\n}\n\n/// <summary>\n/// Step 3 of the oAuth protocol process\n/// Make a request on the provider to Exchange a <see cref=\"RequesToken\"/> for an <see cref=\"AccessToken\"/>\n/// (Step 2 is a simple redirect and so there is no method for it in this class)\n/// </summary>\n/// <param name=\"accessTokenEndpoint\">The url (as per the provider) to use for making a requet to Exchange a request token for an access token</param>\n/// <param name=\"realm\">Typically the url of Your \"application\" or website</param>\n/// <param name=\"consumerKey\">The Consumer Key given to you by the provider</param>\n/// <param name=\"consumerSecret\">The Consumer Secret given to you by the provider</param>\n/// <param name=\"token\">The token you got at the end of Step 1 or Step 2</param>\n/// <param name=\"verifier\">The verifier you got at the end of step 2</param>\n/// <param name=\"tokenSecret\">The tokenSecret you got at the end of step 1</param>\n/// <param name=\"signatureMethod\">defaults to HMAC-SHA1 - the only signature method currently supported</param>\n/// <returns>An instance of a <see cref=\"AccessToken\"/> class</returns>\npublic AccessToken GetOAuthAccessToken(string accessTokenEndpoint, string realm, string consumerKey, string consumerSecret, string token, string verifier, string tokenSecret, SignatureMethod signatureMethod = SignatureMethod.HMACSHA1)\n{\n  var oAuthUtils = new OAuthUtils();\n  var authorizationHeader = oAuthUtils.GetAccessTokenAuthorizationHeader(accessTokenEndpoint, realm, consumerKey, consumerSecret, token, verifier, tokenSecret, signatureMethod);\n  return MakeRequest<AccessToken>(accessTokenEndpoint, authorizationHeader);\n}\nCode Listing 1: The Two Methods you'll use\n\nThe two methods you see in the code listing above are the only two methods you'll use during the process of authenticating the user. The seconds step in the process is a simple re-direct and so there is no method for it in the library per-se. Besides the sample project if you need an explanation of the various parameters, please read the comments provided.\n\nThese two methods will get you as far as authenticating the user using an external OAuth service provider. In other words, she is who she says she is. But you don't necessarily have any other information about her. In other words, executing and completing the Authentication process does not inherently provide you with any information about the authenticated user.\n\nTo get additional information you'll need to use the AccessToken (given to you by the provider in the 3rd and final step of the OAuth process), and make additional calls against the provider. The core library has the methods and functionality you'll need (at the core level) to make these additional calls.\n\nEach provider has a different endpoint you'll need to use and not all providers have the same API and not all providers will provide the information you'll need about your user either.\n\nRetrieving Additional Information\n\nIn the sample application there is a line that has been commented out at the end of the method that will retrieve the user's email address from Google. Of course you can use that only if you're using Google as the provider.\n\n \n\nGetting the Email Address\nvar responseText = oAuthConsumer.GetUserInfo(\"https://www.googleapis.com/userinfo/email\", realm, consumerKey, consumerSecret, accessToken.Token, accessToken.TokenSecret);\nRetrieving an Authenticated user's Email Address (Google)\n\n \n\nYou should be able to write any additional methods you'll need using the code in OAuthConsumer.cs (partial listing in the code listing above) file that pertains to your needs and the specific provider(s) you're using.\n\nThat brings us to the end of this post. I truly hope the library and sample project will help you get started and in no time you'll have an OAuth implementation in your production applications.",
+  "bodyLinks": [
+    {
+      "text": "OAuth 1.0",
+      "url": "https://web.archive.org/web/20240414161938/http://oauth.net/core/1.0/"
+    },
+    {
+      "text": "OAuth 1.0 Revision A",
+      "url": "https://web.archive.org/web/20240414161938/http://oauth.net/core/1.0a/"
+    },
+    {
+      "text": "Google’s AuthSub",
+      "url": "https://web.archive.org/web/20240414161938/http://code.google.com/apis/accounts/docs/AuthSub.html"
+    },
+    {
+      "text": "OAuth Reference",
+      "url": "https://web.archive.org/web/20240414161938/http://code.google.com/apis/accounts/docs/OAuth_ref.html"
+    },
+    {
+      "text": "OAuth Reference",
+      "url": "https://web.archive.org/web/20240414161938/http://dev.twitter.com/pages/auth#at-twitter"
+    },
+    {
+      "text": "OAuth Reference",
+      "url": "https://web.archive.org/web/20240414161938/http://developer.yahoo.com/oauth/guide/oauth-auth-flow.html"
+    },
+    {
+      "text": "OAuth Reference",
+      "url": "https://web.archive.org/web/20240414161938/http://vimeo.com/api/docs/oauth"
+    },
+    {
+      "text": "oauth-csharp-dotnet",
+      "url": "https://web.archive.org/web/20240414161938/http://code.google.com/p/oauth-csharp-dotnet/"
+    }
+  ],
+  "code": [
+    "/// <summary>\n/// Step 1 of the oAuth protocol process\n/// Make a request with the provider for a <see cref=\"RequestToken\"/>\n/// </summary>\n/// <param name=\"requestTokenEndpoint\">The url (as per the provider) to use for making a requet for a token</param>\n/// <param name=\"realm\">Typically the url of Your \"application\" or website</param>\n/// <param name=\"consumerKey\">The Consumer Key given to you by the provider</param>\n/// <param name=\"consumerSecret\">The Consumer Secret given to you by the provider</param>\n/// <param name=\"callback\">The url you'd like the provider to call you back on</param>\n/// <param name=\"signatureMethod\">defaults to HMAC-SHA1 - the only signature method currently supported</param>\n/// <returns>An instance of a <see cref=\"RequestToken\" /> class</returns>\npublic RequestToken GetOAuthRequestToken(string requestTokenEndpoint, string realm, string consumerKey, string consumerSecret, string callback, SignatureMethod signatureMethod = SignatureMethod.HMACSHA1)\n{\n  var oAuthUtils = new OAuthUtils();\n  var authorizationHeader = oAuthUtils.GetRequestTokenAuthorizationHeader(requestTokenEndpoint, realm, consumerKey, consumerSecret, callback, signatureMethod);\n  return MakeRequest<RequestToken>(requestTokenEndpoint, authorizationHeader);\n}\n\n/// <summary>\n/// Step 3 of the oAuth protocol process\n/// Make a request on the provider to Exchange a <see cref=\"RequesToken\"/> for an <see cref=\"AccessToken\"/>\n/// (Step 2 is a simple redirect and so there is no method for it in this class)\n/// </summary>\n/// <param name=\"accessTokenEndpoint\">The url (as per the provider) to use for making a requet to Exchange a request token for an access token</param>\n/// <param name=\"realm\">Typically the url of Your \"application\" or website</param>\n/// <param name=\"consumerKey\">The Consumer Key given to you by the provider</param>\n/// <param name=\"consumerSecret\">The Consumer Secret given to you by the provider</param>\n/// <param name=\"token\">The token you got at the end of Step 1 or Step 2</param>\n/// <param name=\"verifier\">The verifier you got at the end of step 2</param>\n/// <param name=\"tokenSecret\">The tokenSecret you got at the end of step 1</param>\n/// <param name=\"signatureMethod\">defaults to HMAC-SHA1 - the only signature method currently supported</param>\n/// <returns>An instance of a <see cref=\"AccessToken\"/> class</returns>\npublic AccessToken GetOAuthAccessToken(string accessTokenEndpoint, string realm, string consumerKey, string consumerSecret, string token, string verifier, string tokenSecret, SignatureMethod signatureMethod = SignatureMethod.HMACSHA1)\n{\n  var oAuthUtils = new OAuthUtils();\n  var authorizationHeader = oAuthUtils.GetAccessTokenAuthorizationHeader(accessTokenEndpoint, realm, consumerKey, consumerSecret, token, verifier, tokenSecret, signatureMethod);\n  return MakeRequest<AccessToken>(accessTokenEndpoint, authorizationHeader);\n}",
+    "var responseText = oAuthConsumer.GetUserInfo(\"https://www.googleapis.com/userinfo/email\", realm, consumerKey, consumerSecret, accessToken.Token, accessToken.TokenSecret);"
+  ],
+  "header": "OAuth C# Library\nPosted by Shiv Kumar on 6th December, 2010\nCategorized Under: Programming C#\nTagged With: Federated Identity OAuth Open Id \nLicensing:MIT License \n  ",
+  "html": "<div class=\"articleText\">\n        <p>OAuth is a security protocol that enables a user to grant a third-party access to her web resources without sharing her password. <a href=\"https://web.archive.org/web/20240414161938/http://oauth.net/core/1.0/\" target=\"_blank\">OAuth 1.0</a> was published in December 2007 and quickly become the industry standard for web-based access delegation. Then in June 2008 a minor revision (<a href=\"https://web.archive.org/web/20240414161938/http://oauth.net/core/1.0a/\" target=\"_blank\">OAuth 1.0 Revision A</a>) was published, which fixed a security hole in the previous specification.</p> <p>OAuth 1.0 was based largely on two existing proprietary protocols:</p> <ol> <li><a href=\"https://web.archive.org/web/20240414161938/http://code.google.com/apis/accounts/docs/AuthSub.html\" target=\"_blank\">Google’s AuthSub</a>  </li><li>Flickr’s API Auth </li></ol> <p>At the time (due the combined experiences) it was considered the best implementation of a security protocol for the purposes of authenticating third party applications and granting access to limited secured information of the user.</p> <p>OAuth is a complex protocol with a lot of to and fro between the relying party (the consumer or third party application) and the provider. As a result there are only a few implementation of the protocol that actually work across multiple providers.</p> <p>In this post, I'll be presenting you with a C# library that not only works across multiple providers but is also very simple to use and not over engineered like one or two of the other implementations and not so simple that it only works against one provider.</p> <p>The library presented has been tested against the following providers</p> <ol> <li>Google – <a href=\"https://web.archive.org/web/20240414161938/http://code.google.com/apis/accounts/docs/OAuth_ref.html\" target=\"_blank\">OAuth Reference</a>  </li><li>Twitter – <a href=\"https://web.archive.org/web/20240414161938/http://dev.twitter.com/pages/auth#at-twitter\" target=\"_blank\">OAuth Reference</a>  </li><li>Yahoo! – <a href=\"https://web.archive.org/web/20240414161938/http://developer.yahoo.com/oauth/guide/oauth-auth-flow.html\" target=\"_blank\">OAuth Reference</a>  </li><li>Vimeo – <a href=\"https://web.archive.org/web/20240414161938/http://vimeo.com/api/docs/oauth\" target=\"_blank\">OAuth Reference</a> </li></ol> <p>The links above point to documentation on each of those sites so I won't repeat that information here as I believe each one presents the process flow pretty well and there is nothing I can really add to that information except to say that you do need to understand it pretty clearly in order to use any library that simplifies the process for you. Because there is a process involved and you have to code against that process.</p> <div class=\"panel\"> <h2 class=\"note\">Yahoo! won't work locally</h2> <p>You can't test against Yahoo! using your development machine or at least from a non routable IP address. All other services listed above do work using a non routable IP or localhost. The reason is that Yahoo! verifies that your request is truly coming from the domain you registered your application for.</p></div> <p>I found that working against Google's OAuth provider really cleaned up the library I present here (and where most other libraries fail) because of the tokens and keys Google sends back (which invariably need to be encoded before that can be used). I also believe that Google's design is the worst of the lot (unnecessarily complicated).</p> <p>For those of you just wanting dive right in and get the code, I've started an open source project on Google code, that houses the source code and a very simple ASP.NET application that will help you hit the ground running in no time flat. You can find the source code and sample project here</p> <div style=\"margin: 0px 0px -3px\" id=\"pname\"><a href=\"https://web.archive.org/web/20240414161938/http://code.google.com/p/oauth-csharp-dotnet/\">oauth-csharp-dotnet</a></div> <p>&nbsp;</p> <p>I've intentionally kept the code in the sample project really simple so it is easy to grasp how to use the library as well as the sequences of steps involved in the OAuth protocol. Once you understand the process you'll most likely want to re-engineer your application's code for your production systems. The library can be used as is.</p> <h2>The Sample Project</h2> <p>The screen shot below shows the default page of the application. If you've signed up with Google for example, then fill in the consumer key and consumer secret in the appropriate places in the code (there are two places you'll need to do this in – if you don't you'll get an exception, letting you know that that's what you need to do).</p> <p><img style=\"background-image: none; border-bottom: 0px; border-left: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px\" title=\"OAuthPage\" border=\"0\" alt=\"OAuthPage\" src=\"https://web.archive.org/web/20240414161938im_/http://www.matlus.com/content/uploads/2011/01/OAuthPage_f13d6eed-ed75-4506-bd7a-2632acdecfb6.png\" width=\"559\" height=\"317\"></p> <p>Clicking on the Google icon will take you to Google. And Google will present the log in page where you can enter your Google account credentials. The page on Google will also present you with other information as shown below.</p> <p><img style=\"background-image: none; border-bottom: 0px; border-left: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px\" title=\"GoogleAccountLogin\" border=\"0\" alt=\"GoogleAccountLogin\" src=\"https://web.archive.org/web/20240414161938im_/http://www.matlus.com/content/uploads/2011/01/GoogleAccountLogin_fd0b4cab-b441-40c8-aca5-33abd9ef9765.jpg\" width=\"559\" height=\"485\"></p> <p>Once you grant access you will have completed the process and you'll see the screen shot shown below</p> <p><img style=\"background-image: none; border-bottom: 0px; border-left: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px\" title=\"OAuthSuccess\" border=\"0\" alt=\"OAuthSuccess\" src=\"https://web.archive.org/web/20240414161938im_/http://www.matlus.com/content/uploads/2011/01/OAuthSuccess_240cb52b-0c57-429e-b564-610bf9f459fe.png\" width=\"559\" height=\"485\"></p> <p>&nbsp;</p> <h2>OAuth Process</h2> <p>Essentially there are two kinds of application that may need to use OAuth for authentication purposes.</p> <ul> <li>Web Applications  </li><li>Installed Application </li></ul> <p>The library presented here is for Web Application, however the core code should be usable in an installed application as well since the core code handles all of the encryption/decryption (or hashing really) and other nuances of the protocol itself.</p> <p>In Web Application (for the purposes of OAuth) we employ what is frequently known as the 3-legged scenario. In word words there are essentially 3 steps to the entire process. It's all explained in the links above.</p> <h2>Getting Started</h2> <p>The very first step is getting a consumer key and consumer secret (also known as the shared secret). You'll need to sign up with a provider and register your domain and application in order to get these. Each provider will provide you with a consumer key and consumer secret that you'll have to use when communicating with their service.</p> <p>Once you have a consumer key and consumer secret, you'll also you're ready to begin. The sample project has code and the urls you'll need for the 4 providers I listed earlier. If you're working with another provider you'll also need the 3 endpoints (the urls) for each of the steps.</p> <div class=\"panel code content/images/csharp.png\" title=\"OAuthConsumer.cs\" id=\"code_27158\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414161938/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">OAuthConsumer.cs</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"rem\">/// &lt;summary&gt;</span>\n<span class=\"rem\">/// Step 1 of the oAuth protocol process</span>\n<span class=\"rem\">/// Make a request with the provider for a &lt;see cref=\"RequestToken\"/&gt;</span>\n<span class=\"rem\">/// &lt;/summary&gt;</span>\n<span class=\"rem\">/// &lt;param name=\"requestTokenEndpoint\"&gt;The url (as per the provider) to use for making a requet for a token&lt;/param&gt;</span>\n<span class=\"rem\">/// &lt;param name=\"realm\"&gt;Typically the url of Your \"application\" or website&lt;/param&gt;</span>\n<span class=\"rem\">/// &lt;param name=\"consumerKey\"&gt;The Consumer Key given to you by the provider&lt;/param&gt;</span>\n<span class=\"rem\">/// &lt;param name=\"consumerSecret\"&gt;The Consumer Secret given to you by the provider&lt;/param&gt;</span>\n<span class=\"rem\">/// &lt;param name=\"callback\"&gt;The url you'd like the provider to call you back on&lt;/param&gt;</span>\n<span class=\"rem\">/// &lt;param name=\"signatureMethod\"&gt;defaults to HMAC-SHA1 - the only signature method currently supported&lt;/param&gt;</span>\n<span class=\"rem\">/// &lt;returns&gt;An instance of a &lt;see cref=\"RequestToken\" /&gt; class&lt;/returns&gt;</span>\n<span class=\"kwrd\">public</span> <span class=\"identifier\">RequestToken</span> GetOAuthRequestToken(<span class=\"kwrd\">string</span> requestTokenEndpoint, <span class=\"kwrd\">string</span> realm, <span class=\"kwrd\">string</span> consumerKey, <span class=\"kwrd\">string</span> consumerSecret, <span class=\"kwrd\">string</span> callback, <span class=\"identifier\">SignatureMethod</span> signatureMethod = <span class=\"identifier\">SignatureMethod</span>.HMACSHA1)\n{\n  <span class=\"kwrd\">var</span> oAuthUtils = <span class=\"kwrd\">new</span> OAuthUtils();\n  <span class=\"kwrd\">var</span> authorizationHeader = oAuthUtils.GetRequestTokenAuthorizationHeader(requestTokenEndpoint, realm, consumerKey, consumerSecret, callback, signatureMethod);\n  <span class=\"kwrd\">return</span> MakeRequest&lt;<span class=\"identifier\">RequestToken</span>&gt;(requestTokenEndpoint, authorizationHeader);\n}\n\n<span class=\"rem\">/// &lt;summary&gt;</span>\n<span class=\"rem\">/// Step 3 of the oAuth protocol process</span>\n<span class=\"rem\">/// Make a request on the provider to Exchange a &lt;see cref=\"RequesToken\"/&gt; for an &lt;see cref=\"AccessToken\"/&gt;</span>\n<span class=\"rem\">/// (Step 2 is a simple redirect and so there is no method for it in this class)</span>\n<span class=\"rem\">/// &lt;/summary&gt;</span>\n<span class=\"rem\">/// &lt;param name=\"accessTokenEndpoint\"&gt;The url (as per the provider) to use for making a requet to Exchange a request token for an access token&lt;/param&gt;</span>\n<span class=\"rem\">/// &lt;param name=\"realm\"&gt;Typically the url of Your \"application\" or website&lt;/param&gt;</span>\n<span class=\"rem\">/// &lt;param name=\"consumerKey\"&gt;The Consumer Key given to you by the provider&lt;/param&gt;</span>\n<span class=\"rem\">/// &lt;param name=\"consumerSecret\"&gt;The Consumer Secret given to you by the provider&lt;/param&gt;</span>\n<span class=\"rem\">/// &lt;param name=\"token\"&gt;The token you got at the end of Step 1 or Step 2&lt;/param&gt;</span>\n<span class=\"rem\">/// &lt;param name=\"verifier\"&gt;The verifier you got at the end of step 2&lt;/param&gt;</span>\n<span class=\"rem\">/// &lt;param name=\"tokenSecret\"&gt;The tokenSecret you got at the end of step 1&lt;/param&gt;</span>\n<span class=\"rem\">/// &lt;param name=\"signatureMethod\"&gt;defaults to HMAC-SHA1 - the only signature method currently supported&lt;/param&gt;</span>\n<span class=\"rem\">/// &lt;returns&gt;An instance of a &lt;see cref=\"AccessToken\"/&gt; class&lt;/returns&gt;</span>\n<span class=\"kwrd\">public</span> <span class=\"identifier\">AccessToken</span> GetOAuthAccessToken(<span class=\"kwrd\">string</span> accessTokenEndpoint, <span class=\"kwrd\">string</span> realm, <span class=\"kwrd\">string</span> consumerKey, <span class=\"kwrd\">string</span> consumerSecret, <span class=\"kwrd\">string</span> token, <span class=\"kwrd\">string</span> verifier, <span class=\"kwrd\">string</span> tokenSecret, <span class=\"identifier\">SignatureMethod</span> signatureMethod = <span class=\"identifier\">SignatureMethod</span>.HMACSHA1)\n{\n  <span class=\"kwrd\">var</span> oAuthUtils = <span class=\"kwrd\">new</span> OAuthUtils();\n  <span class=\"kwrd\">var</span> authorizationHeader = oAuthUtils.GetAccessTokenAuthorizationHeader(accessTokenEndpoint, realm, consumerKey, consumerSecret, token, verifier, tokenSecret, signatureMethod);\n  <span class=\"kwrd\">return</span> MakeRequest&lt;<span class=\"identifier\">AccessToken</span>&gt;(accessTokenEndpoint, authorizationHeader);\n}</pre></div>\n<h3>Code Listing 1: The Two Methods you'll use</h3>\n<p>The two methods you see in the code listing above are the only two methods you'll use during the process of authenticating the user. The seconds step in the process is a simple re-direct and so there is no method for it in the library per-se. Besides the sample project if you need an explanation of the various parameters, please read the comments provided.</p>\n<p><img style=\"background-image: none; border-bottom: 0px; border-left: 0px; margin: ; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px\" title=\"OAuthProcess\" border=\"0\" alt=\"OAuthProcess\" src=\"https://web.archive.org/web/20240414161938im_/http://www.matlus.com/content/uploads/2011/01/OAuthProcess_8910534d-5ff9-4bff-a2d4-fe4a3b3df152.jpg\" width=\"428\" height=\"768\"></p>\n<p>These two methods will get you as far as authenticating the user using an external OAuth service provider. In other words, <em>she is who she says she is</em>. But you don't necessarily have any other information about her. In other words, executing and completing the Authentication process <strong>does not inherently provide you with any information about the authenticated user</strong>.</p>\n<p>To get additional information you'll need to use the <code>AccessToken</code> (given to you by the provider in the 3rd and final step of the OAuth process), and make additional calls against the provider. The core library has the methods and functionality you'll need (at the core level) to make these additional calls.</p>\n<p>Each provider has a different endpoint you'll need to use and not all providers have the same API and not all providers will provide the information you'll need about your user either.</p>\n<h2>Retrieving Additional Information</h2>\n<p>In the sample application there is a line that has been commented out at the end of the method that will retrieve the user's email address from Google. Of course you can use that only if you're using Google as the provider.</p>\n<p>&nbsp;</p>\n<div class=\"panel code content/images/csharp.png\" title=\"Getting the Email Address\" id=\"code_28923\"><div class=\"codeHeading\" style=\"background-image: url(/web/20240414161938/http://www.matlus.com/content/images/csharp.png);\"><h3 class=\"codeTitle\">Getting the Email Address</h3><div class=\"expand\" title=\"Expand Code Listing\"></div><div class=\"clear\"></div></div><pre class=\"csharpcode\"><span class=\"kwrd\">var</span> responseText = oAuthConsumer.GetUserInfo(<span class=\"str\">\"https://www.googleapis.com/userinfo/email\"</span>, realm, consumerKey, consumerSecret, accessToken.Token, accessToken.TokenSecret);</pre></div>\n<h3>Retrieving an Authenticated user's Email Address (Google)</h3>\n<p>&nbsp;</p>\n<p>You should be able to write any additional methods you'll need using the code in <code>OAuthConsumer.cs</code> (partial listing in the code listing above) file that pertains to your needs and the specific provider(s) you're using.</p>\n<p>That brings us to the end of this post. I truly hope the library and sample project will help you get started and in no time you'll have an OAuth implementation in your production applications.</p>  \n        </div>",
+  "images": [
+    {
+      "alt": "OAuthPage",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240414161938im_/http://www.matlus.com/content/uploads/2011/01/OAuthPage_f13d6eed-ed75-4506-bd7a-2632acdecfb6.png"
+    },
+    {
+      "alt": "GoogleAccountLogin",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240414161938im_/http://www.matlus.com/content/uploads/2011/01/GoogleAccountLogin_fd0b4cab-b441-40c8-aca5-33abd9ef9765.jpg"
+    },
+    {
+      "alt": "OAuthSuccess",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240414161938im_/http://www.matlus.com/content/uploads/2011/01/OAuthSuccess_240cb52b-0c57-429e-b564-610bf9f459fe.png"
+    },
+    {
+      "alt": "OAuthProcess",
+      "loaded": true,
+      "url": "https://web.archive.org/web/20240414161938im_/http://www.matlus.com/content/uploads/2011/01/OAuthProcess_8910534d-5ff9-4bff-a2d4-fe4a3b3df152.jpg"
+    }
+  ],
+  "links": [
+    {
+      "text": "Azure",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/category/azure/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/category/html-5/"
+    },
+    {
+      "text": "IIS",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/category/iis/"
+    },
+    {
+      "text": "jQuery",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/category/jquery/"
+    },
+    {
+      "text": "Online Video",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/category/online-video/"
+    },
+    {
+      "text": "Opinion",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/category/opinion/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Programming",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/category/programming/"
+    },
+    {
+      "text": "C#",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/category/programming/c/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414161938/https://twitter.com/share?url=http%3a%2f%2fwww.matlus.com%2foauth-c-library%2f&text=OAuth+C%23+Library"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414161938/http://www.facebook.com/sharer.php?u=http%3a%2f%2fwww.matlus.com%2foauth-c-library%2f&t=OAuth+C%23+Library"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414161938/https://plus.google.com/share?url=http%3a%2f%2fwww.matlus.com%2foauth-c-library%2f&text=OAuth+C%23+Library"
+    },
+    {
+      "text": "OAuth 1.0",
+      "url": "https://web.archive.org/web/20240414161938/http://oauth.net/core/1.0/"
+    },
+    {
+      "text": "OAuth 1.0 Revision A",
+      "url": "https://web.archive.org/web/20240414161938/http://oauth.net/core/1.0a/"
+    },
+    {
+      "text": "Google’s AuthSub",
+      "url": "https://web.archive.org/web/20240414161938/http://code.google.com/apis/accounts/docs/AuthSub.html"
+    },
+    {
+      "text": "OAuth Reference",
+      "url": "https://web.archive.org/web/20240414161938/http://code.google.com/apis/accounts/docs/OAuth_ref.html"
+    },
+    {
+      "text": "OAuth Reference",
+      "url": "https://web.archive.org/web/20240414161938/http://dev.twitter.com/pages/auth#at-twitter"
+    },
+    {
+      "text": "OAuth Reference",
+      "url": "https://web.archive.org/web/20240414161938/http://developer.yahoo.com/oauth/guide/oauth-auth-flow.html"
+    },
+    {
+      "text": "OAuth Reference",
+      "url": "https://web.archive.org/web/20240414161938/http://vimeo.com/api/docs/oauth"
+    },
+    {
+      "text": "oauth-csharp-dotnet",
+      "url": "https://web.archive.org/web/20240414161938/http://code.google.com/p/oauth-csharp-dotnet/"
+    },
+    {
+      "text": "Parminder Virk",
+      "url": "https://web.archive.org/web/20240414161938/http://ramtajogi.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Kevin Jensen",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/oauth-c-library/www.kineticmedia.net"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Kevin Jensen",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/oauth-c-library/www.kineticmedia.net"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Shiv Kumar",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/"
+    },
+    {
+      "text": "Using LocalDB in Visual Studio Online",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/using-localdb-in-visual-studio-online/"
+    },
+    {
+      "text": "Azure Startup Tasks – Running as Administrator",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/azure-startup-tasks-running-as-administrator/"
+    },
+    {
+      "text": "Installing MSMQ in an Azure WebRole instance",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/installing-msmq-in-an-azure-webrole-instance/"
+    },
+    {
+      "text": "Cross Domain RESTful CRUD Operations using jQuery",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/cross-domain-restful-crud-operations-using-jquery/"
+    },
+    {
+      "text": "jQuery.data()–Assigning objects to dynamic elements",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/jquery-data-assigning-objects-to-dynamic-elements/"
+    },
+    {
+      "text": "A Generic RESTful CRUD HttpClient",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/a-generic-restful-crud-httpclient/"
+    },
+    {
+      "text": "DelegatingHandler for X-HTTP-Method-Override",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/delegatinghandler-for-x-http-method-override/"
+    },
+    {
+      "text": "ASP.NET Web API Supporting RESTful CRUD Operations",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/as-net-web-api-supporting-restful-crud-operations/"
+    },
+    {
+      "text": "JsonpMediaTypeFormatter–Web API JSONP",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/jsonpmediatypeformatter-web-api-jsonp/"
+    },
+    {
+      "text": "HttpClient .NET 4.5",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/httpclient-net-4-5/"
+    },
+    {
+      "text": "Self Host ASP.NET Web API",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/self-host-asp-net-web-api/"
+    },
+    {
+      "text": "ADO.NET",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/ado-net/"
+    },
+    {
+      "text": "Asynchronous",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/asynchronous/"
+    },
+    {
+      "text": "Bindings",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/bindings/"
+    },
+    {
+      "text": "Change Type",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/change-type/"
+    },
+    {
+      "text": "CodeGen",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/codegen/"
+    },
+    {
+      "text": "Data Access",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/data-access/"
+    },
+    {
+      "text": "Database",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/database/"
+    },
+    {
+      "text": "DbDataReader",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/dbdatareader/"
+    },
+    {
+      "text": "Debugging",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/debugging/"
+    },
+    {
+      "text": "Design Pattern",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/design-pattern/"
+    },
+    {
+      "text": "Devices",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/devices/"
+    },
+    {
+      "text": "Factory",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/factory/"
+    },
+    {
+      "text": "Federated Identity",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/federated-identity/"
+    },
+    {
+      "text": "File API",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/file-api/"
+    },
+    {
+      "text": "File Upload",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/file-upload/"
+    },
+    {
+      "text": "Flash",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/flash/"
+    },
+    {
+      "text": "Framework Design",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/framework-design/"
+    },
+    {
+      "text": "Ftp 7.5",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/ftp-7-5/"
+    },
+    {
+      "text": "Future",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/future/"
+    },
+    {
+      "text": "Google TV",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/google-tv/"
+    },
+    {
+      "text": "H.264",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/h-264/"
+    },
+    {
+      "text": "HD TV",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/hd-tv/"
+    },
+    {
+      "text": "Html 5",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/html-5/"
+    },
+    {
+      "text": "Http",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/http/"
+    },
+    {
+      "text": "IE9 Beta",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/ie9-beta/"
+    },
+    {
+      "text": "IIS 7.0",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/iis-7-0/"
+    },
+    {
+      "text": "IIS Express",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/iis-express/"
+    },
+    {
+      "text": "Join",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/join/"
+    },
+    {
+      "text": "JSON",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/json/"
+    },
+    {
+      "text": "Linq",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/linq/"
+    },
+    {
+      "text": "LocalDB",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/localdb/"
+    },
+    {
+      "text": "Mobile",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/mobile/"
+    },
+    {
+      "text": "MSMQ",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/msmq/"
+    },
+    {
+      "text": "MVC",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/mvc/"
+    },
+    {
+      "text": "MVC3",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/mvc3/"
+    },
+    {
+      "text": "OAuth",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/oauth/"
+    },
+    {
+      "text": "Ogg",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/ogg/"
+    },
+    {
+      "text": "Open Id",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/open-id/"
+    },
+    {
+      "text": "Orion",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/orion/"
+    },
+    {
+      "text": "Parrallel",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/parrallel/"
+    },
+    {
+      "text": "Parsing Html",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/parsing-html/"
+    },
+    {
+      "text": "Performance",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/performance/"
+    },
+    {
+      "text": "Plinq",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/plinq/"
+    },
+    {
+      "text": "Poster",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/poster/"
+    },
+    {
+      "text": "Proxy",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/proxy/"
+    },
+    {
+      "text": "Pseudo Streaming",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/pseudo-streaming/"
+    },
+    {
+      "text": "Quartz for ASP.NET",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/quartz-for-asp-net/"
+    },
+    {
+      "text": "Razor",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/razor/"
+    },
+    {
+      "text": "Razor Host",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/razor-host/"
+    },
+    {
+      "text": "REST",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/rest/"
+    },
+    {
+      "text": "Roslyn",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/roslyn/"
+    },
+    {
+      "text": "SelectMany",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/selectmany/"
+    },
+    {
+      "text": "Snippet",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/snippet/"
+    },
+    {
+      "text": "StartUp Tasks",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/startup-tasks/"
+    },
+    {
+      "text": "Templating Engine",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/templating-engine/"
+    },
+    {
+      "text": "TFS",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/tfs/"
+    },
+    {
+      "text": "Threading",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/threading/"
+    },
+    {
+      "text": "TypeConverter",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/typeconverter/"
+    },
+    {
+      "text": "Video",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/video/"
+    },
+    {
+      "text": "WCF",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/wcf/"
+    },
+    {
+      "text": "Web API",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/web-api/"
+    },
+    {
+      "text": "WebForms",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/webforms/"
+    },
+    {
+      "text": "WebM",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/webm/"
+    },
+    {
+      "text": "Windows Services",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/windows-services/"
+    },
+    {
+      "text": "WMI",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/wmi/"
+    },
+    {
+      "text": "XMLHttpRequest",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/tag/xmlhttprequest/"
+    },
+    {
+      "text": "MIT License",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/opensource/mit-license/"
+    },
+    {
+      "text": "Snippets",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/codegem/snippets/"
+    },
+    {
+      "text": "",
+      "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/quartz-for-aspnet/"
+    }
+  ],
+  "pageText": null,
+  "title": "OAuth C# Library",
+  "url": "https://web.archive.org/web/20240414161938/http://www.matlus.com/oauth-c-library/"
+}

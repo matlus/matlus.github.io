@@ -1,0 +1,6 @@
+# Preserve imported bytes, including original whitespace, across Git checkouts.
+articles/** -text -whitespace
+html/** -text -whitespace
+metadata/** -text -whitespace
+manifest.json -text -whitespace
+checksums.json -text -whitespace
