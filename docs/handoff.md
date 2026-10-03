@@ -5,9 +5,15 @@
 The 53 recovered Matlus articles are preserved under
 `docs/source-material/matlus-wayback/`, with text, HTML, original capture metadata,
 55 images, a manifest, and checksums. Four image references remain unrecovered.
-The archive is source material for possible republication and evidence of Shiv's
-writing voice. Original prose and code stay unchanged; grammar edits belong in
-publication copies. No posts have been added to the published collection.
+The archive is immutable source material and evidence of Shiv's writing voice.
+All 53 articles now have publication copies under `src/content/writing/`, retaining
+their original prose, code, titles and dates. Each has a new editorial ink hero;
+59 inline illustrations replace the old image positions, including explanatory
+replacements for four missing captures. Captions distinguish reconstructions from
+historical screenshots. The metadata review added 71 reconciled topics, each with
+a distinct hero and saved prompt. Historical article URLs redirect to `/writing/`.
+See `docs/recovered-articles-publication-plan.md` for verification and deployment
+evidence, and `docs/article-review-backlog.md` for preserved source limitations.
 
 Shiv requested a separate blog-writing skill that adds his voice and teaching
 flow to the professional-writing clarity principles. The repository skill lives
@@ -35,9 +41,8 @@ exception, while search allows no match. Search is not a caveat to get. Preserve
 these contracts and introduce each operation at the right point in the lesson.
 
 These articles have no associated videos or GitHub repositories for publication.
-Retain historical references in the source archive. Future publication uses new
-hero art and recovered inline images as references, while keeping the original
-content, code, and displayed dates. See the archive README for the recovery limits.
+Historical references remain in the article bodies. Recovered inline images served
+as references for new artwork. See the archive README for the recovery limits.
 
 ## Programming to Exceptions consolidation, October 2, 2026
 

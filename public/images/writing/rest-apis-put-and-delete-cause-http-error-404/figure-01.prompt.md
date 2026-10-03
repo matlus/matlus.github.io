@@ -1,0 +1,3 @@
+Create a new explanatory illustration. The first reference supplies historical content; the second supplies ONLY the pastel architectural infographic style.
+
+Main heading: Open Handler Mappings. Illustrate the relevant IIS Manager Features View as a clean instructional panel. A server node at left has Application Pools and Sites children. Center a selected Handler Mappings tile, with a small cursor pointing to it. Show Features View selected at the bottom. Omit the personal server name and unrelated feature tiles. Use a coherent pastel architectural infographic style: pale textured paper, navy upright readable labels, fine blue outlines, restrained shallow-dimensional panels and mint/butter/coral accents. Generous whitespace. No unrelated source screenshot chrome.

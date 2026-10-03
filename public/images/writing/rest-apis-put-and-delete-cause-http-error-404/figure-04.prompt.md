@@ -1,0 +1,3 @@
+Create a new explanatory illustration. The first reference supplies historical content; the second supplies ONLY the pastel architectural infographic style.
+
+Main heading: Allow PUT and DELETE. Illustrate Request Restrictions with tabs Mapping, Verbs (selected), Access. Show radio option All verbs unselected and One of the following verbs selected. Its field is exactly GET,HEAD,POST,DEBUG,PUT,DELETE. Highlight only PUT,DELETE in restrained amber. Include OK and Cancel. All characters in the verb list must be correct. Use a coherent pastel architectural infographic style: pale textured paper, navy upright readable labels, fine blue outlines, restrained shallow-dimensional panels and mint/butter/coral accents. Generous whitespace. No unrelated source screenshot chrome.

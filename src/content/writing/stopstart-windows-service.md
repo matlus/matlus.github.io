@@ -1,0 +1,224 @@
+---
+title: Stop/Start Windows Service
+description: Start, stop, and restart Windows services from C# using net commands
+  or ServiceController, with redirected process output, error handling, and completion
+  waits.
+datePublished: '2011-02-02'
+dateModified: '2026-10-03'
+tags:
+- windows-services
+- process-management
+- csharp
+hero: stopstart-windows-service
+draft: false
+---
+
+There are two code snippets presented in this post. Both of them deal with starting and stopping Windows Services. One option is to use the <code>net start/stop</code> command line option via C# and <code>System.Diagnostics.Process</code> so as to make the usage of this code more object oriented while the other option is to use the <code>ServiceController</code> class that's part of the .NET framework.
+
+Nothing spectacular really, but the purpose of me posting these code snippets is so its out there for those who are trying to figure this out and for me if/when I need to do this kind of thing again.
+
+Some features of the code presented below are:
+
+1. Re-Directs the Standard output stream using RedirectStandardOutput = true
+2. Re-Directs the Standard Error stream using RedirectStandardError = true
+3. Waits for the process to complete. In this case it waits for two processes to complete. The process that stops and then the process that starts.
+4. Asynchronously read from the Standard output and Standard Error streams
+
+### Using System.Diagnostics.Process
+
+
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Diagnostics;
+using System.Runtime.Serialization;
+
+namespace ResetService
+{
+  enum NetOperation { STOP, START };
+
+  public static class ServiceBounce
+  {
+    private static StringBuilder errorMessage = new StringBuilder();
+    private static StringBuilder outputMessage = new StringBuilder();
+
+    public static int TIMEOUT = 60000;
+
+    private static int ExecuteNetProcess(NetOperation operation, string instanceName)
+    {
+      using (var process = new Process())
+      {
+        process.StartInfo = new ProcessStartInfo("net", operation.ToString() + " " + instanceName);
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.RedirectStandardError = true;
+        process.OutputDataReceived += new DataReceivedEventHandler(OnOutputDataReceived);
+        process.ErrorDataReceived += new DataReceivedEventHandler(OnErrorDataReceived);
+        process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+        process.WaitForExit(TIMEOUT);
+        int exitCode = process.ExitCode;
+        process.Close();
+        return exitCode;
+      }
+    }
+
+    private static void ClearMessages()
+    {
+      outputMessage.Length = 0;
+      errorMessage.Length = 0;    
+    }
+
+    public static void Restart(string serviceName)
+    {
+      Stop(serviceName);
+      Start(serviceName);
+    }
+
+    public static void Stop(string serviceName)
+    {
+      ClearMessages();
+      string errMessage = null;
+
+      var exitCodeStop = ExecuteNetProcess(NetOperation.STOP, serviceName);
+      if (exitCodeStop != 0)
+      {
+        errMessage = errorMessage.ToString();
+        if (!errMessage.Contains("service is not started"))
+          throw new MSSQLServiceBounceException(errorMessage.ToString());
+      }
+    }
+
+    public static void Start(string serviceName)
+    {
+      ClearMessages();
+      string errMessage = null;
+
+      var exitCodeStart = ExecuteNetProcess(NetOperation.START, serviceName);
+      Console.ForegroundColor = ConsoleColor.White;
+      if (exitCodeStart != 0)
+      {
+        errMessage = errorMessage.ToString();
+        if (!errMessage.Contains("The requested service has already been started"))
+          throw new MSSQLServiceBounceException(errMessage);
+      }
+    }
+
+    private static void OnOutputDataReceived(object sender, DataReceivedEventArgs e)
+    {
+      outputMessage.Append(e.Data);
+      Console.ForegroundColor = ConsoleColor.DarkGreen;
+      Console.WriteLine(e.Data);
+    }
+
+    private static void OnErrorDataReceived(object sender, DataReceivedEventArgs e)
+    {
+      errorMessage.Append(e.Data);
+      Console.ForegroundColor = ConsoleColor.DarkRed;
+      Console.WriteLine(e.Data);
+    }
+  }
+
+  public class MSSQLServiceBounceException : Exception
+  {
+    public MSSQLServiceBounceException(string message)
+      :base(message)
+    {
+    }
+
+    public MSSQLServiceBounceException(string message, Exception innerException)
+      : base(message, innerException)
+    {
+    }
+
+    public MSSQLServiceBounceException(SerializationInfo serializationInfo, StreamingContext context)
+      : base(serializationInfo, context)
+    {
+    }
+  }
+}
+```
+
+
+
+The class shown in the code listing below uses the <code>ServiceController</code> class from the <code>System.ServiceProcess</code> assembly. This is a pure .NET solution to working with Windows Services. The <code>ServiceController</code> class makes it simple to make "synchronous" calls to stop and start services using the <code>WaitForStatus</code> method as you can see in the code listing below. The next code listing (the one below this one) shows you sample code of how you might use this class.
+
+The features of the class presented below are:
+
+The methods provide synchronous calls. That is the calls don't return until the service is either stopped or stated or stop/started as the case may be. If you do required asynchronous behavior, it's easy enough to modify the code since the normal behavior of the ServiceController class is async.
+
+### Using System.ServiceProcess.ServiceController
+
+
+
+```csharp
+  public static class WindowsServiceBounce
+  {
+    public static IEnumerable<ServiceController> FindService(Func<ServiceController, bool> predicate)
+    {
+      ServiceController[] services = ServiceController.GetServices();
+      var servicesFound = from s in services
+                          where predicate(s)
+                          select s;
+      return servicesFound;
+    }
+
+    public static void Restart(ServiceController service)
+    {
+      Restart(service, new TimeSpan(0, 1, 0));
+    }
+
+    public static void Restart(ServiceController service, TimeSpan waitTimeout)
+    {
+      Stop(service, waitTimeout);
+      Start(service, waitTimeout);
+    }
+
+    public static void Stop(ServiceController service, TimeSpan waitTimeout)
+    {
+      if (service.Status == ServiceControllerStatus.StartPending)
+        service.WaitForStatus(ServiceControllerStatus.StartPending, waitTimeout);
+      
+      if (service.Status == ServiceControllerStatus.Running)
+      {
+        service.Stop();
+        service.WaitForStatus(ServiceControllerStatus.Stopped, waitTimeout);
+      }
+    }
+
+    public static void Start(ServiceController service, TimeSpan waitTimeout)
+    {
+      if (service.Status == ServiceControllerStatus.StopPending)
+        service.WaitForStatus(ServiceControllerStatus.StopPending, waitTimeout);
+
+      if (service.Status == ServiceControllerStatus.Stopped)
+      {
+        service.Start();
+        service.WaitForStatus(ServiceControllerStatus.Running, waitTimeout);
+      }
+    }
+  }
+```
+
+
+
+The code listing below shows and sample of how you might use the class presented in the previous code listing.
+
+### 
+
+
+
+```csharp
+      var services = WindowsServiceBounce.FindService(s => String.Compare(s.ServiceName, "MSSQL$SQLEXPRESS", StringComparison.OrdinalIgnoreCase) == 0);
+      
+      foreach (var service in services)
+        WindowsServiceBounce.Restart(service, new TimeSpan(0, 1, 0));
+      foreach (var service in services)
+        service.Dispose();
+```
+
+

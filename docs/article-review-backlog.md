@@ -1,5 +1,38 @@
 # Article review backlog
 
+## Recovered Matlus articles, October 3, 2026
+
+These are historical source limitations, retained under Shiv's instruction to
+republish the original prose and code. They are not conversion corrections or
+claims that the old examples have been tested against current frameworks.
+
+- Four image captures were unavailable: one Azure startup image and three MSMQ
+  images. Their replacements illustrate the surviving text. The missing MSMQ
+  encoding setting remains unspecified rather than guessed.
+- Some source captures already contain Unicode replacement characters. The
+  immutable archive and publication text preserve those characters.
+- Cross-domain CRUD contains an empty background section and an unfinished HTML
+  example sentence. Self-host Web API refers to a later listing absent from the
+  captured body. Retain both pending a separate source-recovery request.
+- WCF Getting Started uses differing MEX port numbers in its prose and code.
+  Data Access Layer Codegen has inconsistent generated member names and a
+  stored-procedure dispatch that merits review. DataReader Wrappers has differing
+  BlogItem and BlogItemDrw identifiers. Original code remains intact.
+- The HttpApplication discussion and OAuth terminology retain their historical
+  technical claims. Future modernization must be a separate editorial decision.
+- Benchmark figures and browser comparisons describe historical observations.
+  New artwork reconstructs the captured values; it supplies no new measurements.
+- Historical downloads, demo endpoints, videos mentioned within the prose, and
+  external references retain their archived URLs. Their availability is unverified;
+  no replacement repository or YouTube association has been invented.
+- HTML5 Video and Flash links to feature capability/performance sections that do
+  not exist in the capture. Those fragments now point to the corresponding items
+  in its introductory comparison list. Other broken fragments and duplicate anchor
+  IDs were repaired without changing visible text.
+
+Publication evidence and the per-article register live in
+`docs/recovered-articles-publication-plan.md` and `docs/recovered-articles/`.
+
 ## Programming to Exceptions publication
 
 - [x] Apply the October 2 editorial decisions to both articles. Customer retrieval

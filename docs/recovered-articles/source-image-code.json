@@ -1,0 +1,7 @@
+{
+  "asp-net-web-api-with-webforms/figure-03": {
+    "source": "docs/source-material/matlus-wayback/images/6fdde56d46074418-WebAPIProject3_thumb_1.png",
+    "language": "csharp",
+    "code": "using System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing System.Net.Http;\nusing System.Web.Http;\n\nnamespace WebApplication1.Controllers\n{\n    public class CustomersController : ApiController\n    {\n        // GET /api/<controller>\n        public IEnumerable<string> Get()\n        {\n            return new string[] { \"value1\", \"value2\" };\n        }\n\n        // GET /api/<controller>/5\n        public string Get(int id)\n        {\n            return \"value\";\n        }\n\n        // POST /api/<controller>\n        public void Post(string value)\n        {\n        }\n\n        // PUT /api/<controller>/5\n        public void Put(int id, string value)\n        {\n        }\n\n        // DELETE /api/<controller>/5\n        public void Delete(int id)\n        {\n        }\n    }\n}\n"
+  }
+}
