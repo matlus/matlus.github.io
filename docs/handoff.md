@@ -15,6 +15,11 @@ a distinct hero and saved prompt. Historical article URLs redirect to `/writing/
 See `docs/recovered-articles-publication-plan.md` for verification and deployment
 evidence, and `docs/article-review-backlog.md` for preserved source limitations.
 
+Shiv explicitly chose to set `dateModified` equal to `datePublished` for all 53
+recovered articles. Preserve that policy in the importer and publication copies:
+recovery must not promote historical articles to the newest position in the feed.
+The site's existing sorting behavior remains unchanged.
+
 Shiv requested a separate blog-writing skill that adds his voice and teaching
 flow to the professional-writing clarity principles. The repository skill lives
 at `.agents/skills/blog-writing/`; professional-writing stays unchanged. Preserve

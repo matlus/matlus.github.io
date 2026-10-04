@@ -3,7 +3,7 @@ title: C# to Html Syntax Highlighter using Roslyn
 description: Roslyn syntax trees and semantic information drive a C# to HTML highlighter,
   with a SyntaxWalker and explicit handling for type names whose definitions are unavailable.
 datePublished: '2011-11-27'
-dateModified: '2026-10-03'
+dateModified: '2011-11-27'
 tags:
 - roslyn
 - syntax-highlighting

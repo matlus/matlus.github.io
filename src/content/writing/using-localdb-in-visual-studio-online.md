@@ -4,7 +4,7 @@ description: Run database tests on Visual Studio Online by creating a LocalDB in
   publishing a dacpac, and invoking the batch file from the build definition's Pre
   Test Script.
 datePublished: '2014-12-02'
-dateModified: '2026-10-03'
+dateModified: '2014-12-02'
 tags:
 - localdb
 - continuous-integration

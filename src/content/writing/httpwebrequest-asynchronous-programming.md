@@ -3,7 +3,7 @@ title: HttpWebRequest - Asynchronous Programming Model/Task.Factory.FromAsyc
 description: HttpWebRequest callbacks and Task.Factory.FromAsync support asynchronous
   GET and POST calls, with five approaches compared for collecting concurrent responses.
 datePublished: '2011-02-23'
-dateModified: '2026-10-03'
+dateModified: '2011-02-23'
 tags:
 - http
 - asynchronous-io

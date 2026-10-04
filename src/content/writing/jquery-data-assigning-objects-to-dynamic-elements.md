@@ -3,7 +3,7 @@ title: jQuery.data()–Assigning objects to dynamic elements
 description: Store a complete JSON object in a dynamic element's data attribute, then
   retrieve it with jQuery.data() to populate a form without extracting each attribute.
 datePublished: '2012-03-29'
-dateModified: '2026-10-03'
+dateModified: '2012-03-29'
 tags:
 - jquery
 - json

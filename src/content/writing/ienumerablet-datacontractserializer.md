@@ -4,7 +4,7 @@ description: A JsonSerializer streams IEnumerable<T> directly to JSON, preservin
   DataMember names and supporting JSONP while a DbDataReader wrapper avoids building
   an intermediate list.
 datePublished: '2011-01-25'
-dateModified: '2026-10-03'
+dateModified: '2011-01-25'
 tags:
 - serialization
 - json

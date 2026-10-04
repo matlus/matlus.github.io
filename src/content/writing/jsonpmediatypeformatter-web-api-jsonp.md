@@ -4,7 +4,7 @@ description: A JsonMediaTypeFormatter subclass wraps JSON in a callback for JSON
   responses. Registration and controller-level control explain both the solution and
   its limits.
 datePublished: '2012-03-03'
-dateModified: '2026-10-03'
+dateModified: '2012-03-03'
 tags:
 - asp-net-web-api
 - jsonp

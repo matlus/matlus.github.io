@@ -4,7 +4,7 @@ description: Expose an existing synchronous method through Begin and End operati
   using delegates and IAsyncResult, carrying callback state while reusing the original
   computation.
 datePublished: '2011-02-07'
-dateModified: '2026-10-03'
+dateModified: '2011-02-07'
 tags:
 - asynchronous-programming-model
 - delegates

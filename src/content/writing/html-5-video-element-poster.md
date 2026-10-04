@@ -4,7 +4,7 @@ description: The HTML5 video poster should remain until playback begins. A 2010 
   explains why selected thumbnails matter more than automatically showing the first
   frame.
 datePublished: '2010-09-01'
-dateModified: '2026-10-03'
+dateModified: '2010-09-01'
 tags:
 - html5-video
 - video-posters

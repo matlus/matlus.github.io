@@ -4,7 +4,7 @@ description: Build a WCF service and client around Customer contracts, then conf
   transport bindings, create client proxies, and publish metadata through WSDL and
   MEX.
 datePublished: '2011-03-05'
-dateModified: '2026-10-03'
+dateModified: '2011-03-05'
 tags:
 - wcf
 - service-proxies

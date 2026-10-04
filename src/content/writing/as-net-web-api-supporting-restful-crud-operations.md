@@ -3,7 +3,7 @@ title: ASP.NET Web API Supporting RESTful CRUD Operations
 description: Map member CRUD operations to HTTP methods and resource URIs, then implement
   an ApiController with response status codes, Location headers, and error responses.
 datePublished: '2012-03-03'
-dateModified: '2026-10-03'
+dateModified: '2012-03-03'
 tags:
 - asp-net-web-api
 - rest

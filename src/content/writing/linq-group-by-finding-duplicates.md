@@ -4,7 +4,7 @@ description: Group lessons by AddedDate and select groups containing more than o
   item to find duplicates with LINQ, retaining the shared date and all matching lesson
   objects.
 datePublished: '2011-02-02'
-dateModified: '2026-10-03'
+dateModified: '2011-02-02'
 tags:
 - linq
 - duplicate-detection

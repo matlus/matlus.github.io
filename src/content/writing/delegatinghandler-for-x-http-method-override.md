@@ -3,7 +3,7 @@ title: DelegatingHandler for X-HTTP-Method-Override
 description: An X-HTTP-Method-Override header lets POST requests carry PUT or DELETE
   intent. A Web API DelegatingHandler translates the method before controller dispatch.
 datePublished: '2012-03-03'
-dateModified: '2026-10-03'
+dateModified: '2012-03-03'
 tags:
 - asp-net-web-api
 - http-method-override

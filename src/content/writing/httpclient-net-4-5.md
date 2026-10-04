@@ -4,7 +4,7 @@ description: Use HttpClient to send GET, POST, PUT, and DELETE requests, seriali
   Customer objects with ObjectContent, and read typed responses from a self-hosted
   Web API.
 datePublished: '2012-02-20'
-dateModified: '2026-10-03'
+dateModified: '2012-02-20'
 tags:
 - httpclient
 - rest

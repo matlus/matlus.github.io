@@ -3,7 +3,7 @@ title: svcTraceViewer - Debugging WCF Sevices
 description: Configure WCF tracing in Web.config and open the resulting .svclog in
   svcTraceViewer to find the exception hidden behind a vague service error message.
 datePublished: '2011-01-24'
-dateModified: '2026-10-03'
+dateModified: '2011-01-24'
 tags:
 - wcf
 - debugging

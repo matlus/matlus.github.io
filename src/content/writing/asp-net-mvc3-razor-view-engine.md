@@ -4,7 +4,7 @@ description: Razor makes C# mixed with HTML easier to read through its @ syntax,
   blocks, layouts, and sections. Worked templates show the output and the limits of
   view responsibilities.
 datePublished: '2010-10-04'
-dateModified: '2026-10-03'
+dateModified: '2010-10-04'
 tags:
 - asp-net
 - razor

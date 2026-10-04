@@ -4,7 +4,7 @@ description: MPEG LA's 2010 announcement extends royalty-free treatment for Inte
   video that is free to viewers, while leaving H.264 product and browser licensing
   distinct.
 datePublished: '2010-08-30'
-dateModified: '2026-10-03'
+dateModified: '2010-08-30'
 tags:
 - h264
 - html5-video

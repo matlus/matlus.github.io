@@ -4,7 +4,7 @@ description: IE 9 Beta improves performance and standards support, while its tab
   and navigation need work. A 2010 assessment connects browser controls with everyday
   use.
 datePublished: '2010-09-16'
-dateModified: '2026-10-03'
+dateModified: '2010-09-16'
 tags:
 - web-browsers
 - user-interface-design

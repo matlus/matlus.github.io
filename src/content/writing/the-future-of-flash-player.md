@@ -4,7 +4,7 @@ description: Flash Player needs broader codec support and HTTP Range requests to
   with HTML5 video. The 2010 argument weighs video quality, hardware decoding, and
   seeking.
 datePublished: '2010-09-09'
-dateModified: '2026-10-03'
+dateModified: '2010-09-09'
 tags:
 - flash-player
 - video-codecs

@@ -4,7 +4,7 @@ description: An OAuth 1.0 C# library handles request and access tokens across pr
   A web application demonstrates authorization redirects and a later request for user
   information.
 datePublished: '2010-12-06'
-dateModified: '2026-10-03'
+dateModified: '2010-12-06'
 tags:
 - oauth
 - asp-net

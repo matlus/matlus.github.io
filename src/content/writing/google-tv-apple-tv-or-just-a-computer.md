@@ -4,7 +4,7 @@ description: Connecting a desktop computer to an HD TV keeps familiar applicatio
   and browser access. The setup covers video, audio, wireless controls, and online
   video quality.
 datePublished: '2010-09-09'
-dateModified: '2026-10-03'
+dateModified: '2010-09-09'
 tags:
 - home-theater-pc
 - online-video

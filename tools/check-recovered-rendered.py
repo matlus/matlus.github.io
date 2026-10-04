@@ -65,7 +65,7 @@ def check_article(article: dict[str, Any], base: str | None) -> tuple[list[str],
     if canonical is None or canonical.get("href") != "https://matlus.com" + article["url"]:
         failures.append(f"{slug}: canonical differs")
     ld: list[dict[str, Any]] = [json.loads(node.get_text()) for node in soup.select('script[type="application/ld+json"]')]
-    if not any(item.get("headline") == article["title"] and item.get("datePublished", "").startswith(article["datePublished"]) for item in ld):
+    if not any(item.get("headline") == article["title"] and item.get("datePublished", "").startswith(article["datePublished"]) and item.get("dateModified", "").startswith(article["datePublished"]) for item in ld):
         failures.append(f"{slug}: structured title/date differs")
     topics: set[str] = {str(a.get("href")) for a in soup.select(".article-head__tags a")}
     topic_overrides: dict[str, str] = {"factory-pattern": "/writing/factory-pattern/", "factory-method": "/writing/factory-method-pattern/"}
@@ -100,7 +100,7 @@ def check_article(article: dict[str, Any], base: str | None) -> tuple[list[str],
     expected_body: str = re.sub(r"<!-- audit-allow: [^\n]+ -->\n", "", body).replace("&#8212;", "—").replace("&#8230;", "…")
     if twin.split("\n---\n", 1)[-1].strip() != expected_body.strip():
         failures.append(f"{slug}: Markdown body differs")
-    if f"Published: {article['datePublished']}\n" not in twin or f"Tags: {', '.join(metadata['tags'])}\n" not in twin:
+    if f"Published: {article['datePublished']}\n" not in twin or f"Updated: {article['datePublished']}\n" not in twin or f"Tags: {', '.join(metadata['tags'])}\n" not in twin:
         failures.append(f"{slug}: Markdown metadata differs")
     return failures, assets
 

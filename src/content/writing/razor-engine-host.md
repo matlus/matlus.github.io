@@ -4,7 +4,7 @@ description: A Razor host wrapper parses templates and compiles generated C# out
   ASP.NET. A custom base class supplies execution and output methods for a desktop
   example.
 datePublished: '2010-11-05'
-dateModified: '2026-10-03'
+dateModified: '2010-11-05'
 tags:
 - razor
 - code-generation

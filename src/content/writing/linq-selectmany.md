@@ -4,7 +4,7 @@ description: SelectMany flattens related sequences into a single result. Categor
   and posts explain its collection selector, result selector, joins, and nested foreach
   behavior.
 datePublished: '2011-02-17'
-dateModified: '2026-10-03'
+dateModified: '2011-02-17'
 tags:
 - linq
 - delegates
