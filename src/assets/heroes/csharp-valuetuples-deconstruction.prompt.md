@@ -1,0 +1,9 @@
+Hand-drawn technical editorial illustration, fine pen-and-ink linework and cross-hatching, warm ivory paper background, mostly monochrome with sparse selective blue and orange accents, visible pencil construction marks, slightly retro instructional-manual character, sophisticated conceptual metaphor, clean white space, detailed but not photorealistic.
+
+Article idea: A small tuple bundles three ordered values, and deconstruction draws those values into separate variables without changing their order.
+Subject: One slender open wooden instrument case containing exactly three distinct small geometric instruments in fitted recesses, left to right a blue sphere, an orange triangular prism and an uncolored short cylinder. To its right, exactly the same three instruments stand separately in the same left-to-right order. Fine pencil guide lines connect each recess to its corresponding separate instrument, with no crossings. The case conveys temporary grouping of distinct values; the separated set conveys extraction. No duplicate objects beyond these two sets of three.
+Composition: An extremely wide shallow landscape banner, 2400 by 520 proportions. Keep the complete case and all three extracted instruments within the middle horizontal third of the image, leaving generous blank paper margins above and below for a wide crop. No text, letters, labels, numbers, code, logos, people or watermark.
+
+Final edit prompt:
+
+Edit this technical editorial ink hero. Remove every thin connecting line between the open wooden case and the three separate geometric objects, including lines inside the lid and above the objects. Leave blank warm ivory paper in place of the lines. Preserve all six objects, their exact colors, their left-to-right ordering, the open case, the ink hatching, the generous margins, and the wide composition. Add no text or new objects. The grouping and ungrouping is conveyed solely by the two matching left-to-right sets.

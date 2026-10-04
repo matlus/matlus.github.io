@@ -14,6 +14,7 @@ interface Props {
   readonly seed: string;
   readonly heroSlug?: string;
   readonly showTagCloud?: boolean;
+  readonly fullWidthProse?: boolean;
 }
 
 const {
@@ -24,12 +25,13 @@ const {
   seed,
   heroSlug,
   showTagCloud = false,
+  fullWidthProse = false,
 } = Astro.props;
 const hero = heroSlug ? heroFor(heroSlug) : undefined;
 ---
 
 <BaseLayout title={`${title} | Shiv Kumar`} description={description}>
-  <header class="section-hero">
+  <header class:list={['section-hero', { 'full-width-prose': fullWidthProse }]}>
     <div class="page">
       <slot name="hero">
         {
@@ -48,7 +50,7 @@ const hero = heroSlug ? heroFor(heroSlug) : undefined;
     </div>
   </header>
 
-  <div class="page section-body">
+  <div class:list={['page section-body', { 'full-width-prose': fullWidthProse }]}>
     <slot />
   </div>
 
@@ -62,6 +64,10 @@ const hero = heroSlug ? heroFor(heroSlug) : undefined;
 </BaseLayout>
 
 <style>
+  .full-width-prose {
+    --measure: 100%;
+  }
+
   .section-hero {
     padding-top: var(--space-m);
   }
