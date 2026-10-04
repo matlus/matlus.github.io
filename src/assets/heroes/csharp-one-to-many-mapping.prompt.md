@@ -1,0 +1,5 @@
+# One-to-many mapping
+
+Generated with the built-in imagegen tool for the unpublished Performance draft.
+
+Use case: stylized-concept. Wide 16:9 article hero for Custom Data Structure: A One-to-Many Mapping. Hand-drawn technical editorial ink on warm ivory paper, black cross-hatching, visible pencil construction, selective deep teal, pale blue and terracotta. A close richly detailed vintage telephone exchange switchboard: one engineer traces a single incoming cord back to its message hub while a colleague verifies a wiring plan. Four distinct central message hubs each connect out to their own group of smaller state sockets, each small socket has only ONE cable to ONE hub. Make grouped one-to-many wiring legible without a diagram full of arrows. Tidy bundled cables with separated routes, work lamps, plug tools, labels represented as simple blank plaques. Full active composition, dramatic perspective and believable human scale. No words, logos or misleading numerical results, no generic gears or empty desk. Evocative metaphor for reverse lookup and uniqueness, not a literal software schematic. Illustrated, never photorealistic.

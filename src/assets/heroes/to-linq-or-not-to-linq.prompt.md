@@ -1,0 +1,5 @@
+# To LINQ or Not to LINQ
+
+Generated with the built-in imagegen tool for the unpublished Performance draft.
+
+Use case: stylized-concept. Wide 16:9 editorial ink hero for To LINQ or Not to LINQ, a code-review experiment removing repeated string conversions. A bustling document-sorting room seen in a close three-quarter view: a careful operator prepares each customer card once at a single stamping station, then checks it against three distinct upright card-index drawers. Nearby a team member examines a pile of redundant duplicate stamped slips and traces the process on a clipboard. The three drawers are visually different but no text required; the original cards stay intact and selected cards collect in one tray. Believable office machinery and hands, lively complete setting, no huge empty margins. Fine black pen-and-ink outlines and cross-hatching on ivory paper, sparse teal and orange accents, visible pencil construction, vintage technical editorial style. Emphasize avoiding redundant work while preserving result; no race or fake timing numbers. No lettering, logos, slogans, random gears, glossy3D or photography.

@@ -1,0 +1,5 @@
+# One-to-Many Mapping topic
+
+Generated with the built-in imagegen tool. Topic: grouping, unique membership and reverse lookup.
+
+Use case: stylized-concept. Wide16:9 topic hero for One-to-Many Mapping, hand-drawn technical editorial illustration in fine black pen and cross-hatching on warm ivory paper, restrained blue and orange washes. A lively archive room with a curator tracking a single tagged key back to its parent ring: several large distinct key rings hang on an organized pegboard, each ring holds several individually different keys, every key belongs to only one ring. A second curator compares grouping records, one open drawer displays an intact group, and a close foreground hand holds one key still tethered to its ring. Make ownership and reverse identification legible, full composition with practical tools, interesting angled perspective, recognizable tactile keys and rings, sophisticated precise draftsmanship. Distinct from electrical switchboards. No written labels, slogans, logos, invented data, photorealism or glossy3D.
