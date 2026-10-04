@@ -44,6 +44,18 @@ StringBuilder. These receive versioned hero assets and saved prompts; originals
 are retained for comparison. The source-faithful explanatory diagrams inside
 the articles retain their separate verification requirements.
 
+The five original hero image/prompt pairs are tracked comparison assets. Each
+uses its article slug without a suffix. Published articles and retained drafts
+use the selected variants listed below.
+
+| Original hero slug | Selected variant suffix |
+|---|---|
+| `csharp-delegates-higher-order-functions` | `hardware` |
+| `csharp-linq-execution` | `profiler` |
+| `csharp-stringbuilder-myth` | `assembly` |
+| `csharp-value-reference-fundamentals` | `shared-object` |
+| `csharp-valuetuples-deconstruction` | `workbench` |
+
 Completed refreshed heroes: ValueTuples uses the workbench suffix, LINQ uses
 profiler, and StringBuilder uses assembly. All three were restyled from the
 fuller compositions using the supplied artwork as an ink-style reference.
