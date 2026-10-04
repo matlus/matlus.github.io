@@ -2,7 +2,8 @@
 
 Started October 3, 2026 as preparation for editorial review. On October 4, the
 owner approved publishing all eleven completed drafts, including images, metadata,
-source links and the complete publication workflow. Publication is now in progress.
+source links and the complete publication workflow. All eleven are now published;
+the publication register supersedes the preparation statuses below.
 See [the publication register](transcript-series-publication.md).
 The 53 recovered historical articles and their dates remain unchanged.
 

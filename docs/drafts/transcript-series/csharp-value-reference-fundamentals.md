@@ -2,7 +2,7 @@
 title: "So You Think You Know C#? The Fundamentals"
 description: "C# passes arguments by value by default. Integer, string and object examples explain what gets copied, how ref works and which changes reach the caller."
 datePublished: 2020-03-01
-dateModified: 2026-10-03
+dateModified: 2020-03-01
 tags: ["method-design", "csharp"]
 hero: csharp-value-reference-fundamentals-shared-object
 youtube: "https://www.youtube.com/watch?v=7BepNnpU2UU"

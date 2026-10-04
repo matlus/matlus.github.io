@@ -2,7 +2,7 @@
 title: "So You Think You Know C#? Constants and Default Parameter Values"
 description: "C# embeds constants and default parameter values in compiled callers. Library-only builds and IL inspection explain why callers must be rebuilt to adopt changed values."
 datePublished: 2020-03-23
-dateModified: 2026-10-04
+dateModified: 2020-03-23
 tags: ["constants", "optional-parameters", "compilation", "method-design", "csharp"]
 hero: csharp-constants-default-parameters
 youtube: "https://www.youtube.com/watch?v=OrpPfOu4PQ0"

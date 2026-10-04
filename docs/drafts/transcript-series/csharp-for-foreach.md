@@ -2,7 +2,7 @@
 title: "So You Think You Know C#? For vs. Foreach"
 description: "The type a foreach loop sees determines its enumeration path. Array lowering, list enumerators and yield state machines explain the work behind the syntax."
 datePublished: 2020-03-15
-dateModified: 2026-10-04
+dateModified: 2020-03-15
 tags: ["benchmarking", "iterator-pattern", "design-patterns", "csharp"]
 hero: csharp-for-foreach
 youtube: "https://www.youtube.com/watch?v=9bTpI86bA5E"

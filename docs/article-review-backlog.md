@@ -12,7 +12,8 @@ October 4. See [the publication register](transcript-series-publication.md).
 
 The eleven publication copies now pass source/code acceptance, metadata and topic
 art checks, rendered image/code inspection, generated links, typecheck and full
-build. Deployment and source backlinks are tracked in the publication register.
+build. All eleven are published, with source-video and verified public repository
+backlinks complete. Deployment evidence is tracked in the publication register.
 Existing historical article dates remain unchanged. Six Performance articles still
 need drafting; the original per-article notes preserve historical source limits.
 

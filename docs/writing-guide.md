@@ -12,6 +12,24 @@ The [recovered Matlus archive](source-material/matlus-wayback/README.md) contain
 sample when preparing a substantial draft. Preserve the archive and make
 editorial changes in publication copies.
 
+## Links and publication checks
+
+Every off-site HTTP(S) hyperlink must open a new tab. This includes YouTube,
+Microsoft documentation, GitHub repositories and other references, whether the
+link appears in prose, raw HTML, a resource card or a shared component. Internal
+article links and section anchors keep their normal navigation behavior.
+
+Use ordinary Markdown links when writing. The shared rendering middleware adds
+`target="_blank"` and `rel="noopener noreferrer"` to external anchors in the final
+HTML, preserving other useful relationship values such as `nofollow`. This runs
+for preview and static publication and requires no reader-side JavaScript.
+The original source archives and Markdown text remain intact.
+
+Before publishing, run the complete checks in `AGENTS.md`, then run
+`python tools/check-links.py dist`. The generated-link check also enforces this
+external-link policy on every HTML page and runs in deployment CI. Verify an
+external article link in the browser as part of the rendered-page review.
+
 ## Idea and note callouts
 
 Use a callout for a short point the reader should notice while reading an article.

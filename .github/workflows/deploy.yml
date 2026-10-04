@@ -47,6 +47,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: External link policy tests
+        run: npm run test:links
+
       - name: Build
         run: npm run build
 

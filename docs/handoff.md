@@ -4,10 +4,20 @@
 
 The owner approved the eleven completed transcript-derived articles for publication.
 Publication copies, eleven selected heroes, nine source-faithful SVG diagrams and
-24 new topic heroes are prepared and pass the full local checks. See
+24 new topic heroes are published and pass the full local checks. See
 [the publication register](transcript-series-publication.md) for article URLs,
 verification and deployment status. Six Performance articles remain undrafted.
 The earlier review pause has ended for this eleven-article publication batch.
+The owner subsequently requested dateModified equal datePublished on all eleven,
+so they retain their historical feed positions. Keep this policy on publication
+copies and retained drafts. The shared body type is now 1rem (16px at the default
+browser setting), with smaller h2/h3/h4 headings inside prose. Code blocks apply
+the code-size ratio once, avoiding nested scaling at the smaller body size.
+All off-site HTTP(S) links now open a new tab. Shared HTML middleware applies this
+to Markdown, raw HTML and component links; policy tests and the generated-link
+check enforce it in CI. The writing guide and AGENTS.md document the rule.
+All eleven source-video descriptions and both verified public sample-repository
+READMEs now link back to their articles. Existing video descriptions were preserved.
 
 ## Recovered articles and blog-writing skill, October 3, 2026
 

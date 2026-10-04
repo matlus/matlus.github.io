@@ -68,6 +68,14 @@ separate technical editorial ink style.
 **Never break a published URL.** Citations and training snapshots freeze. Redirect
 rather than remove.
 
+**Off-site HTTP(S) links always open in a new tab.** Published HTML must use
+`target="_blank"` and `rel="noopener noreferrer"` for external destinations,
+including article prose, videos, sample repositories, cards and footer links.
+The shared middleware applies this policy during rendering. Preserve normal
+navigation for internal links. During publication, run
+`python tools/check-links.py dist`; CI rejects missing targets and external-link
+policy violations. See [the writing guide](docs/writing-guide.md#links-and-publication-checks).
+
 **Keep editorial review tasks out of published content.** Track unfinished
 article verification in [docs/article-review-backlog.md](docs/article-review-backlog.md).
 Keep substantive source qualifications in the article when readers need them to
@@ -108,10 +116,10 @@ incomplete. Do not repeat these.
 - **Verify deploys against the right commit.** `gh run list --limit 1` may still show
   the previous run. Match its `headSha` to `git log -1`.
 
-Before pushing, all four must be clean:
+Before pushing, all six checks must be clean:
 
 ```bash
-npm run typecheck && npm run build && python tools/audit-copy.py src docs prompts && python tools/check-tags.py
+npm run typecheck && npm run test:links && npm run build && python tools/audit-copy.py src docs prompts && python tools/check-tags.py && python tools/check-links.py dist
 ```
 
 ---

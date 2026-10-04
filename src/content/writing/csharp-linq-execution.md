@@ -2,7 +2,7 @@
 title: "So You Think You Know C#? LINQ"
 description: "LINQ rewrites can add work while removing repetition. Customer filters expose query projections, lookup choices and why benchmarks must compare equal results."
 datePublished: 2020-05-03
-dateModified: 2026-10-04
+dateModified: 2020-05-03
 tags: ["linq", "benchmarking", "compilation", "hash-sets", "csharp"]
 hero: csharp-linq-execution-profiler
 youtube: "https://www.youtube.com/watch?v=4sHcMxKwBZI"

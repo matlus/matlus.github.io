@@ -29,8 +29,9 @@ Six further Performance articles remain outside this publication batch.
 - All embedded source diagrams have descriptive alt text, explanatory captions or
   adjacent prose, and links to the full-size SVG. Original cells, labels and arrows
   are preserved. Historical benchmark plots retain source measurements.
-- Historical video calendar dates remain datePublished; this editorial work is
-  dateModified October 4, 2026.
+- Historical video calendar dates remain datePublished. At the owner's request,
+  dateModified equals datePublished on all eleven articles so they retain their
+  original chronological positions. Git records the October editorial work.
 - Code provenance and isolated executable checks are recorded in each verification
   file under docs/drafts/transcript-series. Constants IL and constructor-chaining
   checks are closed. ValueTuple custom deconstruction and runtime fields are checked
@@ -45,6 +46,11 @@ Six further Performance articles remain outside this publication batch.
 - Tag check: 170 tags, no near-duplicates, all topic heroes and prompts present.
 - Repository copy audit: zero hard errors; technical distinctions retained.
 - Generated local links: all resolve.
+- External-link policy: six tests pass; every generated off-site HTTP(S) link has
+  a new-tab target and noopener/noreferrer. The rule is documented in AGENTS.md
+  and the writing guide, with CI enforcement.
+- Recovered-content regression: 53 articles, 71 topics, 345 image resources and
+  53 redirects pass after applying the shared HTML link policy.
 - All eleven HTML pages match their source code blocks and inline-image counts.
   Canonicals, structured dates, source videos and Markdown twins match.
 - Background-browser checks: every hero loads, every inline diagram loads, and
@@ -54,7 +60,27 @@ Six further Performance articles remain outside this publication batch.
 
 ## Deployment and backlinks
 
-Deployment and canonical backlink verification are in progress.
+Initial publication commit: cf085557b62370540cb7fba2b03ebe6ac3e71b7e.
+GitHub Pages run 37202369337 completed successfully. All eleven live HTML and
+Markdown pages, code, structured dates, source links and image bytes passed
+verification. All 24 new topic pages returned successfully.
+
+The publication follow-up restores historical updated dates, uses a 16px article
+body with smaller section headings, and automatically opens all off-site HTTP(S)
+links in a new tab. A background-browser click opened Microsoft Learn separately
+while preserving the article tab; computed body text was 16px.
+
+All eleven public source-video descriptions now include their canonical article
+link. Existing description text and links were preserved. Each saved description
+was reloaded and compared with its expected text. Before/after text and screenshots
+are retained in the local transcript-series verification workspace.
+
+Both verified public sample repositories now have README backlinks:
+
+- VariousBenchmarks: 7fb4e2cb6225e8018ec5e62b4b05d3c1c16b03ca links LINQ and StringBuilder.
+- SingleElseExceptionStarter: 505ce93087a3d73d7cd8b973e4104af91438bbae links Delegates.
+
+Both saved READMEs were fetched again to verify their links.
 
 No matching public repository was established for the other eight articles.
 Local sample folders alone do not establish a public repository association.

@@ -34,7 +34,7 @@
 
   /* Fluid type scale. */
   --step--1: clamp(0.83rem, 0.8rem + 0.15vw, 0.9rem);
-  --step-0: 1.125rem;
+  --step-0: 1rem;
   --step-1: clamp(1.125rem, 1.075rem + 0.2vw, 1.25rem);
   --step-2: clamp(1.25rem, 1.125rem + 0.45vw, 1.5rem);
   --step-3: clamp(1.5rem, 1.25rem + 0.75vw, 1.875rem);

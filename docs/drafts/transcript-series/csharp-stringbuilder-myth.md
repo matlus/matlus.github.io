@@ -2,7 +2,7 @@
 title: "So You Think You Know C#? The StringBuilder Myth"
 description: "StringBuilder suits growing results, but can cost more for fixed concatenation. Compiler output, allocations and benchmark checks explain when to choose it."
 datePublished: 2020-04-06
-dateModified: 2026-10-04
+dateModified: 2020-04-06
 tags: ["benchmarking", "csharp"]
 hero: csharp-stringbuilder-myth-assembly
 youtube: "https://www.youtube.com/watch?v=B71rabZtWWI"

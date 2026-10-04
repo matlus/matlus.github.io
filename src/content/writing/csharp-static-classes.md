@@ -2,7 +2,7 @@
 title: "So You Think You Know C#? Static Classes"
 description: "Choose static classes when instances serve no purpose. Shared type state, autonomous methods and immutable inputs explain the discipline that makes them useful."
 datePublished: 2020-03-02
-dateModified: 2026-10-04
+dateModified: 2020-03-02
 tags: ["static-classes", "object-layout", "autonomous-methods", "class-design", "immutability", "csharp"]
 hero: csharp-static-classes
 youtube: "https://www.youtube.com/watch?v=IPGizw3YdMg"

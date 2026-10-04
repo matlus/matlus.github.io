@@ -2,7 +2,7 @@
 title: "So You Think You Know C#? ValueTuples and Deconstruction"
 description: "Named ValueTuples make small results readable. Positional fields, copy behavior and Deconstruct methods explain the syntax and the limits of tuple return types."
 datePublished: 2020-08-03
-dateModified: 2026-10-03
+dateModified: 2020-08-03
 tags: ["csharp"]
 hero: csharp-valuetuples-deconstruction-workbench
 youtube: "https://www.youtube.com/watch?v=x3At5Pq2__I"

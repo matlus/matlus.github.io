@@ -2,7 +2,7 @@
 title: "So You Think You Know C#? Constructors"
 description: "C# construction order determines which fields are ready. Field initializers, constructor chaining, virtual dispatch and static initialization explain what runs when."
 datePublished: 2020-03-22
-dateModified: 2026-10-03
+dateModified: 2020-03-22
 tags: ["class-design", "csharp"]
 hero: csharp-constructors
 youtube: "https://www.youtube.com/watch?v=Hf063OqbK64"

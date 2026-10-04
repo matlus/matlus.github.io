@@ -2,7 +2,7 @@
 title: "So You Think You Know C#? Delegates and Higher Order Functions"
 description: "Delegates let callers supply behavior to reusable methods. Lambda syntax and SingleElseException show how higher order functions add useful failure details."
 datePublished: 2020-03-08
-dateModified: 2026-10-04
+dateModified: 2020-03-08
 tags: ["delegates", "lambdas", "higher-order-functions", "error-handling", "linq", "csharp"]
 hero: csharp-delegates-higher-order-functions-hardware
 youtube: "https://www.youtube.com/watch?v=q1BCmwnkFfM"

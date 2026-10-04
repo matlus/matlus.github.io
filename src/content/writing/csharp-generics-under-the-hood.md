@@ -2,7 +2,7 @@
 title: "So You Think You Know C#? Generics Under the Hood"
 description: ".NET generics retain runtime type arguments. Typed lists avoid boxing value-type elements, while CLR specialization and code sharing preserve distinct types."
 datePublished: 2020-03-28
-dateModified: 2026-10-04
+dateModified: 2020-03-28
 tags: ["generics", "boxing", "compilation", "value-and-reference-types", "reflection", "csharp"]
 hero: csharp-generics-under-the-hood
 youtube: "https://www.youtube.com/watch?v=MIZFp5m3Pus"

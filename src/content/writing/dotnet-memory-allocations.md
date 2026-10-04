@@ -2,7 +2,7 @@
 title: ".NET Memory Allocations and Performance"
 description: ".NET allocation costs follow what gets stored and copied. Structs, classes, arrays and strings explain object layout, references and garbage collection."
 datePublished: 2017-10-15
-dateModified: 2026-10-04
+dateModified: 2017-10-15
 tags: ["memory-allocation", "object-layout", "value-and-reference-types", "garbage-collection", "immutability", "csharp"]
 hero: dotnet-memory-allocations
 youtube: "https://www.youtube.com/watch?v=aylUPfOVM90"
