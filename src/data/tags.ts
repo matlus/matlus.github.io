@@ -21,6 +21,21 @@ export interface Tag {
 
 export const TAGS = [
   {
+    slug: "cpu-caches",
+    label: "CPU Caches",
+    description: "Processor caches retain nearby copies of instructions and data. Cache lines, locality, sharing and coherence affect the cost of accessing a program's working set.",
+  },
+  {
+    slug: "one-to-many-mapping",
+    label: "One-to-Many Mapping",
+    description: "Associating one key with multiple values while defining which keys each value may belong to. Lookup direction, uniqueness constraints and update rules determine the relationship's contract and storage.",
+  },
+  {
+    slug: "adapter-pattern",
+    label: "Adapter Pattern",
+    description: "Translating an existing component's interface into the interface its caller needs. The adapter owns the translation while keeping the underlying component's API details inside its implementation.",
+  },
+  {
     slug: "anonymous-types",
     label: "Anonymous Types",
     description: "Compiler-generated types created from property names and values without an explicit class declaration. Their inferred identity, read-only properties and value-based equality shape their use in local operations and query projections.",

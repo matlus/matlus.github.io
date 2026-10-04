@@ -1,12 +1,32 @@
 # Handoff
 
+## Remaining Performance articles approved for publication, October 4, 2026
+
+The owner requested the remaining six Performance articles using the earlier
+source, writing, metadata and verification process, with fuller and more varied
+hero scenes. All six drafts, six article heroes, nine inline figures and three
+new illustrated topics were reviewed and approved for publication. Both dates equal each video's
+original public YouTube calendar date, from 2019 through 2022. Generated HTML,
+Markdown and chronological feed placement have been verified.
+
+The six articles have publication copies under `src/content/writing/`; retained
+drafts preserve the reviewed source text. Required preparation site checks pass,
+as do the isolated preview build, generated links and 48 grouped C# behavior
+checks. See [the preparation register](transcript-series-preparation.md) for the
+review inventory, asset paths and local preview, and
+[the verification record](drafts/transcript-series/performance-verification.md)
+for source qualifications. The [publication register](performance-articles-publication.md)
+records the source associations and directs readers to the publication PR for
+deployment and backlink receipts. Code Reviewer remains the next collection.
+
 ## C# and Performance article publication, October 4, 2026
 
 The owner approved the eleven completed transcript-derived articles for publication.
 Publication copies, eleven selected heroes, nine source-faithful SVG diagrams and
 24 new topic heroes are published and pass the full local checks. See
 [the publication register](transcript-series-publication.md) for article URLs,
-verification and deployment status. Six Performance articles remain undrafted.
+verification and deployment status. The six remaining Performance articles were
+subsequently prepared as the separate review batch above.
 The earlier review pause has ended for this eleven-article publication batch.
 The owner subsequently requested dateModified equal datePublished on all eleven,
 so they retain their historical feed positions. Keep this policy on publication

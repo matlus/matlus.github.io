@@ -7,7 +7,72 @@ the publication register supersedes the preparation statuses below.
 See [the publication register](transcript-series-publication.md).
 The 53 recovered historical articles and their dates remain unchanged.
 
+## Remaining Performance batch ready for review, October 4, 2026
+
+The owner subsequently approved publication of all six articles, including tag
+reconciliation and video/repository backlinks. Publication copies now live in
+`src/content/writing/`. See the [publication register](performance-articles-publication.md);
+the preparation status and local preview details below describe the review stage.
+
+All six remaining articles now have complete drafts, source/code checks,
+independent description/tag review, article heroes and inline figures. This is
+a new preparation batch following the eleven published articles. The six drafts
+remain outside the publication collection with `draft: true`; publication and
+remote changes await the owner's review. All seventeen unique recordings now
+have article drafts or publication copies.
+
+| Article draft | Publication and revision date | Hero scene |
+|---|---|---|
+| [Memory Allocations and Performance, Part 2](drafts/transcript-series/dotnet-memory-allocations-part-2.md) | 2019-08-17 | A layered dispatch hall with nearby stores and distant supply routes |
+| [Benchmarking .NET Applications](drafts/transcript-series/benchmarking-dotnet-applications.md) | 2019-11-27 | An instrumented laboratory comparing equivalent operations |
+| [ASP.NET Core Web API by Hand](drafts/transcript-series/aspnet-core-web-api-by-hand.md) | 2020-04-26 | A cutaway movie archive showing two request paths |
+| [Custom Data Structure: A One-to-Many Mapping](drafts/transcript-series/csharp-one-to-many-mapping.md) | 2020-05-17 | A working switchboard with grouped connections |
+| [To LINQ or Not to LINQ](drafts/transcript-series/to-linq-or-not-to-linq.md) | 2021-03-28 | Customer cards moving through a sorting workshop |
+| [High Performance Logging and Custom Objects](drafts/transcript-series/high-performance-logging-custom-objects.md) | 2022-01-16 | An operations room handling structured event information |
+
+Both dates were checked against the expanded descriptions on public YouTube
+watch pages, including corrections to saved export dates for Part 2 and Logging.
+The generated HTML metadata and Markdown twins preserve those exact calendar
+dates. The isolated preview's home feed retains chronological ordering: the six
+articles occupy historical positions 43, 44, 46, 48, 57 and 58 rather than becoming
+the newest entries. The site's sorting code is unchanged.
+
+The six hero asset stems match the draft filenames. Each has an optimized
+`.webp` and saved `.prompt.md` under `src/assets/heroes/`. Three new topics have
+matching asset pairs: `tag-cpu-caches`, `tag-one-to-many-mapping` and
+`tag-adapter-pattern`. All nine were created with the built-in imagegen tool.
+Their fuller editorial ink scenes vary the setting and activity. Nine inline
+SVGs under `public/images/diagrams/` preserve source figures or explicitly label
+new explanations; the mapping chart uses the original workbook measurements.
+See the [evidence and verification record](drafts/transcript-series/performance-verification.md)
+for source snapshots, figure identities, tested behavior and retained limits.
+
+Validation completed:
+
+- Typecheck: zero errors, zero warnings; 34 existing deprecation hints.
+- External-link policy tests: all six pass.
+- Primary site build: 307 pages, 306 indexed; search checks pass.
+- Isolated preview with all six articles: 313 pages, 312 indexed; search checks pass.
+- Copy audit: zero hard errors; existing and new advisory flags reviewed.
+- Tag check: 173 tags, no near-duplicates, all topic image/prompt pairs present.
+- Generated-link checks pass for both builds, including external new-tab policy.
+- All six rendered article pages load their heroes and inline figures without
+  horizontal page overflow at the existing desktop viewport. The review gallery
+  and all nine inline figures were visually inspected.
+- Forty-eight grouped C# behavior checks pass. The BenchmarkDotNet and
+  LoggerMessage draft examples compile with their actual package APIs.
+
+Local review files and executable evidence are kept together outside the public
+repository at `D:/Source/Workspaces/matlus-performance-2026-10-04/`. The static
+preview is served on port 4322, with the six-article gallery at
+`http://127.0.0.1:4322/review-performance/`. These local files are preparation
+artifacts; the public repository contains only the intended drafts, records and
+publication-ready artwork. The branch is `codex/remaining-performance-articles`.
+
 ## Earlier review pause, October 4, 2026
+
+The following section records the earlier pause, before the first publication
+batch and the six drafts above. Its counts and checks are historical.
 
 Paused at the owner's request after completing the first memory-allocation
 article's draft, source figures, executable checks, metadata review and writing

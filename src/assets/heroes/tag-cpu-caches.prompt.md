@@ -1,0 +1,5 @@
+# CPU Caches topic
+
+Generated with the built-in imagegen tool. Topic: processor cache locality, hierarchy and coherence; distinct from application-result caching.
+
+Use case: stylized-concept. Wide16:9 topic-page hero for CPU Caches, distinct from the article's dispatch-hall scene. A dramatic extreme close cutaway of a processor package imagined as layered architectural terraces: tiny working processors beside shallow trays of adjacent blocks, wider shared storage terraces behind them, long fine copper-like routes leading outward toward a memory bank. A technician's magnifying lens and gloved fingertip inspect one group of adjacent cells, giving tangible scale. Precise hand-drawn technical ink, fine cross-hatching, warm ivory paper, sparse teal and burnt-orange washes, visible construction lines, dense purposeful engineering detail, dynamic diagonal composition. Communicate nearby reusable data and several storage levels without pretending to show a specific chip's exact architecture. No text, numbered capacities, logos, slogans, photorealism or glossy3D.

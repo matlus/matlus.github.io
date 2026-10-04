@@ -1,0 +1,5 @@
+# ASP.NET Core Web API by Hand
+
+Generated with the built-in imagegen tool for the unpublished Performance draft.
+
+Use case: stylized-concept. Wide 16:9 hero illustration for ASP.NET Core Web API by Hand. A dramatic architectural cutaway of a movie archive dispatch building, vintage technical pen-and-ink drawing with fine cross-hatching, warm ivory paper and sparse turquoise and orange accents. Two visible service routes connect incoming request capsules to the SAME central movie archive and return identical film canisters: one travels through a substantial general service hall with multiple staffed counters, the other is a narrow purpose-built direct service hatch tended by an engineer. Emphasize the engineer opening a removable panel to reveal the direct path, thoughtful examination of mechanism rather than destruction or a race. Rich busy architectural detail, film reels, pipelines, technicians, realistic scale, medium-close perspective, full frame, clear central relationship. This is a metaphor, no exact technical labels, no arrows claiming speed, no chart or numbers, no brand logos, no slogans. Sophisticated line drawing, not photo or 3D render.

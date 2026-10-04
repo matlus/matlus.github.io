@@ -14,8 +14,24 @@ The eleven publication copies now pass source/code acceptance, metadata and topi
 art checks, rendered image/code inspection, generated links, typecheck and full
 build. All eleven are published, with source-video and verified public repository
 backlinks complete. Deployment evidence is tracked in the publication register.
-Existing historical article dates remain unchanged. Six Performance articles still
-need drafting; the original per-article notes preserve historical source limits.
+Existing historical article dates remain unchanged. The six remaining Performance
+articles now have complete drafts, metadata, artwork and passing checks; they
+have owner approval and publication copies. Their [verification record](drafts/transcript-series/performance-verification.md)
+preserves the recovered evidence and substantive source limits:
+
+- The complete matching public Web API demonstration repository is unavailable.
+  The recorded handler is presented as a fragment. A later local client uses
+  different transports; no matched comparison or public repository is invented.
+- The original logging provider failure is reported as a historical observation;
+  that specific Windows Event Log failure was not reproduced. Shared-array
+  mutation and structured-state behavior were reproduced and explained.
+- Original mapping and LINQ fixtures differ from some narrated explanations.
+  The drafts state the behavior verified from source. Historical benchmark
+  measurements remain historical; no new timing results are claimed.
+
+These qualifications are retained in the article bodies where they affect the
+reader's interpretation. See the [publication register](performance-articles-publication.md)
+for deployment and source backlink verification.
 
 ## Recovered Matlus articles, October 3, 2026
 
