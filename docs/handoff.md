@@ -1,5 +1,14 @@
 # Handoff
 
+## C# and Performance article publication, October 4, 2026
+
+The owner approved the eleven completed transcript-derived articles for publication.
+Publication copies, eleven selected heroes, nine source-faithful SVG diagrams and
+24 new topic heroes are prepared and pass the full local checks. See
+[the publication register](transcript-series-publication.md) for article URLs,
+verification and deployment status. Six Performance articles remain undrafted.
+The earlier review pause has ended for this eleven-article publication batch.
+
 ## Recovered articles and blog-writing skill, October 3, 2026
 
 The 53 recovered Matlus articles are preserved under

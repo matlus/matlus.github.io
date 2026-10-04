@@ -1,0 +1,234 @@
+{
+  "articles": {
+    "csharp-constants-default-parameters": [
+      "constants",
+      "optional-parameters",
+      "compilation",
+      "method-design",
+      "csharp"
+    ],
+    "csharp-constructors": [
+      "constructors",
+      "static-initialization",
+      "class-design",
+      "polymorphism",
+      "compilation",
+      "csharp"
+    ],
+    "csharp-delegates-higher-order-functions": [
+      "delegates",
+      "lambdas",
+      "higher-order-functions",
+      "error-handling",
+      "linq",
+      "csharp"
+    ],
+    "csharp-for-foreach": [
+      "benchmarking",
+      "compilation",
+      "iterator-pattern",
+      "design-patterns",
+      "csharp"
+    ],
+    "csharp-generics-under-the-hood": [
+      "generics",
+      "boxing",
+      "compilation",
+      "value-and-reference-types",
+      "reflection",
+      "csharp"
+    ],
+    "csharp-linq-execution": [
+      "linq",
+      "benchmarking",
+      "compilation",
+      "hash-sets",
+      "csharp"
+    ],
+    "csharp-static-classes": [
+      "static-classes",
+      "object-layout",
+      "autonomous-methods",
+      "class-design",
+      "immutability",
+      "csharp"
+    ],
+    "csharp-stringbuilder-myth": [
+      "string-concatenation",
+      "stringbuilder",
+      "benchmarking",
+      "compilation",
+      "caching",
+      "csharp"
+    ],
+    "csharp-value-reference-fundamentals": [
+      "value-and-reference-types",
+      "parameter-passing",
+      "immutability",
+      "method-design",
+      "csharp"
+    ],
+    "csharp-valuetuples-deconstruction": [
+      "value-tuples",
+      "deconstruction",
+      "anonymous-types",
+      "compilation",
+      "method-design",
+      "csharp"
+    ],
+    "dotnet-memory-allocations": [
+      "memory-allocation",
+      "object-layout",
+      "value-and-reference-types",
+      "garbage-collection",
+      "immutability",
+      "csharp"
+    ]
+  },
+  "newTags": [
+    {
+      "slug": "anonymous-types",
+      "label": "Anonymous Types",
+      "description": "Compiler-generated types created from property names and values without an explicit class declaration. Their inferred identity, read-only properties and value-based equality shape their use in local operations and query projections.",
+      "scene": "A developer at a desk uses a small label-free mold to form a matching set of three blue record cards, each with identical field slots but different values. Laptop and notebook show simple matching record shapes; no legible text. Close overhead scene, hand removing a fresh record from the mold."
+    },
+    {
+      "slug": "autonomous-methods",
+      "label": "Autonomous Methods",
+      "description": "Methods that operate on information supplied through their signatures without depending on changing state accumulated by their class. They may use fixed information and perform external side effects, distinguishing autonomy from purity.",
+      "scene": "An engineer feeds a sealed blue job envelope and an amber instruction card into a compact desktop calculator apparatus; a separate output document emerges. Clear input/output path, no accumulated storage drawers. Human hand at the input, pencil and cables around a detailed practical workstation."
+    },
+    {
+      "slug": "boxing",
+      "label": "Boxing",
+      "description": "Representing a value-type value inside an object so it can be used through an object or interface reference. Boxing and unboxing affect copying, allocation and the behavior of typed and untyped APIs.",
+      "scene": "Close view of hands fitting a tiny blue numerical data tile into a substantially larger opened amber protective electronics enclosure with visible framing and overhead. A second identical blue tile remains outside beside a caliper. Clear small payload and extra enclosing structure, populated engineering desk."
+    },
+    {
+      "slug": "caching",
+      "label": "Caching",
+      "description": "Retaining results or reusable resources to avoid repeating work. Ownership, validity, retention limits and lifetime determine when cached state can safely be reused.",
+      "scene": "A technician reaches into an organized near-at-hand blue reusable-tool rack beside an electronics workstation; a used instrument is being returned to its fitted cradle, next ready instrument accessible. Behind it a closed amber supply case. Cables, lamp and busy hands convey reuse."
+    },
+    {
+      "slug": "compilation",
+      "label": "Compilation",
+      "description": "Translating source code or intermediate instructions into executable code and metadata. Compiler transformations, specialization and code sharing determine what is produced before deployment or during execution.",
+      "scene": "A programmer works at a split-screen workstation, left pane a short orderly blue code listing, right pane amber low-level instruction-like rows; no readable text. On the desk translucent layers of a schematic align into a compact completed circuit assembly. A hand traces transformation across the panes, rich close scene."
+    },
+    {
+      "slug": "constants",
+      "label": "Constants",
+      "description": "Values fixed at compile time and substituted where code uses them. Their declarations, permitted expressions, and treatment across assembly boundaries determine how changes reach consumers.",
+      "scene": "A printmaker's hands replace an amber master stamp on a detailed printing bench while three already-finished blue impressions remain unchanged on cards nearby. Clear contrasting old and new geometric stamp patterns. Ink roller, ink tin and paper texture fill the edges. No words."
+    },
+    {
+      "slug": "constructors",
+      "label": "Constructors",
+      "description": "How objects are initialized through constructor bodies, field initializers, and calls between constructors. Inheritance and virtual dispatch determine which state is available while construction proceeds.",
+      "scene": "Close workshop scene with a mechanic carefully fastening the upper assembly onto one partially built small engine in a jig. Lower support assembled, tools and still-uninstalled components on a tray, hands visibly aligning a mounting hole. Blue structure and amber upper part, clear assembly order."
+    },
+    {
+      "slug": "deconstruction",
+      "label": "Deconstruction",
+      "description": "Extracting individual values from tuples or objects into separate variables. C# supports positional tuple extraction and Deconstruct methods, including overloads, extension methods and discarded results.",
+      "scene": "A watchmaker carefully transfers exactly three distinct components from a fitted compact case into three separate matching trays in the same left-to-right order. One component in hand, other two in their individual trays; original case empty. Tweezers, loupe and caliper, close rich pen drawing, no duplicate parts."
+    },
+    {
+      "slug": "garbage-collection",
+      "label": "Garbage Collection",
+      "description": "Automatically reclaiming storage occupied by objects that are no longer reachable. Allocation volume, object lifetimes and surviving references affect collection frequency, memory use and execution costs.",
+      "scene": "A technician clears disconnected small amber circuit modules from a shared work tray into a reuse bin while leaving blue modules connected by visible cables to an active control panel. Hand removing one disconnected module, clear active connections and spare capacity, no grim reaper or trash cartoon."
+    },
+    {
+      "slug": "generics",
+      "label": "Generics",
+      "description": "Types and methods parameterized by other types. Compiler and runtime support determine how type arguments are checked, retained and used to specialize or share executable code.",
+      "scene": "A precision toolmaker at a crowded but orderly bench adjusts one master tooling template for different component profiles. Three distinct fitted inserts beside a shared blue mounting fixture, amber interchangeable tooling, hands using a caliper and a technical drawing, close-up credible manufacturing detail."
+    },
+    {
+      "slug": "hash-sets",
+      "label": "Hash Sets",
+      "description": "Collections of distinct values organized for hash-based membership checks. Equality comparers, mutation and set operations determine their behavior and the work required for lookups.",
+      "scene": "An engineer points to a selected compartment in an indexed parts cabinet arranged in a shallow grid on a desk, one blue token in each occupied compartment. A small key template leads directly to an amber highlighted compartment, caliper and matching spare token held in other hand, no text."
+    },
+    {
+      "slug": "higher-order-functions",
+      "label": "Higher Order Functions",
+      "description": "Functions that accept other functions as arguments, return functions, or both. Passing behavior lets a reusable algorithm delegate particular decisions to its caller.",
+      "scene": "A programmer's hand plugs an amber behavior daughtercard into the central socket of a blue three-stage circuit assembly. The fixed left and right stages remain connected; a second compatible alternative card rests beside it. Close hand and gold contacts, laptop and screwdriver at edges. No text; clear caller-supplied behavior slot."
+    },
+    {
+      "slug": "immutability",
+      "label": "Immutability",
+      "description": "Keeping a value or object's contents unchanged after creation. Operations produce replacement values, while variables may still be reassigned to refer to those replacements.",
+      "scene": "A craftsperson makes a revised amber engraving plate beside an intact original blue plate under a protective clear cover. The original is visibly untouched while a new plate is worked on with a graver. Two related designs, pencil annotations without words, tools and hand, rich close studio scene."
+    },
+    {
+      "slug": "lambdas",
+      "label": "Lambdas",
+      "description": "Expressions that define anonymous functions where behavior is needed. Parameter inference, statement and expression bodies, captured variables and the required target type determine how they are used.",
+      "scene": "A close over-the-shoulder view of a programmer editing one compact highlighted function directly within a larger code listing on an ivory screen. Exact central text 'n => n % 2 == 0' only. Pen and notebook connect a small input-number tile to an amber decision marker. Human hands, keyboard and lamp, no other lettering."
+    },
+    {
+      "slug": "memory-allocation",
+      "label": "Memory Allocation",
+      "description": "Obtaining storage for values, objects and working data. Allocation size, frequency and lifetime affect copying, memory use and the work required to reclaim storage.",
+      "scene": "An engineer uses a sliding measuring guide to reserve a run of contiguous empty compartments in a detailed memory-storage teaching tray, placing a blue block into the newly reserved area. Already occupied cells and clear unused cells, amber guide, caliper and laptop at the edges, purposeful hand action."
+    },
+    {
+      "slug": "object-layout",
+      "label": "Object Layout",
+      "description": "How a runtime represents objects through field storage, headers and references to shared type information. Layout and allocation overhead depend on the runtime and target architecture.",
+      "scene": "A detailed exploded technical object model on a workbench: one rectangular blue assembly with a small header cap above rows of embedded data slots and a reference socket connected to a separate amber block. An engineer inspects with a loupe. Dense ink material detail, intelligible containment, no invented byte numbers."
+    },
+    {
+      "slug": "optional-parameters",
+      "label": "Optional Parameters",
+      "description": "Method parameters with defaults that allow callers to omit corresponding arguments. Binding, overload selection, and the placement of default values affect API use and changes to existing callers.",
+      "scene": "A technician configures a physical API calling panel with two argument sockets: the first holds a blue supplied cartridge, the second receives an amber preset cartridge from a small defaults rack. A hand chooses between supplying a cartridge or retaining the preset. Clear matched connector geometry, rich desk, no text."
+    },
+    {
+      "slug": "parameter-passing",
+      "label": "Parameter Passing",
+      "description": "How method parameters receive argument values or access caller variables. Passing by value and passing by reference determine what is copied and which assignments can affect the caller.",
+      "scene": "Two adjacent engineering workstations depicted close-up: a hand places a copied blue data tile into a receiving tray on the left, while a second distinct amber channel is a cable linking directly back to the original variable's slot. Visible source and receiving boundaries, no sprawling arrows, useful instruments fill frame."
+    },
+    {
+      "slug": "static-classes",
+      "label": "Static Classes",
+      "description": "Classes whose members are used without constructing instances. Their language constraints, shared state and responsibilities determine when they suit a design.",
+      "scene": "One shared precision bench instrument is used by a technician to process several separate blue sample cartridges, with a single amber control panel and multiple finished cartridges laid out. No duplicate instrument. Hands feed one sample, microscope lamp and notebook, detailed warm ink scene."
+    },
+    {
+      "slug": "static-initialization",
+      "label": "Static Initialization",
+      "description": "Establishing a type's static state through field initializers and static constructors. Runtime timing guarantees and initialization failures determine what subsequent uses of the type can rely on.",
+      "scene": "An engineer sets up one shared distribution/control panel before connected workstations start using it. Open cover exposes a carefully installed amber configuration module, blue outgoing connectors neatly arranged, hand closing a startup latch, preparation checklist as unlettered boxes, close realistic ink workshop."
+    },
+    {
+      "slug": "string-concatenation",
+      "label": "String Concatenation",
+      "description": "Combining strings into a single result. Fixed expressions, repeated concatenation, formatting and compiler transformations determine the intermediate values, copying and allocations involved.",
+      "scene": "A typesetter's hands align several separate blue word strips into a single finished amber-backed sentence on a composition rail, precise guide, roller, scissors resting unused, rich paper and metal texture. Exact combined words 'Hello World' only. Existing strips intact, new output strip distinct, close filled scene."
+    },
+    {
+      "slug": "stringbuilder",
+      "label": "StringBuilder",
+      "description": "The .NET type for accumulating characters in mutable construction storage before producing a string. Append operations, capacity, chunk growth and final copying determine its behavior and costs.",
+      "scene": "A person's hand adds one new text tile to an open-ended amber assembly channel whose blue ribbon grows through guide rollers. Several linked modular storage trays hold the accumulated ribbon, more blank capacity visible. Detailed adjustable mechanism, screwdriver and supplies, no speed claim or readable labels."
+    },
+    {
+      "slug": "value-and-reference-types",
+      "label": "Value and Reference Types",
+      "description": "The distinction between variables containing values directly and variables containing references to objects. Field storage, assignment and copying determine how values and shared objects behave.",
+      "scene": "An engineer at a desk compares two independent blue data tiles in separate holders with two amber leads that both terminate at one shared transparent object assembly. Hand points to the shared endpoint; notebook and magnifying lens. Exactly two separate value tiles and exactly one shared object with two incoming leads, no words."
+    },
+    {
+      "slug": "value-tuples",
+      "label": "Value Tuples",
+      "description": "Grouping values into positional elements using .NET ValueTuple types and C# tuple syntax. Element names, assignment, copying, mutation and equality determine how these groups behave.",
+      "scene": "A programmer assembles a small ordered result in a three-slot carrying tray: one blue circular token, one amber rectangular token and one ivory hexagonal token, exactly three pieces with clearly different forms. Hands close the tray's transparent lid; matching three-position outline on notebook, laptop at edge. One compact group, no words."
+    }
+  ]
+}

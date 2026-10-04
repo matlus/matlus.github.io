@@ -21,6 +21,126 @@ export interface Tag {
 
 export const TAGS = [
   {
+    slug: "anonymous-types",
+    label: "Anonymous Types",
+    description: "Compiler-generated types created from property names and values without an explicit class declaration. Their inferred identity, read-only properties and value-based equality shape their use in local operations and query projections.",
+  },
+  {
+    slug: "autonomous-methods",
+    label: "Autonomous Methods",
+    description: "Methods that operate on information supplied through their signatures without depending on changing state accumulated by their class. They may use fixed information and perform external side effects, distinguishing autonomy from purity.",
+  },
+  {
+    slug: "boxing",
+    label: "Boxing",
+    description: "Representing a value-type value inside an object so it can be used through an object or interface reference. Boxing and unboxing affect copying, allocation and the behavior of typed and untyped APIs.",
+  },
+  {
+    slug: "caching",
+    label: "Caching",
+    description: "Retaining results or reusable resources to avoid repeating work. Ownership, validity, retention limits and lifetime determine when cached state can safely be reused.",
+  },
+  {
+    slug: "compilation",
+    label: "Compilation",
+    description: "Translating source code or intermediate instructions into executable code and metadata. Compiler transformations, specialization and code sharing determine what is produced before deployment or during execution.",
+  },
+  {
+    slug: "constants",
+    label: "Constants",
+    description: "Values fixed at compile time and substituted where code uses them. Their declarations, permitted expressions, and treatment across assembly boundaries determine how changes reach consumers.",
+  },
+  {
+    slug: "constructors",
+    label: "Constructors",
+    description: "How objects are initialized through constructor bodies, field initializers, and calls between constructors. Inheritance and virtual dispatch determine which state is available while construction proceeds.",
+  },
+  {
+    slug: "deconstruction",
+    label: "Deconstruction",
+    description: "Extracting individual values from tuples or objects into separate variables. C# supports positional tuple extraction and Deconstruct methods, including overloads, extension methods and discarded results.",
+  },
+  {
+    slug: "garbage-collection",
+    label: "Garbage Collection",
+    description: "Automatically reclaiming storage occupied by objects that are no longer reachable. Allocation volume, object lifetimes and surviving references affect collection frequency, memory use and execution costs.",
+  },
+  {
+    slug: "generics",
+    label: "Generics",
+    description: "Types and methods parameterized by other types. Compiler and runtime support determine how type arguments are checked, retained and used to specialize or share executable code.",
+  },
+  {
+    slug: "hash-sets",
+    label: "Hash Sets",
+    description: "Collections of distinct values organized for hash-based membership checks. Equality comparers, mutation and set operations determine their behavior and the work required for lookups.",
+  },
+  {
+    slug: "higher-order-functions",
+    label: "Higher Order Functions",
+    description: "Functions that accept other functions as arguments, return functions, or both. Passing behavior lets a reusable algorithm delegate particular decisions to its caller.",
+  },
+  {
+    slug: "immutability",
+    label: "Immutability",
+    description: "Keeping a value or object's contents unchanged after creation. Operations produce replacement values, while variables may still be reassigned to refer to those replacements.",
+  },
+  {
+    slug: "lambdas",
+    label: "Lambdas",
+    description: "Expressions that define anonymous functions where behavior is needed. Parameter inference, statement and expression bodies, captured variables and the required target type determine how they are used.",
+  },
+  {
+    slug: "memory-allocation",
+    label: "Memory Allocation",
+    description: "Obtaining storage for values, objects and working data. Allocation size, frequency and lifetime affect copying, memory use and the work required to reclaim storage.",
+  },
+  {
+    slug: "object-layout",
+    label: "Object Layout",
+    description: "How a runtime represents objects through field storage, headers and references to shared type information. Layout and allocation overhead depend on the runtime and target architecture.",
+  },
+  {
+    slug: "optional-parameters",
+    label: "Optional Parameters",
+    description: "Method parameters with defaults that allow callers to omit corresponding arguments. Binding, overload selection, and the placement of default values affect API use and changes to existing callers.",
+  },
+  {
+    slug: "parameter-passing",
+    label: "Parameter Passing",
+    description: "How method parameters receive argument values or access caller variables. Passing by value and passing by reference determine what is copied and which assignments can affect the caller.",
+  },
+  {
+    slug: "static-classes",
+    label: "Static Classes",
+    description: "Classes whose members are used without constructing instances. Their language constraints, shared state and responsibilities determine when they suit a design.",
+  },
+  {
+    slug: "static-initialization",
+    label: "Static Initialization",
+    description: "Establishing a type's static state through field initializers and static constructors. Runtime timing guarantees and initialization failures determine what subsequent uses of the type can rely on.",
+  },
+  {
+    slug: "string-concatenation",
+    label: "String Concatenation",
+    description: "Combining strings into a single result. Fixed expressions, repeated concatenation, formatting and compiler transformations determine the intermediate values, copying and allocations involved.",
+  },
+  {
+    slug: "stringbuilder",
+    label: "StringBuilder",
+    description: "The .NET type for accumulating characters in mutable construction storage before producing a string. Append operations, capacity, chunk growth and final copying determine its behavior and costs.",
+  },
+  {
+    slug: "value-and-reference-types",
+    label: "Value and Reference Types",
+    description: "The distinction between variables containing values directly and variables containing references to objects. Field storage, assignment and copying determine how values and shared objects behave.",
+  },
+  {
+    slug: "value-tuples",
+    label: "Value Tuples",
+    description: "Grouping values into positional elements using .NET ValueTuple types and C# tuple syntax. Element names, assignment, copying, mutation and equality determine how these groups behave.",
+  },
+  {
     slug: 'try-parse',
     label: 'Try-Parse',
     description:

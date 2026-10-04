@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="460" viewBox="0 0 1200 460" role="img" aria-labelledby="title desc">
+<title id="title">Concatenation copies into a new string</title>
+<desc id="desc">Five cells spelling HELLO remain in the first row. Five downward arrows copy their characters into a separate eleven-cell row spelling HELLO WORLD, with a blank sixth cell for the space.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 1L9 5L0 9Z" fill="#4a6d88"/></marker><linearGradient id="paper" x2="0" y2="1"><stop stop-color="#fbfcfc"/><stop offset="1" stop-color="#edf4f7"/></linearGradient><style>text{font-family:system-ui,'Segoe UI',sans-serif;fill:#203d55}</style></defs>
+<rect width="1200" height="460" rx="18" fill="url(#paper)"/>
+<text x="55" y="57" font-size="29" font-weight="600">Concatenation copies into a new string</text>
+<text x="55" y="107" font-size="20">Original string</text>
+<rect x="55" y="136" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="55" y="130" width="80" height="68" rx="8" fill="#f8edc3" stroke="#7797ac" stroke-width="1.5"/><text x="95" y="175" text-anchor="middle" font-size="33">H</text>
+<rect x="153" y="136" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="153" y="130" width="80" height="68" rx="8" fill="#f8edc3" stroke="#7797ac" stroke-width="1.5"/><text x="193" y="175" text-anchor="middle" font-size="33">E</text>
+<rect x="251" y="136" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="251" y="130" width="80" height="68" rx="8" fill="#f8edc3" stroke="#7797ac" stroke-width="1.5"/><text x="291" y="175" text-anchor="middle" font-size="33">L</text>
+<rect x="349" y="136" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="349" y="130" width="80" height="68" rx="8" fill="#f8edc3" stroke="#7797ac" stroke-width="1.5"/><text x="389" y="175" text-anchor="middle" font-size="33">L</text>
+<rect x="447" y="136" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="447" y="130" width="80" height="68" rx="8" fill="#f8edc3" stroke="#7797ac" stroke-width="1.5"/><text x="487" y="175" text-anchor="middle" font-size="33">O</text>
+<rect x="55" y="316" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="55" y="310" width="80" height="68" rx="8" fill="#d8ece8" stroke="#7797ac" stroke-width="1.5"/><text x="95" y="355" text-anchor="middle" font-size="33">H</text>
+<rect x="153" y="316" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="153" y="310" width="80" height="68" rx="8" fill="#d8ece8" stroke="#7797ac" stroke-width="1.5"/><text x="193" y="355" text-anchor="middle" font-size="33">E</text>
+<rect x="251" y="316" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="251" y="310" width="80" height="68" rx="8" fill="#d8ece8" stroke="#7797ac" stroke-width="1.5"/><text x="291" y="355" text-anchor="middle" font-size="33">L</text>
+<rect x="349" y="316" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="349" y="310" width="80" height="68" rx="8" fill="#d8ece8" stroke="#7797ac" stroke-width="1.5"/><text x="389" y="355" text-anchor="middle" font-size="33">L</text>
+<rect x="447" y="316" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="447" y="310" width="80" height="68" rx="8" fill="#d8ece8" stroke="#7797ac" stroke-width="1.5"/><text x="487" y="355" text-anchor="middle" font-size="33">O</text>
+<rect x="545" y="316" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="545" y="310" width="80" height="68" rx="8" fill="#d8ece8" stroke="#7797ac" stroke-width="1.5"/><text x="585" y="355" text-anchor="middle" font-size="33"> </text>
+<rect x="643" y="316" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="643" y="310" width="80" height="68" rx="8" fill="#d8ece8" stroke="#7797ac" stroke-width="1.5"/><text x="683" y="355" text-anchor="middle" font-size="33">W</text>
+<rect x="741" y="316" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="741" y="310" width="80" height="68" rx="8" fill="#d8ece8" stroke="#7797ac" stroke-width="1.5"/><text x="781" y="355" text-anchor="middle" font-size="33">O</text>
+<rect x="839" y="316" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="839" y="310" width="80" height="68" rx="8" fill="#d8ece8" stroke="#7797ac" stroke-width="1.5"/><text x="879" y="355" text-anchor="middle" font-size="33">R</text>
+<rect x="937" y="316" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="937" y="310" width="80" height="68" rx="8" fill="#d8ece8" stroke="#7797ac" stroke-width="1.5"/><text x="977" y="355" text-anchor="middle" font-size="33">L</text>
+<rect x="1035" y="316" width="80" height="68" rx="8" fill="#dae6e9"/><rect x="1035" y="310" width="80" height="68" rx="8" fill="#d8ece8" stroke="#7797ac" stroke-width="1.5"/><text x="1075" y="355" text-anchor="middle" font-size="33">D</text>
+<path d="M95 206V300" fill="none" stroke="#4a6d88" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M193 206V300" fill="none" stroke="#4a6d88" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M291 206V300" fill="none" stroke="#4a6d88" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M389 206V300" fill="none" stroke="#4a6d88" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M487 206V300" fill="none" stroke="#4a6d88" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="570" y="270" font-size="18">New string: copied prefix + appended characters</text>
+<text x="55" y="426" font-size="18">Conceptual character layout. The blank cell between O and W contains a space.</text></svg>

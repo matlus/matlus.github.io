@@ -1,5 +1,21 @@
 # Article review backlog
 
+## Transcript series preparation, October 3, 2026
+
+The C# and Performance collection work is tracked in
+[the preparation register](transcript-series-preparation.md). First drafts and
+per-article source/verification records remain under `docs/drafts/transcript-series/`
+until the collection's editorial, metadata, asset and site checks are complete.
+The shared LINQ recording receives one article. Code Reviewer remains the next
+collection. The owner authorized publication of the eleven completed drafts on
+October 4. See [the publication register](transcript-series-publication.md).
+
+The eleven publication copies now pass source/code acceptance, metadata and topic
+art checks, rendered image/code inspection, generated links, typecheck and full
+build. Deployment and source backlinks are tracked in the publication register.
+Existing historical article dates remain unchanged. Six Performance articles still
+need drafting; the original per-article notes preserve historical source limits.
+
 ## Recovered Matlus articles, October 3, 2026
 
 These are historical source limitations, retained under Shiv's instruction to

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1000" viewBox="0 0 1500 1000" role="img" aria-labelledby="title desc">
+  <title id="title">.NET Memory Layout - Reference Type</title>
+  <desc id="desc">Conceptual layout of an Info object. The info reference points below its sync block index to its method table pointer. Id, Value and Date occupy inline storage. Name points to the separate Hello string. The method table pointer leads to Info Method Table, whose type object pointer leads to Type Information and Static Members, and whose base method table link leads to Object.Equals, Object.GetHashCode and Object.ToString. Info.ctor and Info.cctor are also shown in the method table.</desc>
+  <defs>
+    <linearGradient id="paper" x2="0" y2="1"><stop stop-color="#fbfcfc"/><stop offset="1" stop-color="#edf4f7"/></linearGradient>
+    <linearGradient id="blue" x2="0" y2="1"><stop stop-color="#edf6fb"/><stop offset="1" stop-color="#dceaf3"/></linearGradient>
+    <linearGradient id="mint" x2="0" y2="1"><stop stop-color="#eaf8f0"/><stop offset="1" stop-color="#d5ecdf"/></linearGradient>
+    <linearGradient id="gold" x2="0" y2="1"><stop stop-color="#fff7dc"/><stop offset="1" stop-color="#f4e6b7"/></linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="135%"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#36526b" flood-opacity=".10"/></filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 Z" fill="#4a6d88"/></marker>
+    <style>
+      text { font-family: system-ui, 'Segoe UI', sans-serif; fill: #203d55; }
+      .label { font-size: 24px; text-anchor: middle; dominant-baseline: middle; }
+      .heading { font-size: 25px; font-weight: 600; text-anchor: middle; }
+      .cell { stroke: #95b3c6; stroke-width: 1.3; rx: 10; filter: url(#shadow); }
+      .link { fill: none; stroke: #4a6d88; stroke-width: 3; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="1500" height="1000" fill="url(#paper)" rx="18"/>
+  <path d="M30 100H1470M30 940H1470M55 75V965M1445 75V965" stroke="#d9e6ec" fill="none"/>
+  <text x="750" y="65" font-size="37" font-weight="650" text-anchor="middle">.NET Memory Layout - Reference Type</text>
+  <g font-size="19">
+    <rect x="95" y="122" width="22" height="22" rx="5" fill="url(#gold)" stroke="#ccb779"/><text x="128" y="141">Value Types</text>
+    <rect x="315" y="122" width="22" height="22" rx="5" fill="url(#blue)" stroke="#95b3c6"/><text x="348" y="141">Reference Types</text>
+    <rect x="575" y="122" width="22" height="22" rx="5" fill="#f4d8ce" stroke="#c79d90"/><text x="608" y="141">Static</text>
+  </g>
+  <text x="1190" y="205" class="heading">Type Instance</text>
+  <rect class="cell" x="1020" y="226" width="340" height="62" fill="url(#mint)"/><text class="label" x="1190" y="257">Type Information</text>
+  <rect class="cell" x="1020" y="298" width="340" height="62" fill="url(#mint)"/><text class="label" x="1190" y="329">Static Members</text>
+  <rect class="cell" x="220" y="360" width="335" height="64" fill="url(#blue)"/><text class="label" x="387" y="392">Sync Block Index</text>
+  <rect class="cell" x="220" y="434" width="335" height="64" fill="url(#blue)"/><text class="label" x="387" y="466">Method Table Pointer</text>
+  <rect class="cell" x="220" y="508" width="335" height="64" fill="url(#gold)"/><text class="label" x="387" y="540">Storage for Id</text>
+  <rect class="cell" x="220" y="582" width="335" height="64" fill="url(#gold)"/><text class="label" x="387" y="614">Storage for Value</text>
+  <rect class="cell" x="220" y="656" width="335" height="64" fill="url(#gold)"/><text class="label" x="387" y="688">Storage for Date</text>
+  <rect class="cell" x="220" y="730" width="335" height="64" fill="url(#blue)"/><text class="label" x="387" y="762">Pointer to Name</text>
+  <text x="100" y="440" font-size="26">info</text><path class="link" d="M150 434H218"/>
+  <text x="805" y="420" class="heading">Info Method Table</text>
+  <rect class="cell" x="635" y="444" width="340" height="64" fill="url(#blue)"/><text class="label" x="805" y="476">Type Object Pointer</text>
+  <rect class="cell" x="635" y="518" width="340" height="64" fill="url(#blue)"/><text class="label" x="805" y="550">Base Method Table</text>
+  <rect class="cell" x="635" y="682" width="340" height="64" fill="url(#blue)"/><text class="label" x="805" y="714">Info.ctor</text>
+  <rect class="cell" x="635" y="756" width="340" height="64" fill="url(#blue)"/><text class="label" x="805" y="788">Info.cctor</text>
+  <rect class="cell" x="1050" y="530" width="345" height="64" fill="url(#blue)"/><text class="label" x="1222" y="562">Object.Equals</text>
+  <rect class="cell" x="1050" y="604" width="345" height="64" fill="url(#blue)"/><text class="label" x="1222" y="636">Object.GetHashCode</text>
+  <rect class="cell" x="1050" y="678" width="345" height="64" fill="url(#blue)"/><text class="label" x="1222" y="710">Object.ToString</text>
+  <rect class="cell" x="1050" y="867" width="345" height="64" fill="url(#blue)"/><text class="label" x="1222" y="899">Hello</text>
+  <path class="link" d="M555 466C587 466 601 476 633 476"/>
+  <path class="link" d="M975 476C1000 476 994 257 1018 257"/>
+  <path class="link" d="M975 550C1004 550 1020 562 1048 562"/>
+  <path class="link" d="M555 762C605 762 590 899 675 899H1048"/>
+</svg>
