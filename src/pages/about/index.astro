@@ -11,7 +11,7 @@ import SectionLayout from '../../layouts/SectionLayout.astro';
   heroSlug="section-about"
 >
   <div slot="after-hero" class="about-portrait">
-    <Image src={portrait} alt="Shiv Kumar" widths={[420, 840]} sizes="336px" loading="eager" />
+    <Image src={portrait} alt="Shiv Kumar" widths={[336, 672]} sizes="(max-width: 480px) 70vw, 336px" loading="eager" />
   </div>
   <section class="prose">
     <p>
@@ -105,19 +105,17 @@ import SectionLayout from '../../layouts/SectionLayout.astro';
 
 <style>
   .about-portrait {
-    width: clamp(12rem, 40vw, 15rem);
-    aspect-ratio: 1;
+    width: min(70vw, 21rem);
+    max-width: 100%;
     margin-inline: auto;
     margin-top: var(--space-xl);
     overflow: hidden;
-    border-radius: 50%;
+    border-radius: var(--radius-lg);
   }
 
   .about-portrait :global(img) {
-    /* Frame the face and hand while preserving the complete source photograph. */
     display: block;
-    width: 140%;
-    max-width: none;
+    width: 100%;
     height: auto;
   }
 </style>
