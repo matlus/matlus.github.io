@@ -4,7 +4,7 @@ description: HTML5 video playback varied across browsers in 2010. Tests compare 
   playback, CPU use, codec support, and full-screen behavior with Flash and native
   players.
 datePublished: '2010-08-27'
-dateModified: '2026-10-03'
+dateModified: '2010-08-27'
 tags:
 - html5-video
 - flash-player

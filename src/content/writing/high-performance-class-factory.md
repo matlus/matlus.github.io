@@ -3,7 +3,7 @@ title: C# Class Factory - High Performance
 description: A Factory decouples payment processing from concrete classes, discovers
   implementations, and caches constructor delegates built with DynamicMethod and ILGenerator.
 datePublished: '2010-11-23'
-dateModified: '2026-10-03'
+dateModified: '2010-11-23'
 tags:
 - delegates
 - polymorphism

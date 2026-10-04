@@ -3,7 +3,7 @@ title: REST APIs, PUT and DELETE cause HTTP Error 404.0 - Not Found
 description: PUT and DELETE requests can stop at IIS before reaching a REST API. Add
   the verbs to the extensionless handler through IIS Manager or IIS Express configuration.
 datePublished: '2011-12-30'
-dateModified: '2026-10-03'
+dateModified: '2011-12-30'
 tags:
 - iis
 - rest

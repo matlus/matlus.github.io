@@ -4,7 +4,7 @@ description: Data parallelism distributes compute-bound work across cores. Prime
   examples compare PLINQ, Parallel.For, thread-local state, partitioning, and measured
   timings.
 datePublished: '2011-02-10'
-dateModified: '2026-10-03'
+dateModified: '2011-02-10'
 tags:
 - parallel-programming
 - concurrency

@@ -4,7 +4,7 @@ description: Typed DbDataReader wrappers centralize field access and null handli
   Examples compare reusing one wrapper through IEnumerable<T> with creating objects
   for a List<T>.
 datePublished: '2010-11-18'
-dateModified: '2026-10-03'
+dateModified: '2010-11-18'
 tags:
 - datareaders
 - ado-net

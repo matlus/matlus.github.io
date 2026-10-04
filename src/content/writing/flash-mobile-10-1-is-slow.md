@@ -4,7 +4,7 @@ description: Flash Mobile performance comparisons need equivalent workloads. A 2
   critique separates shared bandwidth, extra downloads, and execution costs from unsupported
   conclusions.
 datePublished: '2010-08-28'
-dateModified: '2026-10-03'
+dateModified: '2010-08-28'
 tags:
 - flash-player
 - benchmarking

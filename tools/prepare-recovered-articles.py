@@ -175,7 +175,7 @@ def prepare(source: ArticleSource, mapping: dict[str, str], refresh: bool) -> di
     if output.exists() and not refresh:
         raise FileExistsError(f"Refusing to overwrite publication copy: {output}")
     frontmatter: dict[str, Any] = {"title": source.title, "description": source.title,
-        "datePublished": source.date, "dateModified": "2026-10-03", "tags": [],
+        "datePublished": source.date, "dateModified": source.date, "tags": [],
         "hero": source.slug, "draft": True}
     output.write_text("---\n" + yaml.safe_dump(frontmatter, allow_unicode=True, sort_keys=False) + "---\n\n" + converted, encoding="utf-8")
     return {"index": source.index, "title": source.title, "slug": source.slug,

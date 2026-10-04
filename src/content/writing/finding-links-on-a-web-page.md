@@ -3,7 +3,7 @@ title: Finding links on a Web page
 description: Find links to a target domain with HtmlAgilityPack and C#. A LinkFinder
   downloads HTML, selects anchor elements, and returns their text and attributes.
 datePublished: '2010-08-31'
-dateModified: '2026-10-03'
+dateModified: '2010-08-31'
 tags:
 - html-parsing
 - html-agility-pack

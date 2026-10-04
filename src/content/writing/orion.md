@@ -4,7 +4,7 @@ description: Orion powered Matlus with Quartz for ASP.NET and Windows Live Write
   support. Its original release explains the Visual Studio solution and required Quartz
   project reference.
 datePublished: '2011-01-13'
-dateModified: '2026-10-03'
+dateModified: '2011-01-13'
 tags:
 - blogging
 - asp-net

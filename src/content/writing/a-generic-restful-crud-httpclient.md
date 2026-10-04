@@ -4,7 +4,7 @@ description: A generic HttpClient wraps asynchronous RESTful CRUD operations and
   formatting. A MemberRepository and console client show how to use it with typed
   resources.
 datePublished: '2012-03-10'
-dateModified: '2026-10-03'
+dateModified: '2012-03-10'
 tags:
 - httpclient
 - rest

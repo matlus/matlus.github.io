@@ -3,7 +3,7 @@ title: Cross Domain RESTful CRUD Operations using jQuery
 description: 'Cross-domain CRUD needs changes on both sides: a Web API DelegatingHandler
   handles origin headers and method overrides while jQuery sends the matching requests.'
 datePublished: '2012-03-29'
-dateModified: '2026-10-03'
+dateModified: '2012-03-29'
 tags:
 - asp-net-web-api
 - rest

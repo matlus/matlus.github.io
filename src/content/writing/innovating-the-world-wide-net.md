@@ -3,7 +3,7 @@ title: Disrupting the World Wide Web - Innovating the World Wide Net
 description: The World Wide Net vision connects people through programmable devices,
   native applications, and an operating-system sandbox that reaches beyond the browser.
 datePublished: '2011-03-21'
-dateModified: '2026-10-03'
+dateModified: '2011-03-21'
 tags:
 - connected-devices
 - sandboxing

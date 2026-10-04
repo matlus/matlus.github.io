@@ -3,7 +3,7 @@ title: UrlEncode –The correct encoding
 description: A C# UrlEncode implementation preserves unreserved characters and percent-encodes
   others, with character-by-character comparisons against HttpUtility.UrlEncode.
 datePublished: '2011-02-03'
-dateModified: '2026-10-03'
+dateModified: '2011-02-03'
 tags:
 - url-encoding
 - http

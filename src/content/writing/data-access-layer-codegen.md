@@ -4,7 +4,7 @@ description: Stored-procedure metadata drives ADO.NET code generation and typed 
   wrappers, supporting streamed results or materialized lists according to how callers
   use the data.
 datePublished: '2010-12-19'
-dateModified: '2026-10-03'
+dateModified: '2010-12-19'
 tags:
 - code-generation
 - ado-net

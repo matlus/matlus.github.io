@@ -4,7 +4,7 @@ description: Start, stop, and restart Windows services from C# using net command
   or ServiceController, with redirected process output, error handling, and completion
   waits.
 datePublished: '2011-02-02'
-dateModified: '2026-10-03'
+dateModified: '2011-02-02'
 tags:
 - windows-services
 - process-management

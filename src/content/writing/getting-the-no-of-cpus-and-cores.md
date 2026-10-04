@@ -4,7 +4,7 @@ description: WMI queries expose core counts, logical and physical processors, bi
   and architecture in C#, with narrower queries returning only the CPU information
   required.
 datePublished: '2011-02-07'
-dateModified: '2026-10-03'
+dateModified: '2011-02-07'
 tags:
 - wmi
 - cpu-hardware

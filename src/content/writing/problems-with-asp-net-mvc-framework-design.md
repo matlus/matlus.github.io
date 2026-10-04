@@ -4,7 +4,7 @@ description: ASP.NET MVC's indirect access to views spreads responsibilities acr
   controllers and templates. ViewData, child actions, and typed view instances frame
   the critique.
 datePublished: '2010-10-27'
-dateModified: '2026-10-03'
+dateModified: '2010-10-27'
 tags:
 - asp-net
 - architecture

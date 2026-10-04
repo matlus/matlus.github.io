@@ -3,7 +3,7 @@ title: Quartz for ASP.NET
 description: Quartz composes ASP.NET pages through a Builder, reusable HTML templates,
   and view objects. The walkthrough covers their relationships and Visual Studio templates.
 datePublished: '2010-11-10'
-dateModified: '2026-10-03'
+dateModified: '2010-11-10'
 tags:
 - quartz-aspnet
 - html-templates

@@ -4,7 +4,7 @@ description: Azure role startup configuration affects IIS administration. An OnS
   impersonation example and a later elevated Runtime update explain the approaches
   explored.
 datePublished: '2012-05-01'
-dateModified: '2026-10-03'
+dateModified: '2012-05-01'
 tags:
 - azure
 - windows-impersonation

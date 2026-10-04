@@ -3,7 +3,7 @@ title: Html5 File Upload with Progress
 description: XMLHttpRequest and FormData upload files while the page stays open. File
   metadata, progress events, and completion handlers build a working HTML5 example.
 datePublished: '2010-09-25'
-dateModified: '2026-10-03'
+dateModified: '2010-09-25'
 tags:
 - file-upload
 - xmlhttprequest

@@ -4,7 +4,7 @@ description: Run an ASP.NET Web API in a console process with HttpSelfHostServer
   register routes, and exercise a CustomersController backed by an in-memory customer
   list.
 datePublished: '2012-02-20'
-dateModified: '2026-10-03'
+dateModified: '2012-02-20'
 tags:
 - asp-net-web-api
 - self-hosting

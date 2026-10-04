@@ -3,7 +3,7 @@ title: Setting up IIS 7.0 - Ftp 7.5 for IIS Manager Users
 description: IIS FTP 7.5 can authenticate IIS Manager Users with isolated directories.
   Folder permissions, provider settings, and C# user creation complete the setup.
 datePublished: '2010-08-29'
-dateModified: '2026-10-03'
+dateModified: '2010-08-29'
 tags:
 - iis
 - ftp

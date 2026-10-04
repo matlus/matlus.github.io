@@ -4,7 +4,7 @@ description: Use a local MSMQ queue to move large-file processing out of an Azur
   WebRole request, then install the queue service with a startup task and deploy its
   batch file.
 datePublished: '2012-05-01'
-dateModified: '2026-10-03'
+dateModified: '2012-05-01'
 tags:
 - azure
 - msmq

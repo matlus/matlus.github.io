@@ -4,7 +4,7 @@ description: DBCC CHECKIDENT resets an identity seed to a chosen value. A table 
   explains why the reseed value precedes the desired next identifier after test data
   is deleted.
 datePublished: '2011-02-02'
-dateModified: '2026-10-03'
+dateModified: '2011-02-02'
 tags:
 - sql-server
 - identity-columns

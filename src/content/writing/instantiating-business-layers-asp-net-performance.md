@@ -4,7 +4,7 @@ description: Create a BusinessModule in HttpApplication.Init to reuse it across 
   The proposed ASP.NET design relies on application-instance ownership and stateless
   business layers.
 datePublished: '2010-11-19'
-dateModified: '2026-10-03'
+dateModified: '2010-11-19'
 tags:
 - asp-net
 - iis

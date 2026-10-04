@@ -54,6 +54,8 @@ def main() -> int:
                 failures.append(f"{key}: code transcribed from source image changed")
         if str(metadata["datePublished"]) != article["datePublished"] or metadata["title"] != article["title"]:
             failures.append(f"{slug}: title or original date changed")
+        if str(metadata.get("dateModified")) != article["datePublished"]:
+            failures.append(f"{slug}: modification date must equal the original publication date")
         if metadata.get("youtube") or metadata.get("repositories"):
             failures.append(f"{slug}: unexpected video or repository association")
         if "Licensing:MIT License" in source["header"]:

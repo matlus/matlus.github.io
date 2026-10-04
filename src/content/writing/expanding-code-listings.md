@@ -3,7 +3,7 @@ title: Expanding Code listings
 description: Expand code listings beyond fixed-width page layouts with jQuery. A wrapper
   supplies titles and icons, while a temporary overlay displays the full listing.
 datePublished: '2010-08-30'
-dateModified: '2026-10-03'
+dateModified: '2010-08-30'
 tags:
 - jquery
 - css

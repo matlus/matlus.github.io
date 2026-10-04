@@ -4,7 +4,7 @@ description: A Data Access Layer isolates business logic from the logical data m
   through domain-specific methods, stored procedures, and results shaped for the business
   layer.
 datePublished: '2010-11-20'
-dateModified: '2026-10-03'
+dateModified: '2010-11-20'
 tags:
 - data-access
 - architecture

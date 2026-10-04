@@ -3,7 +3,7 @@ title: MetaWeblog API C# Library
 description: An IMetaWeblogProvider separates blog operations from XML and HTTP. MetaWeblogManager
   translates requests, while an IHttpHandler connects the library to a blog engine.
 datePublished: '2011-01-12'
-dateModified: '2026-10-03'
+dateModified: '2011-01-12'
 tags:
 - metaweblog-api
 - blogging

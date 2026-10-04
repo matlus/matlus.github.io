@@ -46,8 +46,10 @@ Original prose and code are preserved, including historical technical opinions a
 terminology. Copy audits apply to newly authored descriptions, captions, prompts,
 and documentation; they must not force rewrites of faithfully reproduced text.
 No code modernization, added video association, or inferred repository association
-is part of this publication. Publication preparation receives a current modification
-date while the visible original publication day remains unchanged.
+is part of this publication. By Shiv's explicit decision, each recovered article's
+`dateModified` equals its original `datePublished`. Recovery does not make a
+historical article newly updated. The existing feed sorting behavior stays intact;
+Git history records recovery and publication work.
 
 Recovered internal article links point to their new counterparts. Historical root
 article URLs receive redirects where available without colliding with current routes.

@@ -3,7 +3,7 @@ title: ASP.NET Response.Redirect Performance Issue
 description: Use the Response.Redirect overload with endResponse set to false to avoid
   ThreadAbortException, then structure request handling so execution finishes deliberately.
 datePublished: '2011-03-02'
-dateModified: '2026-10-03'
+dateModified: '2011-03-02'
 tags:
 - asp-net
 - error-handling
