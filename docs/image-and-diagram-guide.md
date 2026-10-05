@@ -1,6 +1,6 @@
 # Images and Diagrams
 
-Updated: 2026-10-02
+Updated: 2026-10-05
 
 The site uses technical editorial ink for hero art. Diagrams within articles
 default to pastel architectural infographics. A flat style with fine outlines
@@ -70,7 +70,9 @@ photorealistic.
 
 Article idea: <the claim the reader should connect to the image>
 Subject: <one concrete scene or action that makes the idea visible>
-Composition: <a wide scene with the important relationship in the center band>
+Canvas: 2400 x 520 pixels, exact 60:13 aspect ratio, article hero.
+Composition: <a panoramic scene with the complete important relationship in the
+center band; keep essential subjects clear of all crop edges>
 No text, code, labels, logos, or watermark.
 ```
 
@@ -79,17 +81,38 @@ ink sketch**. Add **industrial design sketch** only when machinery is the subjec
 
 ### Fixed dimensions
 
-| Role | Aspect | Pixels |
+| Role | Aspect ratio | Export pixels |
 |---|---|---|
-| Homepage banner | 1200 x 420 | 2400 x 840 at 2x |
-| Article hero | 1200 x 260 | 2400 x 520 at 2x |
-| OG card | 1200 x 630 | generated at build time |
+| Homepage banner | 20:7 | 2400 x 840 at 2x |
+| Article hero | 60:13 | 2400 x 520 at 2x |
+| Tag / section hero | 20:7 | 2400 x 840 at 2x |
+| OG card | 40:21 | 1200 x 630, generated at build time |
+
+For every article hero, request a 2400 x 520 canvas explicitly. If the generator
+cannot supply that exact canvas, request its highest-resolution landscape output,
+at least 2400 pixels wide, with the complete scene composed for a centered 60:13
+crop. The delivered source must contain at least 2400 x 520 usable pixels.
+Inspect its actual dimensions; prompt wording alone does not establish them.
+If the available generator cannot meet that resolution, report the limitation
+instead of silently upscaling or substituting a smaller export.
+
+The conversion tool center-crops and downsizes to the exact role dimensions.
+It rejects undersized sources. Keep the original outside the repository and
+record its actual dimensions, the export dimensions and conversion settings in
+the adjacent prompt file. Preserve the original generation brief as provenance;
+append any later conversion or composition changes rather than rewriting history.
+
+Article pages enforce the 60:13 frame, including for older assets with other
+dimensions. At 1200 pixels wide it is 260 pixels tall and scales proportionally
+on smaller screens. Inspect the crop at desktop and phone widths: keep essential
+subjects visible and regenerate a wider composition if cropping loses the idea.
+Compression controls bytes and detail; it must not determine the display ratio.
 
 ### Generating one
 
 In an interactive Codex task, use the built-in `image_gen` tool. Read the article,
 fill in the article idea, subject, and composition in the template above, and request
-one wide landscape image. Inspect the result for a clear relationship to the article,
+the canvas and resolution specified above. Inspect the result for a clear relationship to the article,
 unrelated objects, and garbled text. Revise the prompt and regenerate when needed.
 The generator saves the original PNG outside the repository; convert the selected
 image with `tools/prepare-image.mjs` before adding it to `src/assets/heroes/`.
@@ -112,8 +135,10 @@ Use an existing `src/assets/heroes/tag-*.prompt.md` as the prompt structure.
 Keep its visual language and wide composition, replace the collection description
 and scene, and save the exact prompt as
 `src/assets/heroes/tag-<slug>.prompt.md`. Generate and inspect the image, then run
-`node tools/prepare-image.mjs <generated.png> tag-<slug>` to create the paired
-WebP. Run `python tools/check-tags.py` after adding the tag; it requires both files.
+`node tools/prepare-image.mjs <generated.png> tag-<slug> --role section` to create
+the paired WebP in the 2400 x 840 section frame. Include those
+dimensions in the tag prompt. Run `python tools/check-tags.py` after adding the
+tag; it requires both files.
 
 ### Originals stay out of the repo
 
@@ -128,8 +153,11 @@ Convert before committing:
 node tools/prepare-image.mjs <generated.png> <slug>
 ```
 
-That writes `src/assets/heroes/<slug>.webp`. The first conversion went from 2.76 MB to
-0.29 MB at identical dimensions, an 89.6% saving. Astro then optimizes further per
+That writes `src/assets/heroes/<slug>.webp` at exactly 2400 x 520 with WebP quality
+82. For a homepage banner or section hero, add `--role banner` or `--role section`
+to export 2400 x 840. These fixed sizes replace the earlier width-only conversion.
+Inspect fine linework after conversion; file size alone is not a quality check.
+Astro then optimizes further per
 breakpoint at build time, which only happens for images under `src/`, not `public/`.
 
 ### Provenance

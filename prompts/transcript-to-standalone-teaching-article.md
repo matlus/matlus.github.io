@@ -18,7 +18,8 @@ PWI corpus chapters retain their separate mechanical conversion contract.
 Read the complete source before drafting. Establish the central teaching claim,
 the responsibilities or distinctions that support it, and the examples needed to
 make it understandable. Apply the blog-writing skill at
-`.agents/skills/blog-writing/SKILL.md` to new article prose.
+`.agents/skills/blog-writing/SKILL.md` to every article draft and edit, regardless
+of source. This is also a standing repository rule for articles outside this workflow.
 Preserve the author's position and technical vocabulary.
 
 Make a coverage checklist from the complete transcript before drafting. Carry
@@ -58,14 +59,20 @@ Store private transcript links outside the public
 repository. Record editorial tasks in `docs/article-review-backlog.md`; retain
 reader-facing qualifications when they affect interpretation of a sample.
 
-Before publication, compare the finished article against the coverage checklist
-and scan its body for recording references, missing code dependencies and absent
-screen references. Remove recording logistics, not the teaching they surround.
+Before accepting the draft, compare it against the coverage checklist and read
+the body, captions, alt text and conclusion without the source open. Check for
+recording narration, missing code dependencies and references to unseen screens,
+cursors, output or demonstrations. Replace each dependency with the written
+example and explanation needed to follow it. Technical corrections should teach
+the correct behavior directly, with source comparisons kept in editorial records.
+Preserve the teaching when removing recording logistics.
 
 ## Assets and publication
 
 Create an article-specific technical editorial ink hero using the site's image
-guide. Save each selected image's complete prompt beside the asset and convert
+guide, including the fixed 60:13 frame and 2400 x 520 pixel export. Put the
+generation dimensions and crop-safe scene in the prompt. Save each selected
+image's complete prompt beside the asset and convert
 raster originals to the repository's optimized format.
 
 Have a read-only metadata sub-agent apply

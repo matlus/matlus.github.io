@@ -13,7 +13,7 @@ repositories:
 additionalVideos:
   - label: "Logging and Application Insights in Non-ASP.NET Applications"
     url: "https://www.youtube.com/watch?v=HqZB1B3Lb34"
-    context: "The preceding logging discussion referenced by this recording."
+    context: "Optional background on logging configuration and Application Insights."
 draft: false
 ---
 
@@ -21,7 +21,7 @@ When I am investigating a problem, a message saying that a method ran is rarely 
 
 Often that data already exists as a DTO. I do not want every call site to take it apart, invent another format string and decide how each property should appear in the log. I would rather make that decision once in the application's logging adapter.
 
-This example continues the [logging and Application Insights recording](https://www.youtube.com/watch?v=HqZB1B3Lb34). We will look at the adapter, the source-generated logging feature, and the lower-level `ILogger.Log<TState>` method that lets us supply our own structured state.
+We will build the explanation around three parts: an application logging adapter, source-generated logging for fixed events, and the lower-level `ILogger.Log<TState>` method that lets us supply our own structured state. The aim is to keep useful context available as individual fields as well as a readable message.
 
 ## Give the application the API it needs
 
@@ -63,7 +63,7 @@ internal static partial class BlogEvents
 
 The generated path avoids repeatedly doing some of the work associated with the general logging extension methods, including template processing and some boxing. Microsoft's [source-generation documentation](https://learn.microsoft.com/en-us/dotnet/core/extensions/logging/source-generation) explains the supported signatures and diagnostics.
 
-There is a historical version detail to correct. The recording calls this a .NET 5 feature. The recovered project targets `net5.0`, but references version `6.0.0` of the logging packages. `LoggerMessageAttribute` and this generator were introduced with the .NET 6 libraries; the project's target framework alone does not identify the package feature being demonstrated.
+The sample project targets `net5.0`, but references version `6.0.0` of the logging packages. `LoggerMessageAttribute` and this generator were introduced with the .NET 6 libraries. Check the package version as well as the target framework when identifying the available logging features.
 
 ## Event identity is part of the logging design
 
@@ -73,7 +73,7 @@ For a source-generated method representing one well-defined event, a fixed ID is
 
 The `SkipEnabledCheck` setting also needs careful reading. Its default is `false`: the normal generated method performs the enabled check. Setting it to `true` transfers responsibility for that check to the caller. Neither arrangement stops C# from evaluating method arguments before entering the method, so an expensive expression passed as an argument needs a guard at the appropriate call site.
 
-In the recording I also report an intermittent failure when using the Windows Event Log provider with the generated path. I did not establish a reproducible cause, and the same observation did not occur with every provider. It is an account of that historical experiment, not evidence that current source-generated logging is generally broken.
+In my historical experiment, I encountered an intermittent failure when using the Windows Event Log provider with the generated path. I did not establish a reproducible cause, and the same observation did not occur with every provider. That unresolved failure does not establish a general defect in source-generated logging.
 
 ## Look at the lower-level method
 
@@ -109,7 +109,7 @@ The original `BlogLogState` is a private readonly struct implementing `IReadOnly
 
 The key/value list gives the provider a stable set of field names. `Count`, the indexer and the enumerator expose those entries. Separately, `ToString` constructs the display message from the method name and blog fields, and `Format` delegates to it.
 
-This separation is useful. A readable message helps a person scanning a trace. Individually named fields let the logging destination expose context as structured properties, as the Application Insights demonstration does with its custom dimensions.
+This separation is useful. A readable message helps a person scanning a trace. Individually named fields let the logging destination expose context as structured properties. In Application Insights, these properties appear as custom dimensions, so `BlogPost.Title` can be inspected separately from the formatted message.
 
 The original example includes the entire content of the post. In an application, choose the relevant fields deliberately. A large body may add little diagnostic value compared with its title or identifier, and the formatter and structured fields should agree about the snapshot being recorded.
 
@@ -139,18 +139,16 @@ The `EventId` passed to `Log` is the actual event identity. The `EventId` key in
 
 ## A struct does not make the operation allocation-free
 
-The recording describes `KeyValuePair` and `EventId` as structs and associates that with avoiding heap allocation. The useful observation is that they are value types. Their physical storage and the allocations of the surrounding operation still need examination.
+`KeyValuePair` and `EventId` are structs, which makes them value types. That alone does not establish where every instance is stored or whether a logging call allocates. Their physical storage and the allocations of the surrounding operation still need examination.
 
 `BlogLogState` contains a `List<KeyValuePair<string, object?>>`, which allocates storage. The integer event ID and `DateTime` assigned to `object?` values require boxing. Joining arrays creates strings. The iterator used to enumerate the state and formatting the display message can also allocate.
 
 The `readonly` declaration does not make all the data deeply immutable. The original `BlogPost` is itself a struct, copied into the state, but its category and tag arrays remain shared references. The structured list joins those arrays during construction; the formatter joins them again later. If the arrays change before a provider formats the message, the two representations can diverge. Establish snapshot ownership if the provider retains state for later processing.
 
-The demonstrated benefit is control over the application API, enabled-level work and structured representation. This recording does not provide a benchmark establishing that the hand-written DTO state is faster than every generated alternative.
+The benefit here is control over the application API, enabled-level work and structured representation. This example includes no benchmark establishing that the hand-written DTO state is faster than every generated alternative.
 
 ## Verify the destination as well as the call
 
-The Application Insights view in the recording shows the blog fields as separate custom dimensions and the formatted message alongside them. That is the result we were aiming for: useful context without taking the DTO apart at every application call site.
+The destination should expose the blog fields as separate structured properties alongside the formatted message. For the sample state, that means fields such as `MethodName` and `BlogPost.Title` remain individually accessible. That gives us useful context without taking the DTO apart at every application call site.
 
 Test that behavior with the provider you actually use. Check the level, actual event ID, field names and formatter output, and make sure the disabled path does not do the expensive preparation you intended to avoid. An adapter makes those choices local enough to inspect and test.
-
-Original recording: [High Performance Logging and Custom Objects](https://www.youtube.com/watch?v=mxlh1v-2S1U). [Source project](https://github.com/matlus/HighPerformanceLoggingAndInMemoryLogger).

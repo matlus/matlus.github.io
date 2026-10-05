@@ -9,7 +9,7 @@
  * So originals stay out of the repo. This produces a WebP sized for the hero
  * slot, which is what gets committed.
  *
- *   node tools/prepare-image.mjs <source.png> <slug>
+ *   node tools/prepare-image.mjs <source.png> <slug> [--role article|banner|section]
  *
  * Writes src/assets/heroes/<slug>.webp, which Astro then optimizes further per
  * breakpoint at build time.
@@ -22,36 +22,48 @@ import sharp from 'sharp';
 
 /** Wide enough for a 2x hero at the 1200px content width. */
 const TARGET_WIDTH = 2400;
+const HEIGHT_BY_ROLE = { article: 520, banner: 840, section: 840 };
 const QUALITY = 82;
 const OUT_DIR = 'src/assets/heroes';
 
 async function main() {
-  const [source, slug] = process.argv.slice(2);
+  const [source, slug, option, roleArgument, ...extra] = process.argv.slice(2);
+  const role = roleArgument ?? 'article';
 
-  if (!source || !slug) {
-    console.error('Usage: node tools/prepare-image.mjs <source.png> <slug>');
+  if (!source || !slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)
+      || (option !== undefined && option !== '--role')
+      || (option === '--role' && roleArgument === undefined)
+      || !Object.hasOwn(HEIGHT_BY_ROLE, role) || extra.length > 0) {
+    console.error('Usage: node tools/prepare-image.mjs <source.png> <slug> [--role article|banner|section]');
     process.exitCode = 1;
     return;
   }
 
-  await mkdir(OUT_DIR, { recursive: true });
+  const targetHeight = HEIGHT_BY_ROLE[role];
   const destination = path.join(OUT_DIR, `${slug}.webp`);
 
-  const image = sharp(source);
-  const { width = 0, height = 0 } = await image.metadata();
+  // Apply orientation before checking usable dimensions or framing the crop.
+  const { data, info } = await sharp(source).rotate().raw().toBuffer({ resolveWithObject: true });
+  const { width, height } = info;
 
   // Never upscale. A generator that returned a narrow image should be rerun
   // rather than stretched.
-  const resizeWidth = Math.min(TARGET_WIDTH, width);
+  if (width < TARGET_WIDTH || height < targetHeight) {
+    throw new Error(`Source is ${width}x${height}; ${role} requires at least ${TARGET_WIDTH}x${targetHeight}. Generate a larger original; do not upscale.`);
+  }
 
-  await image.resize({ width: resizeWidth }).webp({ quality: QUALITY }).toFile(destination);
+  await mkdir(OUT_DIR, { recursive: true });
+  await sharp(data, { raw: { width, height, channels: info.channels } })
+    .resize({ width: TARGET_WIDTH, height: targetHeight, fit: 'cover', position: 'centre' })
+    .webp({ quality: QUALITY })
+    .toFile(destination);
 
   const before = (await stat(source)).size;
   const after = (await stat(destination)).size;
   const mb = (bytes) => (bytes / 1024 / 1024).toFixed(2);
 
   console.log(`source      ${width}x${height}  ${mb(before)} MB`);
-  console.log(`destination ${resizeWidth}x${Math.round((height * resizeWidth) / width)}  ${mb(after)} MB`);
+  console.log(`destination ${TARGET_WIDTH}x${targetHeight}  ${mb(after)} MB (${role}, quality ${QUALITY})`);
   console.log(`saved       ${(100 - (after / before) * 100).toFixed(1)}%`);
   console.log(destination);
 }

@@ -14,8 +14,10 @@ decisions, and the reasoning behind choices that look arbitrary without it.
 
 ## Standing rules
 
-**Blog articles use the [blog-writing skill](.agents/skills/blog-writing/SKILL.md)**
-to preserve Shiv's voice and teaching flow. It includes the shared clarity
+**Every website article and article edit must use the
+[blog-writing skill](.agents/skills/blog-writing/SKILL.md), regardless of source.**
+This includes original writing and articles derived from transcripts, notes or code.
+The skill preserves Shiv's voice and teaching flow. It includes the shared clarity
 principles and adds guidance from the 53 recovered originals in
 `docs/source-material/matlus-wayback/`. Keep those originals unchanged; edit
 publication copies. Preserve opinions and purposeful questions in context.
@@ -25,6 +27,22 @@ Shiv specifically objects to the antithesis tic ("it's not
 this, it's that"), which the professional-writing audit misses in its bare form. Run both,
 read every flag, and expect to act on maybe a fifth. A recurring refrain is not a
 tic; a document can declare one with `<!-- audit-allow: phrase -->`.
+
+**Articles stand on their own.** Teach the subject directly, without narrating
+the source video, transcript or presentation. Replace screen, cursor and live-demo
+references with the code, data, results, diagrams and explanation the reader needs
+on the page. Keep YouTube and repository links as optional resources; they must
+never supply a missing step in the lesson. Preserve substantive qualifications
+in terms of the example's behavior or evidence, and keep source-comparison notes
+in editorial records. Follow the [standalone article workflow](prompts/transcript-to-standalone-teaching-article.md)
+and [writing guide](docs/writing-guide.md#standalone-articles).
+
+**Article heroes use one fixed frame: 60:13, exported at 2400 x 520 pixels.**
+Include the dimensions and crop-safe composition in every generation brief.
+Follow [the image guide](docs/image-and-diagram-guide.md#fixed-dimensions) for
+generation resolution, inspection and conversion. The shared article layout
+enforces the same ratio for older assets. File-size optimization must preserve
+the aspect ratio and readable illustration detail.
 
 **Every post gets its description and tags from
 [prompts/extract-description-and-tags.md](prompts/extract-description-and-tags.md)**,

@@ -2,8 +2,9 @@
 
 ## Blog voice and teaching flow
 
-Use the [blog-writing skill](../.agents/skills/blog-writing/SKILL.md) for new posts
-and article edits in Shiv's voice. It combines clarity principles with guidance
+Use the [blog-writing skill](../.agents/skills/blog-writing/SKILL.md) for every
+website article and article edit, regardless of whether its source is a video
+transcript, notes, code or original writing. It combines clarity principles with guidance
 on introducing ideas, developing examples, explaining code, and preserving his
 opinions and purposeful questions. Pronouns follow the context.
 
@@ -11,6 +12,26 @@ The [recovered Matlus archive](source-material/matlus-wayback/README.md) contain
 53 original articles as writing samples and source material. Read a relevant
 sample when preparing a substantial draft. Preserve the archive and make
 editorial changes in publication copies.
+
+## Standalone articles
+
+An article teaches the subject directly. Its reader should not need to know that
+a video or transcript supplied the material. Avoid "in the video," "the presenter
+explains," "as shown on screen," and similar narration in prose and captions.
+Keep YouTube and repository links as optional resources in frontmatter and resource
+cards, without making them prerequisites for understanding the article.
+
+Turn visual demonstrations into written examples with the needed code, inputs,
+results, diagrams and explanation. A reference to a figure or listing must point
+to something actually present on the page. Removing a screen reference must not
+remove the teaching that surrounded it. Keep historical measurement limits and
+sample limitations explicit, expressed in terms of the experiment or code.
+Source corrections and provenance comparisons belong in editorial records.
+
+Use the [transcript workflow](../prompts/transcript-to-standalone-teaching-article.md)
+when adapting a recording. Before accepting a draft, read its body, captions,
+alternative text and conclusion without the source open. Check for both explicit
+video references and implicit dependencies on unseen demonstrations.
 
 ## Links and publication checks
 

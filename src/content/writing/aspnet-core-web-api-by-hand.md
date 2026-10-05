@@ -19,7 +19,7 @@ Think of learning to ride a bicycle. The support that helps you get started is u
 
 ## Hold the application operation steady
 
-The recording compares two applications around the same movie-retrieval operation. Both call a Domain Facade to retrieve the movies. The database and the underlying domain work are intended to stay the same. Logging is disabled in both demonstrations so that it does not become an accidental difference between them.
+The experiment compares two applications around the same movie-retrieval operation. Both call a Domain Facade to retrieve the movies. The database and the underlying domain work are intended to stay the same. Logging is disabled in both applications so that it does not become an accidental difference between them.
 
 The controller application configures routing and controller endpoints. The request passes through that machinery, reaches the controller action, and produces a serialized response.
 
@@ -27,13 +27,13 @@ The other application registers one terminal request delegate using `app.Run`. T
 
 [![A controller route and a terminal request delegate both call the same Domain Facade and movie data operation, then return JSON.](/images/diagrams/aspnet-core-by-hand-pipeline.svg)](/images/diagrams/aspnet-core-by-hand-pipeline.svg)
 
-*A conceptual comparison of the two routes in the recording. The direct handler takes responsibility for the endpoint behavior it needs.*
+*Both request paths reach the same movie operation. The direct handler takes responsibility for the endpoint behavior it needs.*
 
 ## The request is already available
 
 An ASP.NET Core request delegate receives an `HttpContext`. It can read the request path and write to the response. We do not need a controller merely to gain access to those objects.
 
-The central fragment visible in the recording is:
+The request handler needs to recognize the path, retrieve the movies and write them to the response body:
 
 ```csharp
 app.Run(async context =>
@@ -53,7 +53,7 @@ app.Run(async context =>
 });
 ```
 
-This is the request-handler fragment, not the complete application. The helpers and Domain Facade are defined elsewhere in the demonstration. The two accepted paths lead to the same movie operation, and the response is explicitly marked as JSON.
+This fragment isolates request handling. `s_domainFacade` refers to the application's Domain Facade, `GetAllMovies` retrieves movie data through it, and `SerializeAndWriteToResponse` serializes that data as JSON into the response stream. Their implementations depend on the application's movie model and serializer and are omitted here. The two accepted paths lead to the same movie operation, and the response is explicitly marked as JSON.
 
 `app.Run` is terminal here: it does not call a next middleware component. Once the request reaches this delegate, the delegate must produce the behavior that endpoint requires. The [ASP.NET Core middleware documentation](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/) describes this terminal-delegate role.
 
@@ -67,22 +67,31 @@ Those may be reasonable omissions for a controlled experiment with one known req
 
 That is where the tradeoff becomes useful to discuss. If the application only needs one fixed response shape and a small number of known paths, a narrower implementation can avoid work that a general solution supports. If it needs the framework's broader behavior, reimplementing that behavior may remove much of the apparent simplicity.
 
-This recording predates the later minimal-API programming model. It demonstrates an ordinary terminal middleware delegate in the ASP.NET Core 3.x period, so it should be read in that historical setting.
+This example uses an ordinary terminal middleware delegate from ASP.NET Core 3.x. It predates the later minimal-API programming model.
 
 ## What the benchmark establishes
 
-The recording runs a separate benchmark client against the two applications and reports the direct version at roughly `0.4` of the controller version's elapsed time. The controller version therefore took about two and a half times as long in that run. This is a reported historical result; it does not establish a current performance promise or a throughput limit under concurrent load.
+A separate benchmark client compared the two applications. These are the historical results:
 
-There are limits to how far we can take that number. The recovered local benchmark client requests the controller endpoint over HTTP and the direct endpoint over HTTPS. It also uses different local ports. That client is evidence of how the experiment was developed; it has not been matched byte-for-byte to the client running in the recording. Either way, a repeatable comparison needs the transport, hosting mode, response bytes and endpoint behavior controlled explicitly.
+| Method | Mean | Error | StdDev | Ratio | RatioSD |
+|---|---:|---:|---:|---:|---:|
+| `MoviesUsingWebApi` | 22.050 ms | 0.4115 ms | 0.7524 ms | 1.00 | 0.00 |
+| `MoviesUsingRaw` | 9.057 ms | 0.1998 ms | 0.5732 ms | 0.42 | 0.03 |
+
+`MoviesUsingWebApi` is the controller baseline; `MoviesUsingRaw` is the direct handler. Comparing their mean times, the controller version took about 2.43 times as long in this run. BenchmarkDotNet reports `Ratio` as the mean of its ratio distribution, so the displayed `0.42` need not equal the quotient of the two displayed means.
+
+`Error` is half the 99.9% confidence interval, and `StdDev` describes the spread of the time measurements. `RatioSD` describes the spread of the ratio distribution. The report lists three removed outliers for the controller method, from 24.52 to 26.44 ms, and five for the direct method, from 11.10 to 11.65 ms.
+
+These measurements have not been rerun here. They do not establish a current performance promise or a throughput limit under concurrent load.
+
+There are limits to how far we can take that number. The available benchmark client requests the controller endpoint over HTTP and the direct endpoint over HTTPS. It also uses different local ports, and its exact revision has not been tied to the historical timing result. A repeatable comparison needs the transport, hosting mode, response bytes and endpoint behavior controlled explicitly.
 
 Client-side allocation measurements would describe the benchmark process. They would not establish how many bytes the separately running server allocated. To compare server allocation, measure the server processes under the same workload.
 
-A fuller experiment would first assert that both requests return the required status, content type and equivalent movie data, then compare a matched transport and hosting configuration. It would retain the runtime and serializer settings with the results. The recording itself notes that the framework's serialization path has optimizations the hand-written version does not use, which is another reason to inspect the actual work before attributing the entire difference to “abstraction.”
+A fuller experiment would first assert that both requests return the required status, content type and equivalent movie data, then compare a matched transport and hosting configuration. It would retain the runtime and serializer settings with the results. The framework's serialization path in this experiment has optimizations the hand-written version does not use, which is another reason to inspect the actual work before attributing the entire difference to “abstraction.”
 
 ## Know what you are paying for
 
 I find these small experiments valuable because they make a hidden path visible. You can see the request, the application call and the response being written. You can then return to the controller version with a better understanding of what sits around that path.
 
 Use that understanding when the application has a measured need. Keep the behavior it promises, identify the work it actually requires, and compare an implementation that meets those requirements. That gives you a defensible reason for choosing a direct handler or retaining the framework's facilities.
-
-Original recording: [ASP.NET Core Web API By Hand](https://www.youtube.com/watch?v=2AQld3TLMac).

@@ -79,7 +79,7 @@ The example above uses equal strings constructed separately. A comparison can in
 
 The original repository's `StringEqualityBenchmark` constructs `stringB` by appending a character to `stringA`. The two strings therefore have different lengths. That is useful evidence about that case; it does not measure scanning two long, equal strings from beginning to end.
 
-In the recording, an early comparison of `==` and `Equals` seems to show a sizeable relative difference at sub-nanosecond scale. A broader comparison brings them much closer. It would be a mistake to turn the first result into a rule that a method call necessarily makes string equality twice as slow. Look at the operands, generated code, variation and runtime before making that claim.
+In an early experiment, comparing `==` and `Equals` seemed to show a sizeable relative difference at sub-nanosecond scale. A broader comparison brought them much closer. It would be a mistake to turn the first result into a rule that a method call necessarily makes string equality twice as slow. Look at the operands, generated code, variation and runtime before making that claim.
 
 The same care applies to the comparison rules. Ordinal equality, culture-sensitive equality and case-insensitive equality can return different answers. An implementation that changes the answer has changed the problem, however attractive its timing may be.
 
@@ -103,11 +103,11 @@ Retain the report, runtime and machine details. BenchmarkDotNet can export resul
 
 ## Arrays and dictionaries: count the work
 
-One of the comparisons in the recording searches for values in small collections. The candidates include a linear array search, binary search on sorted data, and dictionary lookup.
+Another useful comparison searches for values in small collections. The candidates include a linear array search, binary search on sorted data, and dictionary lookup.
 
 Big-O notation describes how work grows. It does not give the elapsed time for a collection of ten items. A compact linear scan can be very competitive at small sizes. Hashing, comparison costs, branches and the memory access pattern all contribute to the actual result.
 
-In that historical experiment, the value-type array did well for small collections, with crossovers in roughly the twenty-to-thirty-element range depending on the dictionary operation. Those numbers belong to that experiment. Changing the key type or machine can change the result. The reference-type comparison in the same recording already shows a different balance.
+In that historical experiment, the value-type array did well for small collections, with crossovers in roughly the twenty-to-thirty-element range depending on the dictionary operation. Those numbers belong to that experiment. Changing the key type or machine can change the result. Repeating the comparison with reference types produced a different balance.
 
 A dictionary indexer and `ContainsKey` followed by the indexer also do different amounts of lookup work. When absence is a normal possibility, `TryGetValue` expresses a combined operation:
 
@@ -124,7 +124,7 @@ Use the same query values and order for every candidate. If the real workload co
 
 ## Concatenation makes the same point
 
-The recording also compares ways to combine ten strings of fifty characters. A fixed expression containing all the operands gives the compiler a different problem from repeatedly appending to a growing string inside a loop.
+Consider combining ten strings of fifty characters. A fixed expression containing all the operands gives the compiler a different problem from repeatedly appending to a growing string inside a loop.
 
 That is why “I used `+`” is not enough detail for a comparison with `StringBuilder`, `String.Concat` or `String.Join`. How many operands are there? Are they already available? Is a separator required? Are intermediate results repeatedly copied? Include the final conversion to the string the caller needs.
 
@@ -137,5 +137,3 @@ I want a benchmark to help me reject a bad idea as readily as it confirms a good
 Change one thing, run the comparison, and inspect both time and allocation. If a plot has a surprising jump, investigate it. A graph alone cannot tell you that a cache boundary, JIT decision or garbage collection caused it.
 
 Finally, take the useful change back to the application and measure there. A convincing microbenchmark is evidence about one operation. The application tells you whether improving that operation solved the problem you started with.
-
-Original recording: [Benchmarking .NET Applications](https://www.youtube.com/watch?v=KDkB_lu5Ng8). Code and historical workbooks: [VariousBenchmarks](https://github.com/matlus/VariousBenchmarks).
