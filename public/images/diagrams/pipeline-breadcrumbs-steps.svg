@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="480" viewBox="0 0 1100 480" role="img" aria-labelledby="title desc">
+  <title id="title">A document pipeline with nested classification steps</title>
+  <desc id="desc">Load Pages, Detect Sections, Classify Sections and Assemble Report run in order. Classification contains Prepare Prompts, Score Sections and a conditional Reconcile Scores step. Their paths are 3.1, 3.2 and 3.3.</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#45687c"/></marker></defs>
+  <rect width="1100" height="480" rx="20" fill="#f8faf7"/>
+  <g font-family="Arial,sans-serif" fill="#243d50">
+    <text x="40" y="44" font-size="25" font-weight="700">One document, four steps</text>
+    <g stroke="#6d8999" stroke-width="1.5">
+      <rect x="35" y="85" width="215" height="110" rx="15" fill="#e0f0eb"/>
+      <rect x="305" y="85" width="215" height="110" rx="15" fill="#e6eef8"/>
+      <rect x="575" y="85" width="215" height="110" rx="15" fill="#fff0c8"/>
+      <rect x="845" y="85" width="220" height="110" rx="15" fill="#e0f0eb"/>
+    </g>
+    <g font-size="22" text-anchor="middle"><text x="142" y="124" font-weight="700">1</text><text x="142" y="162">Load Pages</text><text x="412" y="124" font-weight="700">2</text><text x="412" y="162">Detect Sections</text><text x="682" y="124" font-weight="700">3</text><text x="682" y="162">Classify Sections</text><text x="955" y="124" font-weight="700">4</text><text x="955" y="162">Assemble Report</text></g>
+    <g fill="none" stroke="#45687c" stroke-width="2.5" marker-end="url(#arrow)"><path d="M250 140H299"/><path d="M520 140H569"/><path d="M790 140H839"/></g>
+    <path d="M682 195V245" stroke="#ac9155" stroke-width="2" stroke-dasharray="6 5"/>
+    <rect x="245" y="245" width="820" height="190" rx="18" fill="#fff9e9" stroke="#ac9155" stroke-width="1.5" stroke-dasharray="7 5"/>
+    <text x="268" y="280" font-size="20" font-weight="700">Inside the classification scope</text>
+    <g stroke="#6d8999" stroke-width="1.5"><rect x="268" y="300" width="224" height="100" rx="12" fill="#e6eef8"/><rect x="540" y="300" width="224" height="100" rx="12" fill="#e6eef8"/><rect x="812" y="300" width="229" height="100" rx="12" fill="#fae2da"/></g>
+    <g font-size="21" text-anchor="middle"><text x="380" y="332" font-weight="700">3.1</text><text x="380" y="366">Prepare Prompts</text><text x="652" y="332" font-weight="700">3.2</text><text x="652" y="366">Score Sections</text><text x="926" y="329" font-weight="700">3.3</text><text x="926" y="359">Reconcile Scores</text><text x="926" y="384" font-size="16">only when needed</text></g>
+    <g fill="none" stroke="#45687c" stroke-width="2.5" marker-end="url(#arrow)"><path d="M492 350H534"/><path d="M764 350H806"/></g>
+    <text x="38" y="325" font-size="19">Local steps 1, 2, 3</text><text x="38" y="356" font-size="19">inherit parent path 3.</text>
+    <text x="38" y="455" font-size="17">The parent completes after its children. A skipped child has an explicit reason.</text>
+  </g>
+</svg>

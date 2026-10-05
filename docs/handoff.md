@@ -1,5 +1,29 @@
 # Handoff
 
+## Pipeline Breadcrumbs publication, October 5, 2026
+
+The owner requested a standalone teaching article from the public Pipeline
+Breadcrumbs repository's design document. The
+[draft](drafts/pipeline-breadcrumbs/pipeline-breadcrumbs.md) preserves that title
+and includes a runnable Python example and two explanatory pastel diagrams.
+The blog-writing review and independent metadata review are complete, using six
+existing tags. The [editorial record](drafts/pipeline-breadcrumbs/editorial.md)
+records source coverage, qualifications and passing checks.
+
+The local preview is at `http://127.0.0.1:4325/writing/pipeline-breadcrumbs/`, with
+the owner-approved workshop hero showing a developer and assistant inspecting
+pipeline artifacts. Its 1980 x 429 crop retains the standard 60:13 ratio; the
+owner accepted this smaller native size temporarily. The article now follows
+source revision `13c6b48bfb089c0de7f7c894488205a61d967eb6` from the
+`artifact-sink-protocol` branch (source PR #3 was open during review). It explains
+the sink-class decision, revised API names and hosted blob-storage stand-in.
+The example and all four demo profiles run against that revision; 122 source
+tests pass. Publication was subsequently authorized, including commit, push,
+PR merge and repository backlink. The source PR remains open; the article pins
+the tested public commit. See the [publication register](pipeline-breadcrumbs-publication.md).
+Future article edits belong in `src/content/writing/pipeline-breadcrumbs.md`. The earlier Let's Talk publication, live verification and backlinks
+are complete in PR #64; its follow-up automation is stopped.
+
 ## Let's Talk publication, October 5, 2026
 
 The owner approved publishing **Let's Talk - Null Conditional Operator. No Thank

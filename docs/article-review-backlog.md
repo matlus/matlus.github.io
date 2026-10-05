@@ -1,5 +1,22 @@
 # Article review backlog
 
+## Pipeline Breadcrumbs, October 5, 2026
+
+The [teaching draft](drafts/pipeline-breadcrumbs/pipeline-breadcrumbs.md) has owner approval
+for publication. Source coverage, the runnable example, all four offline demo
+profiles, independent metadata review, two diagrams and site checks are complete.
+See its [editorial record](drafts/pipeline-breadcrumbs/editorial.md).
+
+The source refresh now covers revision `13c6b48bfb089c0de7f7c894488205a61d967eb6`:
+the class-based sink contract, its design rationale, renamed APIs and hosted
+storage stand-in. The article example and four demo profiles pass on that
+revision, along with 122 source tests. Source PR #3 was still open during review;
+the publication recheck confirms the same public commit and open PR. A creative hero
+now accompanies the draft. The owner approved the supplied workshop scene's
+1980 x 429 crop, preserving 60:13 without upscaling, as a temporary size exception.
+The [publication register](pipeline-breadcrumbs-publication.md) tracks the
+canonical URL, deployment and source repository README backlink.
+
 ## Design playlist review batch, October 4, 2026
 
 The owner approved the six complete articles in
