@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="470" viewBox="0 0 1100 470" role="img" aria-labelledby="title desc">
+  <title id="title">The application chooses destinations for logs and artifacts</title>
+  <desc id="desc">A processor reports through its step scope. Progress becomes records on a shared logger routed to application-selected handlers. Artifacts go through a sink object's asynchronous persist method to the filesystem or the demo's blob-storage stand-in. The application owns the destinations.</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#45687c"/></marker></defs>
+  <rect width="1100" height="470" rx="20" fill="#f8faf7"/>
+  <g font-family="Arial,sans-serif" fill="#243d50">
+    <text x="35" y="43" font-size="25" font-weight="700">Two outputs, destinations chosen by the host</text>
+    <rect x="390" y="67" width="675" height="345" rx="18" fill="#eff4f9" stroke="#6d8999" stroke-dasharray="7 5"/>
+    <text x="414" y="99" font-size="19" font-weight="700">Application-owned configuration</text>
+    <rect x="35" y="178" width="220" height="128" rx="15" fill="#fff0c8" stroke="#6d8999" stroke-width="1.5"/>
+    <text x="145" y="215" text-anchor="middle" font-size="22" font-weight="700">Processor</text><text x="145" y="247" text-anchor="middle" font-size="19">reports through</text><text x="145" y="275" text-anchor="middle" font-size="19">its step scope</text>
+    <g stroke="#6d8999" stroke-width="1.5"><rect x="420" y="125" width="250" height="100" rx="13" fill="#e6eef8"/><rect x="785" y="125" width="250" height="100" rx="13" fill="#e6eef8"/><rect x="420" y="280" width="250" height="100" rx="13" fill="#e0f0eb"/><rect x="785" y="280" width="250" height="100" rx="13" fill="#e0f0eb"/></g>
+    <g text-anchor="middle" font-size="22"><text x="545" y="162" font-weight="700">Shared logger</text><text x="545" y="195" font-size="18">message + attributes</text><text x="910" y="162" font-weight="700">Log handlers</text><text x="910" y="195" font-size="18">console, file, telemetry</text><text x="545" y="317" font-size="20" font-weight="700">ArtifactSinkProtocol</text><text x="545" y="350" font-size="18">async persist(artifact)</text><text x="910" y="317" font-weight="700">Storage</text><text x="910" y="350" font-size="18">filesystem / blob stand-in</text></g>
+    <g fill="none" stroke="#45687c" stroke-width="2.5" marker-end="url(#arrow)"><path d="M255 210C320 210 330 175 412 175"/><path d="M255 275C320 275 330 330 412 330"/><path d="M670 175H777"/><path d="M670 330H777"/></g>
+    <text x="288" y="169" font-size="17">progress</text><text x="280" y="349" font-size="17">artifacts</text>
+    <text x="35" y="446" font-size="18">Processors own the work and its evidence. They contain no paths or handler configuration.</text>
+  </g>
+</svg>
