@@ -21,6 +21,21 @@ export interface Tag {
 
 export const TAGS = [
   {
+    slug: "message-brokers",
+    label: "Message Brokers",
+    description: "Infrastructure that receives, routes and delivers messages between applications. Publisher and subscriber contracts, message properties, acknowledgements and delivery guarantees determine how applications use a broker.",
+  },
+  {
+    slug: "expression-trees",
+    label: "Expression Trees",
+    description: "Representing code as a tree of expressions that a program can inspect, transform or translate. C# can convert supported lambdas into expression trees, exposing their parameters, member accesses and operations without executing the lambda.",
+  },
+  {
+    slug: "dependency-inversion",
+    label: "Dependency Inversion",
+    description: "Arranging source dependencies so application policy and implementation details meet through abstractions that are independent of those details. Implementations conform to the contracts rather than requiring policy to depend on concrete infrastructure.",
+  },
+  {
     slug: "cpu-caches",
     label: "CPU Caches",
     description: "Processor caches retain nearby copies of instructions and data. Cache lines, locality, sharing and coherence affect the cost of accessing a program's working set.",

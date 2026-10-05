@@ -1,5 +1,21 @@
 # Article review backlog
 
+## Design playlist review batch, October 4, 2026
+
+The owner approved the six complete articles in
+[the Design preparation register](design-series-preparation.md) for publication
+on October 5. Both dates remain equal to each original source date. Their source,
+code, metadata, artwork and local preview checks are complete; the
+[publication register](design-series-publication.md) tracks deployment and
+source-video/repository backlinks. Service Interface Layer Pattern remains deferred.
+
+The [verification record](drafts/design-series/verification.md) preserves the
+substantive limits already explained where relevant in the drafts: historical
+broker SDKs and incomplete settlement/shutdown guarantees, no live broker or SQL
+execution, explicitly adapted teaching examples, and the original movie mapper's
+ordering assumption. These are source qualifications for the reviewer, rather
+than unreported claims of production verification.
+
 ## Transcript series preparation, October 3, 2026
 
 The C# and Performance collection work is tracked in

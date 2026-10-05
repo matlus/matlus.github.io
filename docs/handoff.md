@@ -1,5 +1,25 @@
 # Handoff
 
+## Design articles approved for publication, October 5, 2026
+
+The owner approved the six reviewed Design articles for publication. Their
+publication copies preserve both datePublished and dateModified at the original
+source-video calendar dates, June 2020 through February 2021. Keep those equal
+dates and historical feed positions. Retained drafts are preparation snapshots;
+future article edits belong in `src/content/writing/`.
+
+The blog-writing skill and independent metadata review confirm standalone
+teaching prose and reconciled descriptions/tags. Six existing article heroes,
+three topic heroes and seven inline diagrams accompany the batch, including three
+reproductions of inspected source drawings. The shared
+article header enforces the same 60:13 frame as other articles. Historical code
+limits remain explicit, including unawaited broker settlement and the original
+movie mapper's positional assumption. See the
+[publication register](design-series-publication.md) for the six source
+associations and deployment/backlink verification. Service Interface Layer
+Pattern remains deferred; the four previously published playlist articles stay
+unchanged.
+
 ## Standalone Performance revisions and hero framing, October 5, 2026
 
 The six published Performance articles now teach their examples directly, with
