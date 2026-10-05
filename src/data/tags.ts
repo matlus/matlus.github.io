@@ -21,6 +21,17 @@ export interface Tag {
 
 export const TAGS = [
   {
+    slug: "null-conditional-operator",
+    label: "Null-Conditional Operator",
+    description: "Conditional member or element access that stops evaluation when its receiver is null. Its use determines whether missing objects legitimately skip work or conceal a broken assumption.",
+  },
+  {
+    slug: "nullable-reference-types",
+    label: "Nullable Reference Types",
+    description: "C# annotations and compiler analysis that describe whether references may be null. Initialization, flow analysis and warning suppression determine the promises expressed in source code without adding runtime null checks.",
+  },
+
+  {
     slug: "message-brokers",
     label: "Message Brokers",
     description: "Infrastructure that receives, routes and delivers messages between applications. Publisher and subscriber contracts, message properties, acknowledgements and delivery guarantees determine how applications use a broker.",
