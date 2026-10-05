@@ -40,6 +40,27 @@ Preserve distinctions between ideas, terms, or actions that serve different purp
 
 Read [spoken-teaching.md](references/spoken-teaching.md) when shaping a sustained argument or adapting a transcript. Preserve questions that anticipate a real objection, deliberate emphasis, and returns to the rule that deepen its meaning. Remove transcription noise and accidental repetition while keeping the teaching purpose.
 
+## Write a standalone article
+
+Every website article must teach its subject on the page, whatever supplied its
+source material. Apply this skill to all article drafts and edits. When adapting
+a transcript, write the explanation directly in the author's voice. Do not narrate
+the video, recording, presenter, transcript or slides, or tell readers to watch,
+pause or recall them. Optional YouTube and repository resource links can remain.
+
+Replace references to a screen, cursor, live output or unseen demonstration with
+the actual code, data, results, diagram and explanation needed at that point.
+References such as "the loop above" are useful only when that loop is present in
+the article. Preserve the lesson rather than deleting the demonstration's substance.
+If evidence is unavailable, keep that editorial task outside the article and
+qualify the supported example without inventing missing details.
+
+Explain technical corrections and benchmark limits directly: "Concat leaves the
+collections unchanged" teaches the behavior; a report of what the speaker got
+wrong does not. Keep source-comparison notes in editorial records. During review,
+read the body, captions, alt text and conclusion as someone with no knowledge of
+the source video, and check that every necessary step is available on the page.
+
 ## Edit with fidelity
 
 For an existing article, preserve its argument, examples, qualifications, and conclusions. Fix grammar, spelling, and awkward syntax where doing so leaves the meaning and tone intact. Preserve deliberate wording and opinions. Source archives remain unchanged; make edits in a separate publication copy.

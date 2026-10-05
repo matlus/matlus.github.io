@@ -60,3 +60,25 @@ and saved video-description and repository README backlink receipts. These remot
 checks follow deployment so every added backlink points to an available article.
 Local source evidence and before/after text remain outside the public repository
 in `D:/Source/Workspaces/matlus-performance-2026-10-04/`.
+
+## Standalone revision, October 5, 2026
+
+The owner requested removal of video narration and implicit dependence on visual
+demonstrations from all six publication copies. Prose and figure captions now
+explain their examples directly. The cache diagram's title also uses standalone
+wording. Technical qualifications, code, dates, source links and existing metadata
+are retained. The previous source-conflict inventory remains in the
+[verification record](drafts/transcript-series/performance-verification.md).
+
+The owner's benchmark screenshot supplies exact Web API timing evidence. The
+complete rows are now included in the article: Web API mean 22.050 ms, error
+0.4115 ms, standard deviation 0.7524 ms, ratio 1.00, ratio deviation 0.00; direct
+handler mean 9.057 ms, error 0.1998 ms, standard deviation 0.5732 ms, ratio 0.42,
+ratio deviation 0.03. The image is retained as `sources/api-benchmark-owner-screenshot.png`
+in the local evidence workspace above. It confirms the output, without resolving
+the exact client revision, transport comparison or unavailable helper bodies.
+
+The shared article hero frame is now 60:13. The six existing 1672 x 941 WebP files
+retain their pixels and are cropped at display time. Future article exports use
+the image guide's 2400 x 520 specification. The owner authorized committing, pushing and merging this revision on October 5.
+The publication PR records the merge SHA, matching Pages run and live checks.

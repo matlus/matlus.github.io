@@ -115,7 +115,7 @@ One candidate calls `UnionWith` to merge the certified and A-list names into the
 
 It also changes the benchmark's state after its first invocation. `GlobalSetup` does not restore the original sets before every measured call. A fresh merged set, or a precomputed immutable lookup reused by the application, would be a different design with its own construction cost and lifetime.
 
-The `Concat` candidate builds an enumerable sequence inside the predicate and searches it for each customer. `Concat` itself does not modify the original collections; the spoken explanation incorrectly groups it with the mutating merge. Its cost comes from the repeated sequence construction and traversal represented by that code.
+The `Concat` candidate builds an enumerable sequence inside the predicate and searches it for each customer. `Concat` leaves the original collections unchanged. Its cost comes from the repeated sequence construction and traversal represented by that code.
 
 These are good experiments. They become useful alternatives only after we establish which preserve the required behavior.
 
@@ -142,11 +142,11 @@ The last two rows intentionally remove the uppercase conversion without otherwis
 
 ## The collection type is part of the comparison
 
-The loop candidates need another detail. In the recovered code, `_customers` is an array. `_customersEnumerable` refers to a `List<Customer>` containing the same customer objects. They are not the same collection merely viewed through two variable types, as the narration suggests.
+The loop candidates need another detail. In the sample code, `_customers` is an array. `_customersEnumerable` refers to a separate `List<Customer>` containing the same customer objects. The comparison changes both the collection implementation and the type through which it is accessed.
 
 An array-based `foreach` can be lowered differently from enumeration through an interface. LINQ also has specialized implementations for some source types. That helps explain why the syntax alone is insufficient to rank the candidates.
 
-The recording discusses delegates, interface dispatch and enumerators as possible sources of overhead. Those mechanisms are worth understanding, but a universal ranking of direct calls, virtual calls, delegates and interface calls would overstate the evidence. JIT optimizations, cached delegates, inlining and the actual source type affect a particular case. Likewise, `foreach` does not universally allocate.
+Delegates, interface dispatch and enumerators can contribute overhead. Those mechanisms are worth understanding, but a universal ranking of direct calls, virtual calls, delegates and interface calls would overstate the evidence. JIT optimizations, cached delegates, inlining and the actual source type affect a particular case. Likewise, `foreach` does not universally allocate.
 
 ## Be conscious of the waste
 
@@ -155,5 +155,3 @@ Temporary strings contribute allocation pressure even when each individual alloc
 I do not want to leave an obvious repeated conversion in a query merely because someone might call changing it premature optimization. The local-variable version is simple, preserves this example's behavior and makes the intent clearer. That is enough reason to consider it. The benchmark then tells us what difference it made.
 
 Keep the desired result, collection mutations and comparison rules in view. Once those are the same, the timing has a useful meaning.
-
-Original recording: [To LINQ Or Not To LINQ](https://www.youtube.com/watch?v=D1m-RIWFrhM). [Source and historical workbook](https://github.com/matlus/VariousBenchmarks).

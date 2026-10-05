@@ -25,7 +25,7 @@ The terminology in the example calls the message the *key* and each state a *val
 
 [![Four messages map to ten values: Message 1 to Values 1–3, Message 2 to Values 4–7, Message 3 to Values 8–9, and Message 4 to Value 10.](/images/diagrams/one-to-many-mapping-values.svg)](/images/diagrams/one-to-many-mapping-values.svg)
 
-*The groups from the source presentation. Lookup starts with a value and returns its associated message.*
+*Each value belongs to one message. Lookup starts with a value and returns its associated message.*
 
 Here is the original interface:
 
@@ -54,19 +54,19 @@ There is one more requirement that is easy to miss: if an attempted addition con
 
 ## A database model makes the constraints visible
 
-The recording presents two relational models for the same requirement. The first has a `Message` table and a `StateMessage` table. `Message.Description` is unique. `StateMessage.MessageId` references the message, while its state `Acronym` is unique.
+We can express this requirement with two relational models. The first has a `Message` table and a `StateMessage` table. `Message.Description` is unique. `StateMessage.MessageId` references the message, while its state `Acronym` is unique.
 
 The second represents messages and states as independent entities, with an association table between them:
 
-[![Two source database models: Message with StateMessage details, and independent Message and State tables connected by AssocMessageState.](/images/diagrams/one-to-many-mapping-models.svg)](/images/diagrams/one-to-many-mapping-models.svg)
+[![Two database models: Message with StateMessage details, and independent Message and State tables connected by AssocMessageState.](/images/diagrams/one-to-many-mapping-models.svg)](/images/diagrams/one-to-many-mapping-models.svg)
 
-*Recreated from the source presentation. Primary keys, foreign keys and unique constraints preserve the original relationships.*
+*Primary keys identify rows, foreign keys connect them, and the unique state constraint prevents a state from belonging to multiple messages.*
 
 In the association model, the `(MessageId, StateId)` pair forms the primary key. That alone would still allow one state to appear with two different messages. The separate unique constraint on `StateId` prevents it. That constraint carries a business rule, and it is the part you must not lose when translating the model into an in-memory structure.
 
 I use an association when the entities have their own reasons to exist. A state and a message can each exist independently of this relationship. A header/detail model is more natural when the detail exists because of its parent, such as an order line belonging to an order.
 
-The database demonstration uses the association model, a view joining its three tables, and a stored procedure that retrieves a message description from a state acronym. The in-memory versions follow the same general idea without requiring a database round trip for each lookup.
+With the association model, a view can join the three tables, and a stored procedure can retrieve a message description from a state acronym. The in-memory versions follow the same general idea without requiring a database round trip for each lookup.
 
 ## Use the same behavioral tests for every candidate
 
@@ -109,7 +109,7 @@ The sample deliberately explores these compositions. A more direct value-to-key 
 
 The benchmark builds the mappings in setup. Each measured method then loops over the generated values, retrieves each key and returns the last result. These are successful lookups: the code creates `randomizedValues`, assigns those values to keys, then looks up that same array.
 
-This matters because the spoken description refers to some values matching and others not matching. The recovered benchmark code does not implement that mixed hit/miss workload. A missing lookup would take the exception path and measure something different.
+This benchmark measures successful lookups only. A workload containing missing values would also take the exception path and measure something different. Include that case in a separate comparison if the application needs it.
 
 Selected values from the original workbook are below. Times are microseconds for the whole batch, and have not been remeasured on a current runtime.
 
@@ -129,10 +129,8 @@ The dictionary is fastest across these cases. The linear list beats the sorted l
 
 There is another important distinction: an approximately constant-time dictionary lookup does not imply a constant-time batch of `N` lookups. Nor is a batch that searches all `N` entries using linear scans merely one linear search. The graph combines the cost of each lookup with an increasing number of lookups.
 
-I suggested cache and prefetch behavior as a possible explanation for the small-list result in the recording. The timings alone do not isolate that cause. Similarly, the close `DataTable` and sorted-list results do not prove that their internal algorithms are identical.
+Cache and prefetch behavior are possible explanations for the small-list result, but the timings alone do not isolate that cause. Similarly, the close `DataTable` and sorted-list results do not prove that their internal algorithms are identical.
 
-The original workbook contains a suspicious list timing of `11.096` at 300 values, which I also question in the recording. It is omitted from this selected comparison rather than silently corrected. The `DataTable` row additionally reports `696000 B` allocated and `164.0625` Gen 0 collections per 1,000 operations; the workbook does not label a separate input size for those final diagnostic columns. They establish a reason to investigate allocation, without treating that number as a per-lookup allocation for every size.
+The original workbook contains a suspicious list timing of `11.096` at 300 values. It is omitted from this selected comparison rather than silently corrected. The `DataTable` row also reports `696000 B` allocated and `164.0625` Gen 0 collections per 1,000 operations; the workbook does not label a separate input size for those final diagnostic columns. They establish a reason to investigate allocation, without treating that number as a per-lookup allocation for every size.
 
 Try another implementation if you have an idea. First run the behavioral tests, including the failure cases. Then measure the operations and data sizes the application actually uses. A data structure earns its place by preserving the rules as well as making useful work efficient.
-
-Original recording: [Custom Data Structure: A One To Many Mapping](https://www.youtube.com/watch?v=e27RquJS_Tc). [Source code, presentation and historical workbook](https://github.com/matlus/OneToManyMapBenchmark).

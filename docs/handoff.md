@@ -1,5 +1,25 @@
 # Handoff
 
+## Standalone Performance revisions and hero framing, October 5, 2026
+
+The six published Performance articles now teach their examples directly, with
+video narration and unseen-screen references removed from prose and captions.
+YouTube and repository resources remain in frontmatter and the resource cards.
+The owner supplied the Web API benchmark screenshot: the article now includes
+both complete timing rows, their uncertainty columns and the reported ratio.
+Historical dates and code excerpts are preserved. Retained preparation drafts
+remain historical review copies; use the publication copies for further edits.
+
+`AGENTS.md`, the blog-writing skill, writing guide and transcript prompt require
+standalone articles and the blog-writing skill for every article. Article headers
+now enforce the documented 60:13 frame. The image guide specifies 2400 x 520
+article exports, and `prepare-image.mjs` enforces exact dimensions and rejects
+upscaling. Existing hero files retain their original pixels and use the shared
+display crop. The three Programming to Exceptions articles also have the owner's
+replacement heroes, exported at exactly 2400 x 520. The owner authorized committing,
+pushing and merging this revision on October 5. The publication PR records its
+merge commit and deployment verification.
+
 ## Remaining Performance articles approved for publication, October 4, 2026
 
 The owner requested the remaining six Performance articles using the earlier

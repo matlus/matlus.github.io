@@ -21,7 +21,7 @@ My preference is to avoid making repeated trips to the same service or database 
 
 The distance data travels also matters. In one system I worked on, moving a service closer to the system it communicated with made a substantial difference. No change to a C# loop could remove the round trip between those locations.
 
-The recording uses a latency table to make this difference in scale visible. Imagine stretching a very short cache access into something you can perceive, then scaling the slower operations by the same factor. Main memory, storage and a long network journey occupy very different amounts of that imaginary time. The exact figures depend on the hardware and workload. The useful idea is to measure which journey your program is actually waiting for.
+Imagine stretching a very short cache access into something you can perceive, then scaling the slower operations by the same factor. Main memory, storage and a long network journey occupy very different amounts of that imaginary time. The exact figures depend on the hardware and workload. The useful idea is to measure which journey your program is actually waiting for.
 
 Once the larger costs are under control, the work inside the processor becomes worth examining.
 
@@ -31,7 +31,7 @@ Think of an instruction passing through stages: it must be obtained, decoded, su
 
 A modern processor can also have multiple execution resources. That allows some instructions to progress alongside others, provided their dependencies and the available resources permit it. A clock frequency alone therefore does not tell us how much useful work a program gets done.
 
-The recording illustrates this with a 3.3 GHz processor and an assumed four instructions per cycle. Multiplying those gives 13.2 billion instructions per second per core in that illustration. It is a capacity example. A dependency chain, a cache miss, or an instruction requiring a particular execution unit can prevent a real program from approaching it.
+Consider a 3.3 GHz processor and assume it can execute four instructions per cycle. Multiplying those gives 13.2 billion instructions per second per core. It is a capacity example. A dependency chain, a cache miss, or an instruction requiring a particular execution unit can prevent a real program from approaching it.
 
 What happens when the processor reaches an `if` statement and does not yet know which path it will take? Waiting at every branch would leave useful execution capacity idle. Branch prediction lets the processor make a prediction and begin work along that path. If the prediction is wrong, work performed speculatively along the wrong path must be discarded.
 
@@ -43,7 +43,7 @@ Main memory is large, but accessing it is expensive compared with accessing a ne
 
 [![Four processor cores with separate instruction and data L1 caches, one L2 per core, a shared L3, and DRAM above them.](/images/diagrams/dotnet-memory-part2-cache-hierarchy.svg)](/images/diagrams/dotnet-memory-part2-cache-hierarchy.svg)
 
-*Recreated from the recording's four-core diagram. The labels, capacities and grouping belong to that historical illustration; they are not a specification for every processor.*
+*An illustrative four-core cache hierarchy. The capacities and grouping describe this example; cache arrangements vary between processors.*
 
 Each core in this drawing has its own instruction cache and L1 data cache, followed by a private L2. The four cores share the L3. Main memory sits beyond that hierarchy. This is a useful picture of the different places a request for data might be satisfied.
 
@@ -84,7 +84,7 @@ The rightmost index varies fastest in the storage of a rectangular .NET array. T
 
 *An explanatory example using C# rectangular-array storage. Both traversals visit the same twelve values; the sequence of addresses differs.*
 
-As the matrix grows, the working set and the distance between accesses change. The recording shows a row-versus-column timing comparison to illustrate that effect. The direction that benefits depends on the actual storage layout: row-first traversal is not a universal rule for every matrix library or language.
+As the matrix grows, the working set and the distance between accesses change. You can compare the two traversal orders by timing each loop over the same array and checking that both produce the same sum. The direction that benefits depends on the actual storage layout: row-first traversal is not a universal rule for every matrix library or language.
 
 A bend in a timing graph is a clue to investigate. It does not, on its own, prove that the program just exceeded a particular cache. Counters, controlled changes in data size and an understanding of the generated code give us stronger evidence.
 
@@ -109,5 +109,3 @@ Cache coherence is also separate from the synchronization contract of your progr
 The purpose of understanding the hardware is to give yourself better hypotheses. Perhaps a compact representation will reduce the working set. Perhaps repeated walks can become one pass. Perhaps a branch or a shared cache line explains a hot path.
 
 Keep a correct baseline, change one thing, and measure the result under the conditions that matter to the application. Include any sorting, copying or preparation that the real operation must pay for. You can then explain both what improved and what you spent to obtain that improvement.
-
-Original recording: [.NET Memory Allocations and Performance, Part 2](https://www.youtube.com/watch?v=Ge0tyJqdhxY).

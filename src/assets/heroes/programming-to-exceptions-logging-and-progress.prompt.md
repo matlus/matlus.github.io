@@ -1,3 +1,18 @@
+# Current hero: owner-supplied replacement, October 5, 2026
+
+The owner supplied `ChatGPT Image Oct 5, 2026, 08_28_58 AM.png` and explicitly
+selected it for this article. Its generation prompt was not supplied. The
+illustration, including its lettering and people, is the owner's selected art.
+
+Original: 2694 x 584 pixels, retained in the owner's Downloads folder.
+Export: 2400 x 520 pixels, 60:13, WebP quality 82, prepared with
+`tools/prepare-image.mjs` using its default article role. The near-identical
+source ratio requires only rounding at the crop edge; no upscaling is applied.
+
+## Previous hero prompt (historical provenance)
+
+The following brief documents the superseded image only.
+
 # Programming to Exceptions: Logging and Progress hero
 
 Generated with the built-in image generation tool. The original remains in the
