@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="570" viewBox="0 0 1200 570" role="img" aria-labelledby="title desc">
+  <title id="title">Required logging with a missing logger</title>
+  <desc id="desc">After a simulated save, ordinary access to a null logger throws. Null-conditional access skips the logging call and returns normally. Neither path reverses the earlier save.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="#50768a" stroke-width="1.5"/></marker>
+  </defs>
+  <rect width="1200" height="570" rx="20" fill="#faf8f1"/>
+  <g font-family="Arial,sans-serif" fill="#243b53" text-anchor="middle">
+    <text x="600" y="50" font-size="27" font-weight="600">The same missing logger, two different outcomes</text>
+    <rect x="420" y="83" width="360" height="75" rx="15" fill="#e1edf7" stroke="#7191a8"/>
+    <text x="600" y="116" font-size="22">Simulated save completes</text>
+    <text x="600" y="142" font-size="18">applicationLogger is null</text>
+    <path d="M510 158V192H295V228" fill="none" stroke="#50768a" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <path d="M690 158V192H905V228" fill="none" stroke="#50768a" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <rect x="70" y="230" width="450" height="89" rx="15" fill="#fff0ca" stroke="#7191a8"/>
+    <text x="295" y="265" font-size="22" font-weight="600">Ordinary access</text>
+    <text x="295" y="295" font-family="monospace" font-size="18">applicationLogger.LogDebug(...)</text>
+    <rect x="680" y="230" width="450" height="89" rx="15" fill="#dcf0e7" stroke="#7191a8"/>
+    <text x="905" y="265" font-size="22" font-weight="600">Conditional access</text>
+    <text x="905" y="295" font-family="monospace" font-size="18">applicationLogger?.LogDebug(...)</text>
+    <path d="M295 319V371" fill="none" stroke="#50768a" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <path d="M905 319V371" fill="none" stroke="#50768a" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <rect x="70" y="375" width="450" height="92" rx="15" fill="#f9dfd7" stroke="#7191a8"/>
+    <text x="295" y="412" font-size="22" font-weight="600">NullReferenceException</text>
+    <text x="295" y="442" font-size="19">Broken assumption becomes visible</text>
+    <rect x="680" y="375" width="450" height="92" rx="15" fill="#fff0ca" stroke="#7191a8"/>
+    <text x="905" y="412" font-size="22" font-weight="600">Log skipped; normal return</text>
+    <text x="905" y="442" font-size="19">Required work silently omitted</text>
+    <text x="600" y="523" font-size="20">Neither path undoes the save. Atomicity needs a separate design.</text>
+  </g>
+</svg>

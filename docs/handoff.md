@@ -1,5 +1,20 @@
 # Handoff
 
+## Let's Talk publication, October 5, 2026
+
+The owner approved publishing **Let's Talk - Null Conditional Operator. No Thank
+you!** with its original February 21, 2022 dates, exact video title, two-woman
+article hero, explanatory diagram and two new illustrated topics. The complete
+blog-writing, source and metadata reviews are retained in the
+[publication register](lets-talk-publication.md). The owner approved native
+2100 x 455 article and 2120 x 742 topic exports without upscaling.
+
+Creating Instances, Using Inheritance already belongs to published Design PR #63;
+keep its URL and verify its existing reciprocal links. This completes the selected
+Let's Talk playlist except the explicitly excluded Impostor Syndrome recording.
+Use separate background Chrome tabs for video-description work. The publication
+PR carries deployment and backlink receipts.
+
 ## Design articles approved for publication, October 5, 2026
 
 The owner approved the six reviewed Design articles for publication. Their
