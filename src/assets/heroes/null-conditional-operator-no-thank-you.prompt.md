@@ -55,4 +55,3 @@ Generate a wide panoramic website banner, 2400 x 520 pixels (60:13). Native outp
 ### Final panoramic edit
 
 Edit this illustration into an ULTRA-WIDE 5:1 PANORAMIC BANNER. Target native output 3000 by 600 pixels, minimum width 2400 pixels. Widen the canvas greatly; zoom the scene out so both women, their hands and monitor fit fully in a shallow horizontal strip. Keep the two women reviewing software at a desk, one in profile, one across the desk, and the warm technical editorial ink style. The screen says Save → Log → Done with a bypass arrow around Log, a question mark over Log; the desk card says Required?; the whiteboard says Missing logger. Remove all other lettering from mugs, books, wall posters and notebooks. Keep key faces, gestures and labels fully within the centered 60:13 crop for final 2400×520 export. This must be much wider and shallower than the reference, with a less close-up viewpoint. Do not just return the reference aspect ratio.
-

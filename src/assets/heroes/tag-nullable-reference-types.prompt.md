@@ -8,5 +8,3 @@ resolution was not produced. The owner approved this native-size exception on Oc
 
 Original: `exec-4a3b64c6-cae0-40ed-b499-bcd84c3d29eb.png`.
 Final: `src/assets/heroes/tag-nullable-reference-types.webp`.
-
-
