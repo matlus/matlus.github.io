@@ -28,6 +28,12 @@ image. Save the specific generation prompt beside the selected workspace asset.
 
 ### Style
 
+Choose each hero from the article's specific argument, example or relationship.
+Identify that connection in its saved prompt, and inspect whether the final
+60:13 crop still communicates it. A generic workshop, laptop, gears or decorative
+code is insufficient without a visible relationship to the article's subject.
+Vary the scene and metaphor across a series while preserving the shared style.
+
 The established look is **hand-drawn technical editorial illustration**. Fine ink
 linework, warm paper, and restrained colour tie the images together. Engineering
 sketches are one subject treatment in the set; people, software workspaces, screens,
@@ -174,6 +180,20 @@ their own art; the tag check prevents a new tag from shipping with the fallback.
 ---
 
 ## 2. Diagrams
+
+### Diagrams recovered from recordings
+
+Inspect the actual frames before reproducing a diagram from a video-derived
+article. Retain its components, exact labels, grouping, connections, arrow
+directions and marker meanings. Improve legibility and styling without replacing
+the source model with a newly invented explanation. Save the source timestamp
+and frame evidence outside the public repository and document the comparison in
+the article's verification record. Keep source-video narration out of the
+published caption; explain the relationship directly.
+
+Additional explanatory figures may support the prose, but they do not substitute
+for a source diagram. Distinguish additions in the verification record and never
+claim they reproduce a frame that was not inspected.
 
 ### Approved style and prompt
 

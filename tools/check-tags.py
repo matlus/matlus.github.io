@@ -26,9 +26,12 @@ HEROES_DIR: Path = Path(__file__).resolve().parent.parent / "src" / "assets" / "
 
 SIMILARITY_THRESHOLD = 0.85
 
-# JSON is a data format; JSONP is a script-callback transport technique.
-# Their similar abbreviations do not make them interchangeable topics.
-DISTINCT_TOPICS: frozenset[frozenset[str]] = frozenset({frozenset({"json", "jsonp"})})
+# Similar spellings can identify different established concepts: JSON/JSONP,
+# and supplying collaborators versus reversing source dependencies.
+DISTINCT_TOPICS: frozenset[frozenset[str]] = frozenset({
+    frozenset({"json", "jsonp"}),
+    frozenset({"dependency-injection", "dependency-inversion"}),
+})
 
 SUFFIXES = ("ings", "ing", "ies", "es", "s", "ed")
 
