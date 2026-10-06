@@ -33,6 +33,18 @@ when adapting a recording. Before accepting a draft, read its body, captions,
 alternative text and conclusion without the source open. Check for both explicit
 video references and implicit dependencies on unseen demonstrations.
 
+## Article images
+
+Every article prepared for publication needs a 1600 x 534 hero (approximately 3:1)
+and a separate 1200 x 500 listing card (12:5). Follow the
+[image guide](image-and-diagram-guide.md#required-article-card-workflow) and
+[card brief](../prompts/generate-article-card.md). Use the hero as the visual
+reference and recompose the strongest foreground action for the small card.
+Inspect complete faces and working hands at desktop and phone widths. Save both
+optimized assets and their exact prompts; verify the listing selects the companion.
+Keep existing approved heroes for image-only card additions. Social preview images
+have their own dimensions and build process.
+
 ## Links and publication checks
 
 Every off-site HTTP(S) hyperlink must open a new tab. This includes YouTube,

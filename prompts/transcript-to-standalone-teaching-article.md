@@ -70,10 +70,15 @@ Preserve the teaching when removing recording logistics.
 ## Assets and publication
 
 Create an article-specific technical editorial ink hero using the site's image
-guide, including the fixed 60:13 frame and 2400 x 520 pixel export. Put the
-generation dimensions and crop-safe scene in the prompt. Save each selected
-image's complete prompt beside the asset and convert
-raster originals to the repository's optimized format.
+guide: 1600 x 534 pixels, approximately 3:1. Also create a companion listing image
+at 1200 x 500 pixels, exact 12:5 (2.4:1), using
+[prompts/generate-article-card.md](generate-article-card.md). Recompose the hero's
+interesting foreground action, preserving complete faces and working hands.
+Include the dimensions in both briefs, measure the actual outputs, and inspect
+the card at 320 and 365 pixels wide. Save both complete prompts beside their
+optimized assets, using the hero asset name plus `-card` for the companion.
+Article publication includes both images even when the original article date is
+historical. Preserve an existing approved hero unless its replacement is requested.
 
 Have a read-only metadata sub-agent apply
 `prompts/extract-description-and-tags.md` to the full final article. Reuse the

@@ -77,4 +77,6 @@ Check that the draft fits its own subject and purpose. It should carry the autho
 
 Apply the clarity pass in the supporting reference. Where the professional-writing audit is installed, its `scripts/audit.py` can flag punctuation and wording in substantial drafts without invoking that skill. Review flags in context; a purposeful question, necessary technical contrast, or required quotation should retain its meaning. Apply repository copy checks and publication requirements where relevant. Do not rewrite archival samples to make a style audit pass.
 
-Return the requested draft or edit. Creating an article does not by itself request publication, new media, or changes to the author's other writing tools.
+When preparing an article for this site's publication, follow `docs/image-and-diagram-guide.md` and `prompts/generate-article-card.md`: supply a 1600 x 534 hero and a separate 1200 x 500 card, save their prompts, and review the card's foreground subjects at actual display size. This includes historical articles newly prepared for the site. Preserve existing approved heroes when adding cards.
+
+Return the requested draft or edit. Publication still requires the owner's authorization.

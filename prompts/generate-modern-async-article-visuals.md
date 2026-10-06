@@ -8,6 +8,13 @@ when changing its colors. The earlier vintage image prompt remains in
 
 ## How to use this set
 
+The briefs below preserve the original visual direction. For any new hero export,
+apply the current [image guide](../docs/image-and-diagram-guide.md): 1600 x 534
+(approximately 3:1), superseding the earlier ratio in these recorded briefs.
+Preparing an article for publication also requires a separate 1200 x 500 listing
+image using [the card brief](generate-article-card.md), with the approved hero as
+its visual reference. Save both completed prompts and inspect both compositions.
+
 For a new image, give the image generator the **Shared direction** below followed
 by one **Image brief**. If editing an existing image, include that image as a visual
 reference and retain the same brief. Treat any source slide as a reference for the

@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import { TAGS, tagHref } from '../data/tags';
+import { cardImageFor } from '../lib/heroes';
 
 interface Recording {
   readonly url: string;
@@ -51,16 +52,17 @@ const fmt = (value: Date) =>
   value.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 
 const hasRecordings = videos.length > 0 || audio !== undefined;
+const cardImage = hero ? cardImageFor(hero) : undefined;
 ---
 
 <article class="card">
   {
     hero && (
       <Image
-        src={hero}
+        src={cardImage ?? hero}
         alt=""
         class="card__thumb"
-        widths={[480, 800]}
+        widths={[480, 800, 1200]}
         sizes="(max-width: 48rem) 100vw, 36rem"
         loading="lazy"
       />
@@ -166,8 +168,10 @@ const hasRecordings = videos.length > 0 || audio !== undefined;
 
   .card__thumb {
     width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
+    height: auto;
+    aspect-ratio: 12 / 5;
+    object-fit: contain;
+    background: #f8f3e7;
     border-bottom: 1px solid var(--color-border);
   }
 
