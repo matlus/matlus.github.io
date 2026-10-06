@@ -39,8 +39,11 @@ Every article prepared for publication needs a 1600 x 534 hero (approximately 3:
 and a separate 1200 x 500 listing card (12:5). Follow the
 [image guide](image-and-diagram-guide.md#required-article-card-workflow) and
 [card brief](../prompts/generate-article-card.md). Use the hero as the visual
-reference and recompose the strongest foreground action for the small card.
-Inspect complete faces and working hands at desktop and phone widths. Save both
+edit target after the title and hero are settled. Outpaint into the card ratio,
+preserving the complete scene and existing subject scale; a matching-ratio hero
+only needs a card-sized export. Recompose only if the derivative is unreadable.
+Inspect complete faces and working hands in the full card with its title at
+about 366 x 153 image pixels and at phone widths. Save both
 optimized assets and their exact prompts; verify the listing selects the companion.
 Keep existing approved heroes for image-only card additions. Social preview images
 have their own dimensions and build process.

@@ -37,20 +37,22 @@ in terms of the example's behavior or evidence, and keep source-comparison notes
 in editorial records. Follow the [standalone article workflow](prompts/transcript-to-standalone-teaching-article.md)
 and [writing guide](docs/writing-guide.md#standalone-articles).
 
-**Every new article needs a hero and a separately composed listing-card image.**
+**Every article needs a hero and a listing-card derivative of that hero.**
 New article heroes export at **1600 x 534 pixels, approximately 3:1**. Card images
 export at **1200 x 500 pixels, exact 12:5 (2.4:1)**. Use
-[the card prompt](prompts/generate-article-card.md) to recompose the hero's interesting
-subjects for the smaller display: preserve complete foreground faces and working
-hands, and simplify peripheral scenery. Inspect both at their actual display sizes.
+[the card prompt](prompts/generate-article-card.md) after the article title and hero
+are settled. Outpaint the hero into the card ratio, preserving its complete scene,
+subject sizes and relationships. Extend above and below for wide heroes; extend
+the sides for taller heroes. An existing 12:5 hero only needs a card-sized export.
+Recompose only when the derivative is unreadable at card size. Inspect the full
+card with its title at about 366 x 153 image pixels and at phone widths.
 Follow [the image guide](docs/image-and-diagram-guide.md#fixed-dimensions), save both
 complete prompts beside the optimized assets, and measure the returned dimensions.
 Prompt wording does not guarantee the generator's output size. Keep existing heroes
 unless replacing them is part of the request; article headers show their natural
-ratio. Older articles without companions show the complete hero in the card frame.
-The build checks companion dimensions and provenance, and requires companions for
-articles published from September 2026 onward. Historical articles newly prepared
-for publication also require both images as part of editorial review.
+ratio. Keep previously approved card compositions unless replacing them is requested.
+The build requires a 1200 x 500 companion and its prompt record for every
+non-draft article, including historical articles.
 
 **Every post gets its description and tags from
 [prompts/extract-description-and-tags.md](prompts/extract-description-and-tags.md)**,

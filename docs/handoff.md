@@ -1,5 +1,26 @@
 # Handoff
 
+## All-article card derivatives, October 6, 2026
+
+The owner approved the Skills versus Controlled Workflows outpainting at the
+actual card size and authorized applying the approach across the article archive.
+Every published article now requires a documented 1200 x 500 (12:5) companion,
+including historical articles. The previous publication-date cutoff is removed.
+
+Keep the approved hero unchanged. Settle the title and hero first, then derive
+the card by extending the environment: top and bottom for wider heroes, left
+and right for taller originals. Sources already at 12:5 need only a direct
+export. This supersedes the separately composed default below; eight previously
+approved card compositions remain. Review each result with its title and
+description at desktop and phone card sizes. The image guide and reusable
+card prompt document the geometry and preservation requirements.
+
+The rollout manifest, `docs/article-card-rollout.json`, records the source
+dimensions and hashes, treatment, and export dimensions for all 121 articles.
+Adjacent card prompts retain the individual briefs and export provenance.
+Article prose, titles, dates and hero files are unchanged. The publication PR
+records the validation and deployment receipt.
+
 ## Programming to Exceptions card companions, October 6, 2026
 
 The owner extended the card work to Programming to Exceptions Parts 1, 2 and 3.

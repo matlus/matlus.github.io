@@ -72,11 +72,15 @@ Preserve the teaching when removing recording logistics.
 Create an article-specific technical editorial ink hero using the site's image
 guide: 1600 x 534 pixels, approximately 3:1. Also create a companion listing image
 at 1200 x 500 pixels, exact 12:5 (2.4:1), using
-[prompts/generate-article-card.md](generate-article-card.md). Recompose the hero's
-interesting foreground action, preserving complete faces and working hands.
+[prompts/generate-article-card.md](generate-article-card.md). Once the article title
+and hero are settled, derive the card by outpainting the hero into the card ratio.
+Preserve the full scene, subject scale, faces and working hands. A matching-ratio
+hero only needs an export; recompose only if the derivative is unreadable at
+card size.
 Include the dimensions in both briefs, measure the actual outputs, and inspect
-the card at 320 and 365 pixels wide. Save both complete prompts beside their
-optimized assets, using the hero asset name plus `-card` for the companion.
+the full card with its title at 320 and 366 image pixels wide. Save both complete
+prompts beside their optimized assets, using the hero asset name plus `-card`
+for the companion.
 Article publication includes both images even when the original article date is
 historical. Preserve an existing approved hero unless its replacement is requested.
 

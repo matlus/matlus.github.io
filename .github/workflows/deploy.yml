@@ -50,7 +50,10 @@ jobs:
       - name: External link policy tests
         run: npm run test:links
 
-      - name: Build
+      - name: Article card validation tests
+        run: npm run test:images
+
+      - name: Build site
         run: npm run build
 
       - name: Check generated links
