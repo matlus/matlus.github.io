@@ -6,7 +6,7 @@ description: >-
   reconciliation, and exact calculations. Jev and LLMs handle bounded judgments.
 datePublished: 2026-10-06
 dateModified: 2026-10-06
-hero: verified-not-trusted-expense-analysis-part-one
+hero: verified-not-trusted-expense-analysis-part-two
 repositories:
   - label: Expense Analysis Workflow
     url: https://github.com/matlus/Analyze-Expenses-Workflow
