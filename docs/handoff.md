@@ -6,7 +6,10 @@ The owner approved commit, push, PR and merge for **Verified, Not Trusted:
 Expense Analysis, Part Two**. Its publication copy is in
 `src/content/writing/verified-not-trusted-expense-analysis-part-two.md`.
 Part One links forward to it. The article preserves the verification refrain,
-title emphasis, idea callout and existing series hero, and adds two flow diagrams.
+title emphasis and idea callout, and adds two flow diagrams. Its distinct hero
+shows two women inspecting a floating mechanical graph with parallel branches
+and convergence. The owner approved the 2160 x 468 crop for publication: it keeps
+both heads, faces and working hands visible in the 60:13 frame without upscaling.
 See the [publication register](expense-analysis-part-two-publication.md) for source
 verification, metadata and the public source repository links. The
 publication PR carries the deployment receipt.
