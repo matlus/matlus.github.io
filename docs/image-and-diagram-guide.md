@@ -1,6 +1,6 @@
 # Images and Diagrams
 
-Updated: 2026-10-05
+Updated: 2026-10-06
 
 The site uses technical editorial ink for hero art. Diagrams within articles
 default to pastel architectural infographics. A flat style with fine outlines
@@ -30,7 +30,7 @@ image. Save the specific generation prompt beside the selected workspace asset.
 
 Choose each hero from the article's specific argument, example or relationship.
 Identify that connection in its saved prompt, and inspect whether the final
-60:13 crop still communicates it. A generic workshop, laptop, gears or decorative
+hero and card compositions still communicate it. A generic workshop, laptop, gears or decorative
 code is insufficient without a visible relationship to the article's subject.
 Vary the scene and metaphor across a series while preserving the shared style.
 
@@ -76,7 +76,7 @@ photorealistic.
 
 Article idea: <the claim the reader should connect to the image>
 Subject: <one concrete scene or action that makes the idea visible>
-Canvas: 2400 x 520 pixels, exact 60:13 aspect ratio, article hero.
+Canvas: 1600 x 534 pixels, approximately 3:1 aspect ratio, article hero.
 Composition: <a panoramic scene with the complete important relationship in the
 center band; keep essential subjects clear of all crop edges>
 No text, code, labels, logos, or watermark.
@@ -89,30 +89,65 @@ ink sketch**. Add **industrial design sketch** only when machinery is the subjec
 
 | Role | Aspect ratio | Export pixels |
 |---|---|---|
-| Homepage banner | 20:7 | 2400 x 840 at 2x |
-| Article hero | 60:13 | 2400 x 520 at 2x |
-| Tag / section hero | 20:7 | 2400 x 840 at 2x |
-| OG card | 40:21 | 1200 x 630, generated at build time |
+| Article hero | Approximately 3:1 | 1600 x 534 |
+| Article listing card | 12:5 (2.4:1) | 1200 x 500 |
+| Homepage banner | 20:7 | 2400 x 840 |
+| Tag / section hero | 20:7 | 2400 x 840 |
+| OG social card | 40:21 | 1200 x 630, generated at build time |
 
-For every article hero, request a 2400 x 520 canvas explicitly. If the generator
-cannot supply that exact canvas, request its highest-resolution landscape output,
-at least 2400 pixels wide, with the complete scene composed for a centered 60:13
-crop. The delivered source must contain at least 2400 x 520 usable pixels.
-Inspect its actual dimensions; prompt wording alone does not establish them.
-If the available generator cannot meet that resolution, report the limitation
-instead of silently upscaling or substituting a smaller export.
+Request the role's dimensions and ratio explicitly. For heroes, 1600 / 534 is
+about 2.996:1; the export dimensions are authoritative. These are website export
+standards, not a claim about the generator's supported canvas sizes or limits.
+The generator may return a different resolution despite an explicit prompt.
+Measure its output and inspect the composition before conversion. Generate a larger
+original when needed; never upscale an undersized result.
 
 The conversion tool center-crops and downsizes to the exact role dimensions.
-It rejects undersized sources. Keep the original outside the repository and
-record its actual dimensions, the export dimensions and conversion settings in
-the adjacent prompt file. Preserve the original generation brief as provenance;
-append any later conversion or composition changes rather than rewriting history.
+Compose for the target ratio before conversion. If that crop removes an important
+face, hand or relationship, recompose with the image tool and inspect again.
+Compression controls bytes and detail; it must preserve the approved composition.
+Keep originals outside the repository and record actual source dimensions, export
+dimensions and conversion settings in each adjacent prompt file.
 
-Article pages enforce the 60:13 frame, including for older assets with other
-dimensions. At 1200 pixels wide it is 260 pixels tall and scales proportionally
-on smaller screens. Inspect the crop at desktop and phone widths: keep essential
-subjects visible and regenerate a wider composition if cropping loses the idea.
-Compression controls bytes and detail; it must not determine the display ratio.
+Existing hero assets stay unchanged unless replacement is requested. Article
+headers show the whole image at its natural ratio. The listing frame is 12:5:
+roughly 365 x 152 pixels on the desktop grid, scaling proportionally on phones.
+Older articles without a card companion fit their whole hero inside that frame.
+
+### Required article-card workflow
+
+Every new article, including a newly prepared historical article, needs both image
+roles. Read the final article and inspect its hero. Use
+[the reusable card brief](../prompts/generate-article-card.md) with the hero as an
+edit reference. Recompose or redraw the interesting action for the card frame.
+Foreground people take priority over distant figures: retain complete heads,
+faces and working hands, with around 5% breathing space. When two people matter
+to the scene, keep them together if legible; otherwise select the stronger focal
+action. Reduce background clutter before shrinking the subject. Preserve the
+hero's illustration style, identities and article-specific relationship.
+
+Save the companion as `src/assets/heroes/<hero-name>-card.webp` and its full brief
+as `<hero-name>-card.prompt.md`. Use the frontmatter's **hero asset name**, which
+may differ from the article slug. The shared ArticleCard component resolves this
+companion automatically on the homepage, writing index, topic and related lists.
+No second frontmatter field is needed. OG social cards keep their separate process.
+
+```bash
+node tools/prepare-image.mjs <hero-original.png> <hero-name> --role article
+node tools/prepare-image.mjs <card-original.png> <hero-name>-card --role card
+```
+
+Inspect the exported card at about 320 and 365 pixels wide and in the responsive
+site grid. Verify faces, hair, hands and the article's defining objects remain
+visible, linework survives compression, and no further browser crop occurs.
+Keep the original generation brief and append refinement prompts and export
+measurements. Publish both optimized assets and both prompt records together.
+
+`npm run build` runs `tools/check-card-images.mjs`: every companion must be exactly
+1200 x 500 with a nonempty prompt and matching hero. It also requires companions
+for articles published on or after 2026-09-01, the owner's approved initial batch.
+Older dates retain the existing-art fallback; editorial review must still supply
+a card when preparing a historical article for its first website publication.
 
 ### Generating one
 
@@ -159,9 +194,9 @@ Convert before committing:
 node tools/prepare-image.mjs <generated.png> <slug>
 ```
 
-That writes `src/assets/heroes/<slug>.webp` at exactly 2400 x 520 with WebP quality
+That writes `src/assets/heroes/<slug>.webp` at exactly 1600 x 534 with WebP quality
 82. For a homepage banner or section hero, add `--role banner` or `--role section`
-to export 2400 x 840. These fixed sizes replace the earlier width-only conversion.
+to export 2400 x 840. Use `--role card` with a `<hero-name>-card` slug for 1200 x 500.
 Inspect fine linework after conversion; file size alone is not a quality check.
 Astro then optimizes further per
 breakpoint at build time, which only happens for images under `src/`, not `public/`.

@@ -1,5 +1,22 @@
 # Handoff
 
+## Article cards and image workflow, October 6, 2026
+
+The owner approved the 1200 x 500 (12:5) card experiment and authorized publication
+for the five articles originally published in September and October 2026. This
+batch excludes the 39 older articles updated during those months. Both Expense
+Analysis articles and Pipeline Breadcrumbs reuse the approved card compositions;
+the two Jev articles receive companion cards based on their current heroes.
+All five hero files and article dates remain unchanged.
+
+New article heroes use 1600 x 534 (approximately 3:1); every new article also needs
+a separately composed 1200 x 500 card. This supersedes earlier 60:13 hero guidance
+below. The image guide, reusable card brief, writing guide, transcript workflow,
+blog-writing skill and conversion tool carry the regular process. Article headers
+show natural image proportions; cards use companions when available and fit older
+heroes completely otherwise. The build validates card dimensions and provenance.
+The publication PR records checks and deployment verification.
+
 ## Expense Analysis, Part Two publication, October 6, 2026
 
 The owner approved commit, push, PR and merge for **Verified, Not Trusted:

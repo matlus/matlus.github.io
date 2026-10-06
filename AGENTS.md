@@ -37,12 +37,20 @@ in terms of the example's behavior or evidence, and keep source-comparison notes
 in editorial records. Follow the [standalone article workflow](prompts/transcript-to-standalone-teaching-article.md)
 and [writing guide](docs/writing-guide.md#standalone-articles).
 
-**Article heroes use one fixed frame: 60:13, exported at 2400 x 520 pixels.**
-Include the dimensions and crop-safe composition in every generation brief.
-Follow [the image guide](docs/image-and-diagram-guide.md#fixed-dimensions) for
-generation resolution, inspection and conversion. The shared article layout
-enforces the same ratio for older assets. File-size optimization must preserve
-the aspect ratio and readable illustration detail.
+**Every new article needs a hero and a separately composed listing-card image.**
+New article heroes export at **1600 x 534 pixels, approximately 3:1**. Card images
+export at **1200 x 500 pixels, exact 12:5 (2.4:1)**. Use
+[the card prompt](prompts/generate-article-card.md) to recompose the hero's interesting
+subjects for the smaller display: preserve complete foreground faces and working
+hands, and simplify peripheral scenery. Inspect both at their actual display sizes.
+Follow [the image guide](docs/image-and-diagram-guide.md#fixed-dimensions), save both
+complete prompts beside the optimized assets, and measure the returned dimensions.
+Prompt wording does not guarantee the generator's output size. Keep existing heroes
+unless replacing them is part of the request; article headers show their natural
+ratio. Older articles without companions show the complete hero in the card frame.
+The build checks companion dimensions and provenance, and requires companions for
+articles published from September 2026 onward. Historical articles newly prepared
+for publication also require both images as part of editorial review.
 
 **Every post gets its description and tags from
 [prompts/extract-description-and-tags.md](prompts/extract-description-and-tags.md)**,
