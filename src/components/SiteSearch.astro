@@ -277,7 +277,7 @@
 
             const title = document.createElement('span');
             title.className = 'site-search__title';
-            title.textContent = (result.meta.title ?? result.url).replace(/\s*\|\s*Shiv Kumar$/, '');
+            title.textContent = (result.meta.title ?? result.url).replace(/\s*\|\s*(?:Matlus|Shiv Kumar)$/, '');
 
             const excerpt = document.createElement('span');
             excerpt.className = 'site-search__excerpt';
