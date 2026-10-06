@@ -112,19 +112,26 @@ dimensions and conversion settings in each adjacent prompt file.
 Existing hero assets stay unchanged unless replacement is requested. Article
 headers show the whole image at its natural ratio. The listing frame is 12:5:
 roughly 365 x 152 pixels on the desktop grid, scaling proportionally on phones.
-Older articles without a card companion fit their whole hero inside that frame.
+Every published article has a companion. The rendering fallback can still fit a
+hero completely, but the build rejects a missing companion for a non-draft article.
 
 ### Required article-card workflow
 
 Every new article, including a newly prepared historical article, needs both image
-roles. Read the final article and inspect its hero. Use
+roles. Settle the article title and hero, then read the final article and inspect
+the hero. Use
 [the reusable card brief](../prompts/generate-article-card.md) with the hero as an
-edit reference. Recompose or redraw the interesting action for the card frame.
-Foreground people take priority over distant figures: retain complete heads,
-faces and working hands, with around 5% breathing space. When two people matter
-to the scene, keep them together if legible; otherwise select the stronger focal
-action. Reduce background clutter before shrinking the subject. Preserve the
-hero's illustration style, identities and article-specific relationship.
+edit target and outpaint into the card frame. Preserve the complete scene,
+identities, subject scale and relationships. For a source wider than 2.4:1,
+extend above and below; for a taller source, extend the sides. A matching-ratio
+hero only needs a card-sized export. The brief gives the exact margin formulas.
+A 3:1 hero needs 50 pixels above and below at the 1200 x 500 export size.
+
+Compare the derivative with its hero at equal card-frame dimensions. A model
+may redraw details despite preservation instructions, so inspect faces, hands,
+objects and meaning. If outpainting remains unreadable at card size, recompose
+the strongest action using the hero as reference and record the reason.
+Keep previously approved card compositions when filling missing companions.
 
 Save the companion as `src/assets/heroes/<hero-name>-card.webp` and its full brief
 as `<hero-name>-card.prompt.md`. Use the frontmatter's **hero asset name**, which
@@ -137,17 +144,17 @@ node tools/prepare-image.mjs <hero-original.png> <hero-name> --role article
 node tools/prepare-image.mjs <card-original.png> <hero-name>-card --role card
 ```
 
-Inspect the exported card at about 320 and 365 pixels wide and in the responsive
-site grid. Verify faces, hair, hands and the article's defining objects remain
+Inspect the full card with its title and description at about 320 and 366 image
+pixels wide and in the responsive site grid. The measured desktop image area is
+about 366 x 153 CSS pixels. Verify faces, hair, hands and defining objects remain
 visible, linework survives compression, and no further browser crop occurs.
 Keep the original generation brief and append refinement prompts and export
 measurements. Publish both optimized assets and both prompt records together.
 
 `npm run build` runs `tools/check-card-images.mjs`: every companion must be exactly
-1200 x 500 with a nonempty prompt and matching hero. It also requires companions
-for articles published on or after 2026-09-01, the owner's approved initial batch.
-Older dates retain the existing-art fallback; editorial review must still supply
-a card when preparing a historical article for its first website publication.
+1200 x 500 with a nonempty prompt and matching hero. It requires a companion for
+every non-draft article, including historical articles. Source titles, dates,
+hero files and article text are preserved during card-only work.
 
 ### Generating one
 

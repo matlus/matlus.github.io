@@ -1,4 +1,4 @@
-/** Validate companion art and the September 2026 onward publication baseline. */
+/** Validate companion art for every published article, including historical work. */
 import { readdir, readFile, access } from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
@@ -21,16 +21,14 @@ for (const name of cards) {
   }
 }
 
-// Earlier published articles retain their existing-art fallback. Historical
-// articles newly prepared for publication also require a card in editorial review.
+// Dates do not exempt historical articles. Drafts may remain unfinished.
 const articles = 'src/content/writing';
 let required = 0;
 for (const name of await readdir(articles)) {
   if (!/\.mdx?$/.test(name)) continue;
   const source = await readFile(path.join(articles, name), 'utf8');
   const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---/u)?.[1] ?? '';
-  const published = frontmatter.match(/^datePublished:\s*['"]?(\d{4}-\d{2}-\d{2})/mu)?.[1];
-  if (!published || published < '2026-09-01') continue;
+  if (/^draft:\s*true\s*(?:#.*)?$/mu.test(frontmatter)) continue;
   required++;
   const hero = frontmatter.match(/^hero:\s*['"]?([a-z0-9-]+)/mu)?.[1];
   if (!hero || !cards.includes(`${hero}-card.webp`)) {
