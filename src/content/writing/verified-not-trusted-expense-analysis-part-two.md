@@ -7,6 +7,10 @@ description: >-
 datePublished: 2026-10-06
 dateModified: 2026-10-06
 hero: verified-not-trusted-expense-analysis-part-one
+repositories:
+  - label: Expense Analysis Workflow
+    url: https://github.com/matlus/Analyze-Expenses-Workflow
+    context: Python controller, bounded model decisions, and verification for Part Two.
 tags:
   - verified-not-trusted
   - verification

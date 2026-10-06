@@ -38,9 +38,10 @@ the answer. These are described as opportunities for future work.
 
 ## Source links
 
-Authenticated inspection on October 6 confirmed that the source repository remains
-private. Its visibility is unchanged. Public repository resource cards and
-reciprocal README links are deferred until the source is publicly accessible.
+The owner subsequently authorized making the source repository public on October 6.
+Anonymous GitHub API access confirmed its public visibility. The article now links
+to [Analyze Expenses Workflow](https://github.com/matlus/Analyze-Expenses-Workflow),
+and the repository README links back to the live article.
 The article includes the code and explanation needed for its lesson.
 There is no directly associated source video for this article.
 
