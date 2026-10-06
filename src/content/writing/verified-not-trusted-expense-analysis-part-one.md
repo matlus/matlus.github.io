@@ -18,6 +18,8 @@ related:
 status: established
 ---
 
+<!-- audit-allow: Verified, not trusted -->
+
 ## Comparing Two Prompts
 
 ***Verified, not trusted*** means checking the evidence behind an AI-generated answer before using it. For an expense total, that means checking which transactions were counted, how they were categorized, and whether the calculation reproduces the reported amount. A clear explanation or a tidy table is not enough to establish those facts.
@@ -87,6 +89,10 @@ Before interpreting anything:
 
 Don't estimate totals or do the arithmetic in your head — show the code. After the tables, tell me the three things you'd most want me to know about my spending this quarter.
 ```
+
+Notice that this prompt describes a sequence of steps. Parsing comes before categorization, cleanup comes before calculation, and the tables come before the interpretation. Coordinating those steps, their inputs, and what happens after each result is **orchestration**.
+
+The **controller** carries out that orchestration. Here, the model is the controller. The prompt supplies instructions, and the model chooses the actions to request, examines their results, and decides what to do next. That repeated process is the **control loop**. Asking the model to use Python inside one step leaves the model in charge of the surrounding orchestration.
 
 <details class="expense-example-output">
 <summary>Recorded model output</summary>
@@ -332,7 +338,7 @@ Each clause has a specific job. It asks for work that supports verification, or 
 **What this changes:** These instructions ask for evidence that can be inspected before accepting the conclusions. Displaying code does not prove that it ran or produced the tables. We need to check that the code uses the supplied data and that its output agrees with the reported results.
 
 
-The order matters. If a duplicate is removed after a table has been calculated, the table must be recomputed. If a transaction changes category, the relevant category totals and budget comparisons must change with it. The findings depend on the final, corrected tables.
+The order matters. If a duplicate is removed after a table has been calculated, the table must be recomputed. If a transaction changes category, the relevant category totals and budget comparisons must change with it. The findings depend on the final, corrected tables. These are responsibilities of the controller. In this approach, we are asking the model to remember and enforce those dependencies.
 
 ## Check the instructions against actual lines
 
@@ -393,10 +399,46 @@ Review both responses against the same checks:
 
 These checks give ***Verified, not trusted*** a practical meaning. Confidence in a total comes from accounting for the source entries and reproducing the calculation. Confidence in a finding comes from checking it against those totals. A result that still depends on an unresolved category or possible duplicate should state that dependency.
 
+## The stakes and the person in the loop
+
+There are two dimensions to consider: the consequences of an error, and whether a person verifies the work before its result is used.
+
+At one end, you are using a prompt or skill to explore your household expenses. You are sitting there, checking the entries, double-checking the tallies, and asking for corrections. You want to understand your budget. The stakes are low, and a human is in the loop. A prompt or skill can be perfectly reasonable for that job.
+
+At the other end, a large organization wants to automate its expense accounting. The results feed business records and decisions, and nobody checks each run before it proceeds. The stakes are high, and the pipeline is fully automated. I would not put that responsibility in the hands of a model-controlled prompt. The accounting has to be correct. An occasional wrong total is a failure, however convincing the explanation around it may be.
+
+| | Personal budgeting | Automated organizational accounting |
+| --- | --- | --- |
+| Consequences of an error | Limited consequences while exploring a household budget | Incorrect records and consequential business decisions |
+| Human verification | A person checks entries and tallies before using the result | Nobody reviews each execution before its result proceeds |
+| Control and checks | A prompt or skill directs the model; the person verifies the work | Application code enforces required steps and checks before accepting a result |
+
+Those are the two extremes. High stakes can still involve a human reviewer, and low-stakes work can run unattended. Increasing the stakes demands stronger evidence. Removing the reviewer means the application must perform the checks that person would otherwise perform. Watching an answer appear is not verification.
+
+## What remains under the model's control?
+
+The second prompt is much more explicit about the work we want. But the model still controls whether it requests a tool call, what it sends to that tool, and what it does with the response. A numbered sequence of instructions does not enforce those actions.
+
+There is another responsibility hidden in “use code.” We are asking the model to generate Python during the run. We must inspect that code as well as establish that it executed. Python will happily execute an incorrect calculation. Successful execution tells us nothing by itself about whether every expense was included or every rule was applied.
+
+We have a concrete example above. The prompt asks for each transaction's date to be parsed, but the recorded code assigns months by line position. Its duplicate removal also depends on the input having been prepared in a particular way. The replay reproduces the figures under those conditions. It does not turn those shortcuts into a general implementation of the instructions.
+
+Even within a prompt-based approach, I would rather supply calculation code that we have written, reviewed, and tested, and explicitly instruct the model to use it without generating a replacement. That removes the need to invent the implementation during each run. It still leaves the model controlling the call and the use of its result.
+
+Suppose our tested function returns $398.69 for August dining. The execution record shows that it ran with the intended inputs and returned that value. Have we established that the final report uses $398.69? No. The model could write $389.69, use a total from before a correction, or compare a different value with the budget. A correct function can return the correct answer while the overall workflow delivers the wrong one.
+
+That is why I want evidence for the whole chain: the intended operation ran, it received the intended inputs, its result met the requirements, and the later calculations and report used that result. A tool call is one link in that chain.
+
+Models can follow these instructions very well. The problem is the run in which one step goes wrong. We do not know in advance which run that will be, and a history of good answers does not verify the next answer. For unattended work with serious consequences, I will not accept “it usually gets it right” as the basis for correctness.
+
+These actions and results can be checked through execution records, retained inputs, and comparisons with the delivered output. The prompt itself establishes none of them, and the model's assurance that it followed the prompt is insufficient. ***Verified, not trusted*** applies to the orchestration as well as the arithmetic.
+
 ## From instructions to a repeatable workflow
 
-The more precise prompt spells out work that the standard prompt leaves to the model. It helps us ask for evidence and identify decisions that need review. ***Verified, not trusted*** applies to this prompt too: we must check the evidence, reproduce the calculations, and limit the findings to what the data supports.
+For the automated end of that spectrum, I want imperative code to be the controller. The application must call the required operations, pass their results to the next steps, and enforce the checks that permit work to continue. Models can still help with interpretation and classification inside that flow. Their contributions must pass the application's checks before being used.
 
-If we discover that a refund was counted as a purchase, telling the model to preserve negative amounts is only the start. Keep that input and the expected signed result as a regression test, and run it when the prompt, model, or calculation code changes. That gives the correction a lasting check.
+We have to test that application code too. If a refund was counted as a purchase, keep the input and expected signed result as a regression test. Run it when the relevant implementation changes. That gives the correction a lasting check instead of another instruction we hope the model remembers.
 
-[Part Two](/writing/verified-not-trusted-expense-analysis-part-two/) moves these steps into a coded workflow. It examines which operations can be controlled by the application, where classification still requires judgment, and how to check the result before presenting findings.
+A skill can invoke this maintained workflow. The important questions are who controls its execution and who verifies the result. Packaging the instructions as a skill does not answer either question by itself.
+
+[Part Two](/writing/verified-not-trusted-expense-analysis-part-two/) takes up these remaining responsibilities: enforcing the sequence, preserving the inputs and returned values, checking model contributions, and building the report from checked results. We will first explain how imperative orchestration changes control of the work, then follow a Python implementation through the expense analysis.

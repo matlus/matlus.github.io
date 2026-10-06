@@ -34,13 +34,27 @@ status: established
 
 In [Part One](/writing/verified-not-trusted-expense-analysis-part-one/), we analyzed an expense log with two prompts. The second prompt spelled out the work: parse every line, preserve uncertainty, handle refunds and duplicates, calculate with code, and then explain the results. Those instructions made the response easier to examine. We still had to establish that the requested work had happened and that the result met the requirements.
 
-Now imagine that this analysis runs overnight for a client. Nobody is sitting beside the assistant, watching the response arrive. There is no opportunity to say, “Hang on. You counted the refund as another purchase.” The result goes into another process, and that process makes a decision based on it.
+Would we be comfortable relying on the prompt discussed in the previous article?
 
-Would you be comfortable relying on the same prompt?
+Before answering that, what is the issue with that prompt in the first place? It describes the steps, but the model remains in charge of carrying them out. The instruction to use Python has not transferred control of the workflow to Python.
 
-I would want the application to control the sequence, perform the calculations, and check the evidence before allowing a result to proceed. I would still use models where their judgment helps. I would give them much smaller jobs.
+Coordinating the steps, their inputs, and what happens after each result is **orchestration**. The **controller** carries out that orchestration. In the prompt-based approach, the model chooses the actions to request, examines their results, and decides what to do next. That repeated process is the **control loop**. The prompt supplies instructions to the controller.
 
-That is the subject of this part: a directed graph whose controller is imperative Python code, with model calls inside particular steps. Python decides which step runs next, what counts as an acceptable answer, when to retry, and what to do with unresolved input. Models supply judgments within those boundaries.
+The model therefore controls whether it requests the calculation, which data it supplies, and whether it recalculates after correcting a transaction. It also decides when it has enough information to produce the report. We have described what should happen. We still need evidence of what actually happened.
+
+### Calling Python leaves several things to verify
+
+First, an instruction to call a tool does not establish that the call happened. Showing Python in an answer does not establish that it executed. We need the execution record and the inputs and outputs associated with that call.
+
+Second, this prompt asks the model to generate the Python during the run. Even if that code executed successfully, did it implement the instructions correctly? Part One's recorded code assigns months by line position despite the request to parse dates. Python can carry out that shortcut perfectly. Successful execution does not make it the requested implementation.
+
+Supplying our own reviewed and tested code, with instructions to use it without generating a replacement, would improve that part of the approach. But there is still a gap after the function returns.
+
+Suppose the tested function returns $398.69 for August dining. The model now has that answer. What establishes that it uses $398.69 in the report and in the budget comparison? It could write $389.69 or reuse a total calculated before a correction. The function has done its job correctly. The delivered result can still be wrong.
+
+We must check that the intended operation ran with the intended inputs, that its result met the requirements, and that subsequent steps used that result. Verifying the function call alone leaves the rest of that chain unchecked.
+
+Models can follow instructions very well. That does not tell us which future run will skip a step, mishandle a response, or carry the wrong value forward. When the consequences are serious, “it usually gets it right” is nowhere near good enough. I want the checks to be part of execution, with successful completion dependent on them.
 
 The theme remains ***Verified, not trusted***. I don't find “trust but verify” a useful starting point here. It grants the answer trust before we have established a reason for doing so. The order I want is ***Verified, therefore trusted***. Until the relevant checks have passed, that answer has not earned our trust. And the trust extends only as far as those checks establish.
 
@@ -49,29 +63,46 @@ The theme remains ***Verified, not trusted***. I don't find “trust but verify�
   <div class="article-callout__content">
     <p><strong>Instruction is not assurance.</strong></p>
     <p>An instruction can go unperformed. It can also be performed incompletely while the model reports success. We need evidence that the work happened and that it met the requirements.</p>
-    <p>In this workflow, code performs the checks before accepting the model's contribution. <strong><em>Verified, not trusted.</em></strong></p>
+    <p>A successful tool call still leaves us to check how its result was used. <strong><em>Verified, not trusted.</em></strong></p>
   </div>
 </div>
 
 ## The stakes and the person in the loop
 
-There is a spectrum here. A skill can do most of the work for a person who is present to inspect the result and ask for corrections. For a rough look at household spending, that can be a useful arrangement. We may tolerate a little back and forth because we can see the mistakes and the consequences are limited.
+There are two dimensions to consider: the consequences of an error, and whether a person verifies the work before its result is used.
 
-Move the same task into work for a company or a client, and the cost of an incorrect calculation changes. Having a person in the loop still helps, but it does not make occasional wrong totals acceptable. That person needs evidence they can review efficiently.
+At one end, you are using a prompt or skill to explore your household expenses. You are sitting there, checking the entries, double-checking the tallies, and asking for corrections. You want to understand your budget. The stakes are low, and a human is in the loop. A prompt or skill can be perfectly reasonable for that job.
 
-Then remove the person from the execution loop. The workflow may run hundreds of times, with unusual inputs arriving while nobody is watching. The checks that a person might have remembered to request now need to be part of the application.
+At the other end, a large organization wants to automate its expense accounting. The results feed business records and decisions, and nobody checks each run before it proceeds. The stakes are high, and the pipeline is fully automated. I would not put that responsibility in the hands of a model-controlled prompt. The accounting has to be correct. An occasional wrong total is a failure, however convincing the explanation around it may be.
 
-| Situation | Who directs the work? | Where does verification happen? |
+| | Personal budgeting | Automated organizational accounting |
 | --- | --- | --- |
-| An interactive prompt or skill for a low-stakes task | The model interprets the request and chooses its actions | A person examines the work and requests corrections |
-| An explicit procedure like Part One's second prompt | The model follows a stated sequence, including using code | A person checks that the procedure was followed and the results agree |
-| A maintained workflow for consequential or unattended work | Imperative code controls steps, branches, retries, and acceptance | Programmed checks run during execution; unresolved cases remain visible or stop further action |
+| Consequences of an error | Limited consequences while exploring a household budget | Incorrect records and consequential business decisions |
+| Human verification | A person checks entries and tallies before using the result | Nobody reviews each execution before its result proceeds |
+| Control and checks | A prompt or skill directs the model; the person verifies the work | Application code enforces required steps and checks before accepting a result |
 
-The second prompt describes a sequence, but the model is still responsible for carrying it out. Asking it to write and run a script does not, by itself, establish that the script used the correct inputs or applied every rule.
+Those are the two extremes. High stakes can still involve a human reviewer, and low-stakes work can run unattended. Increasing the stakes demands stronger evidence. Removing the reviewer means the application must perform the checks that person would otherwise perform. Watching an answer appear is not verification.
 
-A skill can also invoke the maintained workflow in the third row. Skills are a way to package instructions and capabilities; they do not require us to surrender control of the underlying calculation. The useful questions are: Who controls execution? What is verified? What happens when verification fails? I discuss that distinction further in [Skills versus Controlled Workflows](/writing/skills-versus-controlled-workflows/).
+## Put imperative code in charge of orchestration
 
-Higher stakes and less human oversight justify more work on explicit rules, evidence, and failure behavior. The expense example lets us examine what that extra work looks like. Its report exposes unresolved entries; an application that acts on the report must also decide which unresolved conditions prohibit action.
+For the automated end of that spectrum, I want the application to own the control loop. We write and test the code that calls each required operation, passes its result forward, and determines whether the next step can proceed. A model cannot decide that a required check is unnecessary and still obtain a completed report through that path.
+
+Consider the expense calculation. The application first accounts for the source entries and their treatment. It passes that ledger to the calculation function, checks the totals, and uses the returned values to construct the tables. If reconciliation fails, the application stops that path before presenting findings. The returned amount has a defined route into the report, with no model asked to reproduce the number along the way.
+
+| Responsibility | Model-controlled orchestration | Imperative orchestration |
+| --- | --- | --- |
+| Required calls and their order | The model interprets the instructions and requests actions | Application code defines the calls and their dependencies |
+| Calculation implementation | The model generates code during the run | Maintained, reviewed, and tested code performs the calculation |
+| Use of returned values | The model decides how to use the tool response | Code passes returned values into subsequent operations and report construction |
+| Acceptance and failure | Instructions ask the model to check and respond | Programmed checks control acceptance, retries, and failure paths |
+
+This is code we must maintain and test. Its value is that we can inspect and test the required sequence, the movement of values, and the failure behavior as an implementation. We can make successful completion depend on those checks.
+
+Models still have useful work to do inside that flow. Interpreting an ambiguous transaction is one example. The application asks for that judgment, checks the response against the evidence it holds, and determines how to proceed. The model's answer is an input to the controller.
+
+A skill can invoke this maintained workflow. Skills package instructions and capabilities; the application underneath can still control the calculation and report. I discuss that distinction further in [Skills versus Controlled Workflows](/writing/skills-versus-controlled-workflows/).
+
+The implementation below uses imperative Python as the controller. Its calls and branches form a directed graph, with model calls inside particular steps. It also preserves unresolved entries in the report. An application that acts on that report must define which unresolved conditions prohibit action; a report with missing amounts cannot acquire permission to proceed merely because the arithmetic balances.
 
 ## Give the model the smallest useful job
 
@@ -515,7 +546,7 @@ This arrangement gives the LLM a constrained selection task. Its choices can sti
 
 There is also an obvious opportunity to remove work: if the rules already require exactly three candidates, code could select those directly. This version still calls the LLM. The principle applies here too: if the application has already determined the answer, another model call needs a reason.
 
-The final Markdown report is composed by Python from the structured result. Formatting tables and inserting verified statements do not require another model.
+The final Markdown report is composed by Python from the structured result. Formatting tables and inserting verified statements do not require another model. This closes the returned-value gap we identified at the start: code carries the calculated amounts and selected statements into the report, without asking an LLM to reproduce them. The report construction is part of the implementation we can inspect and test.
 
 ## What have we gained?
 
