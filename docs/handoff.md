@@ -1,5 +1,23 @@
 # Handoff
 
+## Programming to Exceptions card companions, October 6, 2026
+
+The owner extended the card work to Programming to Exceptions Parts 1, 2 and 3.
+Their 2400 x 520 heroes remain unchanged. Previously, each card fitted the full
+hero into the 12:5 frame, leaving space above and below and making people small.
+Three dedicated 1200 x 500 companions now bring the foreground action closer:
+method-contract machinery, diagnostic inspection, and structured-log investigation.
+The shared card resolver selects them by the existing hero asset names. Individual
+prompts beside the assets preserve the full generation and export provenance.
+Article text, metadata and dates are unchanged. The follow-up PR records checks
+and publication verification.
+
+The owner also requested website branding in browser titles. The homepage title
+is `Matlus - Engineering with Intent`; article and section titles use a `| Matlus`
+suffix, including Search. Author attribution remains Shiv Kumar. Search suggestions
+strip the site suffix from result titles, including the former suffix in cached
+search data.
+
 ## Article cards and image workflow, October 6, 2026
 
 The owner approved the 1200 x 500 (12:5) card experiment and authorized publication
