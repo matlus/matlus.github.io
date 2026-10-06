@@ -5,13 +5,16 @@ description: >-
   Expense totals need verifiable source coverage and reproducible calculations.
   Two prompts show how parsing, category rules, refunds, and code shape the evidence.
 datePublished: 2026-09-30
-dateModified: 2026-10-02
+dateModified: 2026-10-06
 tags:
   - verified-not-trusted
   - verification
   - prompting
   - python
 hero: verified-not-trusted-expense-analysis-part-one
+related:
+  - verified-not-trusted-expense-analysis-part-two
+  - skills-versus-controlled-workflows
 status: established
 ---
 
@@ -396,4 +399,4 @@ The more precise prompt spells out work that the standard prompt leaves to the m
 
 If we discover that a refund was counted as a purchase, telling the model to preserve negative amounts is only the start. Keep that input and the expected signed result as a regression test, and run it when the prompt, model, or calculation code changes. That gives the correction a lasting check.
 
-Part two will move these steps into a coded workflow. It will examine which operations can be controlled by the application, where classification still requires judgment, and how to check the result before presenting findings.
+[Part Two](/writing/verified-not-trusted-expense-analysis-part-two/) moves these steps into a coded workflow. It examines which operations can be controlled by the application, where classification still requires judgment, and how to check the result before presenting findings.
