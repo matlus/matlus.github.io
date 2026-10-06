@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "node tools/check-card-images.mjs && astro build && pagefind --site dist && node tools/check-search.mjs dist",
+    "build": "node tools/check-card-images.mjs && astro build && node tools/check-built-card-images.mjs dist && pagefind --site dist && node tools/check-search.mjs dist",
     "preview": "astro preview",
     "typecheck": "astro check",
     "test:links": "node --experimental-strip-types --test tools/external-links.test.mjs",

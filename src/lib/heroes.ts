@@ -13,6 +13,9 @@ export function heroFor(slug: string): ImageMetadata | undefined {
 
 /** A companion uses the hero's asset name, which can differ from the article slug. */
 export function cardImageFor(hero: ImageMetadata): ImageMetadata | undefined {
-  const source = Object.keys(heroes).find((key) => heroes[key]?.default.src === hero.src);
+  // Production optimization can give identical hero and topic assets the same URL.
+  const source = Object.keys(heroes).find((key) =>
+    heroes[key]?.default.src === hero.src
+    && heroes[key.replace(/\.webp$/, '-card.webp')] !== undefined);
   return source ? heroes[source.replace(/\.webp$/, '-card.webp')]?.default : undefined;
 }

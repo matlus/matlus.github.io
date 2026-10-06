@@ -21,6 +21,11 @@ Adjacent card prompts retain the individual briefs and export provenance.
 Article prose, titles, dates and hero files are unchanged. The publication PR
 records the validation and deployment receipt.
 
+Production optimization can merge identical article and topic hero assets into
+one URL. Card lookup must choose a matching source that actually has a companion.
+The build also checks the rendered writing listing, catching missing companions
+that source-file validation and the development preview cannot reveal.
+
 ## Programming to Exceptions card companions, October 6, 2026
 
 The owner extended the card work to Programming to Exceptions Parts 1, 2 and 3.
