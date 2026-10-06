@@ -8,7 +8,7 @@ Expense Analysis, Part Two**. Its publication copy is in
 Part One links forward to it. The article preserves the verification refrain,
 title emphasis, idea callout and existing series hero, and adds two flow diagrams.
 See the [publication register](expense-analysis-part-two-publication.md) for source
-verification, metadata and the private-repository backlink limitation. The
+verification, metadata and the public source repository links. The
 publication PR carries the deployment receipt.
 
 ## Pipeline Breadcrumbs publication, October 5, 2026
