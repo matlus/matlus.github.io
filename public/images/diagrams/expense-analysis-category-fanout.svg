@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="722" viewBox="0 0 640 722" role="img" aria-labelledby="title desc">
+<title id="title">Fan out decisions; gather ordered results</title><desc id="desc">Concurrent categorization tasks call Jev and apply Python policy. At most eight are in the categorization section at once. Incomplete lines bypass the model. Results are gathered in input order, not completion order.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#8a8276"/></marker></defs>
+<style>text{font-family:Segoe UI,Arial,sans-serif;fill:#1c1a17}.heading{font-size:24px;font-weight:650}.label{font-size:21px;font-weight:600}.detail{font-size:18px}.path{fill:none;stroke:#8a8276;stroke-width:2;marker-end:url(#arrow)}</style>
+<rect width="100%" height="100%" rx="16" fill="#fdfcfa"/>
+<text x="320" y="38" text-anchor="middle" class="heading">Fan out decisions; gather ordered results</text>
+<rect x="90" y="62" width="460" height="78" rx="12" fill="#e8f0f7" stroke="#2b5c8a" stroke-width="1.5"/>
+<text x="320.0" y="93" text-anchor="middle" class="label">Python creates one task per line</text>
+<text x="320.0" y="120" text-anchor="middle" class="detail">At most eight categorization calls at once</text>
+<path d="M320 140V162H116V187M320 162V187M320 162H524V187" fill="none" stroke="#8a8276" stroke-width="2"/>
+<rect x="22" y="187" width="188" height="78" rx="12" fill="#f8f1de" stroke="#8a6a1f" stroke-width="1.5"/>
+<text x="116.0" y="218" text-anchor="middle" class="label">Complete line A</text>
+<text x="116.0" y="245" text-anchor="middle" class="detail">e.g. Kroger</text>
+<rect x="226" y="187" width="188" height="78" rx="12" fill="#f8f1de" stroke="#8a6a1f" stroke-width="1.5"/>
+<text x="320.0" y="218" text-anchor="middle" class="label">Complete line B</text>
+<text x="320.0" y="245" text-anchor="middle" class="detail">e.g. Target</text>
+<rect x="430" y="187" width="188" height="78" rx="12" fill="#f8f1de" stroke="#8a6a1f" stroke-width="1.5"/>
+<text x="524.0" y="218" text-anchor="middle" class="label">Incomplete line</text>
+<text x="524.0" y="245" text-anchor="middle" class="detail">e.g. line 8</text>
+<path d="M116 265V292" class="path"/>
+<rect x="22" y="292" width="188" height="78" rx="12" fill="#f2ebf8" stroke="#7a4a9e" stroke-width="1.5"/>
+<text x="116.0" y="323" text-anchor="middle" class="label">Jev choice</text>
+<text x="116.0" y="350" text-anchor="middle" class="detail">Fixed category set</text>
+<path d="M116 370V397" class="path"/>
+<rect x="22" y="397" width="188" height="78" rx="12" fill="#e6f2f1" stroke="#0f6f6b" stroke-width="1.5"/>
+<text x="116.0" y="428" text-anchor="middle" class="label">Python policy</text>
+<text x="116.0" y="455" text-anchor="middle" class="detail">Retain proposal</text>
+<path d="M116 475V533" class="path"/>
+<path d="M320 265V292" class="path"/>
+<rect x="226" y="292" width="188" height="78" rx="12" fill="#f2ebf8" stroke="#7a4a9e" stroke-width="1.5"/>
+<text x="320.0" y="323" text-anchor="middle" class="label">Jev choice</text>
+<text x="320.0" y="350" text-anchor="middle" class="detail">Fixed category set</text>
+<path d="M320 370V397" class="path"/>
+<rect x="226" y="397" width="188" height="78" rx="12" fill="#e6f2f1" stroke="#0f6f6b" stroke-width="1.5"/>
+<text x="320.0" y="428" text-anchor="middle" class="label">Python policy</text>
+<text x="320.0" y="455" text-anchor="middle" class="detail">Retain proposal</text>
+<path d="M320 475V533" class="path"/>
+<path d="M524 265V397" class="path"/>
+<rect x="430" y="397" width="188" height="78" rx="12" fill="#e8f0f7" stroke="#2b5c8a" stroke-width="1.5"/>
+<text x="524.0" y="428" text-anchor="middle" class="label">Return None</text>
+<text x="524.0" y="455" text-anchor="middle" class="detail">No category call</text>
+<path d="M524 475V533" class="path"/>
+<rect x="22" y="536" width="596" height="104" rx="12" fill="#e8f0f7" stroke="#2b5c8a" stroke-width="1.5"/>
+<text x="320.0" y="567" text-anchor="middle" class="label">Python gathers the task results</text>
+<text x="320.0" y="594" text-anchor="middle" class="detail">Wait for all tasks; read results in source order</text>
+<text x="320.0" y="618" text-anchor="middle" class="detail">A failed category request prevents completion</text>
+<text x="320" y="677" text-anchor="middle" class="detail">One slot per source line → ledger reconciliation</text>
+</svg>
