@@ -20,7 +20,14 @@ import { readableArticleBody } from '../../lib/article-markdown';
 
 export const getStaticPaths = (async () => {
   const posts = await getCollection('writing', ({ data }) => !data.draft);
-  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+  return posts.flatMap((post) => {
+    // Keep the published Markdown URL readable after the HTML route moves.
+    // Its Source header continues to point to the current canonical article.
+    const slugs = post.id === 'ai-native-sdlc'
+      ? [post.id, 'the-ai-native-lifecycle']
+      : [post.id];
+    return slugs.map((slug) => ({ params: { slug }, props: { post } }));
+  });
 }) satisfies GetStaticPaths;
 
 export const GET: APIRoute = ({ props, site }) => {

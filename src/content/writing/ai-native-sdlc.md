@@ -1,7 +1,7 @@
 ---
-title: The AI-Native Lifecycle
+title: AI-native SDLC
 description: >-
-  An AI-native SDLC engineers both gates through certified code review, functional
+  Engineering both gates requires certified code review, functional
   acceptance tests at the boundary ratified by humans, and verification against
   the specification.
 datePublished: 2026-06-08
