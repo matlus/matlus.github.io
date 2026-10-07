@@ -353,7 +353,7 @@ regression suite, so previous features do not require another complete manual pa
 sprint. Human experience judgments remain human work. Backend behaviour is already covered
 by the regression suite of functional acceptance tests at the boundary.
 
-[The AI-Native Lifecycle](/writing/the-ai-native-lifecycle/) explains how the review gate,
+[AI-native SDLC](/writing/ai-native-sdlc/) explains how the review gate,
 test ratification, and verification gate fit together. The
 [Verification with Intent section](/acceptance-testing/) collects the guidance on testing
 strategy, arrangements, and assertions.

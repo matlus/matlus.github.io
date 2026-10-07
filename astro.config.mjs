@@ -118,6 +118,7 @@ export default defineConfig({
   },
   redirects: {
     ...recoveredArticleRedirects,
+    '/writing/the-ai-native-lifecycle/': '/writing/ai-native-sdlc/',
     '/tags/factory-method/': '/writing/factory-method-pattern/',
     '/pwi/validation-exception-handling/': '/pwi/programming-to-exceptions/',
     '/pwi/validation-exception-handling/csharp/': '/pwi/programming-to-exceptions/',
@@ -138,6 +139,7 @@ export default defineConfig({
       // The markdown twins are alternates of pages already listed, so they
       // would be duplicate entries rather than new destinations.
       filter: (page) => !page.endsWith('.md') && !page.endsWith('/tags/factory-method/') &&
+        !page.endsWith('/writing/the-ai-native-lifecycle/') &&
         !page.includes('/pwi/validation-exception-handling/') &&
         !Object.hasOwn(recoveredArticleRedirects, new URL(page).pathname),
     }),
