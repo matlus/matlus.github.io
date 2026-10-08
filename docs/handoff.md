@@ -1,5 +1,22 @@
 # Handoff
 
+## Recurring likeness in hero illustrations, October 8, 2026
+
+Shiv approved using his likeness by default for the principal man in future hero
+scenes, with expressions, head angles, clothing and companions chosen for the
+subject. He may appear alone, with one or two women, or among other people. Other
+editorial illustrations follow the same preference when a male character belongs
+in the scene. People are optional; explicit casting requests take precedence.
+
+The [image guide](image-and-diagram-guide.md#shivs-likeness-in-scenes) contains the
+reference workflow, identity details, four approved examples and updated hero
+prompt template. The reusable portrait is
+`docs/style-references/shiv-kumar-portrait.webp`. Attach it during generation;
+the written description alone is insufficient. `AGENTS.md` carries the standing
+rule. The reference and four examples are retained for future generation and have
+no published page assignment. This records a future generation preference, with
+existing heroes retained.
+
 ## All-article card derivatives, October 6, 2026
 
 The owner approved the Skills versus Controlled Workflows outpainting at the
