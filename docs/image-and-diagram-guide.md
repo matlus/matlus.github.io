@@ -1,6 +1,6 @@
 # Images and Diagrams
 
-Updated: 2026-10-06
+Updated: 2026-10-08
 
 The site uses technical editorial ink for hero art. Diagrams within articles
 default to pastel architectural infographics. A flat style with fine outlines
@@ -59,6 +59,58 @@ design sketch and patent-style technical illustration**, though more expressive 
 true patent drawing. Choose the subject from the article, then choose the treatment
 that makes that subject legible.
 
+### Shiv's likeness in scenes
+
+When a new hero scene includes a man, use Shiv's likeness for the principal male
+character by default. Shiv approved this recurring use on October 8, 2026 after
+reviewing four workshop illustrations with different expressions and head angles.
+Apply the same preference to other editorial illustrations when a male character
+fits the scene. The subject determines whether people belong in an image; diagram
+workflows retain their existing rules about including people.
+
+Shiv may appear alone, with one or two women, or among other people. Choose the
+cast and activity to serve the subject. Keep additional people visually distinct,
+and follow explicit requests for a particular person or cast. The woman in the
+approved examples is an illustrative character, not a required recurring companion.
+
+Use [the saved portrait](style-references/shiv-kumar-portrait.webp) as the primary
+identity reference. This 1254 x 1254 WebP preserves the supplied image's dimensions
+and was converted at quality 95 without cropping. The original supplied file is
+`C:/Users/shivk/Downloads/Autumn Portrait with Denim and Backpack.png`; future
+generation should use the repository copy so it does not depend on Downloads.
+The reference is for generation and is not rendered on a website page.
+
+Inspect and attach the portrait to the image-generation request. A filename or
+written facial description alone does not supply the visual reference. Also attach
+one approved scene when a style or expression reference would help:
+
+| Approved scene | What it demonstrates |
+|---|---|
+| [Mechanical bird](../src/assets/heroes/shiv-workshop-mechanical-bird.webp) | Initial likeness and vintage workshop treatment |
+| [Observatory](../src/assets/heroes/shiv-concentration-observatory.webp) | Deep concentration and a stronger side angle |
+| [Print studio](../src/assets/heroes/shiv-happy-print-studio.webp) | A broad happy smile and interaction with a companion |
+| [Model railway](../src/assets/heroes/shiv-satisfaction-model-railway.webp) | Quiet satisfaction and a relaxed pose |
+
+Each scene has its complete generation brief in the adjacent `.prompt.md` file.
+These examples are references for future work; their approval did not assign them
+to published pages.
+
+Preserve the recognizable short, slightly spiky salt-and-pepper hair, close-cut
+sides, strong eyebrows, brown eyes, facial proportions, and trimmed peppered beard
+and mustache with silver around the mouth and chin. Vary head angle, gaze, posture
+and expression naturally. Clothing is freely chosen for the scene; the blue shirt,
+apron and portrait's backpack are not identity requirements. Full profiles involve
+inference from the supplied view. Use an additional owner-supplied side portrait
+if one becomes available.
+
+Choose an expression that supports the action: concentrated attention, a broad
+happy smile, quiet satisfaction, or another suitable expression. Let cheeks,
+eyelids, brow and mouth change together. Give every person the same ink treatment,
+level of stylization and scene lighting. Direct their attention toward the shared
+activity where appropriate, and check that Shiv's face belongs naturally in the
+illustration. Review likeness, expression, anatomy and interaction at full size,
+then check the complete composition at thumbnail size.
+
 ### Reusable prompt template
 
 Keep the shared visual traits in the style clause. Before writing the subject, read
@@ -76,6 +128,16 @@ photorealistic.
 
 Article idea: <the claim the reader should connect to the image>
 Subject: <one concrete scene or action that makes the idea visible>
+People: <cast suited to the subject, or none; when a man is included, use Shiv
+for the principal male character unless another identity is requested>
+References: <attach the saved Shiv portrait when applicable; identify any
+additional image as a style, expression or composition reference>
+Likeness when applicable: Preserve Shiv's facial proportions, brown eyes, strong
+eyebrows, short salt-and-pepper hair and trimmed peppered beard and mustache.
+Head angle, gaze and expression: <choose these for the action; vary them from
+the reference portrait; let the whole face express the intended emotion>
+Clothing: <choose for the scene; no fixed shirt, apron or accessories>
+Render all people with the same ink treatment, stylization and lighting.
 Canvas: 1600 x 534 pixels, approximately 3:1 aspect ratio, article hero.
 Composition: <a panoramic scene with the complete important relationship in the
 center band; keep essential subjects clear of all crop edges>
@@ -162,6 +224,9 @@ In an interactive Codex task, use the built-in `image_gen` tool. Read the articl
 fill in the article idea, subject, and composition in the template above, and request
 the canvas and resolution specified above. Inspect the result for a clear relationship to the article,
 unrelated objects, and garbled text. Revise the prompt and regenerate when needed.
+When people are included, apply [the likeness guide](#shivs-likeness-in-scenes),
+attach the actual reference images, and save their roles and filenames in the
+asset's prompt record. Choose fresh poses and expressions for the subject.
 The generator saves the original PNG outside the repository; convert the selected
 image with `tools/prepare-image.mjs` before adding it to `src/assets/heroes/`.
 

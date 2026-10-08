@@ -69,6 +69,12 @@ Preserve the teaching when removing recording logistics.
 
 ## Assets and publication
 
+When the scene includes a man, use Shiv's likeness for the principal male
+character by default, following the
+[likeness guide](../docs/image-and-diagram-guide.md#shivs-likeness-in-scenes).
+Attach the saved portrait and choose the pose, expression, clothing and companions
+for the article's subject. Include the reference roles in the saved prompt.
+
 Create an article-specific technical editorial ink hero using the site's image
 guide: 1600 x 534 pixels, approximately 3:1. Also create a companion listing image
 at 1200 x 500 pixels, exact 12:5 (2.4:1), using

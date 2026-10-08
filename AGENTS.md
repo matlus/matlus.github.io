@@ -54,6 +54,15 @@ ratio. Keep previously approved card compositions unless replacing them is reque
 The build requires a 1200 x 500 companion and its prompt record for every
 non-draft article, including historical articles.
 
+**When a hero scene includes a man, use Shiv's likeness by default.** Follow
+[the likeness guide](docs/image-and-diagram-guide.md#shivs-likeness-in-scenes)
+and attach its portrait reference when generating. Choose the expression, head
+angle, clothing, activity and companions to suit the subject. Shiv can appear
+alone, with one or two women, or in a larger group. Other people remain distinct.
+This also applies to other editorial illustrations when they include a suitable
+male character; it does not require adding people to every image or diagram.
+An explicit request for another person takes precedence.
+
 **Every post gets its description and tags from
 [prompts/extract-description-and-tags.md](prompts/extract-description-and-tags.md)**,
 run by a sub-agent before publishing. New tags go into `src/data/tags.ts` without
