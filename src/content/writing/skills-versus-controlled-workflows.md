@@ -1,401 +1,456 @@
 ---
 title: Skills versus Controlled Workflows
 description: >-
-  When a useful answer is enough, and when you also have to demonstrate that a
-  prescribed procedure was followed.
+  Stakes and human verification determine where workflow control belongs. Explicit
+  prompts guide a model; imperative code enforces steps, checks, and use of results.
 datePublished: 2026-06-19
-dateModified: 2026-10-08
+dateModified: 2026-10-09
 tags:
+  - prompting
   - verification
+  - verified-not-trusted
   - agent-orchestration
-  - ai-assisted-development
   - code-review
+  - ai-workflow-patterns
 hero: controlled-workflows
 diagrams:
   - controlled-workflow
+related:
+  - verified-not-trusted-expense-analysis-part-one
+  - verified-not-trusted-expense-analysis-part-two
 status: established
 ---
 
-The choice between an AI skill and a controlled workflow depends on what the task requires us to establish. Sometimes a useful answer is enough. Sometimes we must also demonstrate that a prescribed process was followed, that every required item was assessed, and that missing or invalid work did not silently become a clean result.
+<!-- audit-allow: Verified, not trusted -->
 
-This guide compares those situations. It treats skills as a valuable way to communicate expertise and organize work, including skills written with extensive procedural instructions. It also explains why some requirements call for executable controls around model reasoning.
+Suppose you ask an AI assistant to analyze your expenses. It organizes the transactions, calculates totals, and explains where your spending increased. You check the entries, question a category, and ask it to recalculate. A prompt or skill can be perfectly reasonable for that job.
 
-The examples are architectural and educational. They do not report the release readiness, measured accuracy, or acceptance status of any product.
+Now suppose those results feed an organization's accounting records automatically. Nobody checks each run before the next system uses the answer. A missed transaction or an incorrect total can affect business decisions. Would you leave the model in charge of deciding which checks to perform and whether the work is complete?
 
-Scope of these lessons: The skills and controlled workflows discussed here run automatically from start to finish. People define requirements before execution and evaluate or act on the results after the run ends. No step waits for a human decision. If required work cannot be completed, the run ends with an explicit failed, incomplete, or unresolved outcome under its execution rules. Ending a run does not mean that verification succeeded.
+I would not. For unattended work with serious consequences, I will not accept "it usually gets it right" as the basis for correctness.
 
-Verified, not trusted. A claim is accepted only when the required evidence and checks support it. A confident answer, a statement that work is complete, or agreement between models cannot substitute for verification. Verification is a condition of acceptance, rather than an optional check after accepting a claim on trust. Every verified result must also make clear what was checked and what remains uncertain. Complete execution does not prove that every model judgment is correct.
+That gives us a spectrum to work through. At one end, the stakes are low and a person verifies the work before using it. At the other, the stakes are high and execution is fully automated. Between them are useful combinations of explicit instructions, tested tools, human review, and application controls.
 
-**Core teaching principle:** Use a skill to communicate expertise and guide work. Use executable controls wherever requirements demand that a procedure be enforced and its execution demonstrated. Use them together when both are needed. (Verified, not trusted.)
+To choose among them, we need to understand what improves as a prompt becomes more precise, what remains under the model's control, and what changes when imperative code takes charge.
 
-## 1. Start with a fair comparison
+<span id="7-choosing-an-approach"></span>
 
-A serious review skill can contain much more than a request to read some guidelines. It might specify:
+## The stakes and the person in the loop
 
-  - How to inventory the code and identify relevant classes.
-  - How to determine which guidelines apply to each class.
-  - How to construct and maintain a coverage matrix.
-  - Which reviews must be independent and what information to withhold.
-  - How to handle missing evidence, contradictory findings, and failed workers.
-  - How to check completion and distinguish uncertainty from a clean assessment.
-  - How to structure the final report and preserve supporting evidence.
+There are two dimensions to consider: the consequences of an error, and whether a person verifies the work before its result is used. They often move together in these examples, but they are separate decisions.
 
-Those instructions matter. They can substantially improve execution. The comparison in this guide is against such a carefully engineered skill, not a weak prompt saying, "Here are 500 guidelines; review my code."
-
-Nevertheless, the completeness of the instructions does not establish the completeness of a particular execution. An assistant can interpret an instruction incorrectly, overlook an item, or accept an incomplete intermediate result. A report that says the checks were performed is not, by itself, independent evidence that they occurred.
-
-**Teaching passage:** Even a meticulously specified skill describes the procedure the assistant is expected to follow; the instructions alone do not establish what occurred during execution. A controlled workflow turns selected requirements into executable checks, so deviations can be detected and incomplete work cannot silently qualify as complete. (Verified, not trusted.)
-
-This is a distinction between instruction and enforcement. It is not a claim that skills always fail or that controllers always succeed.
-
-## 2. Three approaches, rather than a binary choice
-
-A skill is a way to package instructions and supporting resources. A workflow is a procedure. A pipeline is a workflow with stages that process inputs into outputs. A directed graph can represent dependencies and permitted transitions within that workflow.
-
-These concepts overlap. A skill can describe a workflow, coordinate tools, or invoke a complete controller-managed pipeline.
-
-| Approach | What it contains | Who controls progression? |
+| | A person verifies before use | Nobody verifies each run before use |
 | --- | --- | --- |
-| Instruction-only skill | Procedural instructions, domain guidelines, and reference material. | The assistant interprets the instructions and decides what to do next. |
-| Skill with executable helpers | Instructions plus maintained scripts or tools for specific operations. | The assistant coordinates the work; helpers enforce their own local rules. |
-| Controller-managed workflow or pipeline | Executable rules for required stages, inputs, transitions, validation, and failure handling. A skill may provide the entry point. | The controller governs progression; models perform assigned reasoning tasks. |
+| Low stakes | A prompt or skill can support exploration, with the person checking and correcting the work. | A prompt may still be sufficient for disposable output. Add controls for failures that matter, including repeated errors and unexpected cost. |
+| High stakes | Use executable checks for mandatory obligations and give the reviewer the evidence and authority to stop the work. | Put imperative code in charge of required steps, validation, and acceptance. Delegate only bounded judgments to models. |
 
-The middle category matters. A script that validates an assessment can reliably reject a malformed assessment when invoked. It does not establish that the assistant invoked it for every required assessment. Local correctness and complete orchestration are different responsibilities. (Verified, not trusted.)
+The personal-budgeting example belongs in the first cell because we are exploring a household budget and checking the result. A system that changes financial records or makes consequential decisions belongs elsewhere, even if its input looks like the same expense table.
 
-A controller need not be a large graph framework. A small program with explicit sequencing, state, and validation may be sufficient. A workflow may also need loops or conditional paths rather than a fixed acyclic graph. The diagram helps people understand the procedure; executable rules provide the enforcement.
+Human involvement also needs to mean something. A person who sees a polished report and clicks Approve has not necessarily verified it. The reviewer needs access to the source entries, assumptions, computed results, and unresolved issues, with time to examine them before the result takes effect.
 
-### What we mean by a controlled directed-graph workflow
+Increasing the stakes demands stronger evidence. Removing the reviewer means the application must perform the required checks, or stop when it cannot establish what it needs. A human checkpoint can be part of a controlled workflow. An unattended workflow needs an explicit failed, incomplete, or unresolved outcome when the conditions for acceptance are unmet.
 
-A **controlled workflow** is an explicitly designed procedure whose execution is governed by code. A **directed graph** represents its steps as nodes and its dependencies or permitted transitions as arrows. Each step has a defined purpose, required inputs, permitted evidence and tools, expected outputs, and validation and failure rules. In these automated pipelines, steps can perform ordinary computation, invoke a model or bounded agent, or check whether work may proceed. They do not request human decisions during execution. A node does not necessarily represent a sub-agent.
+For worked examples of this spectrum, see [Verified, Not Trusted: Expense Analysis, Part One](/writing/verified-not-trusted-expense-analysis-part-one/) for the prompt comparison and [Verified, Not Trusted: Expense Analysis, Part Two](/writing/verified-not-trusted-expense-analysis-part-two/) for the Python-controlled workflow. Let's use that same expense-analysis task here to see where control resides.
 
-For example, a review workflow might inventory code, determine applicable rules, validate that review plan, dispatch assessments, check that every required result returned, independently challenge findings, and assemble a report. The controller tracks execution state and controls conditional branches, limits, retries where permitted, and stopping. Downstream work receives only the validated outputs and evidence its role permits.
+<span id="1-start-with-a-fair-comparison"></span>
+<span id="2-three-approaches-rather-than-a-binary-choice"></span>
 
-**Concurrency is a design decision, not a consequence of drawing multiple boxes.** Work can run concurrently when inputs are ready, dependencies permit it, and workers will not interfere through shared state. A check that depends on another stage's output must wait. Dividing code by file may also lose caller-callee relationships, shared invariants, or behavior spanning components. Useful decomposition therefore follows reasoning and evidence boundaries, with explicit reconciliation of overlapping or interacting findings. Independent reasoning can run sequentially; simultaneous workers can still be poorly isolated or receive the same anchoring information.
+## Three ways to organize the same work
 
-**Model-family selection and cross-review are separate design choices.** A protocol may require family A and family B to form independent initial assessments, then have A challenge B's findings and B challenge A's findings. The initial passes must finish before their findings are supplied for cross-review if initial independence is required. A cross-review worker necessarily sees the assigned claim, but can receive it in a fresh context without the author's identity or unrelated conclusions. Using different families may help challenge shared assumptions; it does not prove independence or correctness. The controller must also define how disagreements are evaluated, when further adjudication is allowed, and when uncertainty remains unresolved. Agreement alone is not proof. (Verified, not trusted.)
+A **skill** packages instructions, domain knowledge, and supporting resources. Those resources can include executable scripts. A **workflow** describes the procedure for doing the work. A skill can describe a workflow or invoke an application that implements one.
 
-The workflow's design therefore includes more than a list of tasks: it specifies who reasons about what, what each worker can see, what can happen concurrently, how results are checked and combined, and what prevents completion. More sub-agents or more arrows do not automatically improve assurance; each separation and comparison should serve a stated requirement.
+Coordinating the steps, their inputs, and what happens after each result is **orchestration**. The **controller** carries out that orchestration. In a model-controlled session, the model chooses actions to request, examines their results, and decides what to do next. That repeated process is the **control loop**.
 
-## 3. Three claims that should not be confused
+Here are three arrangements we can use for the expense task:
 
-When an assistant finishes a review, we might make three different claims:
-
-1.  **It produced useful findings.** The output contains valuable observations.
-2.  **It followed the required procedure.** All prescribed assessments and constraints were observed.
-3.  **The system can demonstrate that execution.** Records and checks support the claim that required work occurred.
-
-A useful report can satisfy the first claim without establishing the second or third. This matters when the absence of a finding is interpreted as evidence that a rule was checked and no violation was found.
-
-For exploratory work, useful findings may be the intended deliverable. For systematic verification, evidence of coverage and completion is part of the deliverable too.
-
-**Teaching passage:** The relevant question is not merely whether the assistant produced a convincing answer, but whether the system can demonstrate that the answer was produced under the required constraints. (Verified, not trusted.)
-
-## 4. What determinism means in an AI workflow
-
-"Deterministic" should not be used as a single label for the entire system. Several different properties are involved.
-
-| Property | What it means | What a controller can contribute |
+| Approach | What we supply | Who controls progression? |
 | --- | --- | --- |
-| Procedural consistency | The same required rules govern execution on every run. | Enforce prerequisites, required stages, permitted transitions, and stop conditions. |
-| Deterministic mechanical operations | The same relevant inputs produce the same mechanical result. | Apply stable parsing, identity checks, calculations, and validation rules. |
-| Deterministic policy evaluation | The same validated judgments, decisions, and policy inputs produce the same policy outcome. | Compute outcomes through explicit code rather than asking a model to reinterpret the final decision. |
-| Semantic repeatability | Repeated model analysis produces the same findings and judgments. | Constrain context and execution, but cannot generally guarantee identical judgments. |
-| Semantic correctness | Findings and judgments accurately represent the code and requirements. | Support evidence checks and independent challenges, but cannot guarantee correctness or exhaustiveness. |
+| General prompt or skill | The goal, relevant knowledge, and the desired output. | The model works out much of the procedure as it goes. |
+| Explicit procedural prompt or skill, with tested helpers where useful | The sequence, conditions, ambiguity and failure rules, required evidence, and maintained code for particular operations. | The model remains the controller, now following a much more explicit procedure. Helpers enforce their own local rules when invoked. |
+| Imperative controller with bounded model steps | Code implementing the sequence, permitted branches, validation, retries, stopping, and result assembly. Prompts define the particular judgments delegated to models. | Application code controls progression and acceptance. Models answer assigned questions within that flow. |
 
-A controlled workflow can have deterministic transition rules without following the same path on every run. If a model produces five candidates in one run and seven in another, the number of verification calls can differ. The controller can still enforce the rule that every admitted candidate must be verified.
+The middle option improves the instructions as well as the tools. Adding a Python script to a vague prompt leaves many decisions unstated. We should first make those decisions explicit, then use tested code for operations whose behavior we can define.
 
-Similarly, deterministic policy evaluation does not imply byte-identical reports across runs. Timestamps, execution identities, model answers, and other run-specific data can differ.
+These arrangements are compatible with skills. A skill can be the entry point to all three. The useful question is who controls execution after the skill has been invoked.
 
-| Approach | Determinism and consistency |
-| --- | --- |
-| Instruction-only skill | Detailed instructions can improve consistency, but cannot guarantee the same execution path, checks, or findings on every run. |
-| Skill with executable helpers | Helpers can perform deterministic operations; the assistant's selection and sequencing of them may still vary. |
-| Controller-managed workflow | Code can enforce sequencing rules, evidence boundaries, validation, and result assembly. Model judgments, and therefore findings and conditional branches, may still vary. |
+## First, ask for the result
 
-**Teaching passage:** A skill can improve consistency. A controller can enforce the procedure. Neither alone guarantees identical or correct model judgments on every run. (Verified, not trusted.)
+Consider this prompt:
 
-## 5. Is this agentic? Autonomy at different levels
+```text
+Here are our quarterly expenses and budgets. Calculate spending by category,
+determine which categories exceeded budget, find unusual changes, and explain
+what happened.
+```
 
-A controlled workflow can contain agentic behavior without an agent controlling the overall workflow. The stronger form of autonomy is a system receiving a goal, choosing actions, observing results, and revising its approach within defined boundaries.
+It communicates the goal. It leaves the method largely to the model.
 
-The terminology is used broadly. Anthropic's [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) groups workflows and agents under agentic systems while distinguishing predefined orchestration from systems where the model dynamically directs its process and tool use. This is a useful architectural distinction, rather than a universal definition.
+Before it can calculate a total, something has to decide which source lines are transactions, how to interpret dates and negative amounts, which category to assign, and what to do with repeated entries. The model may handle those questions well. The prompt has left it to discover and resolve them during execution.
 
-The following are working definitions for this guide. They describe where decision authority resides, not a ranking in which more autonomy is necessarily better.
+For example, two identical entries might be an accidental duplicate or two separate purchases. A transfer with a date and an amount may still have no known spending purpose. A refund must preserve its negative sign. Correct addition cannot repair a mistake in any of those earlier decisions.
 
-| Dimension | Controlled workflow with model steps | Controlled workflow with bounded agents | Agent-directed workflow |
-| --- | --- | --- | --- |
-| Who defines the overall procedure? | Developers define stages and transition rules. | Developers define the overall procedure; agents choose methods within assigned stages. | The agent plans and revises the procedure within its authority. |
-| What does the model decide? | An assessment, classification, transformation, or other bounded response. | How to investigate or accomplish an assigned subgoal using permitted actions. | Which subgoals to pursue, actions to take, and potentially which workers to delegate to. |
-| How does execution adapt? | Through predefined branches driven by inputs and results. | Through local investigation and feedback loops, followed by controller validation. | Through ongoing planning based on observations and progress toward the goal. |
-| What remains externally controlled? | Sequencing, access, validation, completion, and failure rules. | Those same controls, plus boundaries around each agent's local autonomy. | Permissions, budgets, prohibited actions, required gates, and externally enforced stopping conditions. |
-| When is it a useful fit? | The procedure is understood and each model task can be specified in advance. | Required obligations are fixed, but the investigation needed to satisfy them is variable. | The route to the goal is difficult to prescribe, and adapting the plan is part of the task. |
-| Suggested description | Model-assisted workflow. | Controlled workflow containing bounded agents. | Agent-directed workflow or autonomous agent system. |
+If you are examining the result yourself, you can ask about those decisions and correct them. That can be a useful interactive session. It also shows us what to improve in the prompt.
 
-### Three nuances that prevent misleading labels
+## Then, specify the procedure and its unresolved cases
 
-**Taking different paths does not by itself make a system agentic.** Ordinary code can choose different branches for different inputs. Conversely, an agent may choose the same sensible approach repeatedly. The distinguishing question is whether the model has authority to select and revise actions toward a goal based on feedback.
+For the second approach, suppose we have a documented category policy and maintained helpers for validating transactions and calculating totals. We have reviewed and tested those helpers against independently specified expectations. The following is an illustrative prompt for that setup; it assumes those resources have been supplied.
 
-**Reasoning is not the same as action autonomy.** A model that receives a fixed evidence packet and returns a verdict performs substantive reasoning. Under a stricter definition, that alone does not make it an autonomous agent. If it can choose searches, inspect permitted files, test hypotheses, and decide its next investigative action, it has more clearly agentic behavior, even when confined to one workflow stage.
+```text
+Analyze the attached expense log and budget notes using the supplied category
+policy and the documented validation and calculation helpers. Follow this order:
 
-**A directed graph does not exclude autonomy.** A graph can contain a node that runs an agent's investigation loop. It can also represent a general cycle of planning, acting, observing, and replanning. What matters is who determines the substantive next action, not whether the implementation can be drawn as a graph.
+1. Account for every source line. Preserve its line identifier and original text.
+   Extract the transaction date, description, and signed amount. Record any
+   excluded non-transaction text with its reason. If a date or amount cannot be
+   resolved from the source, list the issue and stop for clarification before
+   calculating a final total.
 
-### Applying the distinction to review and verification
+2. Apply the supplied category policy. Keep transactions whose purpose is unknown
+   explicitly uncategorized. Do not invent a category or budget to fill a gap.
+   If the policy leaves a material choice unresolved, explain the choice and ask
+   for clarification before proceeding.
 
-In the guideline-review example, a controller could require all 40 applicable assessments for a class while allowing a reviewer to choose how to investigate each obligation. The reviewer might follow callers, inspect dependencies, or challenge an apparent violation. It would have discretion over its investigation while lacking authority to omit required assessments or declare incomplete work complete.
+3. Flag possible duplicates without silently deleting them. Apply the policy's
+   rule for confirmed duplicates. If confirmation is required and unavailable,
+   stop and ask. Preserve refunds as negative amounts under the net-spending rule.
 
-For an open-ended task such as diagnosing an unfamiliar failure and proposing a repair, broader planning authority may be useful. The agent may need to discover which components matter, revise hypotheses, and choose new actions based on results. That discretion can coexist with mandatory validation before accepting a repair and externally enforced limits on time, access, or changes.
+4. Show the prepared transactions, exclusions, and unresolved issues. Run the
+   supplied validation helper on those transactions. If validation fails, report
+   the failure and resolve it before calculation. Do not bypass a failed check.
 
-Cross-family review is a separate dimension. Having A challenge B and B challenge A can be a prescribed workflow, an agent-selected strategy, or a controller-required stage containing autonomous investigators. The number or family of the workers does not determine how agentic the system is.
+5. Call the supplied calculation helper with the validated transactions and
+   stated budgets. Use it without replacing or rewriting its implementation.
+   Show the inputs used and the returned category totals, budget comparisons,
+   and monthly changes. If an input changes, repeat validation and calculation.
 
-For the verification architecture discussed in this guide, a precise description is **a controlled verification workflow with bounded model reasoning, and bounded agents where workers can choose investigative actions**. This identifies the authority granted to workers without implying that they can redesign the overall verification protocol. It also avoids calling every fixed model response an autonomous agent.
+6. Explain three findings supported by those returned results. Preserve their
+   amounts in the report and identify the supporting rows. Distinguish possible
+   explanations from facts established by the log. Check the report against the
+   returned results before declaring the analysis complete.
+```
 
-**Teaching passage:** Autonomy can exist at different levels. A controller may govern the overall verification procedure while individual agents choose how to investigate their assigned questions. An agent-directed workflow gives the agent broader authority to plan and revise the procedure itself. Both can use explicit boundaries and executable controls; the difference is which decisions are delegated to the model.
+Notice how much more we have supplied than "use Python." We have specified prerequisites and order. We have described conditions that change what happens next. We have given ambiguity a defined outcome. We have required recalculation after a correction and a comparison between the computed result and the report.
 
-The skill comparison and the autonomy comparison answer different questions. A skill describes how expertise and instructions are supplied. The autonomy comparison describes who chooses actions during execution. A skill can guide any of these three arrangements, and an agent-directed workflow still needs an execution environment that enforces its non-negotiable boundaries.
+Those rules apply to classes of input. "Flag possible duplicates and follow the confirmation policy" works beyond one particular log. "Delete row 108" would encode a decision about a particular dataset. Likewise, preserving signed amounts handles refunds generally; naming one merchant's known refund would leave the underlying rule unstated.
 
-## 6. Benefits, costs, and limitations
+The category policy and helper contracts must be explicit too. "Clean the data" or "handle errors appropriately" would merely move the same unanswered questions into shorter phrases. We cannot enumerate every possible input, but we can say what to do when the supplied rules do not resolve one.
 
-| Dimension | Instruction-only skill | Skill with executable helpers | Controller-managed workflow |
-| --- | --- | --- | --- |
-| Initial effort | Relatively quick to author and revise. | Tools require implementation and testing. | Execution rules, contracts, adapters, and failure paths require engineering. |
-| Flexibility | The assistant can adapt its method to unfamiliar situations. | Adaptable around the operations supported by helpers. | Adaptation occurs within explicitly supported paths. |
-| Procedural consistency | Depends on instruction following and context. | Stronger within individual operations; overall coordination can vary. | Required stages and transitions can be enforced and tested. |
-| Evidence boundaries | Instructions express intended limits; actual access depends on the host. | Helpers can restrict their own inputs and access. | Controller and host mechanisms can construct and enforce worker-specific boundaries. |
-| Failure handling | The assistant interprets failures and chooses a response. | Helpers detect specific failures; the assistant may choose recovery. | Explicit rules govern stopping, retrying, continuing, and reporting incomplete outcomes. |
-| Traceability | Conversation history can help, but accounting may be incomplete. | Structured tool outputs improve traceability. | Designed records can account for required inputs, stages, and results. |
-| Maintenance | Easy to edit, though interactions among instructions can be difficult to diagnose. | Instructions and helper interfaces both need maintenance. | Greater engineering burden, with explicit components and regression tests. |
-| Main limitation | A convincing answer does not establish procedural compliance. | Correct helpers do not establish that every required operation occurred. | Correct execution does not establish that model judgments are correct or exhaustive. |
+This prompt deliberately includes human clarification because it serves an interactive analysis. For an unattended run, unresolved cases need a defined stopping or exception-handling policy. Replacing "ask me" with "use your best judgment" would delegate that decision back to the model.
 
-These are tendencies and capabilities, not automatic guarantees. A controller that merely forwards a large prompt adds little procedural assurance. Its value comes from the controls actually implemented and tested.
+The second approach is therefore a more constrained, model-controlled workflow. We prescribe the procedure in much greater detail, but the controller carrying it out is still a model.
 
-## 7. Choosing an approach
+<span id="11-code-generated-during-execution"></span>
 
-| Question | A skill is often sufficient when | Prefer executable orchestration when |
-| --- | --- | --- |
-| What counts as success? | A useful draft, explanation, or set of suggestions meets the need. | Success also requires evidence that a prescribed procedure was followed. |
-| May the assistant choose the method? | Different investigation paths are acceptable. | Certain steps, ordering, or restrictions are mandatory. |
-| May work be combined or omitted? | The assistant may reasonably simplify the task. | Every required item or assessment must be accounted for. |
-| How strict is independence? | Additional perspectives are helpful. | Separate contexts and withheld information are explicit requirements. |
-| How costly is silent deviation? | A user can readily inspect and correct the result. | An unnoticed omission could invalidate the result or its downstream use. |
-| How strict are outputs? | Presentation and wording can vary. | Other processes depend on validated identities, fields, verdicts, or status rules. |
-| What should happen on failure? | Adapting the method or reporting a limitation is acceptable, without waiting for a human decision during the run. | Specific failures must prevent progression or prevent a clean result. |
-| Must hosts behave consistently? | Some host-dependent behavior is acceptable. | Supported hosts must meet a common execution contract. |
-| How mature is the procedure? | Exploration and refinement of the method are the objective. | Important requirements are stable enough to encode and test. |
+### What tested Python adds
 
-A practical progression is to allow discretion where useful output is sufficient, add helpers where individual operations require exactness, and introduce a controller where correctness depends on how those operations are combined.
+There is a separate improvement in supplying maintained code. Asking the model to generate a calculation script during each run also asks it to decide how that calculation should be implemented. It can choose an incorrect rule and then execute it successfully.
 
-The decisive factor is the assurance requirement, not simply the number of steps. A short workflow can require strict control. A lengthy exploratory task can still be well suited to a skill.
+Part One's recorded expense-analysis code illustrates this: it assigns months by line position despite an instruction to parse dates. Python executes the chosen implementation. Execution alone does not establish that the implementation matches the requirement.
 
-## 8. Example: exploratory codebase evaluation
+Reviewed, tested, versioned helpers let us fix those implementation decisions outside the individual prompt run. Generated code can become such a helper after it has gone through those checks. Tests need expectations derived from the requirements; tests generated from the same mistaken assumption can pass alongside an incorrect implementation.
 
-Consider the request:
+Supplying tested code improves the operation performed by the helper. It leaves the model responsible for calling it with the intended inputs, handling its failure, and using its returned values.
+
+## Instruction is not assurance
+
+Suppose the calculation helper returns $398.69 for August dining. The model could put $389.69 in the report, reuse a total from before a correction, or compare the wrong value with the budget. The helper could have worked perfectly in all three cases.
+
+There is also the earlier possibility that the helper was never called. Showing code in an answer does not establish that it executed. Saying "all checks passed" does not establish which checks ran or what they examined.
+
+**Instruction is not assurance.** An instruction can go unperformed. It can also be performed incompletely while the model reports success. The stronger prompt gives us a better procedure to follow and inspect, but it cannot establish its own execution.
+
+For the expense analysis, we need evidence for this chain:
+
+1. The intended operation ran.
+2. It received the intended inputs.
+3. Its result passed the required checks.
+4. Subsequent operations used that checked result.
+5. The delivered report preserved the result and its qualifications.
+
+A successful tool call accounts for only part of that chain. The model can still skip a later check or disregard a returned value, even after being explicitly told what to do.
+
+This is where ***Verified, not trusted*** applies. We accept a claim when the evidence and checks support it. A model's confidence, its statement that it followed the procedure, and agreement between several models cannot replace that evidence. Verification also has a scope: reproducing totals from a supplied log does not establish that the log contains every real-world expense.
+
+For low-stakes work, a person may perform enough of this verification to make the prompt-based approach appropriate. At the high-stakes, unattended end, those obligations belong in the application.
+
+<span id="what-we-mean-by-a-controlled-directed-graph-workflow"></span>
+
+## Put imperative code in charge
+
+In the third approach, we write the control flow in Python. The application calls the required operations, supplies their inputs, checks their outputs, and decides whether execution can proceed. It also builds the authoritative result from the accepted values.
+
+The expense procedure can be represented as a **directed graph**. Its nodes are steps, and its arrows show permitted transitions and dependencies:
+
+```text
+Read and identify source lines
+    -> parse and validate transactions
+    -> classify where the supplied rules need semantic judgment
+    -> reconcile coverage, categories, refunds, and duplicate decisions
+    -> calculate totals and budget comparisons
+    -> validate proposed findings against computed evidence
+    -> assemble the report from accepted records
+
+A failed check follows its defined failure path.
+A permitted correction returns to the relevant earlier step and repeats
+the dependent checks. Retry limits determine when that cycle must stop.
+```
+
+The graph can contain cycles. An invalid model response might trigger a bounded correction attempt followed by validation again. A changed transaction must flow through reconciliation and calculation again before the report can use it. Python owns the retry conditions, attempt limits, and final outcome.
+
+We do not need a large graph framework to do this. Ordinary methods, conditionals, and loops can implement the graph. Drawing boxes gives us a view of the procedure; the code determines what can execute.
+
+For an unattended workflow, failure to establish a required fact prevents a successful result. If human intervention is part of the design, code can hold the work at that checkpoint until the required decision arrives. Human decisions are explicit inputs to progression, rather than an assumption that someone will catch errors later.
+
+### Ask the model for the smallest useful judgment
+
+If Python can calculate a total, compare two values, enumerate records, or enforce a known policy, let Python do it. Use the model where understanding language, interpreting evidence, or making another semantic judgment is necessary.
+
+For example, the controller might supply a transaction's description and the permitted categories, then ask for a category, supporting evidence, or an unresolved response. It does not need to ask that model to prepare the entire quarterly report, choose which checks matter, or decide whether accounting is complete.
+
+Even a bounded response needs validation. Code can check that the transaction identifier exists, the category is allowed, cited evidence belongs to the source, and all required responses are present. A valid category identifier alone does not prove that the classification is correct. Where that judgment matters, the workflow needs additional evidence, a prescribed independent assessment, or a way to leave the case unresolved.
+
+"Smallest useful judgment" refers to responsibility, not an arbitrarily tiny context window. A reviewer may need callers, dependencies, or several source passages to answer one question correctly. Supply enough evidence for that question while keeping unrelated decisions outside the model's authority.
+
+We can narrow report generation in the same way. Python can calculate and retain the amounts, while a model proposes findings tied to specific computed rows. The application checks those references and assembles the authoritative figures directly from the accepted records. Asking a final model to rewrite everything freely would reopen the returned-value problem at the last step.
+
+The worked example in [Verified, Not Trusted: Expense Analysis, Part Two](/writing/verified-not-trusted-expense-analysis-part-two/) follows this separation through a Python implementation. Here, the architectural point is that Python governs the decisions we can specify imperatively, including whether a model contribution is admissible and what happens next.
+
+<span id="3-three-claims-that-should-not-be-confused"></span>
+<span id="8-example-exploratory-codebase-evaluation"></span>
+
+## Apply the distinction to code review
+
+Consider a different request:
 
 > Read this repository, understand its structure, and evaluate maintainability, coupling, testability, and clarity.
 
-A skill can supply definitions, investigation guidance, examples, and a report structure. Different runs may examine different paths or emphasize different weaknesses while still providing useful evaluations.
+A skill can supply definitions, investigation guidance, examples, and a report structure. Different runs may investigate different paths and still produce useful advice. A developer can examine the findings before changing the code.
 
-If the user expects informed advice rather than exhaustive rule coverage, variation can be acceptable. Preserving flexibility may be more valuable than prescribing every investigation step.
+That is a reasonable use of a skill when the deliverable is an informed evaluation. It makes a limited claim about the investigation performed.
 
-The limitation should be reflected in the claim: the output is an evaluation based on the investigation performed. It is not automatically proof that every class was assessed against every relevant standard.
+Now change the requirement: every relevant code unit must be assessed against every applicable guideline. A useful report alone cannot establish that. We have three distinct claims to consider:
 
-## 9. Example: systematic review against approximately 500 guidelines
-
-Suppose an organization maintains Python guidelines and is developing a corresponding C# set. Across the relevant catalog, there are approximately 500 rules. A particular class might require 30 or 40 assessments based on its responsibilities and code content.
-
-The objective is not merely to find some defects. It is to ensure that every in-scope code unit receives every required assessment.
-
-| Responsibility | What must be established |
+| Claim | What supports it |
 | --- | --- |
-| Inventory | Every relevant file, class, function, or other review unit is accounted for. |
-| Applicability | Each unit is assigned the rules relevant to its role and content. |
-| Execution | Every required unit-rule pairing receives an assessment. |
-| Completion validation | Missing, failed, or invalid assessments remain visible and prevent a claim of complete review. |
-| Evidence | Assessments identify the rule, reviewed code, conclusion, and supporting evidence or reasoning. |
-| Reporting | No violation found, not applicable, not reviewed, and unable to assess remain distinct. |
+| The review produced useful findings. | Findings that help explain or improve the code. |
+| The required procedure was followed. | Completion of the prescribed assessments and observance of their constraints. |
+| We can demonstrate that execution. | Retained inventories, inputs, results, and checks accounting for the required work. |
 
-The logical unit of accounting is the code-rule pairing. That does not require a separate model call for every pairing. Assessments may be batched where appropriate, provided the accounting and evidence remain intact.
+A report can satisfy the first without establishing the others. That becomes consequential when "no finding" is treated as evidence that a rule was checked and no violation was found.
 
-### A strong skill still leaves an execution question
+<span id="9-example-systematic-review-against-approximately-500-guidelines"></span>
 
-The skill could explicitly require:
+### Account for every required assessment
 
-> Create a class-rule matrix, assess every applicable pairing, check for missing assessments, and report completion only when every required entry is accounted for.
+Suppose an organization maintains approximately 500 guidelines across its relevant Python and C# catalogs. A particular class might need 30 or 40 assessments, depending on its responsibilities and code.
 
-This is a strong instruction. However, if the assistant constructs the matrix, decides applicability, performs the assessments, and checks its own completion, an omission can survive all four activities. The final report may faithfully reflect an incomplete matrix.
+<span id="a-strong-skill-still-leaves-an-execution-question"></span>
 
-A controller can maintain an explicit required inventory and compare it with validated returned assessments. If a class requires 40 assessments and only 37 valid results return, three entries remain incomplete. They cannot silently become clean assessments.
+A strong skill could say:
 
-### Coverage has more than one meaning
+> Inventory the review units. Determine applicable rules using the supplied criteria. Create a unit-rule matrix, assess every required pairing, retain supporting evidence, and check for missing results. Keep "not applicable," "not reviewed," "unable to assess," and "no violation found" distinct. Report completion only when every required entry is accounted for.
 
-| Question | Why it matters |
+Those are valuable instructions. They identify order, obligations, and incomplete outcomes. If the model constructs the inventory, performs the assessments, and checks its own completion, however, the same omission can survive all three activities.
+
+A controller can maintain the required inventory and compare it with validated returned assessments. If a class requires 40 assessments and only 37 valid results return, three remain incomplete. Duplicate responses cannot satisfy the missing obligations, and an incomplete review cannot qualify as clean.
+
+The unit of accounting is the code-rule pairing. Several pairings can share a model call if the returned results remain individually identifiable. Narrow responsibility does not require one call per item.
+
+<span id="coverage-has-more-than-one-meaning"></span>
+
+There are still three separate things to check:
+
+| Question | What can go wrong? |
 | --- | --- |
-| Applicability coverage: did we identify all rules that should apply? | Completing an incorrectly narrowed review plan does not establish full coverage. |
-| Execution coverage: did every required assessment complete? | Missing work must not be interpreted as absence of violations. |
-| Judgment accuracy: were the assessments substantively correct? | A complete set of assessments can still contain mistaken conclusions. |
+| Did we identify all applicable rules? | A complete run against an incorrectly narrowed plan misses required work. |
+| Did every required assessment return a valid result? | Missing or invalid work may be mistaken for absence of violations. |
+| Were the assessments substantively correct? | A structurally complete review can contain mistaken judgments. |
 
-If applicability is model-assisted, it needs its own controls. Possible approaches include mandatory baseline rules, explicit applicability decisions, conservative handling of uncertainty, and independent checks of routing. A "not applicable" decision should have a defined basis rather than becoming an unexplained escape from review.
+If models help determine applicability, that step needs controls too: mandatory baseline rules, recorded applicability decisions, a defined basis for exclusions, and conservative handling of uncertainty. The same orchestration principles apply across languages, but Python and C# still need their own applicability and interpretation rules.
 
-Receiving a structurally valid assessment does not prove that the model reasoned correctly or examined every relevant behavior. Execution records support bounded claims about work performed and evidence supplied; substantive accuracy requires additional evaluation.
+<span id="10-example-spec-to-test-verification"></span>
 
-The same orchestration principles can apply to Python and C#, but language-specific applicability and interpretation still need their own definitions and validation.
+### Preserve independence in Spec-to-Test Verification
 
-**Teaching passage:** A complete code review must account for every required code-rule assessment. A controlled workflow can detect missing assessments and prevent incomplete work from being reported as complete. Model judgments remain fallible, but coverage and completion need not depend solely on the model remembering to follow instructions. (Verified, not trusted.)
+An exploratory request to find possible gaps between a specification, production code, and tests can be useful as a skill. A prescribed verification protocol can require separate review roles, independent challenges, restricted evidence, and fixed outcome rules.
 
-## 10. Example: Spec-to-Test Verification
+Suppose every admitted finding must receive an independent assessment without revealing who first proposed it. A prompt can instruct the model to arrange that. A controller can construct the verifier's input, omit the finder's identity, restrict accessible evidence through the host, and account for the required response.
 
-An exploratory request to identify possible specification and test gaps can be appropriate for a skill. A prescribed verification protocol adds stronger requirements, such as:
+| Requirement | What the controller implements |
+| --- | --- |
+| Restrict evidence by role | Construct role-specific inputs and restrict available files and tools. |
+| Verify every admitted candidate | Retain candidate identities and require corresponding valid assessments. |
+| Detect changes to reviewed source | Compare source identities at defined checkpoints. |
+| Reject invalid assessments | Validate fields, identifiers, citations, and required evidence. |
+| Keep different conclusions distinct | Separate production defects from weaknesses in test evidence and unresolved questions. |
+| Preserve accepted judgments | Assemble the report from validated records under defined outcome rules. |
 
-  - Keep production-defect findings distinct from weaknesses in test evidence.
-  - Restrict what each review role receives.
-  - Preserve candidate identity and provenance through processing.
-  - Independently challenge every admitted candidate.
-  - Validate returned assessments and expose uncertainty.
-  - Apply defined outcome rules and preserve validated verdicts in the report.
+Telling a worker to ignore information leaves that information available to it. Withholding it requires control over both the supplied input and accessible context. A fresh session does not establish separation if shared history or unrestricted tools reintroduce excluded evidence.
 
-Consider the requirement that each candidate receive independent verification without revealing the finder's identity. The assistant can be instructed to do this. A controller can additionally construct the verifier's input, omit finder identity, restrict evidence access through the host, account for execution, and validate the response.
+Independent assessments can still share model biases. Different model families may offer another perspective, but agreement between them does not prove correctness. The procedure needs rules for evaluating disagreement and retaining unresolved outcomes.
 
-Telling a worker to ignore information is different from withholding that information from its input and accessible context. A fresh session alone is also insufficient if shared history or unrestricted tools reintroduce excluded evidence. The relevant boundary must be implemented across input construction and host execution.
+## Design the graph around evidence and dependencies
 
-Fresh contexts support independence, but do not eliminate shared model biases. Different model families can provide another perspective, but do not establish correctness or turn agreement into proof.
+Multiple boxes in a diagram do not establish that the work should run concurrently. A step must wait for inputs on which it depends. Concurrent workers must also avoid interfering through shared state.
 
-| Requirement | Instruction-level approach | Executable control |
+For code review, splitting work by file can hide caller-callee relationships and behavior spanning components. Decomposition should preserve the evidence needed for each assessment, with reconciliation for overlapping or interacting findings.
+
+A protocol might require model families A and B to form separate initial assessments, then have each challenge the other's findings. If initial independence matters, both initial passes must finish before either receives the other's conclusions. The cross-review stage necessarily sees an assigned claim, but need not see its author's identity or unrelated findings.
+
+The controller defines these dependencies, the evidence each role receives, and when further adjudication is permitted. Independent reasoning can run sequentially. Simultaneous execution alone says nothing about independence.
+
+<span id="4-what-determinism-means-in-an-ai-workflow"></span>
+
+## What becomes deterministic?
+
+Putting Python in charge does not make model judgments deterministic. It gives us a stable place to implement the rules governing those judgments and their consequences.
+
+| Property | What imperative control can establish |
+| --- | --- |
+| Procedural consistency | Required prerequisites, stages, checks, and stopping rules govern each execution. |
+| Mechanical operations | The same relevant inputs produce the same result from stable parsing, calculation, and validation code. |
+| Policy decisions | The same validated inputs and policy produce the same acceptance or rejection outcome. |
+| Semantic repeatability | Model judgments may still vary across runs. |
+| Semantic correctness | Evidence checks and independent challenges support a judgment; they cannot guarantee that every interpretation is correct. |
+
+The same transition rules can produce different paths. If one run admits five findings and another admits seven, the number of verification calls changes. Python can still enforce that every admitted finding receives the required verification.
+
+We should expect timestamps, run identifiers, findings, and wording to vary where the design permits it. The requirement is that permitted variation cannot bypass mandatory obligations.
+
+<span id="5-is-this-agentic-autonomy-at-different-levels"></span>
+<span id="three-nuances-that-prevent-misleading-labels"></span>
+<span id="applying-the-distinction-to-review-and-verification"></span>
+
+## Where autonomy belongs
+
+A model receiving a fixed evidence packet and returning an assessment performs reasoning. If it can also select searches, inspect permitted files, test hypotheses, and choose its next investigative action, it has more autonomy within that assignment.
+
+| Arrangement | What the model may decide | What remains outside that decision |
 | --- | --- | --- |
-| Restrict evidence by role | Tell the assistant what each worker may see. | Construct role-specific inputs and restrict available tools or files. |
-| Verify every admitted candidate | Tell the assistant to launch each verification. | Account for candidates and require corresponding valid results. |
-| Detect changes to bound source | Tell the assistant to check for drift. | Compare source identities at defined gates. |
-| Reject invalid assessments | Describe acceptable answers and citations. | Parse and validate responses under explicit rules. |
-| Preserve final judgments | Instruct the assistant not to rewrite verdicts. | Assemble authoritative outputs from validated records. |
+| Controlled workflow with model steps | A bounded classification, assessment, or transformation. | Required stages, evidence boundaries, validation, and completion. |
+| Controlled workflow with bounded agents | How to investigate an assigned question using permitted actions. | The overall protocol and the obligations each investigation must satisfy. |
+| Agent-directed workflow | How to plan and revise the broader procedure toward a goal. | Whatever permissions, budgets, acceptance checks, and stopping rules the host enforces. |
 
-These controls explain why a verification pipeline can justify more engineering than an exploratory analysis skill. They do not establish that every defect will be found or that the specification itself is correct and complete.
+For the review example, Python can require all 40 assessments while an investigator chooses how to examine each one. That worker can follow callers and challenge an apparent violation without gaining authority to omit an assessment or declare missing work complete.
 
-## 11. Code generated during execution
+Broader planning can be useful when diagnosing an unfamiliar failure. Discovering which components matter and revising hypotheses may be part of the job. At the consequential end of our spectrum, that investigation still needs externally enforced acceptance checks before its proposed repair can take effect.
 
-A detailed skill may direct the assistant to create scripts or other tooling as needed. This can be useful, but introduces implementation choices during the task itself.
+A directed graph can contain such an investigation loop. Branches and cycles also exist in ordinary programs. The graph's shape, worker count, and model family do not tell us who has authority to choose the next substantive action.
 
-**Code generated during a prompt is not the same thing as a controlled implementation.** The generated code may perform deterministic operations once it exists, but the model still decides what code to generate, what inputs to construct, what conditions to compare, and what the code treats as the complete inventory. A different run may generate a different script or encode different assumptions. Maintained, reviewed, tested, versioned code removes those implementation decisions from each prompt execution; model reasoning around that code can still remain probabilistic.
+Anthropic's [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) makes a related distinction between predefined workflows and agents that dynamically direct their process and tool use. Naming the actual authority granted to the model is more useful here than treating "agentic" as a measure of quality.
 
-| Responsibility | Decision being made |
-| --- | --- |
-| Interpret the procedure | What does a requirement such as independent verification mean operationally? |
-| Construct an implementation | Which workers, scripts, inputs, and checks should implement it? |
-| Execute it | What runs, in what order, and what happens after a failure? |
-| Judge evidence | Are the proposed findings supported? |
-| Declare completion | What is sufficient to say the task is finished? |
+<span id="6-benefits-costs-and-limitations"></span>
+<span id="12-where-a-controllers-assurance-ends"></span>
 
-Repeated runs may choose different structures, validation rules, or recovery behavior. They do not necessarily do so on every run; the point is that the instructions alone do not fix these implementation decisions.
+## The cost of control and the limits of assurance
 
-Generated tests may also reflect the same misunderstanding as the generated implementation. Passing those tests is useful evidence, but may not establish conformity with the original requirement.
+A controller requires engineering. We have to define contracts, implement the procedure, test failure paths, maintain integrations, and retain evidence. A prompt is easier to revise while we are still discovering what the procedure should be.
 
-Generating code is not inherently the problem. If the code is reviewed, tested against independently specified expectations, versioned, and reused, it becomes a maintained implementation. Assurance is weaker when the implementation is improvised and accepted within the same execution without those checks.
+| Approach | What we gain | What we still have to account for |
+| --- | --- | --- |
+| General prompt or skill | Flexible exploration and a quick way to apply domain knowledge. | The model chooses much of the method; the result needs review appropriate to its use. |
+| Explicit procedure with tested helpers | Fewer unstated choices, inspectable intermediate work, and stable implementations of particular operations. | The model still controls sequencing, calls, recovery, and use of returned values. |
+| Imperative controller | Testable enforcement of prerequisites, coverage, validation, failure rules, and result assembly. | The controller can contain defects, encode an incomplete procedure, or accept insufficient evidence. Model judgments remain fallible. |
 
-## 12. Where a controller's assurance ends
+Code earns assurance through its requirements and tests. A controller that merely forwards one large prompt has implemented very little of the control we have discussed.
 
-A controller can contain defects, enforce an incomplete procedure, or trust weak evidence. It does not become reliable merely because it is ordinary code.
+Test the failures that would invalidate the result. Missing assessments must prevent completion. Duplicate responses must not satisfy two obligations. Invalid citations must be rejected. Excluded evidence must be absent from worker inputs and inaccessible through their tools. A correction to an input must invalidate dependent results.
 
-Useful controls require explicit requirements and proportionate tests. For example, tests should establish that missing assessments prevent completion, duplicate results do not satisfy two obligations, invalid citations are rejected, and excluded information is absent from worker inputs.
+The boundary includes the assistant invoking the controller. A skill instruction to use a runner does not prove that every conversational answer came from it. A downstream system should accept the validated runner artifact and required status, rather than infer success from an assistant's summary. Execution properties such as the requested model route also need host evidence where the protocol depends on them.
 
-The boundary also includes the coding assistant that invokes the controller. A skill instruction to use the runner is not itself a guarantee that every conversational answer came from it. Where that distinction matters, consumers should recognize validated runner artifacts as the authoritative result and distinguish them from an assistant's informal analysis.
+These controls establish bounded claims about procedure and evidence. They do not establish that the specification itself is complete or that every model judgment is correct.
 
-Likewise, the controller can enforce that a specific model route is requested only to the extent supported by the host. Unknown or unavailable execution properties should remain explicit rather than being inferred from instructions.
+<span id="13-discussing-reliability-without-inventing-percentages"></span>
 
-The benefit is a stable, inspectable place to enforce and test procedural requirements. It is not a guarantee of semantic infallibility.
+### Measure the properties you depend on
 
-## 13. Discussing reliability without inventing percentages
+We can explain why a missing-result check improves assurance without inventing a percentage improvement in accuracy. Numerical reliability claims need a defined benchmark, scoring method, and observed results.
 
-It is reasonable to expect stronger assurance when omissions become detectable and required checks become enforceable. It is not reasonable to assign a numerical improvement, such as 40% versus 80%, without measurements.
+Evaluate applicability against an independently established reference. Measure required assessment completion, detection of known defects, unsupported findings, and variation across repeated runs. Deliberately supply missing, malformed, and contradictory results to check whether the required failure behavior occurs.
 
-A useful evaluation would measure separate properties:
+A successful example demonstrates that run. Repeated evaluation helps characterize behavior across the cases tested. Neither gives an unchecked future answer a free pass.
 
-  - Correctness of rule applicability against an independently established reference.
-  - Completion of required assessments.
-  - Detection of known violations and frequency of unsupported findings.
-  - Variation across repeated runs on the same inputs.
-  - Whether deliberately missing, malformed, or contradictory results produce the required failure behavior.
+<span id="14-how-to-prompt-well-before-you-need-a-workflow"></span>
 
-"Materially stronger assurance" is an appropriate qualitative claim when supported by concrete controls. Accuracy percentages require a defined benchmark, scoring method, and observed results.
+## Improve the prompt while it is still the right tool
 
-## 14. How to prompt well before you need a workflow
+The first improvement to an interactive task is often a clearer prompt. Specify the sequence, make consequential choices explicit, and expose evidence a person can inspect. Use computation for the mechanical work and model reasoning for interpretation.
 
-A controlled workflow is not the first answer to every AI task. A prompt or skill can often produce a much better result simply by assigning different kinds of work to the mechanisms best suited to them.
+<span id="use-code-for-exact-arithmetic-and-aggregation"></span>
 
-In a prompt-driven session, the assistant may inspect files, call tools, generate and execute code, create intermediate tables, or search a repository. The assistant still decides how to coordinate those actions. There is no external controller proving that every required step occurred. That distinction matters, but it does not make the executable work inside the session unimportant.
+### Calculate before interpreting
 
-**Teaching rule:** Do not ask the model to reason through work that can be made mechanical. Ask it to use deterministic code, search, parsing, execution, or other exact operations for the parts that can be computed or enumerated, and reserve model reasoning for interpretation and judgment. (Verified, not trusted.)
+The expense prompts above show the progression from requesting totals to prescribing preparation, validation, calculation, and interpretation. A shorter improvement to the general prompt would be:
 
-### Use code for exact arithmetic and aggregation
+> Use code to calculate total spending by category, budget variance for each category with a stated budget, and month-by-month totals. Show the calculated tables first. Then analyze those computed results and explain the most significant changes or anomalies.
 
-**Less effective prompt:**
+This moves arithmetic into executable operations. The fuller procedural prompt also handles the inputs and unresolved cases on which those calculations depend. In both versions, we still need evidence that the operation ran and that the findings used its result.
 
-> Here are our quarterly expenses and budgets. Calculate spending by category, determine which categories exceeded budget, find unusual changes, and explain what happened.
+<span id="externalize-the-requirement-inventory-before-generating-tests"></span>
 
-**Better prompt:**
+### Establish the requirement inventory before generating tests
 
-> Use code to calculate total spending by category, budget variance for each category, and the month-by-month totals. Show the calculated tables first. Then analyze those computed results and explain the most significant changes or anomalies.
-
-The model is still coordinating the task, but arithmetic and aggregation no longer depend on language reasoning. The model can concentrate on explaining what the computed results mean.
-
-### Externalize the requirement inventory before generating tests
-
-**Less effective prompt:**
+**General request:**
 
 > Read these business requirements, generate all the acceptance tests we need, and confirm that every requirement is covered.
 
-**Better prompt:**
+**More explicit procedure:**
 
-> First extract the business rules and acceptance criteria into a numbered inventory. Do not generate tests yet. Show that inventory. Then generate acceptance-test scenarios mapped to those requirement IDs. Finally, show the requirement-to-test mapping and identify any requirement that remains ambiguous or has no mapped scenario.
+> First extract the business rules and acceptance criteria into a numbered inventory. Do not generate tests yet. Show the inventory and flag ambiguity for review. Once the inventory is resolved, generate acceptance-test scenarios mapped to those requirement IDs. Finally, show the requirement-to-test mapping and identify any requirement with no mapped scenario. Do not claim complete coverage while required entries remain unresolved or unmapped.
 
-This does not prove that the extracted inventory is complete or that every generated test is correct. It does make the intermediate reasoning visible, reduces dependence on the model remembering relationships implicitly, and makes obvious gaps easier for a human to inspect.
+The inventory makes intermediate decisions visible. Mapping scenarios to it makes omissions easier to detect. We still have to check the inventory against the source and determine whether each scenario actually demonstrates its requirement. A populated mapping cell alone proves neither.
 
-### Use deterministic discovery before semantic impact analysis
+<span id="use-deterministic-discovery-before-semantic-impact-analysis"></span>
 
-**Less effective prompt:**
+### Discover references before reasoning about impact
+
+**General request:**
 
 > I changed the signature of getUser(). Search the repository and tell me everything that will break.
 
-**Better prompt:**
+**More explicit procedure:**
 
-> Use repository search or static-analysis tooling to enumerate references to getUser() first. Show the resulting call-site inventory. Then analyze each discovered call site and explain whether the signature change affects it.
+> Use repository search or static-analysis tooling to enumerate references to getUser() first. Show the call-site inventory and the scope of the search. Then analyze each discovered call site for effects of the signature change. Record unresolved references or dependencies and distinguish them from unaffected callers.
 
-The mechanical search answers where the references are. Model reasoning answers what the change means at each reference. Keeping those questions separate generally produces a stronger result than asking the model to perform both implicitly.
+The search supplies an inventory for the reasoning to examine. Its coverage still depends on the search scope and tooling. Dynamic references or code outside the repository may require further investigation. Exposing that limit is more useful than claiming every caller was found without evidence.
 
-### Use real execution for claims about runtime behavior
+<span id="use-real-execution-for-claims-about-runtime-behavior"></span>
 
-**Less effective prompt:**
+### Execute tests before reporting their outcome
+
+**General request:**
 
 > Write tests for this change, inspect them, and tell me whether they will pass.
 
-**Better prompt:**
+**More explicit procedure:**
 
-> Generate the tests, execute them with the real test runner, and report the runner's actual results. Then explain any failures.
+> Generate the tests, execute them with the real test runner, and report the runner's actual results. Explain any failures. If execution is unavailable or incomplete, state that limitation and do not report the tests as passing.
 
-The model can propose code and interpret failures. The runtime establishes what actually happened. A passing generated test is still not proof that the test correctly represents the requirement.
+The runtime supplies evidence about what executed. Reviewing what the tests assert remains necessary: passing tests can still encode the wrong requirement.
 
-These techniques improve prompt-driven work without changing who controls the overall task. The assistant may still omit a step, choose a different path on another run, or misunderstand the source material. When the requirement changes from "produce a strong, inspectable result" to "demonstrate that every prescribed obligation was executed under enforced constraints," the problem has crossed into controlled-workflow territory.
+These prompts improve model-controlled work. They make the intended procedure and its limits easier to inspect. When acceptance depends on demonstrating that every prescribed obligation was fulfilled, implement those obligations in the controller.
 
-Two especially useful live demonstrations are financial analysis from a tabular expense dataset and business-requirements-to-acceptance-test generation. In both cases, the audience can see the difference between asking for an answer and asking the assistant to expose intermediate structure, use executable operations where appropriate, and then apply model reasoning to the resulting evidence.
+<span id="15-teaching-examples-at-a-glance"></span>
 
-## 15. Teaching examples at a glance
+## Choose for the consequences of the result
 
-| Task | Suitable starting point | Why |
+| Task and use | Suitable starting point | Why |
 | --- | --- | --- |
-| Explore a codebase's maintainability and structure | Instruction-only skill | Useful observations can satisfy the task despite variation in investigation and emphasis. |
-| Perform an advisory code review | Skill, potentially with helpers | Suggestions are evaluated by a developer; exhaustive procedural coverage may not be required. |
-| Render a report from validated structured data | Skill with maintained validation and rendering helpers | Exact mechanical operations can be delegated to code while the assistant handles interaction. |
-| Review all relevant code against a large guideline catalog | Controller-managed workflow with a skill entry point | Applicability, assessment accounting, evidence, and incomplete outcomes require explicit treatment. |
-| Execute a prescribed Spec-to-Test verification protocol | Controller-managed pipeline with a skill entry point | Evidence separation, independent candidate assessment, validation, and outcome rules are part of the requirement. |
+| Explore household expenses while checking entries and totals | Explicit prompt or skill, with calculation helpers | A person verifies and resolves ambiguity before using the findings. |
+| Evaluate a codebase for maintainability advice | Skill with investigation guidance | Useful observations can meet the goal without claiming exhaustive coverage. |
+| Perform an advisory code review | Procedural skill with useful helpers | A developer checks suggestions; the required scope remains explicit. |
+| Render a report interactively from validated records | Skill invoking maintained rendering code | Code preserves the mechanical output, while the person checks that the intended records were used. |
+| Review every required unit-rule pairing or execute a prescribed verification protocol | Imperative controller, optionally invoked through a skill | Coverage, evidence separation, validation, and incomplete outcomes are mandatory obligations. |
+| Feed consequential business records or decisions without per-run human verification | Imperative controller with narrowly bounded model judgments | Required checks and use of accepted values must be part of execution. |
 
-## 16. Discussion questions for learners
+The number of steps does not decide this. A short task can have serious consequences. A lengthy investigation can remain exploratory and useful under human review.
 
-1.  What would count as success for this task: a useful answer, complete procedural execution, or both?
-2.  If a required assessment were omitted, what would detect the omission?
-3.  Who determines the assessment inventory, and how is that determination checked?
-4.  What information must a worker be unable to access, rather than merely instructed to ignore?
-5.  Which decisions should remain open to model judgment, and which should be fixed by policy or code?
-6.  What evidence would justify saying the work is complete?
-7.  Which properties may vary between runs without violating the requirement?
-8.  Where should autonomy reside: in the overall plan, within particular investigations, or only in bounded judgments?
-9.  Does calling the system agentic clarify who controls its actions, or hide that distinction?
+<span id="16-discussion-questions-for-learners"></span>
+
+Before choosing, ask what happens if the result is wrong, who checks it before use, which decisions can be expressed as code, and what evidence permits completion. Then ask what prevents a missing step or ignored return value from becoming an accepted result.
+
+A careful prompt deserves credit for the choices it makes explicit. Tested helpers deserve credit for the operations they implement. For high-stakes unattended work, I want imperative code to enforce how those operations are combined, and models to contribute only the judgments the application actually needs. **Instruction is not assurance.** The result still has to be verified.
 
 ## Reference note
 
-OpenAI's [Build skills documentation](https://learn.chatgpt.com/docs/build-skills) describes skills as packages of instructions, resources, and optional executable scripts, and identifies deterministic behavior as a reason to use scripts. The three-way comparison in this guide is an engineering framework for deciding where execution control belongs, not a vendor-defined classification or a measured comparison of products.
+OpenAI's [Build skills documentation](https://learn.chatgpt.com/docs/build-skills) describes skills as packages of instructions, resources, and optional scripts. The three approaches here are an engineering framework for locating control and verification responsibilities. They are not vendor-defined product categories or a measured comparison of model accuracy.
