@@ -5,7 +5,7 @@ description: >-
   Expense totals need verifiable source coverage and reproducible calculations.
   Two prompts show how parsing, category rules, refunds, and code shape the evidence.
 datePublished: 2026-09-30
-dateModified: 2026-10-06
+dateModified: 2026-10-09
 tags:
   - verified-not-trusted
   - verification
@@ -24,11 +24,9 @@ status: established
 
 ***Verified, not trusted*** means checking the evidence behind an AI-generated answer before using it. For an expense total, that means checking which transactions were counted, how they were categorized, and whether the calculation reproduces the reported amount. A clear explanation or a tidy table is not enough to establish those facts.
 
-This exercise uses two prompts to analyze the same expense log. Both ask for monthly spending, budget comparisons, and three findings. The second also specifies how the model should prepare the data and calculate the results before interpreting them.
+We will give two prompts the same expense log and budget notes. Both ask for monthly spending, budget comparisons, and three findings. The first describes the answer we want. The second also specifies how to prepare the data, calculate the figures, and show the work behind them.
 
-Each total depends on earlier decisions: which lines become transactions, what their amounts mean, and how they are categorized. A table alone does not show whether those decisions were sound. A more precise prompt makes more of the work available to check.
-
-The question throughout the exercise is: Can we trace each conclusion back to the transactions and the rules that produced it?
+As we follow the example, keep one question in mind: Can we trace each conclusion back to the transactions and the rules that produced it?
 
 <div class="article-callout" role="note" aria-label="Idea">
   <svg class="article-callout__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/icons/callouts.svg#idea"></use></svg>
@@ -45,11 +43,238 @@ The question throughout the exercise is: Can we trace each conclusion back to th
 
 ## The data and the task
 
-The expense log covers June through August 2026. It was prepared for this teaching exercise and includes inconsistent date formats, missing category labels, a repeated entry, a refund, and transfers with no stated purpose.
+The sample expense log covers June through August 2026. It is a text file, with 198 transaction entries. Dates and separators vary, some entries appear out of order, and there are no category labels. It also contains a repeated entry, a refund, and transfers with no stated purpose.
 
-The accompanying budget notes name only two targets: keep eating out and coffee under $260 a month, and keep shopping around $1,200 a month. The second is a rough target. Neither note creates a budget for every other category.
+<details class="expense-example-output expense-example-input">
+<summary>personal_expenses.txt (complete expense log)</summary>
 
-The task is to organize the transactions, compute monthly category totals, compare dining and shopping with those targets, and explain the main changes.
+```text
+misc expenses - running list
+(started keeping track of this after i realized i had no idea where money was going. not super consistent about it, some entries are from memory a day or two late. june through august.)
+
+- June 1  Trader Joe's  $82.18
+06-01: iCloud+ 200GB, 2.99
+June 1 Amazon Prime $14.99
+6/2: Xfinity Internet, $64.99
+- 6/2  Shell  $24.97
+- 6/2  Local Coffee Co  13.73
+6/3/26 - Local Coffee Co - $11.35
+Jun. 3 - Netflix - $15.49
+Planet Fitness App (6/3/26) - 9.99
+June 3: Verizon Wireless, $78.14
+Trader Joe's (Jun. 4) - $35.72
+6/4 Planet Fitness $67.82
+June 4: Steam, 47.58
+Jun. 4 Spotify Premium 11.99
+- Jun 5  Aldi  $61.21
+06-05: Spotify Concert, $55.28
+Amazon (June 5) - $182.78
+Best Buy, 2026-06-05 -- $56.99
+Kroger, Jun. 6 -- $114.37
+- 6/8/26  Kroger  $112.18
+Jun. 7: Kroger, $21.78
+Jun. 7 | Chevron | $33.58
+AMC Theatres - $31.31 (June 6)
+6/9: BP Gas, $30.24
+2026-06-09 | Home Depot | $103.93
+Jun 12: Lyft, $49.78
+Jun. 12: Chipotle, $16.85
+Local Coffee Co - 34.22 (2026-06-12)
+McDonald's, June 10 -- $7.60
+Rustic Tap Brewery - $8.37 (6/13)
+Panera Bread, 06-13 -- $33.59
+June 13 | Chevron | $20.97
+6/13 | Target | $142.47
+REI, 6/13/26 -- $189.97
+Riverside Physical Therapy - $15.40 (6/13)
+- 6/14/26  Costco  $29.04
+Costco, Jun 15 -- $71.28
+- 6/17  Riverside Physical Therapy  $94.67
+Barnes & Noble (Jun. 17) - $29.02
+Target - $62.34 (2026-06-18)
+06-19 | Shell | $23.87
+06-19 Old Navy $65.50
+City Parking Authority (6/20/26) - 50.53
+6/20/26 - Zelle Payment - $102.66
+Costco (Jun 21) - $43.25
+Uber (June 21) - $71.36
+Jun 21 | Barnes & Noble | $31.68
+6/21/26 - ATM Cash Withdrawal - $100.00
+- Jun 22  City Parking Authority  $44.97
+Jun 22: Home Depot, $45.36
+Jun 24 - City Parking Authority - $21.44
+6/24/26 Bowl-O-Rama 9.25
+Jun 25 | Starbucks | $26.82
+Jun. 25 - Uber - 62.41
+Jun. 25: Old Navy, $110.73
+Jun. 28: Sushi Kame, $37.51
+- 2026-06-25  Venmo - Sam  $68.54
+6/28/26 | Costco | $53.33
+June 25: Riverside Physical Therapy, $73.82
+Walgreens, 6/28 -- $92.54
+Jun 30: Thai Orchid, $22.70
+6/30/26 | City Parking Authority | 27.29
+Panera Bread (07-01) - $24.42
+Jul. 1 | Planet Fitness App | 9.99
+7/1/26 - Xfinity Internet - $64.99
+2026-07-02: Chipotle, $28.36
+07-02 | Panera Bread | $7.22
+7/2/26 IKEA $92.60
+07-05 Netflix $15.49
+07-02 Spotify Premium $11.99
+- 2026-07-03  IKEA  $16.89
+Jul. 2 | Planet Fitness | $73.58
+Jul. 5 - iCloud+ 200GB - $2.99
+Jul 6 | IKEA | $180.34
+July 6: Spotify Concert, 15.09
+Amazon Prime, 7/5 -- $14.99
+July 5 | Verizon Wireless | $78.14
+7/7/26 | Costco | $71.74
+7/7/26 - Sushi Kame - $27.08
+2026-07-07: Shell, $26.17
+Jul 7 | Thai Orchid | $31.65
+Jul 7 REI $109.19
+- Jul 7  CVS Pharmacy  $26.14
+2026-07-08: Aldi, $33.37
+- 2026-07-08  Rustic Tap Brewery  $7.34
+Jul 8: Local Coffee Co, $24.01
+Chevron (07-08) - $27.99
+Venmo - Sam, 7/9 -- $75.00
+Shell, 2026-07-12 -- $51.20
+Trader Joe's (07-13) - $108.54
+Jul. 13 - City Parking Authority - $17.00
+7/13: Target, $88.28
+Jiffy Lube (Jul. 14) - $38.37
+Jul 15 BP Gas $67.32
+2026-07-16 - Kroger - $28.88
+July 16 Trader Joe's $34.31
+Riverside Physical Therapy - $66.26 (2026-07-16)
+Costco (Jul. 17) - $38.97
+7/17 | Whole Foods | $73.64
+- Jul 18  Kroger  $142.20
+Rustic Tap Brewery (2026-07-18) - $5.69
+Jul. 18 - BP Gas - $63.54
+Amazon (2026-07-18) - $141.82
+Planet Fitness (Jul. 18) - 59.23
+Return processed - REI (7/18/26) - -$68.00
+07-21 - City Parking Authority - $14.30
+AMC Theatres, July 22 -- $54.22
+Trader Joe's (Jul. 22) - $54.12
+Trader Joe's (Jul. 22) - $54.12
+Costco, 2026-07-23 -- 113.92
+Jul. 26: Best Buy, 195.60
+Jul 28 Lyft $36.08
+City Parking Authority, 07-28 -- $31.70
+ATM Cash Withdrawal - $30.79 (Jul. 29)
+Jul. 30 Bagel Corner $9.37
+- 7/31  Walgreens  $45.96
+7/31 | Trader Joe's | $129.51
+- 2026-07-30  Spotify Concert  $45.24
+Spotify Concert - $20.96 (7/31)
+Netflix (8/2/26) - $15.49
+08-01 | Xfinity Internet | $64.99
+Aug 2: Zelle Payment, $120.00
+Old Navy (2026-08-01) - $78.91
+Costco (Aug 3) - $144.50
+Amazon Prime (08-03) - $14.99
+August 4 | Ticketmaster | 59.42
+August 4 | McDonald's | $23.51
+- 08-04  Sushi Kame  $8.81
+Planet Fitness App, 8/4 -- $9.99
+- Aug 5  Chipotle  $35.98
+Rustic Tap Brewery - $24.22 (August 5)
+Aug. 5: Spotify Premium, $11.99
+2026-08-05: iCloud+ 200GB, $2.99
+8/5 - Verizon Wireless - $78.14
+BP Gas (2026-08-06) - $26.14
+Starbucks - $34.66 (2026-08-07)
+Dr. Hensley Dental Copay, Aug 7 -- $86.46
+PayPal Transfer - $69.90 (08-07)
+BP Gas (8/8) - $64.15
+Costco - $45.07 (Aug 9)
+8/9 Luigi's Pizza $26.02
+Sushi Kame - $21.68 (8/9)
+8/9: Amazon, $185.90
+- Aug 9  Target  127.80
+August 10 - Trader Joe's - $103.30
+Aug. 10: Bagel Corner, $10.13
+McDonald's (8/10/26) - $9.21
+Costco - $89.78 (8/11/26)
+Local Coffee Co - $11.95 (Aug. 11)
+Sushi Kame (Aug 11) - $6.45
+August 11 - Best Buy - $156.79
+August 11 - Ticketmaster - 59.68
+08-12 Kroger $129.67
+Panera Bread, Aug. 12 -- $27.01
+- 8/13  Whole Foods  $48.31
+- 08-13  BP Gas  $53.78
+Aug. 13 Shell $51.26
+ATM Cash Withdrawal (8/13/26) - $79.84
+Aug 14 - Starbucks - $8.05
+2026-08-14: BP Gas, $21.80
+Uber - $58.73 (08-14)
+Aug 14: Amazon, $35.25
+Walgreens - $13.77 (08-14)
+Delta Air Lines - $412.60 (Aug. 14)
+Delta Air Lines (8/14) - $450.60
+Airport Parking - $68.00 (August 14)
+August 15 | Marriott | $486.27
+Hertz Rental Car - 214.35 (8/15/26)
+8/16/26 - BP Gas - $13.36
+Uber, August 16 -- $24.10
+August 17 REI $132.82
+8/17/26 - Barnes & Noble - $77.40
+8/18: Luigi's Pizza, $29.46
+8/20/26 - Kroger - $19.18
+Costco - 107.35 (Aug 20)
+BP Gas (08-20) - $35.79
+- 08-20  Barnes & Noble  $78.98
+IKEA, 2026-08-21 -- $68.71
+Whole Foods (8/23/26) - $43.94
+- 8/23  Chipotle  $36.19
+BP Gas (08-24) - $51.86
+08-26: Planet Fitness, $54.19
+2026-08-26 Rustic Tap Brewery $34.67
+Chevron (8/26) - 63.74
+Aug. 25 - Aldi - $58.15
+Aug 27 - Whole Foods - $38.03
+08-27 Costco 18.99
+Luigi's Pizza, Aug 27 -- $23.00
+2026-08-27: Lyft, 32.33
+Old Navy, 08-27 -- $92.34
+Panera Bread - $27.69 (August 28)
+8/29/26 Trader Joe's $136.52
+City Parking Authority, 8/30/26 -- $20.43
+Aug 30: Shell, $21.94
+Chevron - $23.17 (Aug 30)
+2026-08-31 Best Buy 183.41
+Ticketmaster - $41.78 (August 31)
+8/31 | Riverside Physical Therapy | $68.38
+```
+
+</details>
+
+The second file, `budget_notes.txt`, tells us what the person wants to monitor:
+
+```text
+budget-ish notes to self
+
+not tracking everything against a number, just the two things that actually
+worry me:
+
+- eating out / coffee: want to keep this under $260 a month. it's been
+  creeping up and i don't think i'm noticing it day to day.
+- amazon/shopping in general: it's probably my biggest category overall but
+  i've got more slack there, roughly $1200/month is fine, just want to keep
+  an eye on it so it doesn't quietly become $2000.
+
+everything else (groceries, gas, subscriptions, etc) i'm not budgeting
+against a specific number right now, just want to see where it's going.
+```
+
+These files have different jobs. The expense log supplies the transactions. The budget notes supply two targets: a monthly dining limit of $260 and a rough shopping target of $1,200. They supply no numerical budget for groceries, gas, or the other categories.
+
+We want monthly category totals, comparisons with those two targets, and three findings about the changes. Let's start by asking for that directly.
 
 ## The standard prompt
 
@@ -63,9 +288,19 @@ This is a reasonable request. It names the input, the time period, the compariso
 
 It leaves several decisions unstated, including how to handle repeated entries, negative amounts, and descriptions that do not support a category. It also asks for totals without requiring code or a record of how the source lines became transactions.
 
-A model might handle these issues correctly on its own. We should apply the same verification standard to either prompt's response: inspect the source coverage, decisions, and calculations. The prompt's length gives us no evidence that those checks have passed.
+A model might handle these issues correctly on its own. But if it returns a table and three findings, we still need to know what happened between the request and that answer.
 
-The next step is to make those hidden decisions explicit. Start with what determines a total: how each source line is read and counted, what remains uncertain, and how duplicates and refunds are treated. Then ask for code and computed results that let us check the calculation. This gives the second prompt a clear purpose: specify the work we need to inspect before accepting its conclusions.
+## What happens between the prompt and the answer?
+
+The language models used in chat generate text a piece at a time. Each piece is a **token**, which can be a word, part of a word, or punctuation. The model predicts how likely possible next tokens are, given the instructions, supplied material, and text already generated. A generation method selects a token, adds it to the text, and repeats.
+
+This is called **autoregressive** generation: each new piece becomes part of the context for the next one. Selection can take the most likely token or sample among possible tokens, so repeated requests can produce different responses. [Hugging Face's text-generation guide](https://huggingface.co/docs/transformers/llm_tutorial) describes this process.
+
+A more precise prompt guides that generation by making the requested behavior clearer. A sentence such as "I checked every transaction" still needs evidence behind it. Repeating the same answer would not establish correctness either.
+
+When the chat application provides a code-execution tool, the model can request a calculation, the application runs the code, and the result comes back to the model. The model can then continue using that result. We need to inspect both the calculation and the answer built from it.
+
+That is the purpose of the next prompt. It makes the preparation steps explicit and asks for code and computed tables so we have something to inspect before accepting the findings.
 
 ## The more precise prompt
 
@@ -90,9 +325,124 @@ Before interpreting anything:
 Don't estimate totals or do the arithmetic in your head — show the code. After the tables, tell me the three things you'd most want me to know about my spending this quarter.
 ```
 
+## What the added instructions do
+
+The improvement is specific: this prompt tells the model how to turn the text into a set of transactions, what to do with problems in the data, and what evidence to show. Let's follow those instructions before looking at the response.
+
+### Name the inputs and explain their condition
+
+> "Attached is a running personal expense log (personal_expenses.txt) and a short note on the two things I'm budgeting against (budget_notes.txt)."
+
+This opening supplies **context**: which files to use and what each contributes. Spending comes from the log; budget targets come from the notes.
+
+> "Dates and formatting are inconsistent, there's no category field, and it's roughly but not strictly chronological."
+
+These details explain what preparation is needed. The model must read several date formats, add categories, and group transactions by their dates. A line's position in the file is insufficient evidence of its month.
+
+### Set the order of work
+
+> "Before interpreting anything:"
+
+This introduces a **sequence**: prepare the transactions and calculate the figures before drawing conclusions. A large travel purchase may catch our attention immediately. We still need the complete totals before saying what explains a month's increase.
+
+The numbered steps describe that order. They remain instructions for the model to follow; numbering them does not make the application enforce the sequence.
+
+<span id="check-the-instructions-against-actual-lines"></span>
+
+### 1. Account for every source line
+
+> "Parse every line into date, merchant/description, and amount."
+
+**Parse** means read the text and extract its fields. For example:
+
+```text
+Best Buy, 2026-06-05 -- $56.99
+```
+
+This becomes a transaction dated June 5, 2026, with merchant Best Buy and amount $56.99. The named fields give every transaction the same structure despite the varied source formats.
+
+"Every line" requires complete coverage. Difficult transactions must not disappear. The heading and introductory note need to be identified as non-transaction text, and extracted transactions must remain traceable to their source lines.
+
+### 2. Make parsing uncertainty visible
+
+> "Flag any line you can't confidently parse."
+
+When a date, description, or amount is unclear, show the source line and the field needing clarification. That gives us a problem we can resolve. A guessed value or a silently omitted transaction could otherwise be hidden inside a plausible total.
+
+### 3. Preserve unknown categories
+
+> "Assign each transaction a spending category based on the merchant."
+
+This asks for a consistent mapping, such as Trader Joe's to Groceries. Choosing the mapping involves judgment: knowing the store does not tell us everything purchased there. Stating the rules makes those choices inspectable.
+
+> "Don't force a category" and "flag it as uncategorized and tell me what it is."
+
+Consider this entry:
+
+```text
+Venmo - Sam, 7/9 -- $75.00
+```
+
+The date and amount are readable, but the payment's purpose is unknown. Assigning it to Dining would invent a fact. "Uncategorized" preserves that uncertainty. "Tell me what it is" keeps the $75 and its description visible for follow-up.
+
+### 4. Check duplicates and refunds
+
+> "Check for likely duplicate entries and handle refunds/negative amounts correctly"
+
+The log contains this pair:
+
+```text
+Trader Joe's (Jul. 22) - $54.12
+Trader Joe's (Jul. 22) - $54.12
+```
+
+Both lines parse successfully. Counting both could inflate July groceries by $54.12. "Likely" matters: they could represent two real purchases. Flagging the pair and explaining the decision lets us check the assumption behind the total.
+
+The refund presents a different problem:
+
+```text
+Return processed - REI (7/18/26) - -$68.00
+```
+
+Some hyphens separate fields; the minus sign before the amount changes its meaning. For net spending, this line subtracts $68 from July shopping. Reading it as a positive purchase makes the total $136 higher: adding $68 instead of subtracting $68. The instruction calls attention to a sign that must survive cleanup.
+
+### 5. Calculate after preparing the data
+
+> "Once the data is clean, use code to compute monthly totals by category"
+
+"Once" makes calculation depend on the prepared transactions. Removing a duplicate or changing a category afterward requires recalculation, so the table uses the corrected data.
+
+"Use code" specifies the method: group and sum the prepared records by month and category using executable calculations we can inspect and run again.
+
+> "Compare against the two budget targets, and find the largest month-over-month changes."
+
+"The two" ties the comparison to the budget notes: dining against $260 a month and shopping against roughly $1,200. It does not authorize a new grocery budget. "Month-over-month" means comparing June with July, then July with August. "Largest" still needs a choice: the biggest dollar change and the biggest percentage change may identify different categories. The response should state its measure.
+
+### 6. Show evidence before conclusions
+
+> "Show me the computed tables before your interpretation."
+
+This sets the **output order**: inspect the figures before reading the explanation. "Computed" ties the tables to the calculation's results.
+
+> "Don't estimate totals or do the arithmetic in your head" and "show the code."
+
+These are a **constraint** on the method and a request to show it. Displayed code alone does not prove that it ran or that its results reached the tables.
+
+> "After the tables, tell me the three things you'd most want me to know about my spending this quarter."
+
+This bounds the final **task**: choose three useful findings supported by the figures, with the person's dining and shopping concerns in mind. Selecting them requires judgment.
+
+Together, these clauses give us a clearer process and more work to inspect. They also give us specific requirements against which to check the response.
+
+## Who carries out these steps?
+
 Notice that this prompt describes a sequence of steps. Parsing comes before categorization, cleanup comes before calculation, and the tables come before the interpretation. Coordinating those steps, their inputs, and what happens after each result is **orchestration**.
 
 The **controller** carries out that orchestration. Here, the model is the controller. The prompt supplies instructions, and the model chooses the actions to request, examines their results, and decides what to do next. That repeated process is the **control loop**. Asking the model to use Python inside one step leaves the model in charge of the surrounding orchestration.
+
+## The recorded response
+
+Here is the response and the supplied code from a run with the more precise prompt. Look for its treatment of the duplicate, refund, and unknown-purpose transfers. Then check whether the code carries out the requested steps. These excerpts show what happened in one run; they do not establish how reliably either prompt works.
 
 <details class="expense-example-output">
 <summary>Recorded model output</summary>
@@ -292,94 +642,13 @@ changes
 
 </details>
 
-## What the added instructions do
-
-Each clause has a specific job. It asks for work that supports verification, or sets a requirement we can check. The explanation below each clause separates requesting that work from checking that it happened.
-
-### 1. Account for every source line
-
-> “Parse every line into date, merchant/description, and amount.”
-
-**What this changes:** This makes coverage part of the task. The model has to consider every source line and extract the same fields. To verify coverage, we still need a way to match each transaction to its source line and explain any excluded text, such as the log's heading.
-
-
-### 2. Make parsing uncertainty visible
-
-> “Flag any line you can't confidently parse.”
-
-**What this changes:** This asks the model to expose reading problems before calculating. A date or amount it cannot read with confidence should remain visible as an issue. The instruction gives uncertainty a place in the result, although we still have to check for problems the model failed to flag.
-
-
-### 3. Preserve unknown categories
-
-> “Where a transaction is genuinely ambiguous” and “flag it as uncategorized”
-
-**What this changes:** This separates reading a transaction from knowing its purpose. A transfer may have a clear date and amount but no known spending purpose. Keeping it uncategorized preserves that limit.
-
-
-### 4. Check duplicates and refunds
-
-> “Check for likely duplicate entries and handle refunds/negative amounts correctly”
-
-**What this changes:** This names two data problems that can change totals. The model should identify a possible duplicate and explain how it treated it. A refund must retain its negative sign when calculating net spending. “Likely” matters: matching entries are evidence to inspect, not proof that one should be deleted.
-
-
-### 5. Calculate after preparing the data
-
-> “Once the data is clean, use code to compute monthly totals by category”
-
-**What this changes:** This puts calculation after parsing, categorization, and cleanup, and requests executable arithmetic. ***Verified, not trusted*** applies to both inputs and calculations: review the cleaned transactions and category rules, then run the code and check that it reproduces the reported totals.
-
-
-### 6. Show evidence before conclusions
-
-> “Show me the computed tables before your interpretation” and “show the code.”
-
-**What this changes:** These instructions ask for evidence that can be inspected before accepting the conclusions. Displaying code does not prove that it ran or produced the tables. We need to check that the code uses the supplied data and that its output agrees with the reported results.
-
-
-The order matters. If a duplicate is removed after a table has been calculated, the table must be recomputed. If a transaction changes category, the relevant category totals and budget comparisons must change with it. The findings depend on the final, corrected tables. These are responsibilities of the controller. In this approach, we are asking the model to remember and enforce those dependencies.
-
-## Check the instructions against actual lines
-
-The log contains this repeated pair:
-
-```text
-Trader Joe's (Jul. 22) - $54.12
-Trader Joe's (Jul. 22) - $54.12
-```
-
-Keeping both entries adds $54.12 more than keeping one. A useful response should flag the pair, state whether it counts one or both, and explain the assumption. Removing a line silently prevents us from checking that decision.
-
-The refund appears as:
-
-```text
-Return processed - REI (7/18/26) - -$68.00
-```
-
-The punctuation matters. Some hyphens separate fields, while the minus sign before the amount changes its meaning. Under a net-spending calculation, this entry subtracts $68 from July shopping. Reading it as a positive $68 purchase would make the total $136 higher than the correct signed treatment.
-
-An ambiguous transfer is recorded as:
-
-```text
-Venmo - Sam, 7/9 -- $75.00
-```
-
-We can read its date, description, and amount. The line does not say what the payment was for. Calling it dining, shopping, or groceries would add information that the source does not provide. It should remain uncategorized until its purpose is known.
-
-Cleaning needs care because the decisions affect different parts of the calculation. Removing a duplicate changes which entries are counted, while correcting a refund's sign changes the net amount. Categorization determines where that amount appears in the report.
-
 ## What still needs a rule or a check
 
 The second prompt leaves some choices open. It does not supply a fixed category list, define the exact duplicate rule, or specify whether a displayed overall total should include uncategorized transfers and cash withdrawals. Those choices can change the answer even when every addition is correct.
 
-Merchant-based categorization has limits. A merchant name may support a useful working category, but it does not establish what was purchased. The category rules should be stated and applied consistently. Unknown-purpose amounts should be shown separately so they are not mistaken for verified spending in a known category.
-
 For example, the log has two August purchases at Barnes & Noble: $77.40 and $78.98. Together they total $156.38. Treating bookstores as Shopping rather than Entertainment moves that amount between categories. The prompt does not choose between those rules.
 
-The request to find the “largest month-over-month changes” also needs interpretation. Largest by dollar amount and largest by percentage can identify different changes. A response should say which measure it uses, or show both where they are useful.
-
-More instructions make these decisions easier to discuss and test. They do not establish that the model followed them. An answer can contain code, tables, and confident explanations while still omitting a line or using an unsupported category.
+Even when the model states its rules and flags uncertainty, we must check for omissions, misread fields, and unsupported categories. Naming a requirement in the prompt does not establish that the response meets it.
 
 Verification has a defined scope. We can check that the tables agree with the supplied log under stated category rules. That does not establish that the log contains every real-world expense or that each merchant-based category describes what was actually purchased. Missing evidence must remain a limit on the conclusion.
 
@@ -397,7 +666,7 @@ Review both responses against the same checks:
 - Dining and shopping are compared with the two stated monthly targets
 - Each finding can be traced to the relevant transactions and computed totals
 
-These checks give ***Verified, not trusted*** a practical meaning. Confidence in a total comes from accounting for the source entries and reproducing the calculation. Confidence in a finding comes from checking it against those totals. A result that still depends on an unresolved category or possible duplicate should state that dependency.
+These checks give ***Verified, not trusted*** a practical meaning: account for the entries, reproduce the totals, and check the findings against them. State any dependency on an unresolved category or possible duplicate.
 
 ## The stakes and the person in the loop
 
@@ -441,4 +710,4 @@ We have to test that application code too. If a refund was counted as a purchase
 
 A skill can invoke this maintained workflow. The important questions are who controls its execution and who verifies the result. Packaging the instructions as a skill does not answer either question by itself.
 
-[Part Two](/writing/verified-not-trusted-expense-analysis-part-two/) takes up these remaining responsibilities: enforcing the sequence, preserving the inputs and returned values, checking model contributions, and building the report from checked results. We will first explain how imperative orchestration changes control of the work, then follow a Python implementation through the expense analysis.
+Part two takes up these remaining responsibilities: enforcing the sequence, preserving the inputs and returned values, checking model contributions, and building the report from checked results. In [Verified, Not Trusted: Expense Analysis, Part Two](/writing/verified-not-trusted-expense-analysis-part-two/), we first explain how imperative orchestration changes control of the work, then follow a Python implementation through the expense analysis.

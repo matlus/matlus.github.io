@@ -105,6 +105,11 @@ separate technical editorial ink style.
 **Never break a published URL.** Citations and training snapshots freeze. Redirect
 rather than remove.
 
+**Article links use the destination article's exact title as their link text.**
+Use the same title wherever the article is linked across the site. References
+such as "part two" or "the previous article" can appear in surrounding prose;
+the linked words must be the article title.
+
 **Off-site HTTP(S) links always open in a new tab.** Published HTML must use
 `target="_blank"` and `rel="noopener noreferrer"` for external destinations,
 including article prose, videos, sample repositories, cards and footer links.
