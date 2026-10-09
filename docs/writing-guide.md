@@ -50,6 +50,11 @@ have their own dimensions and build process.
 
 ## Links and publication checks
 
+Use the destination article's exact title as the link text whenever linking to
+an article. Keep that title consistent across the site. Descriptions such as
+"part two" or "the previous article" belong in the surrounding prose, with the
+article's title in the link itself.
+
 Every off-site HTTP(S) hyperlink must open a new tab. This includes YouTube,
 Microsoft documentation, GitHub repositories and other references, whether the
 link appears in prose, raw HTML, a resource card or a shared component. Internal
