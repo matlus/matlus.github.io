@@ -12,6 +12,7 @@
     "typecheck": "astro check",
     "test:links": "node --experimental-strip-types --test tools/external-links.test.mjs",
     "test:images": "node --test tools/check-card-images.test.mjs",
+    "test:feedback": "node --test workers/feedback/test/*.test.mjs",
     "audit:copy": "python tools/audit-copy.py",
     "astro": "astro"
   },

@@ -1,0 +1,18 @@
+# Cloudflare Worker for the matlus.com feedback form. Setup: README.md.
+name = "matlus-feedback"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+[vars]
+ALLOWED_ORIGINS = "https://matlus.com"
+GITHUB_OWNER = "matlus"
+GITHUB_REPO = "site-inbox"
+
+# Keep request logs, including the copy of any message GitHub refused.
+[observability]
+enabled = true
+
+# Secrets are never stored here. Set them with:
+#   npx wrangler secret put GITHUB_TOKEN
+#   npx wrangler secret put TURNSTILE_SECRET_KEY

@@ -2,6 +2,7 @@
 import { NAV } from '../data/nav';
 import { TAGS, tagHref } from '../data/tags';
 import { tagCounts } from '../lib/tag-counts';
+import { FEEDBACK_ENABLED } from '../data/feedback';
 
 const counts = await tagCounts();
 const topTopics = TAGS.filter((tag) => (counts[tag.slug] ?? 0) > 0)
@@ -67,6 +68,19 @@ const buildYear = new Date().getFullYear();
     <nav class="site-footer__col" aria-label="Find me online">
       <h2 class="site-footer__heading">Connect</h2>
       <ul class="site-footer__list">
+        {
+          FEEDBACK_ENABLED && (
+            <li>
+              <button class="site-footer__social site-footer__message" type="button" data-feedback-open>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                  <path d="m3.5 6 8.5 7 8.5-7" />
+                </svg>
+                Send a message
+              </button>
+            </li>
+          )
+        }
         <li>
           <a class="site-footer__social" href="https://github.com/matlus" target="_blank" rel="noopener noreferrer">
             {/* GitHub mark from Simple Icons (CC0). */}
@@ -192,6 +206,22 @@ const buildYear = new Date().getFullYear();
     transition: color 0.12s ease;
   }
 
+  .site-footer__message {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-height: 1.75rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-text-muted);
+    font: inherit;
+    cursor: pointer;
+    transition: color 0.12s ease;
+  }
+
+  .site-footer__message:hover,
+  .site-footer__message:focus-visible,
   .site-footer__list a:hover,
   .site-footer__list a:focus-visible {
     color: var(--color-accent);

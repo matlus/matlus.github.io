@@ -1,0 +1,108 @@
+---
+/**
+ * The message form as a modal dialog, available on every page. Any element
+ * with data-feedback-open opens it; the footer carries the button.
+ *
+ * Because it is on every page, it also records the first page and referrer
+ * of each visit, which the form sends along.
+ */
+import FeedbackForm from './FeedbackForm.astro';
+---
+
+<dialog class="feedback-dialog" aria-labelledby="feedback-dialog-title" data-feedback-dialog>
+  <div class="feedback-dialog__body">
+    <div class="feedback-dialog__header">
+      <h2 id="feedback-dialog-title">Send me a message</h2>
+      <button class="feedback-dialog__close" type="button" data-feedback-close>
+        <span aria-hidden="true">&times;</span>
+        <span class="visually-hidden">Close</span>
+      </button>
+    </div>
+    <p class="feedback-dialog__lede">
+      Ask a question, suggest something, or tell me about a work opportunity.
+    </p>
+    <FeedbackForm id="feedback-dialog" />
+  </div>
+</dialog>
+
+<style>
+  .feedback-dialog {
+    width: min(100% - (var(--gutter) * 2), 38rem);
+    max-height: calc(100dvh - var(--space-l));
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Padding sits inside, so only a click outside the panel reaches the dialog. */
+  .feedback-dialog__body {
+    padding: var(--space-m);
+  }
+
+  .feedback-dialog::backdrop {
+    background: rgb(0 0 0 / 45%);
+  }
+
+  .feedback-dialog__header {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: var(--space-s);
+  }
+
+  .feedback-dialog__header h2 {
+    margin: 0;
+    font-size: var(--step-2);
+  }
+
+  .feedback-dialog__close {
+    flex: none;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .feedback-dialog__close:hover {
+    color: var(--color-text);
+  }
+
+  .feedback-dialog__lede {
+    margin: var(--space-2xs) 0 var(--space-m);
+    color: var(--color-text-muted);
+  }
+</style>
+
+<script>
+  import { recordLanding } from '../lib/visit-source';
+
+  recordLanding();
+
+  const dialog = document.querySelector<HTMLDialogElement>('[data-feedback-dialog]');
+
+  if (dialog) {
+    const form = dialog.querySelector('form');
+
+    for (const opener of document.querySelectorAll('[data-feedback-open]')) {
+      opener.addEventListener('click', () => {
+        dialog.showModal();
+        form?.dispatchEvent(new Event('feedback:open'));
+      });
+    }
+
+    dialog.querySelector('[data-feedback-close]')?.addEventListener('click', () => dialog.close());
+
+    // A click on the backdrop lands on the dialog element itself.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+  }
+</script>

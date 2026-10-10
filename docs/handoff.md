@@ -1,5 +1,28 @@
 # Handoff
 
+## Message form and private inbox, October 10, 2026
+
+Shiv asked for one form on every page so visitors can ask questions, suggest
+changes or raise work opportunities. A "Send a message" button in the footer
+opens it as a dialog, and the About page shows it inline under "Get in touch",
+because people deciding whether to hire him usually read that page first.
+
+GitHub Pages cannot receive a form. A Cloudflare Worker in `workers/feedback`
+verifies a Turnstile token and files each message as a labelled issue in the
+private repository `matlus/site-inbox`. Messages never go into this public
+repository. Issues give email notification, open and closed state, and an
+export path through the API; each issue carries a JSON copy of the submission.
+
+Each message records the page it was sent from and the first referrer and
+landing URL of the visit, kept in `sessionStorage` because later pages report
+this site as their referrer. Browsers often reduce the referrer to an origin,
+so shared links should carry `utm_source`.
+
+The form stays out of the build until `src/data/feedback.ts` has the Worker URL
+and Turnstile site key. [The Worker README](../workers/feedback/README.md)
+covers the Cloudflare and GitHub setup, including the "Include your own
+updates" notification setting that issues created with Shiv's own token need.
+
 ## Recurring likeness in hero illustrations, October 8, 2026
 
 Shiv approved using his likeness by default for the principal man in future hero
@@ -522,7 +545,8 @@ the tag cloud uses actual published tag counts.
 
 The About page gives Shiv's two professional roles and points readers to the writing
 and Programming With Intent sections. It stays deliberately brief without a public
-employment history or contact details.
+employment history or contact details; visitors reach Shiv through the message
+form instead.
 
 Verified source videos and code repositories appear in resource cards after the
 article body. Editorial verification tasks remain in `docs/article-review-backlog.md`
