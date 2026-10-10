@@ -13,7 +13,7 @@
  */
 import { KINDS } from '../../workers/feedback/src/submission.js';
 
-const PRODUCTION_ENDPOINT = '';
+const PRODUCTION_ENDPOINT = 'https://matlus-feedback.shiv-kmr003.workers.dev/';
 const PRODUCTION_TURNSTILE_SITE_KEY = '0x4AAAAAAFTcM6oO5qMglmeJ';
 
 const env = import.meta.env;
