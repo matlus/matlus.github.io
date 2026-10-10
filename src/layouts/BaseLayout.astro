@@ -1,6 +1,8 @@
 ---
 import SiteNav from '../components/SiteNav.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import FeedbackDialog from '../components/FeedbackDialog.astro';
+import { FEEDBACK_ENABLED } from '../data/feedback';
 import '../styles/tokens.css';
 import '../styles/base.css';
 
@@ -95,5 +97,7 @@ const personLd = {
     </main>
 
     <SiteFooter />
+
+    {FEEDBACK_ENABLED && <FeedbackDialog />}
   </body>
 </html>

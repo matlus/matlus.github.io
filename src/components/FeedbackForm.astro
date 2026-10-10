@@ -1,0 +1,407 @@
+---
+/**
+ * The site-wide message form. Rendered in the footer dialog on every page and
+ * inline on the About page, so it takes an id prefix to keep the two apart.
+ * The page, title and first referrer travel with each message; see
+ * src/lib/visit-source.ts and workers/feedback.
+ */
+import { FEEDBACK_ENDPOINT, FEEDBACK_KINDS, TURNSTILE_SITE_KEY } from '../data/feedback';
+
+interface Props {
+  readonly id: string;
+}
+
+const { id } = Astro.props;
+---
+
+<form
+  class="feedback-form"
+  data-feedback-form
+  data-endpoint={FEEDBACK_ENDPOINT}
+  data-sitekey={TURNSTILE_SITE_KEY}
+  data-pagefind-ignore
+  novalidate
+>
+  <fieldset class="feedback-form__kinds">
+    <legend>What is this about?</legend>
+    {
+      FEEDBACK_KINDS.map((kind) => (
+        <label class="feedback-form__kind">
+          <input type="radio" name="kind" value={kind.value} required />
+          <span>{kind.label}</span>
+        </label>
+      ))
+    }
+  </fieldset>
+
+  <div class="feedback-form__row">
+    <div class="feedback-form__field">
+      <label for={`${id}-name`}>Name <span class="feedback-form__hint">(optional)</span></label>
+      <input id={`${id}-name`} name="name" type="text" autocomplete="name" maxlength="120" />
+    </div>
+    <div class="feedback-form__field">
+      <label for={`${id}-email`}>Email <span class="feedback-form__hint">(needed for a reply)</span></label>
+      <input id={`${id}-email`} name="email" type="email" autocomplete="email" maxlength="254" />
+    </div>
+  </div>
+
+  <div class="feedback-form__field">
+    <label for={`${id}-message`}>Message</label>
+    <textarea id={`${id}-message`} name="message" rows="6" maxlength="5000" required></textarea>
+  </div>
+
+  {/* Left empty by people, who never see it. Bots tend to fill it. */}
+  <div class="feedback-form__trap" aria-hidden="true">
+    <label>Website <input name="website" type="text" tabindex="-1" autocomplete="off" /></label>
+  </div>
+
+  <div class="feedback-form__challenge" data-feedback-challenge></div>
+
+  <div class="feedback-form__actions">
+    <button class="feedback-form__submit" type="submit">Send message</button>
+    <p class="feedback-form__status" role="status" aria-live="polite" data-feedback-status></p>
+  </div>
+
+  <p class="feedback-form__note">
+    Messages go to a private inbox that only I read. Along with what you write,
+    the form sends the page you're on and the site that linked you here. I use
+    your email only to reply.
+  </p>
+
+  <noscript><p class="feedback-form__note">The form needs JavaScript to send.</p></noscript>
+</form>
+
+<style>
+  .feedback-form {
+    display: grid;
+    gap: var(--space-s);
+    font-size: var(--step-0);
+  }
+
+  .feedback-form__kinds {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .feedback-form__kinds legend {
+    width: 100%;
+    margin-bottom: var(--space-2xs);
+    padding: 0;
+    font-weight: 600;
+  }
+
+  .feedback-form__kind {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .feedback-form__kind input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .feedback-form__kind span {
+    display: inline-block;
+    padding: var(--space-3xs) var(--space-xs);
+    border: 1px solid var(--color-border-strong);
+    border-radius: 999px;
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+  }
+
+  .feedback-form__kind input:checked + span {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-bg);
+    font-weight: 600;
+  }
+
+  .feedback-form__kind input:focus-visible + span {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .feedback-form__row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: var(--space-s);
+  }
+
+  .feedback-form__field {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .feedback-form__field label {
+    font-weight: 600;
+  }
+
+  .feedback-form__hint {
+    font-weight: 400;
+    color: var(--color-text-faint);
+  }
+
+  .feedback-form input[type='text'],
+  .feedback-form input[type='email'],
+  .feedback-form textarea {
+    width: 100%;
+    padding: var(--space-2xs) var(--space-xs);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+  }
+
+  .feedback-form textarea {
+    resize: vertical;
+    min-height: 8rem;
+  }
+
+  .feedback-form [aria-invalid='true'] {
+    border-color: var(--color-video);
+  }
+
+  .feedback-form__trap {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .feedback-form__challenge:empty {
+    display: none;
+  }
+
+  .feedback-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s);
+  }
+
+  .feedback-form__submit {
+    padding: var(--space-2xs) var(--space-m);
+    border: 0;
+    border-radius: var(--radius);
+    background: var(--color-accent);
+    color: var(--color-bg);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .feedback-form__submit:hover {
+    background: var(--color-accent-hover);
+  }
+
+  .feedback-form__submit:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .feedback-form__status {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .feedback-form__status[data-tone='error'] {
+    color: var(--color-video);
+  }
+
+  .feedback-form__status[data-tone='success'] {
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  .feedback-form__note {
+    margin: 0;
+    color: var(--color-text-faint);
+    font-size: var(--step--1);
+  }
+</style>
+
+<script>
+  import { readLanding } from '../lib/visit-source';
+
+  interface Turnstile {
+    render(container: HTMLElement, options: Record<string, unknown>): string;
+    reset(widgetId: string): void;
+  }
+
+  declare global {
+    interface Window {
+      turnstile?: Turnstile;
+    }
+  }
+
+  const TURNSTILE_SCRIPT = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+  const TOKEN_WAIT_MS = 15_000;
+
+  let turnstileReady: Promise<Turnstile> | undefined;
+
+  // Loaded only once someone starts on a form, so ordinary page views never
+  // contact Cloudflare.
+  function loadTurnstile(): Promise<Turnstile> {
+    turnstileReady ??= new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = TURNSTILE_SCRIPT;
+      script.async = true;
+      script.onload = () => (window.turnstile ? resolve(window.turnstile) : reject(new Error('turnstile')));
+      script.onerror = () => {
+        turnstileReady = undefined;
+        reject(new Error('turnstile'));
+      };
+      document.head.append(script);
+    });
+    return turnstileReady;
+  }
+
+  function setUpForm(form: HTMLFormElement): void {
+    const endpoint = form.dataset['endpoint'] ?? '';
+    const sitekey = form.dataset['sitekey'] ?? '';
+    const status = form.querySelector<HTMLElement>('[data-feedback-status]');
+    const challenge = form.querySelector<HTMLElement>('[data-feedback-challenge]');
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (!status || !challenge || !submit) return;
+
+    let widgetId: string | undefined;
+    let token = '';
+    let waiters: ((value: string) => void)[] = [];
+
+    const say = (message: string, tone: 'info' | 'error' | 'success' = 'info') => {
+      status.textContent = message;
+      status.dataset['tone'] = tone;
+    };
+
+    const tokenArrived = (value: string) => {
+      token = value;
+      for (const waiter of waiters) waiter(value);
+      waiters = [];
+    };
+
+    const startChallenge = async () => {
+      if (widgetId !== undefined) return;
+      widgetId = '';
+      try {
+        const turnstile = await loadTurnstile();
+        widgetId = turnstile.render(challenge, {
+          sitekey,
+          action: 'feedback',
+          appearance: 'interaction-only',
+          theme: document.documentElement.dataset['theme'] === 'dark' ? 'dark' : 'light',
+          callback: tokenArrived,
+          'expired-callback': () => (token = ''),
+          'error-callback': () => {
+            token = '';
+          },
+        });
+      } catch {
+        widgetId = undefined;
+      }
+    };
+
+    const waitForToken = () =>
+      token
+        ? Promise.resolve(token)
+        : new Promise<string>((resolve) => {
+            waiters.push(resolve);
+            setTimeout(() => resolve(token), TOKEN_WAIT_MS);
+          });
+
+    form.addEventListener('focusin', () => void startChallenge(), { once: true });
+    form.addEventListener('feedback:open', () => void startChallenge());
+
+    const fieldFor = (name: string) =>
+      form.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name="${name}"]`);
+
+    const markInvalid = (errors: Record<string, string>) => {
+      for (const element of form.querySelectorAll('[aria-invalid]')) element.removeAttribute('aria-invalid');
+      for (const name of Object.keys(errors)) fieldFor(name)?.setAttribute('aria-invalid', 'true');
+      const first = Object.keys(errors)[0];
+      if (first) fieldFor(first)?.focus();
+    };
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const value = (name: string) => String(data.get(name) ?? '').trim();
+
+      const errors: Record<string, string> = {};
+      if (!value('kind')) errors['kind'] = 'Choose what your message is about.';
+      if (!value('message')) errors['message'] = 'Write a message.';
+      const email = fieldFor('email');
+      if (email instanceof HTMLInputElement && value('email') && !email.checkValidity()) {
+        errors['email'] = 'Check the email address.';
+      }
+      if (Object.keys(errors).length > 0) {
+        markInvalid(errors);
+        say(Object.values(errors).join(' '), 'error');
+        return;
+      }
+      markInvalid({});
+
+      submit.disabled = true;
+      say('Sending...');
+      void startChallenge();
+
+      try {
+        const turnstileToken = await waitForToken();
+        if (!turnstileToken) {
+          say("The spam check didn't finish. Please try again in a moment.", 'error');
+          return;
+        }
+
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            kind: value('kind'),
+            name: value('name'),
+            email: value('email'),
+            message: value('message'),
+            website: value('website'),
+            turnstileToken,
+            page: { url: location.href.split('#')[0], title: document.title },
+            landing: readLanding() ?? {},
+          }),
+        });
+        const result = (await response.json().catch(() => ({}))) as {
+          ok?: boolean;
+          fields?: Record<string, string>;
+        };
+
+        if (response.ok && result.ok) {
+          form.reset();
+          say('Thank you. Your message has been sent.', 'success');
+          return;
+        }
+        if (result.fields) {
+          markInvalid(result.fields);
+          say(Object.values(result.fields).join(' '), 'error');
+          return;
+        }
+        say("Your message didn't send. It's still here, so please try again.", 'error');
+      } catch {
+        say("Your message didn't send. It's still here, so please try again.", 'error');
+      } finally {
+        submit.disabled = false;
+        // A token works once. Fetch a fresh one for any further message.
+        token = '';
+        if (widgetId) window.turnstile?.reset(widgetId);
+      }
+    });
+  }
+
+  for (const form of document.querySelectorAll<HTMLFormElement>('[data-feedback-form]')) {
+    setUpForm(form);
+  }
+</script>

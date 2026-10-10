@@ -2,6 +2,8 @@
 import { Image } from 'astro:assets';
 import portrait from '../../assets/about/shiv-kumar.webp';
 import SectionLayout from '../../layouts/SectionLayout.astro';
+import FeedbackForm from '../../components/FeedbackForm.astro';
+import { FEEDBACK_ENABLED } from '../../data/feedback';
 ---
 
 <SectionLayout
@@ -102,6 +104,19 @@ import SectionLayout from '../../layouts/SectionLayout.astro';
       engineering guidance, with examples in Python and C#.
     </p>
   </section>
+
+  {
+    FEEDBACK_ENABLED && (
+      <section class="about-contact" aria-labelledby="contact">
+        <h2 id="contact">Get in touch</h2>
+        <p class="about-contact__lede">
+          If you have a question about something I've written, a suggestion, or a
+          role or project you'd like to discuss, send me a message here.
+        </p>
+        <FeedbackForm id="about-contact" />
+      </section>
+    )
+  }
 </SectionLayout>
 
 <style>
@@ -112,6 +127,26 @@ import SectionLayout from '../../layouts/SectionLayout.astro';
     margin-top: var(--space-xl);
     overflow: hidden;
     border-radius: var(--radius-lg);
+  }
+
+  .about-contact {
+    max-width: 44rem;
+    margin-top: var(--space-xl);
+    padding: var(--space-m);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+
+  .about-contact h2 {
+    margin: 0;
+    font-size: var(--step-2);
+    scroll-margin-top: calc(var(--nav-height) + 0.75rem);
+  }
+
+  .about-contact__lede {
+    margin: var(--space-2xs) 0 var(--space-m);
+    color: var(--color-text-muted);
   }
 
   .about-portrait :global(img) {
