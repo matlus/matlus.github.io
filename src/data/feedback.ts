@@ -14,7 +14,7 @@
 import { KINDS } from '../../workers/feedback/src/submission.js';
 
 const PRODUCTION_ENDPOINT = '';
-const PRODUCTION_TURNSTILE_SITE_KEY = '';
+const PRODUCTION_TURNSTILE_SITE_KEY = '0x4AAAAAAFTcM6oO5qMglmeJ';
 
 const env = import.meta.env;
 
