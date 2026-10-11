@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="853" viewBox="0 0 640 853" role="img" aria-labelledby="title desc">
+<title id="title">Trace a wrong total to its cause</title><desc id="desc">A reported total and the entry-by-entry reference ledger feed a code search. Code applies the accepted policy closest to the answer, computes the difference, then searches for the fewest entry mistakes that add up exactly to it. It reports the cause, such as a left-out Airport Parking line, or says no simple cause was found. The scorecard groups causes across runs.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#8a8276"/></marker></defs>
+<style>text{font-family:Segoe UI,Arial,sans-serif;fill:#1c1a17}.heading{font-size:24px;font-weight:650}.label{font-size:21px;font-weight:600}.detail{font-size:18px}.caption{font-size:17px;fill:#5c564c}.path{fill:none;stroke:#8a8276;stroke-width:2;marker-end:url(#arrow)}.line{fill:none;stroke:#8a8276;stroke-width:2}</style>
+<rect width="100%" height="100%" rx="16" fill="#fdfcfa"/>
+<text x="320.0" y="38" text-anchor="middle" class="heading">Trace a wrong total to its cause</text>
+<rect x="22" y="62" width="290" height="104" rx="12" fill="#f2ebf8" stroke="#7a4a9e" stroke-width="1.5"/>
+<text x="167.0" y="93" text-anchor="middle" class="label">Reported total</text>
+<text x="167.0" y="120" text-anchor="middle" class="detail">From the extracted facts,</text>
+<text x="167.0" y="145" text-anchor="middle" class="detail">or quoted by the judge</text>
+<rect x="328" y="62" width="290" height="104" rx="12" fill="#f8f1de" stroke="#8a6a1f" stroke-width="1.5"/>
+<text x="473.0" y="93" text-anchor="middle" class="label">Reference ledger</text>
+<text x="473.0" y="120" text-anchor="middle" class="detail">Every log line: category,</text>
+<text x="473.0" y="145" text-anchor="middle" class="detail">policies, counted or not</text>
+<path d="M167 166V188H473V166M320 188V188" class="line"/>
+<path d="M320 188V213" class="path"/>
+<rect x="22" y="213" width="596" height="104" rx="12" fill="#e6f2f1" stroke="#0f6f6b" stroke-width="1.5"/>
+<text x="320.0" y="244" text-anchor="middle" class="label">Apply accepted policies</text>
+<text x="320.0" y="271" text-anchor="middle" class="detail">Use any that bring the reference closer to the answer</text>
+<text x="320.0" y="296" text-anchor="middle" class="detail">Difference = reported total − reference total</text>
+<path d="M320 317V344" class="path"/>
+<rect x="22" y="344" width="596" height="129" rx="12" fill="#e6f2f1" stroke="#0f6f6b" stroke-width="1.5"/>
+<text x="320.0" y="375" text-anchor="middle" class="label">Search for the fewest entry mistakes</text>
+<text x="320.0" y="402" text-anchor="middle" class="detail">that add up exactly to the difference:</text>
+<text x="320.0" y="427" text-anchor="middle" class="detail">an entry left out, an entry from another category,</text>
+<text x="320.0" y="452" text-anchor="middle" class="detail">the duplicate counted, a refund counted as a purchase</text>
+<path d="M320 473V495H167V517M320 495H473V517" class="line"/>
+<path d="M167 517V520" class="path"/>
+<path d="M473 517V520" class="path"/>
+<rect x="22" y="520" width="290" height="104" rx="12" fill="#e6f2f1" stroke="#0f6f6b" stroke-width="1.5"/>
+<text x="167.0" y="551" text-anchor="middle" class="label">Cause found</text>
+<text x="167.0" y="578" text-anchor="middle" class="detail">Left out line 169,</text>
+<text x="167.0" y="603" text-anchor="middle" class="detail">Airport Parking, −68.00</text>
+<rect x="328" y="520" width="290" height="104" rx="12" fill="#fbeceb" stroke="#a83232" stroke-width="1.5"/>
+<text x="473.0" y="551" text-anchor="middle" class="label">No simple cause</text>
+<text x="473.0" y="578" text-anchor="middle" class="detail">Say so</text>
+<text x="473.0" y="603" text-anchor="middle" class="detail">instead of guessing</text>
+<path d="M167 624V646H473V624M320 646V646" class="line"/>
+<path d="M320 646V671" class="path"/>
+<rect x="22" y="671" width="596" height="104" rx="12" fill="#f8f1de" stroke="#8a6a1f" stroke-width="1.5"/>
+<text x="320.0" y="702" text-anchor="middle" class="label">Scorecard groups causes across runs</text>
+<text x="320.0" y="729" text-anchor="middle" class="detail">One cause in several runs points to a systematic</text>
+<text x="320.0" y="754" text-anchor="middle" class="detail">mistake in the prompt, or in the expected answer</text>
+<rect x="16.0" y="809" width="22" height="22" rx="5" fill="#f2ebf8" stroke="#7a4a9e" stroke-width="1.5"/>
+<text x="46.0" y="826" text-anchor="start" class="caption">Model output</text>
+<rect x="176.0" y="809" width="22" height="22" rx="5" fill="#e6f2f1" stroke="#0f6f6b" stroke-width="1.5"/>
+<text x="206.0" y="826" text-anchor="start" class="caption">Code</text>
+<rect x="336.0" y="809" width="22" height="22" rx="5" fill="#f8f1de" stroke="#8a6a1f" stroke-width="1.5"/>
+<text x="366.0" y="826" text-anchor="start" class="caption">Saved data</text>
+<rect x="496.0" y="809" width="22" height="22" rx="5" fill="#fbeceb" stroke="#a83232" stroke-width="1.5"/>
+<text x="526.0" y="826" text-anchor="start" class="caption">Unexplained</text>
+</svg>

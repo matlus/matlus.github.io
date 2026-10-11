@@ -1,5 +1,28 @@
 # Handoff
 
+## Expense Analysis, Part Three publication, October 11, 2026
+
+Shiv approved publishing **Verified, Not Trusted: Expense Analysis, Part Three**
+with commit, push and PR merge. The article measures how often each Part One
+prompt produces correct results, using repeated isolated runs, pass rates and a
+gate. Its publication copy is
+`src/content/writing/verified-not-trusted-expense-analysis-part-three.md`.
+
+The hero shows five identical glass test chambers, one flagged result and a
+tally column; Shiv checks the odd result while the series' auburn-haired
+engineer loads the feeder. The card is a faithful outpaint of that hero. Both
+prompt records sit beside the assets, and the originals are under
+`D:/Source/Workspaces/matlus-expense-part-three-2026-10-10/`. Two authored SVG
+diagrams show the eval path and failure-cause tracing.
+
+The metadata review used six existing tags, with `acceptance-testing` in place of
+the draft's `regression-testing`; no new tags were needed. Parts One and Two now
+say the series has four parts and link to Part Three, and Part Two's link to
+Part One uses its full title. Part Four, which puts Part Two's directed graph
+through the same evals, is not yet written. The agent-skills facts were rechecked
+on October 10 (104,542 stars). After the article is live, the
+[Skills and Evals](https://github.com/matlus/Skills-and-Evals) README links to it.
+
 ## Message form and private inbox, October 10, 2026
 
 Shiv asked for one form on every page so visitors can ask questions, suggest
