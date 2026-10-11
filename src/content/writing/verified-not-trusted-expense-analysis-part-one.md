@@ -5,7 +5,7 @@ description: >-
   Expense totals need verifiable source coverage and reproducible calculations.
   Two prompts show how parsing, category rules, refunds, and code shape the evidence.
 datePublished: 2026-09-30
-dateModified: 2026-10-09
+dateModified: 2026-10-10
 tags:
   - verified-not-trusted
   - verification
@@ -14,6 +14,7 @@ tags:
 hero: verified-not-trusted-expense-analysis-part-one
 related:
   - verified-not-trusted-expense-analysis-part-two
+  - verified-not-trusted-expense-analysis-part-three
   - skills-versus-controlled-workflows
 status: established
 ---
@@ -24,7 +25,7 @@ status: established
 
 ***Verified, not trusted*** means checking the evidence behind an AI-generated answer before using it. For an expense total, that means checking which transactions were counted, how they were categorized, and whether the calculation reproduces the reported amount. A clear explanation or a tidy table is not enough to establish those facts.
 
-We will give two prompts the same expense log and budget notes. Both ask for monthly spending, budget comparisons, and three findings. The first describes the answer we want. The second also specifies how to prepare the data, calculate the figures, and show the work behind them.
+We will give two prompts the same expense log and budget notes. Both ask for monthly spending, budget comparisons, and three findings. The first describes the answer we want. The second also specifies how to prepare the data, calculate the figures, and show the work behind them. This article is the first of four that work through the same expense log.
 
 As we follow the example, keep one question in mind: Can we trace each conclusion back to the transactions and the rules that produced it?
 
@@ -710,4 +711,4 @@ We have to test that application code too. If a refund was counted as a purchase
 
 A skill can invoke this maintained workflow. The important questions are who controls its execution and who verifies the result. Packaging the instructions as a skill does not answer either question by itself.
 
-Part two takes up these remaining responsibilities: enforcing the sequence, preserving the inputs and returned values, checking model contributions, and building the report from checked results. In [Verified, Not Trusted: Expense Analysis, Part Two](/writing/verified-not-trusted-expense-analysis-part-two/), we first explain how imperative orchestration changes control of the work, then follow a Python implementation through the expense analysis.
+Part two takes up these remaining responsibilities: enforcing the sequence, preserving the inputs and returned values, checking model contributions, and building the report from checked results. In [Verified, Not Trusted: Expense Analysis, Part Two](/writing/verified-not-trusted-expense-analysis-part-two/), we first explain how imperative orchestration changes control of the work, then follow a Python implementation through the expense analysis. [Verified, Not Trusted: Expense Analysis, Part Three](/writing/verified-not-trusted-expense-analysis-part-three/) returns to the prompts in this article and measures how often each one produces correct results across repeated runs.

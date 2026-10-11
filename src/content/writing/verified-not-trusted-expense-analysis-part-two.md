@@ -5,7 +5,7 @@ description: >-
   Imperative Python controls expense analysis and verifies model contributions through source evidence,
   reconciliation, and exact calculations. Jev and LLMs handle bounded judgments.
 datePublished: 2026-10-06
-dateModified: 2026-10-06
+dateModified: 2026-10-10
 hero: verified-not-trusted-expense-analysis-part-two
 repositories:
   - label: Expense Analysis Workflow
@@ -22,6 +22,7 @@ tags:
   - python
 related:
   - verified-not-trusted-expense-analysis-part-one
+  - verified-not-trusted-expense-analysis-part-three
   - skills-versus-controlled-workflows
   - jev-practical-reference
 draft: false
@@ -32,7 +33,7 @@ status: established
 
 ## Who makes sure the work gets done?
 
-In [Part One](/writing/verified-not-trusted-expense-analysis-part-one/), we analyzed an expense log with two prompts. The second prompt spelled out the work: parse every line, preserve uncertainty, handle refunds and duplicates, calculate with code, and then explain the results. Those instructions made the response easier to examine. We still had to establish that the requested work had happened and that the result met the requirements.
+In [Verified, Not Trusted: Expense Analysis, Part One](/writing/verified-not-trusted-expense-analysis-part-one/), the first of these four articles, we analyzed an expense log with two prompts. The second prompt spelled out the work: parse every line, preserve uncertainty, handle refunds and duplicates, calculate with code, and then explain the results. Those instructions made the response easier to examine. We still had to establish that the requested work had happened and that the result met the requirements.
 
 Would we be comfortable relying on the prompt discussed in the previous article?
 
@@ -554,7 +555,7 @@ We have moved a substantial amount of responsibility into code we can inspect an
 
 We also have smaller places to investigate when something goes wrong. A questioned total leads to a set of ledger lines. A changed category retains the original model proposal and the applied policy. An unresolved amount leads back to its original source text. The result carries the information needed to ask a precise question.
 
-The repository's offline tests exercise parsing, evidence checks, policies, reconciliation, calculations, and invalid model responses. One integration test uses the original 198-entry expense fixture, confirms its duplicate, retains eight unresolved outflows, and reproduces $11,758.68 in observed outflow under the workflow's rules. Its model answers are supplied by test doubles, so it checks how the program handles those answers. Live model accuracy requires separate evaluation.
+The repository's offline tests exercise parsing, evidence checks, policies, reconciliation, calculations, and invalid model responses. One integration test uses the original 198-entry expense fixture, confirms its duplicate, retains eight unresolved outflows, and reproduces $11,758.68 in observed outflow under the workflow's rules. Its model answers are supplied by test doubles, so it checks how the program handles those answers. Live model accuracy requires separate evaluation. [Verified, Not Trusted: Expense Analysis, Part Three](/writing/verified-not-trusted-expense-analysis-part-three/) builds that evaluation for the prompts from Part One, and Part Four applies it to this workflow.
 
 This does not make the entire pipeline deterministic. Model-dependent choices can vary. What it does is give us deterministic control over the sequence and over how accepted inputs become calculated outputs, while restricting the places where model judgment can affect the result.
 
