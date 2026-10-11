@@ -4,8 +4,8 @@ titleEmphasis: "Verified, Not Trusted"
 description: >-
   Evals are acceptance tests for prompts and skills: repeated isolated runs, a pass rate for each check,
   and a minimum pass rate as the gate. Code grades extracted facts and traces failures.
-datePublished: 2026-10-10
-dateModified: 2026-10-10
+datePublished: 2026-10-11
+dateModified: 2026-10-11
 hero: verified-not-trusted-expense-analysis-part-three
 repositories:
   - label: Skills and Evals
