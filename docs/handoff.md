@@ -1,5 +1,31 @@
 # Handoff
 
+## Expense Analysis, Part Four publication, October 12, 2026
+
+Shiv approved publishing **Verified, Not Trusted: Expense Analysis, Part Four**
+and merging its supporting source changes. The publication copy is
+`src/content/writing/verified-not-trusted-expense-analysis-part-four.md`, with
+**What Is an Eval? A Worked Example** as its opening lesson heading. Most source
+prose is preserved. Targeted changes clarify aggregate checks, confirmed
+duplicates, accepted category policies, and what repeated runs establish.
+A new 1600 x 534 hero, its 1200 x 500 outpainted card and two pastel SVG flow
+diagrams accompany it. Parts One through Three link to Part Four.
+
+The source repository's PR #16 merged at
+`78796de225a6b9f5cc995bae95d3dcff90492b24`. It contains the 100% gate, 70
+retained completed runs and entry-by-entry check described in the article.
+The tested PR head was `22452f4`: 487 offline tests passed, seven tests were
+skipped, and Ruff and Pyright were clean. Regrading all 70 saved outcomes
+passed; report text matches after normalizing line endings. No new paid or
+live-model evaluations were performed for publication.
+
+See [the editorial record](drafts/expense-analysis/part-four-editorial.md) for
+source coverage, reviewed qualifications, metadata, images and verification.
+The website publication uses a clean worktree from `origin/main` at `1150966`,
+keeping unrelated untracked drafts and artwork in the primary checkout.
+Its publication PR carries the exact website merge and deployment receipt.
+After the canonical article is live, the source README links back to it.
+
 ## Expense Analysis, Part Three publication, October 11, 2026
 
 Shiv approved publishing **Verified, Not Trusted: Expense Analysis, Part Three**
