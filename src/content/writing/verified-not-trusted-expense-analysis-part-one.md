@@ -15,6 +15,7 @@ hero: verified-not-trusted-expense-analysis-part-one
 related:
   - verified-not-trusted-expense-analysis-part-two
   - verified-not-trusted-expense-analysis-part-three
+  - verified-not-trusted-expense-analysis-part-four
   - skills-versus-controlled-workflows
 status: established
 ---

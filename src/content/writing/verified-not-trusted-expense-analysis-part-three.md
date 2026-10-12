@@ -439,6 +439,6 @@ The next time someone offers you a skill, ask for its label. If the answer is "I
 
 The same applies to your own skills. Every time you change the prompt or move to a new model, run the eval again and read the scorecard before you rely on the result.
 
-In Part Four, we put the directed graph from [Verified, Not Trusted: Expense Analysis, Part Two](/writing/verified-not-trusted-expense-analysis-part-two/) through these same evals. Code controls every step there, and a model makes only the judgments code cannot. How much does that raise the pass rates over the more precise prompt from Part One?
+[Verified, Not Trusted: Expense Analysis, Part Four](/writing/verified-not-trusted-expense-analysis-part-four/) works through the expense entries to explain reference keys, checks, graders and pass-rate gates. It also shows how the directed workflow from [Verified, Not Trusted: Expense Analysis, Part Two](/writing/verified-not-trusted-expense-analysis-part-two/) exposes each line for verification, and what repeated runs tell us about its completed reports.
 
 ***Verified, not trusted.*** Trust follows the evidence, and for a prompt, the evidence is a measured pass rate.
