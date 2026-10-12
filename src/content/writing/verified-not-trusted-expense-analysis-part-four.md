@@ -58,7 +58,7 @@ The industry uses a handful of terms for the parts of an eval. They are simple o
 | Task | One input with a known correct outcome: the expense log and the budget note, and the job "analyze my spending". |
 | Run | One attempt at the task, starting fresh, sharing nothing with any other run. Some people call this a trial. |
 | Output | What the run produced: a written answer, or structured data, or both. |
-| Reference key | The hand-checked correct answer: every line's category and amount, and every total that follows from them. |
+| Reference key | The hand-checked correct answer: every line's date, merchant, amount and category, and every total that follows from them. |
 | Check | One property of the output that must be right, such as "July shopping is $756.72". |
 | Grader | Whatever decides whether a check passed: a piece of code, a model, or a person. |
 | Pass rate | How many runs passed a check, divided by how many runs there were. Four out of five is 80%. |
@@ -121,7 +121,7 @@ output shows you. A prompt's answer is a written report with tables of totals, a
 appears in it. All you can check is the totals. A wrong total tells you something went wrong in parsing, categorization or calculation. The reference key lets code search for likely line-level causes, but the total alone cannot prove which line was wrong. Several errors can also cancel out and leave the total correct. But a total only covers its own lines. The prompt eval
 checks five totals, so a grocery or gas line read as $45.18 instead of $54.18 would never be caught.
 
-The workflow from [Verified, Not Trusted: Expense Analysis, Part Two](/writing/verified-not-trusted-expense-analysis-part-two/) returns every line it read, with its amount, month, category and whether it was counted. When the
+The workflow from [Verified, Not Trusted: Expense Analysis, Part Two](/writing/verified-not-trusted-expense-analysis-part-two/) returns every line it read, with its date, merchant, amount, category and whether it was counted. When the
 output shows every line, check every line. That check is code comparing 198 lines with the reference key, and it is the
 strongest check in the suite.
 
@@ -157,7 +157,7 @@ Put those together and you get the list of things in this task you should not ta
 
 | Don't trust that... | Verify by checking... | Grader |
 |---|---|---|
-| every line was read correctly | each line's amount, sign and month; the totals when lines aren't visible | code |
+| every line was read correctly | each line's date, merchant, amount and sign; the totals when lines aren't visible | code |
 | each line is in the right category | each line's category; the totals when lines aren't visible | code |
 | transfers and withdrawals were left alone | the count, and each entry's category when the ledger is available | code |
 | the duplicate was removed and the look-alikes kept | the duplicate fact, both Delta charges, the travel total | code |
@@ -177,23 +177,22 @@ about what isn't checked and what it would take to check it:
 
 | Check | Graded by | What it needs |
 |---|---|---|
-| Each line's full date | code | the date for all 198 lines, written into the reference key by hand |
-| Each line's merchant, written consistently ("Delta Air Lines" however the line spells it) | code | the merchant for all 198 lines, written in by hand |
 | Every category total for every month, beyond the five checked | code | nothing new; code can add them up from the reference key's lines |
 | Every budget comparison and every month-to-month change | code | nothing new, for the same reason |
 | Each uncategorized entry is explained ("tell me what it is") | judge | a rubric |
 | The findings and tables agree with each other | code if the report is built from data, judge if it's prose | a rubric for prose |
 
-The first two are the expensive kind. Before code can check a date or a merchant, someone has to write down the right
-answer for every line. That's the usual trade-off: once the reference exists, grading is cheap and automatic, and building
-the reference is the human work. For a written answer, the checks that need "nothing new" in the reference key still need
-the fact extraction to pull out every total, beyond the five it reads today.
+Each line's date and merchant used to be on this list. Before code could check them, someone had to write down the right
+date and merchant for all 198 lines, independently of the workflow's parser. That's the usual trade-off: building the
+reference is the human work, and once it exists, grading is cheap and automatic. Both are now in the reference key and
+checked on every line. For a written answer, the checks that need "nothing new" in the reference key still need the fact
+extraction to pull out every total, beyond the five it reads today.
 
 ## The same checks, with structured output
 
 I also built a workflow for the same task, where code controls every step instead of the model. Its eval uses the same
 checks, but something changes: the workflow returns structured data as well as prose. Every line comes back with its
-category, its amount and what happened to it (counted, excluded as a duplicate, left uncategorized).
+date, merchant, amount, category and what happened to it (counted, excluded as a duplicate, left uncategorized).
 
 That turns two checks graded by a judge in Part Three into code checks. The workflow also adds the entry-by-entry reference check, which the prompt report cannot expose. "Transfers are not forced into a category" is now
 code reading each line's category. "Only the two stated budgets are used" is code comparing the budget table with the
@@ -202,6 +201,31 @@ budget note. This workflow's reference also accepts merchant-only Amazon, Target
 The more structure your output has, the more of your eval code can grade. Of the workflow's checks, only the
 findings still need a judge.
 
+## Check every step, and the totals follow
+
+The workflow runs in steps: read each line, put it in a category, add up the totals, choose the findings. If you verify
+what each step produces, you don't need to verify the same thing again further on.
+
+The line check covers the first two steps. Every line's date, merchant, amount and sign are compared with the reference
+key, and so are its category and whether it was counted. The third step is code, and that code has its own unit tests.
+Tested code adding up verified lines gives the right totals, so a total can only be wrong if a line is wrong, and the line
+check would already have caught it. For the workflow, the complete set of checks is short: every line, the findings, and
+the unit tests of the calculation code.
+
+The workflow's eval still makes the five total checks and the fact checks. They are the same checks the prompt eval makes,
+and keeping them is what makes the two results comparable. For the workflow, they confirm what the line check has already
+established.
+
+The prompt is different. The model does its own adding up, so its totals don't follow from its lines. It can read every
+line correctly and still add them up wrong, or total a different set of lines from the ones it read. That's why the prompt
+eval needs its total checks, and would need them even if its answer listed every line. You can skip checking a total only
+when tested code computed it.
+
+Writing the merchants into the reference key paid off straight away. It showed that the workflow recorded the merchant on
+line 108 as "Return processed - REI" rather than REI. The refund still reduced July Shopping by $68.00, so the total checks
+passed. The merchant field was wrong. The workflow now separates refund wording from the merchant's name, and every line
+matches.
+
 ## Verifying inside the run
 
 An eval checks the answer after it is written. The workflow also checks each step while it runs, before the next step
@@ -209,7 +233,7 @@ uses the result. Two kinds of model take part. Jev is a System 1 model: it answe
 without reasoning step by step first, and gives a probability for each choice. A large language model is used only where
 code and Jev can't do the job.
 
-1. Code reads each line's date, description and amount. For a line code can't read, code lists the possible dates and
+1. Code reads each line's date, merchant and amount. For a line code can't read, code lists the possible dates and
    amounts in its text and Jev picks which is which. If Jev isn't confident, a large language model reads the line, and
    code confirms the date and amount it returns appear in the line's own text. In this log, code read every line itself.
 2. Jev puts each line in a category from a fixed list. Code rejects any answer that isn't on the list, then applies written
@@ -274,9 +298,14 @@ A check passes when its pass rate reaches the minimum. For the prompt in Part Th
 five. That accepts that a model's answer varies and asks how often it varies.
 
 For the workflow, the minimum is 100%. Code decides every step that has one right answer, so the same input should give
-the same verified outcome every time, and any failed check is something to investigate rather than a rate to tolerate. Across the 70 retained completed runs on seven model-and-effort configurations, the report text was identical. The suite now requires 100% for every graded check. The entry-by-entry check was added after those runs and passed when applied to all 70 saved structured results.
+the same verified outcome every time, and any failed check is something to investigate rather than a rate to tolerate.
+After extending the entry-by-entry check to include dates and merchants and fixing the REI merchant, I reran both eval
+rounds: seven model-and-effort configurations, five runs each, twice. All 70 completed runs passed every graded check,
+including all 198 lines, and produced identical report text. The suite requires 100% for every graded check.
 
-Those 70 reports establish consistency on this one expense log. They do not prove that every future log will produce the right answer. A separate earlier attempt failed before producing a report; the retained results include a replacement run. Completion failures matter too, so a release decision should examine them alongside the correctness of completed answers.
+Those 70 reports establish consistency on this one expense log. They do not prove that every future log will produce the
+right answer. A separate earlier attempt failed before producing a report. Completion failures matter too, so a release
+decision should examine them alongside the correctness of completed answers.
 
 The minimum is a statement about how much you're willing to rely on the result. For low-stakes exploration, where you read
 every answer anyway, you might accept 80% on a check. An analysis that feeds a decision about money should not.
