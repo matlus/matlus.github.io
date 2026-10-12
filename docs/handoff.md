@@ -1,5 +1,22 @@
 # Handoff
 
+## Expense Analysis, Part Four synchronization, October 12, 2026
+
+Shiv approved updating and republishing Part Four after source
+[PR #18](https://github.com/matlus/Analyze-Expenses-Workflow/pull/18)
+merged at `7ccee9f3665e1fb86ddfaccc3d9b0bdd2b93763f`.
+The publication Markdown now includes full-date and merchant grading for all
+198 lines, the REI merchant correction and two fresh eval rounds totaling 70
+completed runs. This replaces the earlier account of regrading saved outcomes.
+
+The new **Check every step, and the totals follow** section preserves the
+owner-approved argument: tested calculation code computes totals from verified
+lines. Do not add a general qualification about tests possibly being wrong.
+The existing category-policy and single-fixture qualifications remain.
+Title, original publication date, hero and card are retained. The editorial
+record holds the source evidence; the republication PR records checks and the
+deployment receipt. The existing source README backlink remains valid.
+
 ## Expense Analysis, Part Four publication, October 12, 2026
 
 Shiv approved publishing **Verified, Not Trusted: Expense Analysis, Part Four**

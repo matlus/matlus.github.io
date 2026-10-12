@@ -116,3 +116,54 @@ The website PR records the exact merge commit, matching GitHub Pages run and
 live verification. After the canonical article is live, the source README gets
 a backlink. The final source PR records that update. This article has no source
 video.
+
+## October 12 synchronization with source PR #18
+
+Shiv approved updating the publication Markdown and republishing it after
+[source PR #18](https://github.com/matlus/Analyze-Expenses-Workflow/pull/18)
+merged at `7ccee9f3665e1fb86ddfaccc3d9b0bdd2b93763f`.
+The earlier source snapshot and preparation results above remain historical.
+
+The reference key now supplies independently read full dates and merchant names
+for all 198 lines. The existing entry-by-entry grader checks both fields, and
+the article moves them out of its list of possible future checks. The stronger
+reference exposed the REI refund's merchant as `Return processed - REI`; the
+parser now returns `REI`. Its amount and category were already correct.
+
+The source PR replaces the old retained results with two fresh rounds: seven
+model-and-effort configurations, five runs each, twice. Independently inspected
+the 70 saved outcomes and applied the current line grader to every one:
+
+- All 70 pass, with 198 unique line numbers per outcome.
+- All 1,050 saved graded verdicts pass; these include the model judge's verdicts.
+- All 70 report texts are identical after normalizing line endings.
+- The parser matches the reference's date, merchant and amount on all 198 lines.
+- The 64 focused parser, grading and eval-configuration tests pass.
+
+This verification reads and regrades existing artifacts. No new paid or live
+model runs were performed for the website revision.
+
+The new **Check every step, and the totals follow** section preserves the source
+argument at Shiv's explicit request: tested calculation code adds verified
+lines, while a model doing its own arithmetic needs its totals checked. The
+workflow retains the shared total and fact checks used for comparison. The
+article retains its existing category-policy and single-fixture qualifications.
+
+The blog-writing skill governs the article edit. Existing approved artwork,
+title and dates remain; the revision and initial publication share October 12.
+The required metadata sub-agent read the full revision, Part Three and the tag
+vocabulary using `prompts/extract-description-and-tags.md`. It retained the
+existing description and all four existing tags; no new topics are needed.
+The writing audit reports no punctuation errors or review items. The three
+article copy-audit advisories remain substantive distinctions about refund
+arithmetic, uncategorized transfers and the corrected reference key.
+Republication checks are recorded in the republication PR, along with its merge
+commit and matching deployment run.
+
+Local republication checks passed: typecheck has zero errors, zero warnings and
+34 existing hints; all 31 site tests pass; the full copy audit checks 715 files
+with zero hard flags and 62 reviewed advisories. The tag vocabulary, production
+build, 123 article cards, search indexing of 328 pages and generated-link policy
+checks pass. Generated HTML contains the approved calculation argument, the REI
+example and the fresh-round results, with the old retrospective claim removed.
+The source repository's public README still links to the canonical article.
