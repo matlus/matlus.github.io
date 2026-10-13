@@ -1,5 +1,34 @@
 # Handoff
 
+## Expense Analysis, Part One teaching revision, October 13, 2026
+
+Shiv approved revising Part One after considering two editorial critiques.
+The revision clarifies that the article compares prompt instructions and examines
+one recorded response, adds a visible expense-log excerpt, removes numbering
+from the prompt explanation, and moves the inspection checklist before the output.
+The tested prompts, complete inputs, recorded output and calculation code remain
+unchanged. Existing section anchors remain available.
+
+The main prose now explains the row-position month assignments, fixed-index
+duplicate removal and replay conditions. The returned-value example has its own
+subheading, and the detailed control discussion precedes the stakes comparison.
+Recorded-output headings keep their original anchors but no longer populate the
+article's table of contents. The closing roadmap covers Parts Two through Four.
+The existing description, tags, hero and card remain appropriate and are retained.
+Shiv authorized commit, push, PR creation and merge to `origin/main`.
+Publication uses an isolated checkout to preserve unrelated local drafts.
+Independent prepublication metadata extraction confirmed the existing description
+and all four tags. The publication PR records the merge and deployment receipt.
+
+Validation passed: article writing and copy audits, typecheck (zero errors and
+warnings; 34 existing deprecation hints), six external-link tests, build, card
+and search checks, tag validation, generated-link checks and diff checks.
+All 17 original fenced blocks and the recorded response were compared with HEAD;
+the rendered article preserves its legacy anchors and excludes the four output
+headings from navigation. The tracked copy audit has zero hard findings; the
+original checkout's full-folder audit has 21 hard findings in unrelated untracked
+narration drafts. All six publication checks are rerun in the isolated checkout.
+
 ## Expense Analysis, Part Four synchronization, October 12, 2026
 
 Shiv approved updating and republishing Part Four after source
