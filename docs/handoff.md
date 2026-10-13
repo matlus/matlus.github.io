@@ -1,5 +1,28 @@
 # Handoff
 
+## Expense Analysis, Part Two teaching revision, October 13, 2026
+
+Shiv approved revising Part Two and publishing it through commit, push, PR and
+merge to `origin/main`. The revision shortens the recap and stakes comparison,
+identifies execution, implementation and returned-value use as separate
+verification responsibilities, and preserves the first-person trust argument.
+The duplicated assurance callout and stakes table are removed; the article still
+explains control and stakes before introducing the implementation.
+
+Jev is introduced through its bounded decision task before the System One name.
+Line 3's unresolved route into LLM extraction is explicit at the end of step 2
+and the beginning of step 3. Possible optimizations move after the walkthrough;
+the absence of an LLM categorization fallback remains beside the category code.
+Nearby repetitions of the refrain are reduced. Code, walkthrough outputs,
+diagrams, source qualifications and existing section anchors are preserved.
+The description focuses on the architecture; approved hero and card remain.
+Independent metadata extraction confirmed the revised description and all eight
+existing tags. All 17 input, code and output blocks, both diagrams and every
+walkthrough table were compared with the previous publication copy and preserved.
+
+Publication uses an isolated checkout to leave the deferred draft cleanup alone.
+The publication PR records validation, the merge and the deployment receipt.
+
 ## Expense Analysis, Part One teaching revision, October 13, 2026
 
 Shiv approved revising Part One after considering two editorial critiques.
