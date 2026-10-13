@@ -3,9 +3,9 @@ title: "Verified, Not Trusted: Expense Analysis, Part Two"
 titleEmphasis: "Verified, Not Trusted"
 description: >-
   Imperative Python controls expense analysis and verifies model contributions through source evidence,
-  reconciliation, and exact calculations. Jev and LLMs handle bounded judgments.
+  reconciliation, and exact calculations. Models handle bounded judgments.
 datePublished: 2026-10-06
-dateModified: 2026-10-11
+dateModified: 2026-10-13
 hero: verified-not-trusted-expense-analysis-part-two
 repositories:
   - label: Expense Analysis Workflow
@@ -33,56 +33,33 @@ status: established
 
 ## Who makes sure the work gets done?
 
-In [Verified, Not Trusted: Expense Analysis, Part One](/writing/verified-not-trusted-expense-analysis-part-one/), the first of these four articles, we analyzed an expense log with two prompts. The second prompt spelled out the work: parse every line, preserve uncertainty, handle refunds and duplicates, calculate with code, and then explain the results. Those instructions made the response easier to examine. We still had to establish that the requested work had happened and that the result met the requirements.
+In [Verified, Not Trusted: Expense Analysis, Part One](/writing/verified-not-trusted-expense-analysis-part-one/), we compared two prompts' instructions and examined one recorded response. The more precise prompt specified parsing, cleanup, calculation with code, and evidence before conclusions. The model still controlled whether those steps happened and how their results were used. Here, in the second of four articles, we'll follow a Python implementation that controls the sequence, checks model contributions, and builds the report from checked results.
 
 Would we be comfortable relying on the prompt discussed in the previous article?
 
-Before answering that, what is the issue with that prompt in the first place? It describes the steps, but the model remains in charge of carrying them out. The instruction to use Python has not transferred control of the workflow to Python.
-
-Coordinating the steps, their inputs, and what happens after each result is **orchestration**. The **controller** carries out that orchestration. In the prompt-based approach, the model chooses the actions to request, examines their results, and decides what to do next. That repeated process is the **control loop**. The prompt supplies instructions to the controller.
-
-The model therefore controls whether it requests the calculation, which data it supplies, and whether it recalculates after correcting a transaction. It also decides when it has enough information to produce the report. We have described what should happen. We still need evidence of what actually happened.
+Look at where control resides. Coordinating the steps, their inputs, and what happens next is **orchestration**. The **controller** runs the **control loop**: choosing an action, examining its result, and deciding what to do next. In the prompt-based workflow, the model is the controller. Asking it to use Python has not transferred control of the workflow to Python.
 
 ### Calling Python leaves several things to verify
 
-First, an instruction to call a tool does not establish that the call happened. Showing Python in an answer does not establish that it executed. We need the execution record and the inputs and outputs associated with that call.
+First, **execution** needs evidence. Showing Python in an answer does not establish that it ran. We need the execution record and the inputs and outputs associated with the call.
 
-Second, this prompt asks the model to generate the Python during the run. Even if that code executed successfully, did it implement the instructions correctly? Part One's recorded code assigns months by line position despite the request to parse dates. Python can carry out that shortcut perfectly. Successful execution does not make it the requested implementation.
+Second, **implementation** needs inspection. This prompt asks the model to generate Python during the run. Part One's recorded code assigns months by line position despite the request to parse dates. Successful execution does not make it the requested implementation. Supplying our own reviewed and tested code, with instructions to use it without generating a replacement, would reduce that risk.
 
-Supplying our own reviewed and tested code, with instructions to use it without generating a replacement, would improve that part of the approach. But there is still a gap after the function returns.
+Third, **use of returned results** needs verification. Even when a tested function returns the correct value, the model still decides what to carry into subsequent calculations and the report.
+
+### Correct execution does not guarantee a correct report
 
 Suppose the tested function returns $398.69 for August dining. The model now has that answer. What establishes that it uses $398.69 in the report and in the budget comparison? It could write $389.69 or reuse a total calculated before a correction. The function has done its job correctly. The delivered result can still be wrong.
 
 We must check that the intended operation ran with the intended inputs, that its result met the requirements, and that subsequent steps used that result. Verifying the function call alone leaves the rest of that chain unchecked.
 
-Models can follow instructions very well. That does not tell us which future run will skip a step, mishandle a response, or carry the wrong value forward. When the consequences are serious, “it usually gets it right” is nowhere near good enough. I want the checks to be part of execution, with successful completion dependent on them.
-
-The theme remains ***Verified, not trusted***. I don't find “trust but verify” a useful starting point here. It grants the answer trust before we have established a reason for doing so. The order I want is ***Verified, therefore trusted***. Until the relevant checks have passed, that answer has not earned our trust. And the trust extends only as far as those checks establish.
-
-<div class="article-callout" role="note" aria-label="Idea">
-  <svg class="article-callout__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/icons/callouts.svg#idea"></use></svg>
-  <div class="article-callout__content">
-    <p><strong>Instruction is not assurance.</strong></p>
-    <p>An instruction can go unperformed. It can also be performed incompletely while the model reports success. We need evidence that the work happened and that it met the requirements.</p>
-    <p>A successful tool call still leaves us to check how its result was used. <strong><em>Verified, not trusted.</em></strong></p>
-  </div>
-</div>
+This is why I want ***Verified, not trusted*** as the starting point. I don't find “trust but verify” useful here. It grants the answer trust before we have established a reason for doing so. The order I want is ***Verified, therefore trusted***. Until the relevant checks have passed, that answer has not earned our trust. And the trust extends only as far as those checks establish.
 
 ## The stakes and the person in the loop
 
-There are two dimensions to consider: the consequences of an error, and whether a person verifies the work before its result is used.
+The choice depends on the consequences of an error and whether a person verifies each result. A prompt or skill can be reasonable for exploring household expenses while you check the entries and tallies. When organizational expense accounting runs unattended, nobody reviews each run before its result enters business records. I would not put that responsibility in the hands of a model-controlled prompt. When the consequences are serious, “it usually gets it right” is nowhere near good enough.
 
-At one end, you are using a prompt or skill to explore your household expenses. You are sitting there, checking the entries, double-checking the tallies, and asking for corrections. You want to understand your budget. The stakes are low, and a human is in the loop. A prompt or skill can be perfectly reasonable for that job.
-
-At the other end, a large organization wants to automate its expense accounting. The results feed business records and decisions, and nobody checks each run before it proceeds. The stakes are high, and the pipeline is fully automated. I would not put that responsibility in the hands of a model-controlled prompt. The accounting has to be correct. An occasional wrong total is a failure, however convincing the explanation around it may be.
-
-| | Personal budgeting | Automated organizational accounting |
-| --- | --- | --- |
-| Consequences of an error | Limited consequences while exploring a household budget | Incorrect records and consequential business decisions |
-| Human verification | A person checks entries and tallies before using the result | Nobody reviews each execution before its result proceeds |
-| Control and checks | A prompt or skill directs the model; the person verifies the work | Application code enforces required steps and checks before accepting a result |
-
-Those are the two extremes. High stakes can still involve a human reviewer, and low-stakes work can run unattended. Increasing the stakes demands stronger evidence. Removing the reviewer means the application must perform the checks that person would otherwise perform. Watching an answer appear is not verification.
+High stakes can still involve a human reviewer, and low-stakes work can run unattended. Increasing the stakes demands stronger evidence. Removing the reviewer means the application must perform the checks that person would otherwise perform. I want successful completion to depend on those checks. Watching an answer appear is not verification.
 
 ## Put imperative code in charge of orchestration
 
@@ -113,7 +90,7 @@ Adding amounts, grouping transactions by month, comparing a total with a budget,
 
 Understanding an unfamiliar transaction description is different. A model may help decide which category the description supports. A line containing several dates or amounts may also need contextual interpretation. Even then, we can often narrow the job to choosing among values that code has already found.
 
-The implementation uses Jev for these bounded decisions. TypeSafe describes Jev as a System One model: it produces typed judgments rather than free-form prose. Its `Choice` operation selects among supplied options and returns probabilities. That suits a question such as “Which of these source amounts is the transaction amount?” See the [System One documentation](https://docs.typesafe.ai/concepts/system-one) and [Choice reference](https://docs.typesafe.ai/primitives/choice).
+The implementation uses Jev, an AI model from TypeSafe that makes bounded decisions from supplied evidence and returns typed answers and probabilities. TypeSafe calls this a **System One** model: the emphasis is on fast, focused judgments that software can use directly. Its `Choice` operation selects among supplied options. That suits a question such as “Which of these source amounts is the transaction amount?” See the [System One documentation](https://docs.typesafe.ai/concepts/system-one) and [Choice reference](https://docs.typesafe.ai/primitives/choice).
 
 An LLM can perform classification too. The architectural decision is to isolate the judgment behind a small contract so that code can inspect the answer. Here, Jev handles choices, and an LLM is available for unresolved extraction and a final, tightly constrained selection of findings. All the controller and processing code shown below is Python.
 
@@ -260,11 +237,11 @@ After selection, Python retrieves the original occurrence, parses it again, reje
 
 That probability threshold is a routing rule. It cannot prove that the selected amount is correct. A confidently wrong selection still has to face the source and policy checks, and those checks have limits too. The threshold needs evaluation against representative inputs before we rely on it operationally.
 
-This is ***Verified, not trusted*** applied to a small answer. Restrict the possible answer, check the choice, and derive the value from the source.
+Restrict the possible answer, check the choice, and derive the value from the source. In this walkthrough, Jev leaves line 3 unresolved, so Python passes it to the LLM stage.
 
 ## 3. Use the LLM for what remains unresolved
 
-Suppose Jev chooses `none` for line 3, or the selected probability is below the minimum. Python leaves the amount unresolved. The next processor can ask the LLM to extract the missing information.
+Line 3 reaches this stage with its amount still unresolved. A Jev choice of `none` or a selected probability below the minimum leaves that field open. The LLM processor now attempts to extract the missing information from the source.
 
 This fallback also covers other unresolved parsing problems that Jev's candidate selection cannot solve. A failed Jev extraction request can leave a line for this stage. The LLM is given the unresolved source lines, the known fields, an output schema, and instructions to supply evidence.
 
@@ -365,9 +342,9 @@ For example, suppose Jev proposes Shopping for the merchant-only Target entry. P
 
 These rules are repeatable, inspectable decisions. They also remain policies with limits. A merchant name does not prove which items were purchased. Classifying a Kroger charge according to the catalog verifies application of that rule; a receipt would provide stronger evidence about the purchase itself.
 
-There are two implementation details we should be precise about. First, this version asks Jev about every complete line before applying the deterministic policy, even when a known-merchant rule will determine the result. It retains the proposal for inspection. If that proposal has no useful role in a particular application, moving conclusive rules ahead of the model call would remove unnecessary model work.
+This version asks Jev about every complete line before applying the deterministic policy, even when a known-merchant rule will determine the result. It retains the proposal for inspection.
 
-Second, **the probability-based LLM fallback in this implementation belongs to date and amount extraction**. Categorization uses Jev followed by code policy; it does not currently send low-probability category decisions to an LLM. The same routing idea could be added there, but its accepted outputs and failure policy would need to be defined and tested.
+**The probability-based LLM fallback in this implementation belongs to date and amount extraction**. Categorization uses Jev followed by code policy; it does not currently send low-probability category decisions to an LLM. The same routing idea could be added there, but its accepted outputs and failure policy would need to be defined and tested.
 
 ### Fan-in preserves the relationship to the source
 
@@ -545,9 +522,15 @@ Python checks that the response contains exactly three distinct IDs, that every 
 
 This arrangement gives the LLM a constrained selection task. Its choices can still vary where there is room to choose, but it cannot alter the numbers or make up the selected statements.
 
-There is also an obvious opportunity to remove work: if the rules already require exactly three candidates, code could select those directly. This version still calls the LLM. The principle applies here too: if the application has already determined the answer, another model call needs a reason.
-
 The final Markdown report is composed by Python from the structured result. Formatting tables and inserting verified statements do not require another model. This closes the returned-value gap we identified at the start: code carries the calculated amounts and selected statements into the report, without asking an LLM to reproduce them. The report construction is part of the implementation we can inspect and test.
+
+## Where this implementation could be leaner
+
+The walkthrough also exposes two places where a model call may add no useful judgment. These are opportunities to change the implementation, rather than behavior already implemented here.
+
+In categorization, conclusive merchant rules could run before Jev. The current order retains a model proposal even when policy determines the category. If that proposal has no useful role in an application, applying the rule first would remove unnecessary model work.
+
+In findings selection, code could select the candidates directly when the rules already require exactly three. This version still calls the LLM. If the application has already determined the answer, another model call needs a reason.
 
 ## What have we gained?
 
