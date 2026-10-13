@@ -1,5 +1,33 @@
 # Handoff
 
+## Expense Analysis, Part Three teaching revision, October 13, 2026
+
+Shiv approved revising Part Three and publishing through commit, push, PR and
+merge to `origin/main`. The revision separates stakes, context and inherited
+skill risk from model changes and the certification ladder. The harness now
+follows Arrange, Act and Assert; the proof-requirement discussion follows the
+Steam diagnosis and identifies what the recorded suite did and did not measure.
+Renamed sections retain their previous anchors.
+
+The opening states both accepted travel totals and accounts for the $24.10 Uber
+policy difference before the omitted Delta charge. The grading section separates
+fact extraction, execution-log checks and rubric judging. Errored checks remain
+non-passes in the denominator and are distinguished from incorrect answers.
+The Steam sequence now distinguishes the original-key regrade from grading with
+the corrected key, and new grader calls from reused trial answers.
+
+The diagnostic explanation and existing SVG describe consideration of accepted
+policies and the fewest-mistake search, with the implemented three-mistake limit.
+The run command's timing is an estimate for 15 sequential trials plus grading.
+The skill-pack inspection is dated to its original October 10 snapshot.
+Code, recorded results, original publication date, hero and card are retained.
+All 12 fenced blocks and four original tables were compared with HEAD and are
+unchanged. Independent metadata extraction confirmed the description and all
+six tags. Article writing and copy audits are clean; the edited SVG was rendered
+and inspected with its existing layout.
+Publication uses an isolated checkout; the PR records validation and deployment.
+Deferred draft cleanup remains untouched.
+
 ## Expense Analysis, Part Two teaching revision, October 13, 2026
 
 Shiv approved revising Part Two and publishing it through commit, push, PR and
