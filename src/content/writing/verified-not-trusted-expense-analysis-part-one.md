@@ -5,7 +5,7 @@ description: >-
   Expense totals need verifiable source coverage and reproducible calculations.
   Two prompts show how parsing, category rules, refunds, and code shape the evidence.
 datePublished: 2026-09-30
-dateModified: 2026-10-11
+dateModified: 2026-10-13
 tags:
   - verified-not-trusted
   - verification
@@ -26,7 +26,9 @@ status: established
 
 ***Verified, not trusted*** means checking the evidence behind an AI-generated answer before using it. For an expense total, that means checking which transactions were counted, how they were categorized, and whether the calculation reproduces the reported amount. A clear explanation or a tidy table is not enough to establish those facts.
 
-We will give two prompts the same expense log and budget notes. Both ask for monthly spending, budget comparisons, and three findings. The first describes the answer we want. The second also specifies how to prepare the data, calculate the figures, and show the work behind them. This article is the first of four that work through the same expense log.
+We will compare two prompts for the same expense log and budget notes. Both ask for monthly spending, budget comparisons, and three findings. The first describes the answer we want. The second also specifies how to prepare the data, calculate the figures, and show the work behind them.
+
+This article compares their instructions and examines one recorded response to the more precise prompt. It does not present a pair of responses or measure which prompt works more reliably. It is the first of four articles that work through the same expense log; Part Three compares the prompts across repeated runs.
 
 As we follow the example, keep one question in mind: Can we trace each conclusion back to the transactions and the rules that produced it?
 
@@ -46,6 +48,20 @@ As we follow the example, keep one question in mind: Can we trace each conclusio
 ## The data and the task
 
 The sample expense log covers June through August 2026. It is a text file, with 198 transaction entries. Dates and separators vary, some entries appear out of order, and there are no category labels. It also contains a repeated entry, a refund, and transfers with no stated purpose.
+
+Here are a few lines from different parts of the file. Notice the date formats, the payment with no stated purpose, the negative refund, and the repeated purchase:
+
+```text
+Best Buy, 2026-06-05 -- $56.99
+Venmo - Sam, 7/9 -- $75.00
+Return processed - REI (7/18/26) - -$68.00
+Trader Joe's (Jul. 22) - $54.12
+Trader Joe's (Jul. 22) - $54.12
+Netflix (8/2/26) - $15.49
+08-01 | Xfinity Internet | $64.99
+```
+
+The last two lines also show why we must read the dates rather than assume the file is in date order. The complete log follows.
 
 <details class="expense-example-output expense-example-input">
 <summary>personal_expenses.txt (complete expense log)</summary>
@@ -351,7 +367,9 @@ The numbered steps describe that order. They remain instructions for the model t
 
 <span id="check-the-instructions-against-actual-lines"></span>
 
-### 1. Account for every source line
+<span id="1-account-for-every-source-line"></span>
+
+### Account for every source line
 
 > "Parse every line into date, merchant/description, and amount."
 
@@ -365,13 +383,17 @@ This becomes a transaction dated June 5, 2026, with merchant Best Buy and amount
 
 "Every line" requires complete coverage. Difficult transactions must not disappear. The heading and introductory note need to be identified as non-transaction text, and extracted transactions must remain traceable to their source lines.
 
-### 2. Make parsing uncertainty visible
+<span id="2-make-parsing-uncertainty-visible"></span>
+
+### Make parsing uncertainty visible
 
 > "Flag any line you can't confidently parse."
 
 When a date, description, or amount is unclear, show the source line and the field needing clarification. That gives us a problem we can resolve. A guessed value or a silently omitted transaction could otherwise be hidden inside a plausible total.
 
-### 3. Preserve unknown categories
+<span id="3-preserve-unknown-categories"></span>
+
+### Preserve unknown categories
 
 > "Assign each transaction a spending category based on the merchant."
 
@@ -387,7 +409,9 @@ Venmo - Sam, 7/9 -- $75.00
 
 The date and amount are readable, but the payment's purpose is unknown. Assigning it to Dining would invent a fact. "Uncategorized" preserves that uncertainty. "Tell me what it is" keeps the $75 and its description visible for follow-up.
 
-### 4. Check duplicates and refunds
+<span id="4-check-duplicates-and-refunds"></span>
+
+### Check duplicates and refunds
 
 > "Check for likely duplicate entries and handle refunds/negative amounts correctly"
 
@@ -408,7 +432,9 @@ Return processed - REI (7/18/26) - -$68.00
 
 Some hyphens separate fields; the minus sign before the amount changes its meaning. For net spending, this line subtracts $68 from July shopping. Reading it as a positive purchase makes the total $136 higher: adding $68 instead of subtracting $68. The instruction calls attention to a sign that must survive cleanup.
 
-### 5. Calculate after preparing the data
+<span id="5-calculate-after-preparing-the-data"></span>
+
+### Calculate after preparing the data
 
 > "Once the data is clean, use code to compute monthly totals by category"
 
@@ -420,7 +446,9 @@ Some hyphens separate fields; the minus sign before the amount changes its meani
 
 "The two" ties the comparison to the budget notes: dining against $260 a month and shopping against roughly $1,200. It does not authorize a new grocery budget. "Month-over-month" means comparing June with July, then July with August. "Largest" still needs a choice: the biggest dollar change and the biggest percentage change may identify different categories. The response should state its measure.
 
-### 6. Show evidence before conclusions
+<span id="6-show-evidence-before-conclusions"></span>
+
+### Show evidence before conclusions
 
 > "Show me the computed tables before your interpretation."
 
@@ -442,6 +470,24 @@ Notice that this prompt describes a sequence of steps. Parsing comes before cate
 
 The **controller** carries out that orchestration. Here, the model is the controller. The prompt supplies instructions, and the model chooses the actions to request, examines their results, and decides what to do next. That repeated process is the **control loop**. Asking the model to use Python inside one step leaves the model in charge of the surrounding orchestration.
 
+<span id="how-to-compare-the-responses"></span>
+
+## How to inspect and compare the responses
+
+Before looking at the recorded response, here is what we need to check. The same checks apply to either prompt:
+
+- Every transaction line is accounted for, with parsing problems and exclusions explained
+- The repeated Trader Joe's entries are flagged, with their treatment stated
+- The REI refund keeps its negative sign
+- Transfers and cash withdrawals with no known purpose remain visible as uncategorized
+- The category rules, code, and tables agree
+- Dining and shopping are compared with the two stated monthly targets
+- Each finding can be traced to the relevant transactions and computed totals
+
+These checks give ***Verified, not trusted*** a practical meaning: account for the entries, reproduce the totals, and check the findings against them. State any dependency on an unresolved category or possible duplicate.
+
+To compare responses yourself, give each prompt the same expense log and budget notes, in a fresh conversation with the same model and tools. Save the full responses and apply these checks to both. That compares what happened in those runs. Claims about how reliably either prompt works require repeated tests.
+
 ## The recorded response
 
 Here is the response and the supplied code from a run with the more precise prompt. Look for its treatment of the duplicate, refund, and unknown-purpose transfers. Then check whether the code carries out the requested steps. These excerpts show what happened in one run; they do not establish how reliably either prompt works.
@@ -451,7 +497,7 @@ Here is the response and the supplied code from a run with the more precise prom
 
 I treated the **REI return on July 18 as −$68.00 against Shopping**. I also removed one of the two identical **Trader Joe’s $54.12 entries on July 22** as an apparent duplicate. If both were real purchases, add $54.12 to July groceries and the July/quarter totals.
 
-### Spending by category
+<h3 id="spending-by-category">Spending by category</h3>
 
 | Category | June | July | August | Quarter |
 | --- | --- | --- | --- | --- |
@@ -471,7 +517,7 @@ I treated the **REI return on July 18 as −$68.00 against Shopping**. I also re
 
 I classified Walgreens/CVS under **Health & fitness**, rather than Shopping. Amazon Prime is a subscription; ordinary Amazon purchases are Shopping.
 
-### Your two budget areas
+<h3 id="your-two-budget-areas">Your two budget areas</h3>
 
 | Month | Dining & coffee | $260 budget | Shopping | \~$1,200 guideline |
 | --- | --- | --- | --- | --- |
@@ -482,7 +528,7 @@ I classified Walgreens/CVS under **Health & fitness**, rather than Shopping. Ama
 
 The dining quarter total is interesting: **you came in almost exactly at the three-month budget**, but the monthly behavior is very different. June and July created enough room to absorb August.
 
-### Month-to-month changes
+<h3 id="month-to-month-changes">Month-to-month changes</h3>
 
 | Category | June → July | July → August |
 | --- | --- | --- |
@@ -493,7 +539,7 @@ The dining quarter total is interesting: **you came in almost exactly at the thr
 
 August's overall jump is heavily influenced by **$1,631.82 of travel**: two Delta charges, Marriott, Hertz, and airport parking. So the near-doubling of total spending isn't simply normal spending getting out of control.
 
-### The three things I'd pay attention to
+<h3 id="the-three-things-id-pay-attention-to">The three things I'd pay attention to</h3>
 
 1. **Dining is the clearest budget warning.** June and July were comfortably below $260, but August hit **$398.69**, a 141% increase from July. Your quarter still looks fine at $776.57 versus $780, but that hides the August change. If August becomes the new normal, dining would run about **$1,664 over budget annually**.
 2. **Shopping is sizeable, but it isn't quietly becoming $2,000/month.** You averaged about **$998.60/month** across the quarter. August crossed your \~$1,200 guideline by only $18.31, and the quarter as a whole was about **$604 below** the corresponding $3,600 guideline. The REI refund is correctly reducing this category.
@@ -508,9 +554,7 @@ So the area I'd watch most closely in September is **food overall**: groceries p
 
 The following code and intermediate output were supplied from the same interactive chat. They show data preparation, category assignments, removal of the repeated entry, totals, and percentage changes. The original assignment to `raw` and the code for the budget comparisons were not included in these excerpts.
 
-Replaying the supplied code against the original expense file reproduced all 44 cells in the category totals table and all nine percentage calculations below, after excluding the file's two introductory lines. That leaves 198 transaction entries before removing the repeated entry and 197 afterward. This preparation is necessary: retaining the introductory lines shifts the row numbers, moves some expenses into the wrong month, and makes `df.drop(index=108)` remove a $54.22 AMC Theatres charge instead of the $54.12 Trader Joe's entry. The replay establishes how to reproduce the recorded figures; it does not establish how `raw` was prepared in the original chat.
-
-Months are assigned by line position rather than by parsing each transaction's date. The reproduced results therefore depend on the input order and the stated category and duplicate decisions. The code and output below are preserved as supplied.
+The code and output below are preserved as supplied. After these excerpts, we will examine the month assignments and duplicate removal, and explain how the recorded figures were reproduced.
 
 ```python
 lines=[l.strip() for l in raw.splitlines() if l.strip()]
@@ -644,6 +688,26 @@ changes
 
 </details>
 
+## What the recorded run actually did
+
+The response states how it treated the REI refund and the repeated Trader Joe's entry. It keeps payments with no stated purpose in a separate Cash & transfers category, although those amounts still contribute to its displayed overall total. We can inspect those decisions. Now look at how the code assigns months and removes the repeated entry:
+
+```python
+month="June" if i<62 else ("July" if i<119 else "August")
+
+df2=df.drop(index=108).copy()
+```
+
+The first line assigns a month from the row's position. It does not parse the transaction's date, as the prompt requested. For this input, the transaction rows fall into month-sized blocks. Moving a July transaction into the June block would give it the wrong month even if its date remained clear.
+
+The second line removes a particular row. The recorded code shows the repeated Trader Joe's entries at indexes 107 and 108, then removes index 108. That decision depends on which lines were included before the rows were numbered.
+
+To check whether the supplied code could reproduce the recorded figures, it was run again against the original expense file. That is the replay. After excluding the file's two introductory lines, it reproduced all 44 cells in the category totals table and all nine percentage calculations. There were 198 transaction entries before removing the repeated entry and 197 afterward.
+
+Those introductory lines matter. Retaining them shifts the row numbers, assigns some transactions to the wrong month, and makes `df.drop(index=108)` remove a $54.22 AMC Theatres charge instead of the $54.12 Trader Joe's entry. The original assignment to `raw` was not included in the supplied excerpts, so the replay establishes how to reproduce the figures, without establishing how the original chat prepared its input.
+
+We have reproduced a result under specific input and category decisions. We have also found a requirement the code did not implement: parsing each transaction's date. A matching total alone does not establish that every requested step happened.
+
 ## What still needs a rule or a check
 
 The second prompt leaves some choices open. It does not supply a fixed category list, define the exact duplicate rule, or specify whether a displayed overall total should include uncategorized transfers and cash withdrawals. Those choices can change the answer even when every addition is correct.
@@ -652,23 +716,27 @@ For example, the log has two August purchases at Barnes & Noble: $77.40 and $78.
 
 Even when the model states its rules and flags uncertainty, we must check for omissions, misread fields, and unsupported categories. Naming a requirement in the prompt does not establish that the response meets it.
 
-Verification has a defined scope. We can check that the tables agree with the supplied log under stated category rules. That does not establish that the log contains every real-world expense or that each merchant-based category describes what was actually purchased. Missing evidence must remain a limit on the conclusion.
+Verification has a defined scope. We can check that the tables agree with the supplied log under stated category rules. That does not establish that the log contains every real-world expense or that each merchant-based category describes what was actually purchased. A grocery-store purchase may include something other than food. The calculation's conclusions remain bounded by the evidence in the log.
 
-## How to compare the responses
+## What remains under the model's control?
 
-Give each prompt the same expense log and budget notes, in a fresh conversation with the same model and tools. Save the full responses. That gives us a comparison of what happened in those runs. Claims about how reliably either prompt works require repeated tests.
+The second prompt is much more explicit about the work we want. But the model still controls whether it requests a tool call, what it sends to that tool, and what it does with the response. A numbered sequence of instructions does not enforce those actions.
 
-Review both responses against the same checks:
+There is another responsibility hidden in “use code.” We are asking the model to generate Python during the run. We must inspect that code as well as establish that it executed. Python will happily execute an incorrect calculation. Successful execution tells us nothing by itself about whether every expense was included or every rule was applied.
 
-- Every transaction line is accounted for, with parsing problems and exclusions explained
-- The repeated Trader Joe's entries are flagged, with their treatment stated
-- The REI refund keeps its negative sign
-- Transfers and cash withdrawals with no known purpose remain visible as uncategorized
-- The category rules, code, and tables agree
-- Dining and shopping are compared with the two stated monthly targets
-- Each finding can be traced to the relevant transactions and computed totals
+The recorded code shows why that inspection matters. Its row-based month assignments and fixed-index duplicate removal reproduce the figures with the preparation described above. They do not implement the requested date parsing or a duplicate check that works independently of row position.
 
-These checks give ***Verified, not trusted*** a practical meaning: account for the entries, reproduce the totals, and check the findings against them. State any dependency on an unresolved category or possible duplicate.
+Even within a prompt-based approach, I would rather supply calculation code that we have written, reviewed, and tested, and explicitly instruct the model to use it without generating a replacement. That removes the need to invent the implementation during each run. It still leaves the model controlling the call and the use of its result.
+
+### Correct execution does not guarantee a correct report
+
+Suppose our tested function returns $398.69 for August dining. The execution record shows that it ran with the intended inputs and returned that value. Have we established that the final report uses $398.69? No. The model could write $389.69, use a total from before a correction, or compare a different value with the budget. A correct function can return the correct answer while the overall workflow delivers the wrong one.
+
+That is why I want evidence for the whole chain: the intended operation ran, it received the intended inputs, its result met the requirements, and the later calculations and report used that result. A tool call is one link in that chain.
+
+Models can follow these instructions very well. The problem is the run in which one step goes wrong. We do not know in advance which run that will be, and a history of good answers does not verify the next answer. For unattended work with serious consequences, I will not accept “it usually gets it right” as the basis for correctness.
+
+These actions and results can be checked through execution records, retained inputs, and comparisons with the delivered output. The prompt itself establishes none of them, and the model's assurance that it followed the prompt is insufficient. ***Verified, not trusted*** applies to the orchestration as well as the arithmetic.
 
 ## The stakes and the person in the loop
 
@@ -686,24 +754,6 @@ At the other end, a large organization wants to automate its expense accounting.
 
 Those are the two extremes. High stakes can still involve a human reviewer, and low-stakes work can run unattended. Increasing the stakes demands stronger evidence. Removing the reviewer means the application must perform the checks that person would otherwise perform. Watching an answer appear is not verification.
 
-## What remains under the model's control?
-
-The second prompt is much more explicit about the work we want. But the model still controls whether it requests a tool call, what it sends to that tool, and what it does with the response. A numbered sequence of instructions does not enforce those actions.
-
-There is another responsibility hidden in “use code.” We are asking the model to generate Python during the run. We must inspect that code as well as establish that it executed. Python will happily execute an incorrect calculation. Successful execution tells us nothing by itself about whether every expense was included or every rule was applied.
-
-We have a concrete example above. The prompt asks for each transaction's date to be parsed, but the recorded code assigns months by line position. Its duplicate removal also depends on the input having been prepared in a particular way. The replay reproduces the figures under those conditions. It does not turn those shortcuts into a general implementation of the instructions.
-
-Even within a prompt-based approach, I would rather supply calculation code that we have written, reviewed, and tested, and explicitly instruct the model to use it without generating a replacement. That removes the need to invent the implementation during each run. It still leaves the model controlling the call and the use of its result.
-
-Suppose our tested function returns $398.69 for August dining. The execution record shows that it ran with the intended inputs and returned that value. Have we established that the final report uses $398.69? No. The model could write $389.69, use a total from before a correction, or compare a different value with the budget. A correct function can return the correct answer while the overall workflow delivers the wrong one.
-
-That is why I want evidence for the whole chain: the intended operation ran, it received the intended inputs, its result met the requirements, and the later calculations and report used that result. A tool call is one link in that chain.
-
-Models can follow these instructions very well. The problem is the run in which one step goes wrong. We do not know in advance which run that will be, and a history of good answers does not verify the next answer. For unattended work with serious consequences, I will not accept “it usually gets it right” as the basis for correctness.
-
-These actions and results can be checked through execution records, retained inputs, and comparisons with the delivered output. The prompt itself establishes none of them, and the model's assurance that it followed the prompt is insufficient. ***Verified, not trusted*** applies to the orchestration as well as the arithmetic.
-
 ## From instructions to a repeatable workflow
 
 For the automated end of that spectrum, I want imperative code to be the controller. The application must call the required operations, pass their results to the next steps, and enforce the checks that permit work to continue. Models can still help with interpretation and classification inside that flow. Their contributions must pass the application's checks before being used.
@@ -712,4 +762,6 @@ We have to test that application code too. If a refund was counted as a purchase
 
 A skill can invoke this maintained workflow. The important questions are who controls its execution and who verifies the result. Packaging the instructions as a skill does not answer either question by itself.
 
-Part two takes up these remaining responsibilities: enforcing the sequence, preserving the inputs and returned values, checking model contributions, and building the report from checked results. In [Verified, Not Trusted: Expense Analysis, Part Two](/writing/verified-not-trusted-expense-analysis-part-two/), we first explain how imperative orchestration changes control of the work, then follow a Python implementation through the expense analysis. [Verified, Not Trusted: Expense Analysis, Part Three](/writing/verified-not-trusted-expense-analysis-part-three/) returns to the prompts in this article and measures how often each one produces correct results across repeated runs.
+Part two takes up these remaining responsibilities: enforcing the sequence, preserving the inputs and returned values, checking model contributions, and building the report from checked results. In [Verified, Not Trusted: Expense Analysis, Part Two](/writing/verified-not-trusted-expense-analysis-part-two/), we first explain how imperative orchestration changes control of the work, then follow a Python implementation through the expense analysis.
+
+[Verified, Not Trusted: Expense Analysis, Part Three](/writing/verified-not-trusted-expense-analysis-part-three/) returns to the prompts in this article and measures how often each one produces correct results across repeated runs. [Verified, Not Trusted: Expense Analysis, Part Four](/writing/verified-not-trusted-expense-analysis-part-four/) explains how to build those checks, then extends evaluation to the Python-controlled workflow with checks for every source line.
