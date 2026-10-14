@@ -1,5 +1,26 @@
 # Article review backlog
 
+## Recent article workflow pass, October 13, 2026
+
+The [review record](recent-article-review-2026-10-13.md) covers 26 recent articles,
+21 supported revisions and five unchanged controls. Dates, original blog sources,
+older published posts, corpus chapters and artwork are preserved.
+
+- Confirm the inherited approximate DORA respondent count against the original
+  reports before changing its numerical attribution in
+  [Stampede at the Gates](../src/content/writing/stampede-at-the-gates.md).
+- Obtain dated Jev documentation captures for the retained September snapshot.
+  Current documentation drift alone does not establish a historical error.
+- Retain or recover the original Meridian execution receipts supporting 77
+  selected ordering/composer cases and 18 assertion-report cases. This article
+  pass checked historical code and did not rerun that system.
+- Address the one-file expense eval's float cent-boundary comparison and missing
+  key-placement guard in a separate source-repository task.
+  [Verified, Not Trusted: Expense Analysis, Part Three](../src/content/writing/verified-not-trusted-expense-analysis-part-three.md)
+  now distinguishes those examples from the library checks used for saved results.
+
+Deferred draft and video-workspace cleanup remains outside this pass.
+
 ## Pipeline Breadcrumbs, October 5, 2026
 
 The [teaching draft](drafts/pipeline-breadcrumbs/pipeline-breadcrumbs.md) has owner approval

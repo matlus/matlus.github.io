@@ -491,8 +491,7 @@ criterion: whether the required service outcomes are verified through the
 assembled operation before exposure. A large number of component checks cannot
 substitute for missing database, broker, or customer-communication evidence.
 Claims about agreement with a named author's philosophy do not decide whether
-those observations exist. This article makes no unverified quotations or
-numerical comparison of testing strategies.
+those observations exist.
 
 <a id="mocks-fakes-contracts"></a>
 
@@ -508,7 +507,7 @@ compatibility problems, but executed state and effects still need observations.
 For services evolving together, verify compatible versions and required flows
 through their intended stable environments. Track consumer contracts and change
 policy; a successful order scenario alone does not enumerate every consumer's
-API dependency. See [interface testing](/writing/testing-the-service-interface/).
+API dependency. See [Testing the Service Interface](/writing/testing-the-service-interface/).
 
 <a id="properties-and-models"></a>
 
@@ -550,7 +549,7 @@ consumption needs byte counts, not merely a short log string. A transaction
 requirement needs a real interrupted write and rollback observations. A structural
 requirement can need source review; a query budget can need measured execution
 under its specified arrangement. Do not claim that one output comparison proves
-an unobserved structural or resource property. See [assertions](/writing/assertions-that-verify-the-whole-outcome/).
+an unobserved structural or resource property. See [Assertions That Verify the Whole Outcome](/writing/assertions-that-verify-the-whole-outcome/).
 
 <a id="mutation-and-measurement"></a>
 
@@ -577,8 +576,9 @@ subscription ownership, and diagnostics without removing required evidence.
 
 Detailed tests can take substantial implementation time. Explain that investment
 as continuing regression protection and release confidence. Measure the actual
-suite before making speed claims. The [maintenance](/writing/a-suite-the-team-can-keep-trusting/)
-and [regression](/writing/the-regression-suite-the-business-is-paying-for/) articles describe that workflow.
+suite before making speed claims. [A Suite the Team Can Keep Trusting](/writing/a-suite-the-team-can-keep-trusting/)
+and [The Regression Suite the Business Is Paying For](/writing/the-regression-suite-the-business-is-paying-for/)
+describe that workflow.
 
 <a id="scope-and-falsifiability"></a>
 
@@ -599,4 +599,4 @@ necessary throughout adoption and release.
 
 ---
 
-[Previous article](/writing/from-a-green-suite-to-a-release/) | [Series contents](/acceptance-testing/)
+Previous: [From a Green Suite to a Release](/writing/from-a-green-suite-to-a-release/) | [Series contents](/acceptance-testing/)

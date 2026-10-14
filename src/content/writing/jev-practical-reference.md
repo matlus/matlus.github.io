@@ -115,7 +115,7 @@ Useful distinctions:
 | Score | Weighted position on the rubric's level indexes. | An exact amount, count, percentage, or physical magnitude. |
 | Repeatability | Whether repeated runs tend to return the same decision. | Whether that decision matches ground truth. |
 
-TypeSafe's [Choice self-consistency cookbook](https://docs.typesafe.ai/cookbooks/consistency_choice_cookbook) repeats eight moderation questions about one borderline post 15 times. Jev's raw picked-label agreement with its plurality labels is reported as 90.8%; adding an uncertain outcome below the cookbook's illustrative top-option probability threshold of 0.60 increases reported application-decision agreement to 99.2%, with automatic decisions on 74.2% of answers. **That is a repeatability and abstention experiment, not proof that majority voting improves classification accuracy.** The [Noul version](https://docs.typesafe.ai/cookbooks/consistency_noul_cookbook) similarly uses a review band around uncertain probabilities. Use repeated calls to study stability; adopt voting only if a labeled evaluation shows it improves the intended metric.
+TypeSafe's [Choice self-consistency cookbook](https://docs.typesafe.ai/cookbooks/consistency_choice_cookbook) repeats eight moderation questions about one borderline post 15 times. The post and rubric stayed fixed, but each request carried a fresh uid, so these results do not isolate variation on identical complete inputs. Jev's raw picked-label agreement with its plurality labels is reported as 90.8%; adding an uncertain outcome below the cookbook's illustrative top-option probability threshold of 0.60 increases reported application-decision agreement to 99.2%, with automatic decisions on 74.2% of answers. **That is a repeatability and abstention experiment, not proof that majority voting improves classification accuracy.** The [Noul version](https://docs.typesafe.ai/cookbooks/consistency_noul_cookbook) similarly uses a review band around uncertain probabilities. Use repeated calls to study stability; adopt voting only if a labeled evaluation shows it improves the intended metric.
 
 ## 5. When Jev is a good fit
 
@@ -175,7 +175,7 @@ The chosen label says *what* Jev thinks; the distribution or confidence informs 
 
 ### Composite scoring
 
-Ask for separate, single-dimension Scores and combine normalized results with explicit weights in code. The resume example scores Python depth, leadership, system design, and generalist breadth, then weights them differently for a senior individual-contributor role and an engineering-manager role. The weights are a business rule; Jev supplies the semantic measurements. Evaluate whether those dimensions and weights match the intended decisions before automating them. [Pattern](https://docs.typesafe.ai/patterns/composite-scoring)
+Ask for separate, single-dimension Scores and combine normalized results with explicit weights in code. With n levels, a Score runs from 0 to n - 1; divide each score by n - 1 to put the dimensions on a 0–1 scale before applying the weights. The resume example scores Python depth, leadership, system design, and generalist breadth, then weights them differently for a senior individual-contributor role and an engineering-manager role. The weights are a business rule; Jev supplies the semantic measurements. Evaluate whether those dimensions and weights match the intended decisions before automating them. [Pattern](https://docs.typesafe.ai/patterns/composite-scoring)
 
 ### Intent routing
 
@@ -183,7 +183,7 @@ Classify an incoming request and send it to ordinary code, a specialist LLM, or 
 
 ## 9. The cookbook atlas
 
-The [cookbook index](https://docs.typesafe.ai/cookbooks) currently lists **18** worked recipes. Each row below states the reusable mechanism, not a claim that the published result transfers to another dataset.
+This atlas covers **18** worked recipes from the [cookbook index](https://docs.typesafe.ai/cookbooks). Each row below states the reusable mechanism, not a claim that the published result transfers to another dataset.
 
 | Cookbook | What Jev does | What code or another model does |
 | --- | --- | --- |

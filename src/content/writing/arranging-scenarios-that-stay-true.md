@@ -14,7 +14,7 @@ those decisions belongs to the arrangement.
 
 > **About the examples:** Meridian Ordering is a private training reference project. The inline listings illustrate the techniques; the full C# and Python repositories are not currently public.
 
-The [complete order walkthrough](/writing/one-order-every-obligation/) shows them
+[One Order, Every Obligation](/writing/one-order-every-obligation/) shows them
 together. Here we will examine why the arrangement uses random values, how it
 keeps those values inside the intended scenario, and how its helpers work.
 
@@ -119,8 +119,8 @@ This email generation gives the test a fresh address to record on its customer
 and compare with the outbound request. Meridian captures that request without
 sending it. A real-delivery test needs a routable address or alias in a domain
 whose inbox the test environment can read. Keep the controlled delivery address
-separate from the customer's original address; the
-[email article](/writing/the-test-mediator-and-the-transport-spy/) explains both observations.
+separate from the customer's original address;
+[The Test Mediator and the Transport Spy](/writing/the-test-mediator-and-the-transport-spy/) explains both observations.
 
 The primitive generator
 also shows exact-decimal amounts drawn as scaled integers, dates drawn as whole
@@ -347,9 +347,24 @@ private readonly ExpectedOrderPlacementIdentifiers _expectedOrderPlacementIdenti
     DataGenerators.CreateExpectedOrderPlacementIdentifiers();
 ```
 
-The complete test class
-shows initialization and teardown. The order reference identifies the broker
-message too, but broker consumption also needs isolation. An identifier cannot
+The containing TestPlaceOrderExpectedPaths class implements xUnit's IAsyncLifetime
+contract. xUnit calls DisposeAsync for teardown, which uses the same reserved
+identifiers to delete this test's records:
+
+<!-- Listing source: tests/MeridianOrdering.Tests/Acceptance/DomainFacade/TestPlaceOrderExpectedPaths.cs; revision: 501e097f66b884615f517c5252d1ab719709f421; method: DisposeAsync -->
+
+```csharp
+public ValueTask DisposeAsync()
+{
+    DataManagerForTest.DeleteOrderPlacementTestRecords(
+        customerId: _expectedOrderPlacementIdentifiers.CustomerId,
+        orderReference: _expectedOrderPlacementIdentifiers.OrderReference);
+    return ValueTask.CompletedTask;
+}
+```
+
+The order reference identifies the broker message too, but broker consumption
+also needs isolation. An identifier cannot
 recover a message another consumer has already removed from a shared queue.
 
 ## Make failures possible to investigate
@@ -374,4 +389,4 @@ request is the behavior being verified.
 
 ---
 
-[Previous article](/writing/one-order-every-obligation/) | [Series contents](/acceptance-testing/) | [Next article](/writing/assertions-that-verify-the-whole-outcome/)
+Previous: [One Order, Every Obligation](/writing/one-order-every-obligation/) | [Series contents](/acceptance-testing/) | Next: [Assertions That Verify the Whole Outcome](/writing/assertions-that-verify-the-whole-outcome/)

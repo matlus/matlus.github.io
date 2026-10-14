@@ -3,7 +3,7 @@ title: "Functional Acceptance Testing at the Boundary"
 description: "Functional acceptance tests verify complete outcomes through the assembled system. Correct arrangements, deep assertions, and controlled observations support release confidence."
 datePublished: 2026-06-15
 dateModified: 2026-09-27
-tags: ["acceptance-testing", "verification", "regression-testing", "test-isolation", "refactoring", "test-mediator", "transport-spy", "domain-facade", "design-patterns", "architectural-patterns", "csharp"]
+tags: ["acceptance-testing", "verification", "regression-testing", "test-isolation", "refactoring", "test-mediator", "transport-spy", "domain-facade", "architectural-patterns", "csharp"]
 hero: functional-acceptance-testing-at-the-boundary
 ---
 
@@ -40,7 +40,7 @@ follow everything that should happen, and then work through how to test it.
 
 The code excerpts below follow the same acceptance test. The
 complete test class
-includes its setup and cleanup; the [full walkthrough](/writing/one-order-every-obligation/)
+includes its setup and cleanup; [One Order, Every Obligation](/writing/one-order-every-obligation/)
 explains the supporting code.
 
 ## What should happen when an order is placed?
@@ -361,7 +361,7 @@ of retry, concurrency, and recovery.
 Meridian groups these comparisons in an asserter that reports all available
 mismatches together. If the total is wrong in the caller result, database,
 fulfillment payload, and email, the team gets the failed comparisons in one report.
-The [complete order walkthrough](/writing/one-order-every-obligation/) shows the full
+[One Order, Every Obligation](/writing/one-order-every-obligation/) shows the full
 test, its asserters, and the production code behind this flow.
 
 ## The email problem and the two ways to handle it
@@ -455,10 +455,9 @@ service's mediator and spy, as Meridian does. Those are implementation shapes;
 capturing without forwarding and redirecting a real delivery are choices about
 what a particular test does at the transport boundary.
 
-The [Test Mediator and Transport Spy article](/writing/the-test-mediator-and-the-transport-spy/)
+[The Test Mediator and the Transport Spy](/writing/the-test-mediator-and-the-transport-spy/)
 explains this same email example in detail, including the two shapes and their
-two-way communication. The email Test Mediator source
-provides its implementation.
+two-way communication.
 
 ## This is functional acceptance testing at the boundary
 
@@ -494,7 +493,7 @@ already been established. We have also verified that the feature's scenarios and
 expectations are correct and cover those requirements. Once those conditions are
 met, green tests give the team confidence to go to production.
 
-The [scenario-completeness article](/writing/knowing-which-scenarios-a-feature-requires/) explains
+[Knowing Which Scenarios a Feature Requires](/writing/knowing-which-scenarios-a-feature-requires/) explains
 that connection. Correct arrangements, deep assertions, and review give meaning
 to the suite's green result.
 
@@ -555,8 +554,8 @@ observations the tests use. The scenarios and their assertions can stay exactly
 as written while the real production path changes behind them.
 
 I have done this many times. It is a practical benefit of choosing this boundary
-and keeping implementation knowledge out of the tests. The
-[refactoring article](/writing/refactoring-and-adopting-boundary-testing/)
+and keeping implementation knowledge out of the tests.
+[Refactoring and Adopting Boundary Testing](/writing/refactoring-and-adopting-boundary-testing/)
 explains how this fulfills the refactoring promise I took from TDD and where
 test-support maintenance still belongs.
 
@@ -613,4 +612,4 @@ effort this series will explain.
 
 ---
 
-[Series contents](/acceptance-testing/) | [Next article](/writing/knowing-which-scenarios-a-feature-requires/)
+[Series contents](/acceptance-testing/) | Next: [Knowing Which Scenarios a Feature Requires](/writing/knowing-which-scenarios-a-feature-requires/)

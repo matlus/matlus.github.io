@@ -70,10 +70,45 @@ the typed request and return an arranged domain outcome. That lets the controlle
 test exercise its actual parsing and composition without creating a database
 scenario for every wire-shape variation.
 
-The complete Hook subclass
-records the request and supports a scripted result or exception. Its parsing-only
-constructor fails if the Hook is reached at all, because those scenarios expect
-refusal before domain invocation.
+Here is the production Hook, followed by the override in `OrdersControllerForTest`:
+
+<!-- Listing source: src/MeridianOrdering.Api/Controllers/OrdersController.cs; method: PlaceOrderCoreAsync; revision: 501e097f66b884615f517c5252d1ab719709f421 -->
+
+```csharp
+[ExcludeFromCodeCoverage]
+protected virtual Task<OrderPlacementResult> PlaceOrderCoreAsync(OrderPlacementRequest orderPlacementRequest)
+{
+    return _domainFacade.PlaceOrderAsync(orderPlacementRequest);
+}
+```
+
+<!-- Listing source: tests/MeridianOrdering.Api.Tests/ControllerTests/ForTestClasses/OrdersControllerForTest.cs; method: PlaceOrderCoreAsync; revision: 501e097f66b884615f517c5252d1ab719709f421 -->
+
+```csharp
+protected override Task<OrderPlacementResult> PlaceOrderCoreAsync(OrderPlacementRequest orderPlacementRequest)
+{
+    CapturedOrderPlacementRequest = orderPlacementRequest;
+    if (_scriptedDomainException is not null)
+    {
+        throw _scriptedDomainException;
+    }
+
+    if (_scriptedOrderPlacementResult is null)
+    {
+        throw new InvalidOperationException(
+            "The domain hook was reached, but this scenario scripted nothing: the parser should have refused the body first");
+    }
+
+    return Task.FromResult(_scriptedOrderPlacementResult);
+}
+```
+
+The subclass stores the supplied result in `_scriptedOrderPlacementResult` or
+the supplied exception in `_scriptedDomainException`.
+`CapturedOrderPlacementRequest` exposes the typed request to the test. The override captures it first, then throws the scripted exception or
+returns the scripted result. The parameterless parsing-only constructor supplies
+neither; reaching the Hook then fails because those scenarios expect refusal
+before domain invocation.
 
 ## Compare the request and response together
 
@@ -129,10 +164,16 @@ public async Task PlaceOrder_WhenBodyCarriesAValidOrder_ThenTheHookReceivesTheTy
 ```
 
 The arranged amount is a composition input; this category does not calculate
-catalog prices. The aggregate controller asserter compares the captured request
-and returned response together. Its
-complete implementation
-shows which fields it compares.
+catalog prices. `AsserterController.AssertOrderRequestAndResponseAreAsExpected`
+compares the captured request and returned response together. It reports a missing
+request, compares `OrderReference` and `CustomerId`, and uses `SequenceEqual` for
+the `OrderPlacementLineItems`. That sequence comparison checks the line values, count,
+and order, including the mixed-case SKU text supplied by this scenario.
+
+For the response, it requires `OkObjectResult` with status 200 and a body of type
+`OrderPlacementResultResource`. It compares that body with the expected resource,
+including `OrderReference`, the formatted `OrderTotal`, and `OrderPlacementStatus`.
+Available request and response discrepancies accumulate into one failure report.
 
 Parsing scenarios separately verify malformed JSON, missing fields, wrong root
 shape, wrong line-item shape, and non-integer quantities. They compare the required
@@ -238,4 +279,4 @@ required behavior verified before exposure.
 
 ---
 
-[Previous article](/writing/idempotency-and-concurrent-requests/) | [Series contents](/acceptance-testing/) | [Next article](/writing/a-suite-the-team-can-keep-trusting/)
+Previous: [Idempotency and Concurrent Requests](/writing/idempotency-and-concurrent-requests/) | [Series contents](/acceptance-testing/) | Next: [A Suite the Team Can Keep Trusting](/writing/a-suite-the-team-can-keep-trusting/)

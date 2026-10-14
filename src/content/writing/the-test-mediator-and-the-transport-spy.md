@@ -17,8 +17,8 @@ That gives us two practical problems: control outbound delivery and retain the
 values needed for assertions. A Test Mediator and a transport spy provide the
 communication between the test and that observation point.
 
-We will use the same email example as the
-[main article](/writing/functional-acceptance-testing-at-the-boundary/#the-email-problem-and-the-two-ways-to-handle-it).
+We will use the same email example as in
+[Functional Acceptance Testing at the Boundary](/writing/functional-acceptance-testing-at-the-boundary/#the-email-problem-and-the-two-ways-to-handle-it).
 Meridian deliberately has no separate running email service because it is a
 teaching application. It captures the request and supplies an arranged response.
 We will also explain the production arrangement with a stable real provider and
@@ -368,4 +368,4 @@ keeping the public operation and production behavior in the test.
 
 ---
 
-[Previous article](/writing/assertions-that-verify-the-whole-outcome/) | [Series contents](/acceptance-testing/) | [Next article](/writing/refusals-failures-and-work-still-owed/)
+Previous: [Assertions That Verify the Whole Outcome](/writing/assertions-that-verify-the-whole-outcome/) | [Series contents](/acceptance-testing/) | Next: [Refusals, Failures, and Work Still Owed](/writing/refusals-failures-and-work-still-owed/)

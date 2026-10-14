@@ -3,7 +3,7 @@ title: "Refactoring and Adopting Boundary Testing"
 description: "A stable Domain Facade lets acceptance scenarios and assertions survive internal refactoring. Adapt test support behind unchanged observations and adopt complete boundary tests feature by feature."
 datePublished: 2026-06-15
 dateModified: 2026-09-27
-tags: ["acceptance-testing", "refactoring", "architecture", "error-handling", "test-driven-development", "domain-facade", "test-mediator", "transport-spy", "gateway-pattern", "architectural-patterns", "design-patterns", "csharp"]
+tags: ["acceptance-testing", "refactoring", "architecture", "error-handling", "test-driven-development", "domain-facade", "test-mediator", "transport-spy", "gateway-pattern", "architectural-patterns", "csharp"]
 hero: refactoring-and-adopting-boundary-testing
 ---
 
@@ -142,8 +142,8 @@ obligations and logs the failure according to the feature's policy.
 
 These contracts support both production diagnosis and assertions. They reduce
 the need for tests to infer failures from arbitrary nulls or vague success flags.
-The [failure article](/writing/refusals-failures-and-work-still-owed/) shows those results
-in Meridian.
+[Refusals, Failures, and Work Still Owed](/writing/refusals-failures-and-work-still-owed/)
+shows those results in Meridian.
 
 Validate at the owning trust boundary. After that boundary establishes typed
 domain data and the required invariants, internal methods can rely on their
@@ -166,9 +166,12 @@ operation. It is not a license to replace that operation's acceptance suite.
 
 Meridian does not demonstrate that USPS cluster or a class-composite suite.
 It does demonstrate independently tested composers that its expectations borrow.
-Their complete email
-and fulfillment
-tests verify those components' content responsibilities.
+The email tests check the recipient, subject, order reference, and exact approved
+bodies; the fulfillment tests check identity, monetary wire formatting, and the
+recorded UTC timestamp.
+[Assertions That Verify the Whole Outcome](/writing/assertions-that-verify-the-whole-outcome/#establish-expected-values-independently)
+explains why those independent checks are required before borrowing a composer
+to build expectations.
 
 ## Distinguish development tools from the maintained release artifact
 
@@ -195,10 +198,11 @@ on its own. The approach is a team discipline; a testing technique cannot create
 competence or resolve missing business decisions automatically.
 
 Adoption grows by preserving verified behavior as features and internals change.
-The [regression article](/writing/the-regression-suite-the-business-is-paying-for/) explains the continuing
-business value, and the [release article](/writing/from-a-green-suite-to-a-release/)
+[The Regression Suite the Business Is Paying For](/writing/the-regression-suite-the-business-is-paying-for/)
+explains the continuing business value, and
+[From a Green Suite to a Release](/writing/from-a-green-suite-to-a-release/)
 explains the responsibilities after the suite is green.
 
 ---
 
-[Previous article](/writing/the-regression-suite-the-business-is-paying-for/) | [Series contents](/acceptance-testing/) | [Next article](/writing/from-a-green-suite-to-a-release/)
+Previous: [The Regression Suite the Business Is Paying For](/writing/the-regression-suite-the-business-is-paying-for/) | [Series contents](/acceptance-testing/) | Next: [From a Green Suite to a Release](/writing/from-a-green-suite-to-a-release/)

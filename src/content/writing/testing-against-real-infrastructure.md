@@ -3,7 +3,7 @@ title: "Testing Against Real Infrastructure"
 description: "Real infrastructure must participate when transactions and messages are required outcomes. Provision SQL and broker topology, isolate runs, define observation windows, and verify actual rollback."
 datePublished: 2026-06-15
 dateModified: 2026-09-27
-tags: ["acceptance-testing", "test-isolation", "data-access", "csharp"]
+tags: ["acceptance-testing", "test-isolation", "data-access", "message-brokers", "sql-server", "csharp"]
 hero: testing-against-real-infrastructure
 ---
 
@@ -16,8 +16,9 @@ infrastructure that performs them.
 
 Meridian runs its order scenarios against real SQL Server and a real broker.
 Its ordinary CI configuration uses RabbitMQ. Its teaching email integration
-captures requests; a stable real provider can support the separate
-[delivery arrangement](/writing/the-test-mediator-and-the-transport-spy/#redirect-real-delivery-and-read-the-inbox).
+captures requests; a stable real provider can support the separate delivery
+arrangement described in
+[The Test Mediator and the Transport Spy](/writing/the-test-mediator-and-the-transport-spy/#redirect-real-delivery-and-read-the-inbox).
 
 The purpose is confidence to go to production. First establish the business
 requirements, acceptance criteria, functional requirements, and non-functional
@@ -293,7 +294,7 @@ controlled inbox. Payment testing can use the provider's approved test environme
 and operations. Integration-specific details belong with that implementation.
 
 A selected transport seam can arrange failures on demand while retaining production
-response handling. The [Test Mediator article](/writing/the-test-mediator-and-the-transport-spy/)
+response handling. [The Test Mediator and the Transport Spy](/writing/the-test-mediator-and-the-transport-spy/)
 explains its evidence and what needs a separate real-service observation.
 
 ## Use real infrastructure at the final CI gate
@@ -323,4 +324,4 @@ is the release evidence the team maintains as the system changes.
 
 ---
 
-[Previous article](/writing/a-suite-the-team-can-keep-trusting/) | [Series contents](/acceptance-testing/) | [Next article](/writing/learning-a-system-through-its-tests/)
+Previous: [A Suite the Team Can Keep Trusting](/writing/a-suite-the-team-can-keep-trusting/) | [Series contents](/acceptance-testing/) | Next: [Learning a System Through Its Tests](/writing/learning-a-system-through-its-tests/)

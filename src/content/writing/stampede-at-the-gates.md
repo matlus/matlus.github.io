@@ -83,9 +83,10 @@ old frame and expected to break speed records.
 Developers accepted generated code a block at a time, then a feature at a time. Generation
 speed climbed away from human cognition speed. The adoption dashboards looked wonderful.
 
-The numbers a board cares about did not move, and the reason sits exactly where code goes
-after it is written. Faster generation does not make the downstream work disappear. It
-makes that work arrive faster at two fixed checkpoints, code review and verification, both
+Faster generation alone does not establish faster reviewed and verified delivery. The
+reason sits exactly where code goes after it is written. Faster generation does not make
+the downstream work disappear. It makes that work arrive faster at two fixed checkpoints,
+code review and verification, both
 staffed by humans whose capacity is bounded by headcount.
 
 The moment anyone pressed the accelerator, the existing weaknesses amplified. The wheels
@@ -122,34 +123,41 @@ The herd is the changesets, never the engineers producing them.
 
 ## The numbers are already in
 
-This is not a prediction. Every slice of the pipeline anyone has pointed an instrument at
-reports the same direction.
+This is not a prediction. The studies below report pressure on review, verification and
+production reliability.
 
 **Code output roughly doubles.** An enterprise that mandated AI assistance saw pull request
 throughput reach 2.09 times its baseline, with reviewer load doubling alongside it. The
-study's own title says it: "AI Writes Faster Than Humans Can Review." (CMU and Stanford,
-2026, 802 developers and 196,000 pull requests.)
+study's own title says it:
+["AI Writes Faster Than Humans Can Review"](https://arxiv.org/html/2607.01904v1).
+(CMU and Stanford, 2026, 802 developers and 196,000 pull requests.)
 
-**The review gate is already being bypassed.** 61% of AI-authored pull requests merge with
-no review at all. Only 8% receive human-only review. Teams are not absorbing the volume;
-they are waving it through. (Duma and others, 2026, in-the-wild data.)
+**Human oversight is already scarce.** Among 33,596 agent-authored pull requests sampled
+from popular repositories, 61% had no recorded review. Of the reviewed pull requests in
+that same population, only 10.14% received human-only review. That is thin recorded human
+oversight of the arriving volume.
+([Duma and others, 2026](https://arxiv.org/html/2605.02273v1), in-the-wild data.)
 
 **Waving it through has a price.** Telemetry across 22,000 developers shows bugs per
 developer up 54%, production incidents per pull request up 242.7%, and median review time
-up 441%. (Faros AI, 2026, 4,000 or more teams.)
+up 441%.
+([Faros AI, 2026](https://www.faros.ai/blog/ai-acceleration-whiplash-takeaways), 4,000 or
+more teams.)
 
 **Deployments break more often.** Every 25% increase in AI adoption correlates with a 7.2%
 drop in delivery stability, meaning how often changes break production and how long
-recovery takes. That association has been negative for two annual reports running. (DORA,
-2024 to 2025, around 5,000 respondents.)
+recovery takes. That association has been negative for two annual reports running.
+([DORA, 2024](https://cloud.google.com/blog/products/devops-sre/announcing-the-2024-dora-report)
+to [2025](https://dora.dev/insights/balancing-ai-tensions/), around 5,000 respondents.)
 
 **Tests multiply, verification does not.** 81% of enterprise leaders report more production
 issues, and 70% say maintaining the test suite now outweighs writing the code itself. AI
 multiplies tests too, but tests coupled to the implementation break with every change.
-Volume went up. Verification realism did not. (CloudBees, 2026, 200 or more enterprise
-technology leaders.)
+Volume went up. Verification realism did not.
+([CloudBees, 2026](https://www.cloudbees.com/newsroom/enterprise-technology-leaders-report-production-failures-from-ai-generated-code),
+200 or more enterprise technology leaders.)
 
-Different studies, different methods, different commercial incentives, same direction.
+Different studies, different methods, different commercial incentives, downstream pressure.
 DORA's own phrase for the mechanism is that AI amplifies what is already there, including
 your weaknesses.
 
@@ -162,9 +170,10 @@ Every one of those increases the flow rate through gate one. None of them reduce
 herd.
 
 Two of them fail on their own terms before we even get to the relocation problem. Waving
-work through is already the de facto behaviour, and that is what the 61% figure describes.
-Pointing a generic AI reviewer at the problem runs into independent benchmarks showing
-frontier models catch somewhere between 15% and 31% of what human reviewers flag.
+work through abandons the review gate's purpose. In Duma's sample, 61% of agent-authored
+pull requests had no recorded review to examine. Pointing a generic AI reviewer at the
+problem runs into [SWE-PRBench](https://arxiv.org/html/2603.26130v1): its eight evaluated
+models detected between 15% and 31% of human-flagged issues in the diff-only configuration.
 
 But suppose you did relieve gate one. You have not removed the queue. You have relocated
 it to gate two, the last checkpoint before production, where a miss costs the most and is
@@ -250,9 +259,12 @@ who is checking whom?
 
 Tests that mirror the implementation inherit its assumptions. They mock its internals,
 and when the assistant regenerates the code it can regenerate the tests to agree with it.
-Calling that an eval changes nothing about what has been checked. The independent research
-reports AI-generated tests that over-mock and use weak assertions. Generating more of those
-tests does not establish that the feature meets its requirements.
+Calling that an eval changes nothing about what has been checked.
+[Are Coding Agents Generating Over-Mocked Tests?](https://arxiv.org/html/2602.00409v1)
+found greater use of mocks in the studied agent-authored test commits.
+[VibeCheck](https://arxiv.org/html/2609.05978v1) found weak assertions in generated suites
+across 15 student-developed repositories. Generating more tests with those weaknesses does
+not establish that the feature meets its requirements.
 
 Gate two runs the full regression suite of **functional acceptance tests at the boundary**.
 Each feature adds its scenarios to that suite. Every subsequent change runs against the

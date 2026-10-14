@@ -1,5 +1,29 @@
 # Handoff
 
+## Recent article workflow pass, October 13, 2026
+
+Shiv authorized applying the publication workflow to newer articles and publishing
+the supported changes through commit, push, PR and merge. The
+[review record](recent-article-review-2026-10-13.md) covers all 26 published articles
+dated 2026: 21 candidates improved and five remained unchanged. Fresh reviews,
+source adjudication and independent comparisons preceded rendered inspection.
+An exposed comparison was excluded and replaced with a clean session.
+
+The acceptance series now supplies four small historical source excerpts and
+locatable public explanations. Article links use exact destination titles. Jev
+adds normalization and experiment-scope details; the AI articles correct research
+scope and receipt validity; Expense Part Three corrects the saved Sonnet total
+and distinguishes automated signals from what saved evidence establishes.
+Independent metadata extraction retains all descriptions and supports four
+existing-tag corrections. No new tags or artwork are required.
+
+All date values and field presence remain unchanged. Original blog posts and
+archives, older publication copies, corpus chapters, approved artwork, tested
+code and recorded outputs remain protected. Unrelated drafts and deferred cleanup
+are untouched. The PR receipt carries final checks, rendered evidence, exact
+merge/deployment identity and live verification; remaining source tasks are in
+the article review backlog.
+
 ## Preserve article dates during edits, October 13, 2026
 
 Shiv extended date preservation to every article edit: retain the exact

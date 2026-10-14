@@ -54,8 +54,8 @@ visible. Reusable asserters hide comparison mechanics behind names identifying
 the obligations. Keep the public invocation visible rather than putting the
 whole operation inside a setup helper.
 
-The [arrangement article](/writing/arranging-scenarios-that-stay-true/) explains default delegates
-and owned identities. The [assertion article](/writing/assertions-that-verify-the-whole-outcome/) explains
+[Arranging Scenarios That Stay True](/writing/arranging-scenarios-that-stay-true/) explains default delegates
+and owned identities. [Assertions That Verify the Whole Outcome](/writing/assertions-that-verify-the-whole-outcome/) explains
 pure comparisons and accumulated reports. These conventions are supported by the
 PWI structure chapter
 and naming chapter.
@@ -96,7 +96,7 @@ subscriptions.
 
 The disposable runner owns a whole database for the run. Per-test teardown owns
 records within it. Private fault scenarios own their separate hydrated databases.
-The [infrastructure article](/writing/testing-against-real-infrastructure/) explains these
+[Testing Against Real Infrastructure](/writing/testing-against-real-infrastructure/) explains these
 different scopes and cancellation. Abrupt process termination may prevent normal
 teardown; preserve diagnosable cleanup and a deliberate orphan-cleanup procedure
 instead of treating every leftover object as safe to delete.
@@ -113,16 +113,17 @@ For every changed feature, review:
 - Whether comparisons cover fields, counts, absence, state, and diagnostics.
 - Whether cleanup remains scoped under failure as well as success.
 
-The [obligation map](/writing/knowing-which-scenarios-a-feature-requires/#place-order-obligation-map) provides a
-repeatable format. Registration's [corresponding map](/writing/knowing-which-scenarios-a-feature-requires/#customer-registration-obligation-map)
+The Place Order obligation map in
+[Knowing Which Scenarios a Feature Requires](/writing/knowing-which-scenarios-a-feature-requires/#place-order-obligation-map)
+provides a repeatable format. The Registration map in
+[Knowing Which Scenarios a Feature Requires](/writing/knowing-which-scenarios-a-feature-requires/#customer-registration-obligation-map)
 shows how a no-return operation still has substantial stored-state obligations.
 
 ## Keep failures useful outside the debugger
 
 Comparison reports need obligation names and expected and actual values. Domain
 failures need precise classification, context, and original causes where relevant.
-Safe diagnostic checks protect credentials and bound provider data. The
-[failure article](/writing/refusals-failures-and-work-still-owed/) connects those contracts
+Safe diagnostic checks protect credentials and bound provider data. [Refusals, Failures, and Work Still Owed](/writing/refusals-failures-and-work-still-owed/) connects those contracts
 to the resulting state.
 
 When CI reports an error, start with the named scenario and its failed observation
@@ -148,7 +149,7 @@ removing it solely to improve timing would remove evidence.
 Independently tested composers may be borrowed as expectation builders. Comparison
 infrastructure needs tests of equal, unequal, and missing data. A dense inherited
 rule cluster may justify a stable smaller production boundary, as explained in
-[adoption and refactoring](/writing/refactoring-and-adopting-boundary-testing/).
+[Refactoring and Adopting Boundary Testing](/writing/refactoring-and-adopting-boundary-testing/).
 
 Do not let temporary construction checks become the release authority while
 the assembled scenario is missing. Maintain the scenarios that demonstrate
@@ -157,4 +158,4 @@ regression protection, and new teammates can use it to learn the system.
 
 ---
 
-[Previous article](/writing/testing-the-service-interface/) | [Series contents](/acceptance-testing/) | [Next article](/writing/testing-against-real-infrastructure/)
+Previous: [Testing the Service Interface](/writing/testing-the-service-interface/) | [Series contents](/acceptance-testing/) | Next: [Testing Against Real Infrastructure](/writing/testing-against-real-infrastructure/)
