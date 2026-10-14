@@ -15,8 +15,15 @@ Verify that accepted findings are resolved. Identify harmful suggestions that
 were correctly rejected and unresolved issues without assuming every suggestion
 needed an edit. Check that no necessary explanation was lost when repetition
 was removed or sections moved. Compare tested prompts, code, recorded outputs,
-reference tables, title, original date, and established anchors. Explain any
+reference tables, title, and established anchors. Explain any
 authorized evidence-backed change to these protected elements.
+
+Compare `datePublished` and `dateModified` against the baseline, including exact
+values and whether each field exists. Adding, removing or altering a date field
+is a regression unless a separate, explicit owner instruction authorizes that
+date correction. Report this comparison even when no dates are present. Confirm
+the rendered dates and homepage ordering remain unchanged by the edit; when no
+rendered page is supplied, leave that presentation check pending.
 
 Give a verdict: improved, equivalent, regressed, or unresolved. Cite changed
 passages and evidence supporting the verdict. Distinguish inspected facts from

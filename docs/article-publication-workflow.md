@@ -14,6 +14,14 @@ owner instruction for a particular historical article is handled separately.
 Identify provenance rather than assuming a recent import or dateModified makes
 an original article new. When provenance is unclear, leave its text untouched.
 
+For an existing article, preserve the exact `datePublished` and `dateModified`
+values and whether each field exists. Add neither field when absent; do not
+replace a date with the editing day or normalize existing dates. This keeps
+displayed dates and homepage ordering stable. Record revisions in Git and the
+editorial receipt. A separately authorized date correction is a different task.
+If a missing required date prevents publication, report the source gap without
+inventing a date or changing the content schema.
+
 Preserve unrelated drafts and files. Reading a source repository does not authorize
 changing it. Editorial evaluation does not authorize publishing sample revisions.
 Keep trial copies, cold-session outputs and detailed evidence outside the public
@@ -23,7 +31,8 @@ content collection. Use the article-review backlog for unresolved editorial work
 
 Record the article path and baseline revision, intended reader, central teaching
 claim, supplied author position, sources and revisions, related series parts,
-and protected material. Include applicable owner date and URL policies in the brief.
+and protected material. Record both date fields' exact values or absence, along
+with applicable owner date and URL policies, in the brief.
 Use the
 [blog-writing skill](../.agents/skills/blog-writing/SKILL.md). For video-derived
 articles, also use the
@@ -57,6 +66,7 @@ The writer applies the
 against the evidence and recording accepted, rejected, optional and deferred
 items. Review consensus alone does not decide. Make the smallest supported
 corrections and preserve the author's intent and protected evidence.
+Compare both date fields against the baseline, including their presence.
 
 Start a second fresh, read-only session using the
 [revision verification prompt](../prompts/verify-article-revision.md). It receives
@@ -76,6 +86,8 @@ tables, diagrams, captions, alt text, callouts, collapsed material and external
 links. Necessary steps must be available on the page. A Markdown review may leave
 this pending, but publication requires completion. Reinspect affected sections
 after subsequent prose or layout changes.
+Confirm displayed dates and the article's position in the homepage list remain
+unchanged by the edit.
 
 ## 5. Metadata, assets and publication checks
 
@@ -84,6 +96,8 @@ Use the existing independent
 on the final article.
 Check proposed metadata against the article before accepting it. A recommended
 evaluation must not become a claim that an evaluation was performed.
+Apply description and tag changes without altering either date field or adding
+a missing one. Recheck date preservation before committing.
 
 Follow the image guide for required hero and card assets; keep approved artwork
 unless replacement is authorized. Run the complete
@@ -100,6 +114,7 @@ baseline and final content hashes, the review-prompt version,
 coverage, findings and dispositions, independent comparison verdict, rendered
 inspection, audits and build. The receipt should let a future editor see what
 was checked without rerunning the entire process.
+Include the before/after date-field comparison in that receipt.
 
 GitHub's [deployment workflow](../.github/workflows/deploy.yml) repeats its
 automated repository checks, builds the approved content and deploys it. It does

@@ -15,7 +15,13 @@ An acceptable draft can remain unchanged. Record optional suggestions separately
 when their benefit is uncertain. For tests, write a candidate copy outside the
 published content collection; keep the baseline untouched.
 
-Preserve the article's title, public URL, original date, tested prompts, recorded
+Preserve both `datePublished` and `dateModified` exactly, including whether each
+field exists. Add neither field when absent. Do not use the editing day or
+normalize existing dates. Report a missing required publication date without
+inventing one; keep an undated trial outside the public content collection.
+Only a separate, explicit owner instruction to correct dates permits a change.
+
+Preserve the article's title, public URL, tested prompts, recorded
 outputs, code, numbers and reference tables unless the authorized change and
 source evidence specifically require changing them. Keep existing anchors when
 renaming or moving headings. Preserve technical qualifications, personal
@@ -26,6 +32,7 @@ Return the revised draft or unchanged decision, a finding-disposition record,
 and a concise account of changed passages. Identify any source conflict that
 cannot be resolved. Run the applicable writing and copy audits, review their
 flags in context, and do not rewrite protected evidence just to pass an audit.
+Report the before/after value or absence of each date field.
 
 The next step is an independent comparison using
 [verify-article-revision.md](verify-article-revision.md).

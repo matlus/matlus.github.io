@@ -22,6 +22,12 @@ The review is a separate step. Protect Shiv's original blog articles and their
 published copies; this workflow does not authorize rewriting them. GitHub
 deployment runs automated checks and does not repeat editorial model sessions.
 
+**Article edits preserve publication and update dates.** Keep the exact existing
+`datePublished` and `dateModified` values and whether each field is present.
+Do not add a missing field, change a date to the editing day, or normalize dates
+as part of editorial work. This preserves displayed dates and homepage ordering.
+A separately authorized date correction is a different task.
+
 **Every website article and article edit must use the
 [blog-writing skill](.agents/skills/blog-writing/SKILL.md), regardless of source.**
 This includes original writing and articles derived from transcripts, notes or code.
@@ -146,9 +152,9 @@ guideline articles without a direct source video use 2017-09-20, when the body o
 work began, unless a better documented historical date applies. Directly
 video-derived articles use the matching video's public YouTube calendar date,
 including PWI videos. Keep that displayed date without shifting it to another day
-through UTC conversion. Recent conversion and editorial work belongs in
-`dateModified`. Git history records repository revisions and supplies no evidence
-for the original publication date.
+through UTC conversion. For existing articles, preserve both date fields and
+their absence under the article-edit rule above. Git history records repository
+revisions and supplies no evidence for the original publication date.
 
 ---
 

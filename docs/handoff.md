@@ -1,5 +1,15 @@
 # Handoff
 
+## Preserve article dates during edits, October 13, 2026
+
+Shiv extended date preservation to every article edit: retain the exact
+`datePublished` and `dateModified` values and whether each field exists. Add
+neither field when absent. Editorial edits must leave displayed dates and
+homepage order unchanged. AGENTS, the publication workflow, revision prompt and
+independent comparison prompt now carry this rule. The content schema and
+homepage sorting remain unchanged. A missing required date is a source gap,
+never a reason to invent a date. Date corrections require separate owner direction.
+
 ## Article publication workflow, October 13, 2026
 
 Shiv approved implementing and testing a separate article publication workflow,
