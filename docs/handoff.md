@@ -1,5 +1,28 @@
 # Handoff
 
+## Three closer listing cards, October 14, 2026
+
+Shiv selected Expense Analysis Parts Three and Four and Skills versus Controlled
+Workflows for closer card compositions using the approved Breadcrumbs pair as
+the example. The three companions now bring the same two people and their work
+forward while retaining the defining props and recognizable setting. Original
+article heroes, all article text and metadata, dates and homepage ordering remain
+unchanged.
+
+Part Three keeps five chambers, the flagged odd result and the tally. Part Four
+keeps the comparison desk, master ledger, five slips, stencil and mint/orange
+tally. Skills retains its original brunette woman and dark-haired man, workshop
+and connected workflow; the identity-preservation request takes precedence over
+substituting a different likeness. Warm colour remains moderate and brightness
+gentle. Framing refinements restore complete hair silhouettes and breathing room;
+Part Three also restores its quiet original drafting backdrop. The actual desktop
+grid prompted a tighter Skills composition before its final framing refinement.
+
+The built-in image tool produced 1942 × 809 originals. Each selected companion
+exports at 1200 × 500 WebP, quality 82, without upscaling or stretching. Complete
+initial briefs, references, refinements and export records accompany the assets.
+The publication receipt records desktop/phone inspection and deployment checks.
+
 ## Homepage series grouping, October 13, 2026
 
 Shiv requested uninterrupted homepage blocks for Expense Analysis and Programming
