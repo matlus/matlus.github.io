@@ -1,5 +1,16 @@
 # Handoff
 
+## Expense Analysis series dates, October 13, 2026
+
+Shiv requested that the four-part series retain its original publication dates
+and appear newest part first on the homepage. Each part's `dateModified` now
+matches its `datePublished`, suppressing the updated label and restoring the
+relative order Four, Three, Two, One. Part Four already had matching dates.
+The dates are September 30, October 6, October 11 and October 12, respectively.
+Later revision history remains in Git; preserve this owner-approved date policy
+when editing this series. Other articles retain the existing homepage rule of
+sorting by the later publication or update date.
+
 ## Shared Google typography, October 13, 2026
 
 Shiv approved applying the Gemini typography experiment across the website and
