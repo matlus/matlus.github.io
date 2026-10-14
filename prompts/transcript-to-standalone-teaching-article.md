@@ -5,6 +5,12 @@ video. It complements `docs/transcript-ratification-handoff.md`. The article is
 written for someone who has neither watched the video nor opened its repository.
 PWI corpus chapters retain their separate mechanical conversion contract.
 
+This source-adaptation prompt supplies the drafting step of the
+[article publication workflow](../docs/article-publication-workflow.md).
+After drafting, run its independent teaching/evidence review and verified
+revision before rendered inspection and publication. Keep the review separate
+from the blog-writing skill.
+
 ## Inputs
 
 - The complete transcript and any existing chapter or canonical manuscript.

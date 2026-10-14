@@ -1,5 +1,30 @@
 # Handoff
 
+## Article publication workflow, October 13, 2026
+
+Shiv approved implementing and testing a separate article publication workflow,
+then committing workflow changes before later article revisions. The entry point
+is [article-publication-workflow.md](article-publication-workflow.md), routed from
+AGENTS and the writing guide. Blog-writing remains unchanged. Fresh-session
+teaching/evidence review, adjudicated revision and an independent comparison now
+precede final rendered inspection, metadata and existing publication checks.
+Original blog source and its published copies are protected.
+
+The [initial evaluation](article-publication-workflow-evaluation.md) records five
+varied article trials: three final candidates improved and two stayed equivalent.
+The first expense candidate was held as unresolved and corrected on a second
+cycle. Final comparisons found no new regressions. Personal-account handling,
+comparison tracking, clean review packets and metadata scope were strengthened.
+Public articles, archives, artwork, the blog-writing skill and deployment jobs
+remain unchanged; all 1,302 protected file hashes matched.
+
+Candidate copies, raw reviews, comparison records, metadata, screenshots and
+full logs are retained externally under the October 13 publication-workflow
+trial directory. Only workflow files and documentation enter this commit.
+Later article work can use the retained findings; do not apply trial candidates
+as an automatic publication sweep. Deferred draft cleanup remains untouched.
+GitHub deploys repeat automated checks and do not rerun editorial model sessions.
+
 ## Expense Analysis, Part Three teaching revision, October 13, 2026
 
 Shiv approved revising Part Three and publishing through commit, push, PR and
