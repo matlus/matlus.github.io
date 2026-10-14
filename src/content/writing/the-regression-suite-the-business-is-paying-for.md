@@ -3,7 +3,7 @@ title: "The Regression Suite the Business Is Paying For"
 description: "The maintained regression suite protects earlier business behavior as new features change the system. Keep approved expectations, run the required suite, and preserve lessons as permanent scenarios."
 datePublished: 2026-06-15
 dateModified: 2026-09-27
-tags: ["acceptance-testing", "regression-testing", "verification"]
+tags: ["acceptance-testing", "regression-testing", "verification", "continuous-integration"]
 hero: the-regression-suite-the-business-is-paying-for
 ---
 
@@ -40,10 +40,10 @@ $10,000.00. It then expects Placed status, recorded order content, fulfillment,
 and a placed-order confirmation. The erroneous comparison changes several of
 those outcomes and should fail their comparisons.
 
-The complete threshold test
-shows the existing guard and assertions. This example predicts how they respond
-to that teaching change; no deliberate mutation was applied or executed for
-this article.
+The threshold guard is shown in
+[Arranging Scenarios That Stay True](/writing/arranging-scenarios-that-stay-true/#guard-scenarios-that-depend-on-an-exact-value).
+This example predicts how the outcome comparisons respond to that teaching
+change; no deliberate mutation was applied or executed for this article.
 
 The expected values remain anchored to the requirement. Updating them merely
 to match the new code would erase the protection the business paid for.
@@ -72,10 +72,10 @@ A focused run helps a developer work on one scenario. It does not protect all
 earlier functionality. The complete required suite belongs at the release gate,
 with the real infrastructure and stable downstream arrangements it needs.
 
-Meridian's CI workflow
-provisions SQL Server and RabbitMQ and runs the solution through its disposable
-database runner. Local focused commands are useful during implementation; the
-full run exercises obligations the developer may not realize the change affects.
+Meridian's CI configuration provisions SQL Server and RabbitMQ and runs the
+solution through its disposable database runner. Local focused commands are
+useful during implementation; the full run exercises obligations the developer
+may not realize the change affects.
 
 A failure in another feature deserves investigation. Verify its arrangement and
 environment, inspect the actual mismatch, and follow the production operation.
@@ -86,8 +86,10 @@ Do not dismiss it because the developer did not intend to change that feature.
 Suppose exploratory work discovers that one email diagnostic leaks a credential
 fragment when the provider response uses an escaped value. The lesson should
 become a permanent scenario with the relevant input shape and negative assertion.
-Meridian's response-body scenarios
-demonstrate this kind of maintained protection.
+Meridian's response-body scenarios check that diagnostic text contains no
+credential fragments.
+[The Test Mediator and the Transport Spy](/writing/the-test-mediator-and-the-transport-spy/#observe-bytes-consumed-when-bounded-reads-matter)
+explains how response-body consumption and diagnostic text are observed.
 
 Discovery can add a scenario, a row for the same rule, or a missing field assertion.
 It can also reveal an incorrect requirement or expectation requiring owner review.
@@ -110,4 +112,4 @@ sends to production and confident in the decision to send it.
 
 ---
 
-[Previous article](/writing/learning-a-system-through-its-tests/) | [Series contents](/acceptance-testing/) | [Next article](/writing/refactoring-and-adopting-boundary-testing/)
+Previous: [Learning a System Through Its Tests](/writing/learning-a-system-through-its-tests/) | [Series contents](/acceptance-testing/) | Next: [Refactoring and Adopting Boundary Testing](/writing/refactoring-and-adopting-boundary-testing/)

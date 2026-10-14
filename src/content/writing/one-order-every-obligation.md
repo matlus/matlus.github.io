@@ -53,7 +53,7 @@ The order uses several parts of the system:
 
 The complete outcome includes the caller's reference, total, and status; the
 recorded order and lines; one fulfillment notification with the required content;
-and one confirmation request for the address on file. The [obligation map](/writing/knowing-which-scenarios-a-feature-requires/#place-order-obligation-map)
+and one confirmation request for the address on file. The Place Order obligation map in [Knowing Which Scenarios a Feature Requires](/writing/knowing-which-scenarios-a-feature-requires/#place-order-obligation-map)
 connects those requirements to the observations and comparisons below.
 
 
@@ -63,10 +63,9 @@ The complete method below comes from Meridian. Its phase comments use
 `/// Arrange`, `/// Act`, and `/// Assert` for this article; its executable
 statements are unchanged. Arrange establishes inputs and expectations, Act invokes
 the operation, and Assert gathers actual results and compares them with those
-expectations. Its imports, containing
-class, reserved identifiers, initialization, and teardown are in the
-complete source file.
-The explanations below describe the supporting helpers and show selected listings.
+expectations. The containing test class reserves identifiers and implements
+initialization and teardown. The explanations below describe the supporting
+helpers and show selected listings.
 
 ```csharp
 public async Task PlaceOrder_WhenActiveCustomerPlacesValidOrder_ThenOrderIsRecordedFulfillmentNotifiedAndConfirmationEmailed()
@@ -294,9 +293,7 @@ of that expected order: the caller result, recorded lines, fulfillment lines,
 wire-formatted amounts, and confirmation email. This avoids retyping the same
 expected facts in several places.
 
-The complete expected-model factory
-shows each conversion. Amounts on the fulfillment wire use invariant two-decimal
-formatting. The email expectation uses the production composer, whose
+Amounts on the fulfillment wire use invariant two-decimal formatting. The email expectation uses the production composer, whose
 independent class tests
 verify the content it produces. Those tests are the condition for borrowing that
 composer as an oracle.
@@ -352,8 +349,8 @@ It returns the recorded order data that the production path uses for outbound wo
 After commit, fulfillment is published and confirmation is submitted when required. Successful
 actions acquire completion evidence. Business-required failure handling preserves
 the accepted order and pending obligations when a defined operational action
-cannot complete. The source listing includes those policies; later articles will
-follow their distinct scenarios in detail.
+cannot complete. Later articles follow those failure policies through their
+distinct scenarios in detail.
 
 This walkthrough describes the internals to teach the implementation. The
 acceptance test's contract remains the public operation and its observable effects.
@@ -565,7 +562,7 @@ that the test environment can receive, plus correlation to each run's order.
 Meridian implements request capture; the real delivery arrangement described here
 is the production approach, and requires its own provider and inbox support.
 
-The [Test Mediator and Transport Spy article](/writing/the-test-mediator-and-the-transport-spy/)
+[The Test Mediator and the Transport Spy](/writing/the-test-mediator-and-the-transport-spy/)
 shows the same example's capture method, paired factory, failure scripts, and
 response-body observations. It also explains the separate mediator-and-spies
 shape and the combined shape Meridian uses. Those implementation shapes can
@@ -620,4 +617,4 @@ to go to production.
 
 ---
 
-[Previous article](/writing/knowing-which-scenarios-a-feature-requires/) | [Series contents](/acceptance-testing/) | [Next article](/writing/arranging-scenarios-that-stay-true/)
+Previous: [Knowing Which Scenarios a Feature Requires](/writing/knowing-which-scenarios-a-feature-requires/) | [Series contents](/acceptance-testing/) | Next: [Arranging Scenarios That Stay True](/writing/arranging-scenarios-that-stay-true/)

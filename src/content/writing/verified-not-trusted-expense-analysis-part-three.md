@@ -49,7 +49,7 @@ This article, the third of four, is that evaluation. We take the same expense lo
 
 Part One explained why a model can answer the same request differently each time. It generates text a token at a time, and the selection among likely next tokens can vary from one run to the next. The same prompt, the same model and the same files can produce different answers.
 
-Here is what that looks like in practice. We ran the final prompt five times on Claude Sonnet 5.5, each run in a fresh session with the same two files. Four runs reported August travel as $1,655.92, an accepted total that includes the August 16 Uber charge in Travel. The key also accepts $1,631.82 when that $24.10 charge stays in Transport. In the third run, the model decided that the two Delta Air Lines charges on August 14 were duplicates:
+Here is what that looks like in practice. We ran the final prompt five times on Claude Sonnet 5.5, each run in a fresh session with the same two files. Four runs reported August travel as $1,631.82, an accepted total that keeps the August 16 Uber charge in Transport. The key also accepts $1,655.92 when that $24.10 charge is included in Travel. In the third run, the model decided that the two Delta Air Lines charges on August 14 were duplicates:
 
 ```text
 Delta Air Lines - $412.60 (Aug. 14)
@@ -81,11 +81,11 @@ What changes is the nature of the system. A prompt running on a model varies. So
 | Release decision | Every test passes | Every gated check meets its minimum pass rate |
 | What a passing result tells you | The system meets its requirements in the tested scenarios | How often the prompt met each requirement in the runs you made |
 
-Look at that last row carefully. An eval does not make a prompt deterministic. A check that passes the gate at 80% tells you the prompt fails that check about one time in five, for that model, at that reasoning effort, on those inputs. You can deploy the skill on that basis, but you deploy it knowing that. The eval spells out the caveats you are accepting.
+Look at that last row carefully. An eval does not make a prompt deterministic. A check that passes four of five runs failed once in that sample, for that model, at that reasoning effort, on those inputs. It meets an 80% minimum; a check passing five of five meets that minimum too. The threshold is the bar you chose, and the pass rate records what happened in the runs you made. You can deploy the skill on that basis, but you deploy it knowing what was measured. The eval spells out the caveats you are accepting.
 
 You must have evals. Without them, nobody knows what they are buying into: not the author of the skill, and not the person relying on it.
 
-The two disciplines meet in one more place. The code that runs an eval is ordinary code, and it gets ordinary tests. The graders that compare amounts, read tool-call logs and calculate pass rates are deterministic. In the repository for this article, more than a hundred tests check that machinery with the model processes replaced by a spy. A one-cent difference passes; a two-cent difference fails. Those tests have to pass 100% of the time.
+The two disciplines meet in one more place. The code that runs an eval is ordinary code, and it gets ordinary tests. The graders that compare amounts, read tool-call logs and calculate pass rates are deterministic. In the repository for this article, more than a hundred tests check that machinery with the model processes replaced by a spy. In the library's Decimal amount grader, a one-cent difference passes; a two-cent difference fails. Those tests have to pass 100% of the time.
 
 ## What are you buying into?
 
@@ -161,7 +161,7 @@ The input files are exactly the ones from Part One. The expected values come fro
 "travel_august_total": ["1655.92", "1631.82"]
 ```
 
-Keep the expected values where only the grading code can read them. Every file in `inputs/` is copied into the trial's working folder, where the model can open it. An answer key in that folder would turn the eval into a reading test. The loader refuses an eval suite that places a graded file inside `inputs/`.
+Keep the expected values where only the grading code can read them. Every file in `inputs/` is copied into the trial's working folder, where the model can open it. An answer key in that folder would turn the eval into a reading test. The library loader refuses an eval suite that places a graded file inside `inputs/`. The one-file example depends on keeping those files separate, as the folder structure above does.
 
 `eval_suite.json` wires these files together. It defines 16 checks. Here are three of them:
 
@@ -263,11 +263,11 @@ def is_amount_accepted(actual_amount: str | None, expected_amounts: Iterable[str
     return any(abs(amount - float(expected_amount)) <= AMOUNT_TOLERANCE for expected_amount in expected_amounts)
 ```
 
-An answer that never states the total fails. So does an answer whose total is not a number, or one that differs from every accepted value by more than one cent. The extractor can misread an answer, and when it does, the extracted facts saved with the run show exactly what it read. What it cannot do is decide that $1,219.22 is close enough.
+An answer that never states the total fails. So does an answer whose total is not a number, or one outside the tolerance of every accepted value. The intended tolerance includes a one-cent difference, but the one-file function above uses binary floats: $165.15 compared with $165.14 can subtract to slightly more than $0.01 and fail. The library grader uses Decimal and accepts that cent boundary; it produced the recorded results below. The extractor can misread an answer, and when it does, the extracted facts saved with the run show exactly what it read. What it cannot do is decide that $1,219.22 is close enough.
 
-The `code-executed` check reads the tool-call log. Part One pointed out that displayed code does not prove it ran. This check does not look at the answer at all. It looks at the shell commands the session actually executed and passes only when a command matching `python` ran successfully. An answer that shows code it never executed fails this check, however convincing the code looks.
+The `code-executed` check reads the tool-call log. Part One pointed out that displayed code does not prove it ran. This check does not look at the answer at all. It passes when a successful shell call has command text matching `python`. That is a useful signal, but `echo python` would pass too. To establish that Python ran the intended expense calculation, inspect the saved command and its result. Displaying code alone supplies no execution evidence, however convincing the code looks.
 
-The prompt says "show the code" and "Don't estimate totals or do the arithmetic in your head." Instruction is not assurance. In these recorded runs, every session did run Python, and we know that from the log. The prompt's request alone would not tell us.
+The prompt says "show the code" and "Don't estimate totals or do the arithmetic in your head." Instruction is not assurance. In these recorded runs, every session passed the automated check, and inspection of the saved commands and results confirms that every session did run Python for the expense calculation. The prompt's request alone would not tell us.
 
 Some requirements need judgment. Did the computed tables come before the interpretation? Are there exactly three findings, each supported by the numbers? For those, a judge session applies a written rubric. Here is part of the rubric for the findings:
 
@@ -326,7 +326,7 @@ Here the eval and the acceptance test look alike again. The assertion is binary.
 
 Each run below used medium reasoning effort, and each answer was graded in Claude Code by Sonnet at low effort. The recorded runs in the repository were produced by the library version of this eval, which reads the same eval suite and applies the same checks.
 
-First, the three prompts on the same task:
+First, the three prompts on the same task. Every check has an 80% minimum here, so 4/5 meets the gate. The table also lists checks below 5/5, including a 4/5 check in a variant that failed because other checks fell below the minimum:
 
 | Prompt | Claude Opus 5.5, 5 runs | Claude Sonnet 5.5, 5 runs |
 | --- | --- | --- |
@@ -338,7 +338,7 @@ The standard prompt fell short where Part One said it leaves decisions unstated.
 
 The more precise prompt fixed every analysis problem. Its one remaining failure is instructive. Step 5 of that prompt says, "Show me the computed tables before your interpretation." Opus led with its conclusions in all five runs anyway. That is **instruction is not assurance**, measured: the instruction was in the prompt, and the models did not reliably follow it.
 
-The third variant changes only the reply order, stating explicitly that the tables come first. With that change, Opus passed every check in every run.
+The third variant makes the reply order explicit, stating that the tables come first. It also requires exactly three findings, tells the model to check every number and comparison against its tables, and limits budget judgments to the two stated targets. With those changes, Opus passed every check in every run.
 
 This is the comparison to ask of any skill pack: does the model do better with the instructions than without them, across repeated runs? Advice on skills pulls in two directions. One view says models skip steps, so every skill should anticipate their excuses. The other says models are now smart enough, so prune your skills. Either can be true for a particular model and task. An eval with and without the skill tells you which.
 
@@ -365,22 +365,22 @@ Since we already know the correct answer, the eval should be able to explain a w
 
 The diagnosis considers the ledger under each accepted category policy. For each one, code computes the difference between its reference total and the reported amount. A total that matches an accepted policy needs no entry-level explanation.
 
-For a remaining difference, code searches for the fewest entry mistakes whose effects add up to it: a reference entry left out, an entry from another category counted in, the duplicate counted, or the refund counted as a purchase. It selects the explanation requiring the fewest mistakes across the accepted policies. Here is the cause it recorded for one of Haiku's runs:
+For a remaining difference, code searches for the fewest entry mistakes whose effects add up to it: a reference entry left out, an entry from another category counted in, the duplicate counted, or the refund counted as a purchase. It selects candidate explanations requiring the fewest mistakes across the accepted policies. A numerical match tells us where to look; confirm it against the saved code or entry assignments before calling it the cause. Here is the diagnostic it recorded for one of Haiku's runs:
 
 ```text
 Travel 2026-08: reported 1,563.82, reference 1,631.82 (under the accepted policy 'August 16 Uber in Transport'),
 a difference of -68.00. Explained by: left out line 169 "Airport Parking - $68.00 (August 14)" (-68.00).
 ```
 
-That is a failure message we can act on. The search is deliberately conservative and stops at three mistakes. For a single month's total, it considers all candidate mistakes up to combinations of two; for a total across all months, only single mistakes receive that unrestricted search. Larger combinations use only plausible candidates, such as omitted reference entries or a counted duplicate. Among dozens of entries, arbitrary combinations can match a difference by coincidence. When nothing simple explains the difference, the eval says so instead of guessing.
+That is a failure message we can act on. In this run, the saved code assigned Airport Parking to `Rides & parking`, and the execution output included its $68 there. The expense was counted in the analysis but left out of Travel, which confirms what caused the travel difference. The search is deliberately conservative and stops at three mistakes. For a single month's total, it considers all candidate mistakes up to combinations of two; for a total across all months, only single mistakes receive that unrestricted search. Larger combinations use only plausible candidates, such as omitted reference entries or a counted duplicate. Among dozens of entries, arbitrary combinations can match a difference by coincidence. When nothing simple explains the difference, the eval says so instead of guessing.
 
-Judged checks get the same treatment. The judge is asked to quote any amount it rejects and the reference value it compared it with. Code then traces that amount in the ledger. The judge never explains the cause itself, so the explanation is not one more model's opinion.
+Judged checks get the same treatment. The judge is asked to quote any amount it rejects and the reference value it compared it with. Code then traces that amount in the ledger. The judge never supplies the entry-level explanation itself. Code finds a numerical candidate, and the saved calculation lets us check whether it describes what happened.
 
-The scorecard groups these causes across runs. One cause appearing in several runs points to a systematic mistake.
+The scorecard groups these candidate explanations across runs. The same candidate appearing in several runs points to a systematic mistake to investigate.
 
 <figure class="article-diagram">
-  <img class="article-diagram__image" style="max-width: 640px;" src="/images/diagrams/expense-analysis-failure-trace.svg" alt="A reported total and the entry-by-entry reference ledger feed a search in code. Code considers accepted category policies, computes the difference under each one, and searches for the fewest entry mistakes that explain it. It reports the cause, such as a left-out Airport Parking line, or says that no simple cause was found. The scorecard groups causes across runs." loading="lazy" />
-  <figcaption>Code compares a wrong total with the reference ledger and looks for the fewest entry mistakes that explain the difference. When nothing simple explains it, the eval says so.</figcaption>
+  <img class="article-diagram__image" style="max-width: 640px;" src="/images/diagrams/expense-analysis-failure-trace.svg" alt="A reported total and the entry-by-entry reference ledger feed a search in code. Code considers accepted category policies, computes the difference under each one, and searches for the fewest entry mistakes that explain it. It reports candidate explanations, such as Airport Parking left out of Travel, or says that no simple explanation was found. Saved code or entry assignments confirm what happened. The scorecard groups candidates across runs." loading="lazy" />
+  <figcaption>Code compares a wrong total with the reference ledger and looks for the fewest entry mistakes that explain the difference. These are candidates to check against the saved calculation. When nothing simple explains it, the eval says so.</figcaption>
 </figure>
 
 ## Sometimes the eval is wrong

@@ -307,4 +307,4 @@ preserves its promised repeated-request behavior.
 
 ---
 
-[Previous article](/writing/refusals-failures-and-work-still-owed/) | [Series contents](/acceptance-testing/) | [Next article](/writing/testing-the-service-interface/)
+Previous: [Refusals, Failures, and Work Still Owed](/writing/refusals-failures-and-work-still-owed/) | [Series contents](/acceptance-testing/) | Next: [Testing the Service Interface](/writing/testing-the-service-interface/)

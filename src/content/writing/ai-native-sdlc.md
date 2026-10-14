@@ -92,17 +92,20 @@ gated check in CI. Same rules, same bar, checked at two moments, invented nowher
 
 The piece that makes this more than paperwork is the integrity receipt. A file that passes
 local review travels with a checksum proving it reaches the merge gate unchanged. If the
-receipt checks out, that file is not reviewed again. Review workload gets absorbed in
-parallel at every developer's desk instead of piling up at one central chokepoint, and
+receipt is to be reused, it must bind that exact content, the review-standard version, and
+the relevant reviewed context and dependencies. A change to any of those inputs invalidates
+it. If the receipt checks out, that file is not reviewed again. Review workload gets absorbed
+in parallel at every developer's desk instead of piling up at one central chokepoint, and
 nobody pays for the same AI review twice.
 
 The bar goes up. The queue disappears.
 
 ### Certified, not assumed
 
-Generic AI review is where this usually falls down. Independent benchmarks put frontier
-models somewhere between 15% and 31% of what human reviewers flag, which is not a
-foundation to build a gate on.
+Generic AI review is where this usually falls down.
+[SWE-PRBench](https://arxiv.org/html/2603.26130v1) evaluated eight models and found they
+detected between 15% and 31% of human-flagged issues in its diff-only configuration. That
+is not a foundation to build a gate on.
 
 The answer is certification. Every rule sits an exam against every model before it is
 allowed near production code: code with known violations it must catch, clean code it must
@@ -125,9 +128,12 @@ who is checking whom?
 
 Conventional tests are coupled to the implementation. They mirror the code's structure,
 they mock its internals, and when the assistant regenerates the code it regenerates the
-tests alongside. The auditor and the accountant become the same party. The independent
-research says it plainly: AI-generated tests over-mock, use weak assertions, and are
-supplements to rather than substitutes for human-designed verification against real
+tests alongside. The auditor and the accountant become the same party.
+[Are Coding Agents Generating Over-Mocked Tests?](https://arxiv.org/html/2602.00409v1)
+found greater use of mocks in the studied agent-authored test commits.
+[VibeCheck](https://arxiv.org/html/2609.05978v1) found weak assertions in generated suites
+across 15 student-developed repositories. In this lifecycle, I treat AI-generated tests
+as supplements to rather than substitutes for human-designed verification against real
 behaviour.
 
 ### What high fidelity means
@@ -176,9 +182,9 @@ Because these tests never look inside the system, they are decoupled from the
 implementation. That is the property the industry has discussed for years without producing
 many working examples.
 
-In an AI-native lifecycle the property changes what a test is for. These are the only tests
-that stay valid when the code underneath them is rewritten, which happens constantly once
-generation is cheap.
+In an AI-native lifecycle the property changes what a test is for. These tests stay valid
+when the code underneath them is rewritten, provided the required behaviour and public
+contract stay the same. Rewrites happen constantly once generation is cheap.
 
 So the relationship inverts. The tests become the durable asset, the executable statement
 of business intent, the thing you own and accumulate. The code becomes regenerable output.

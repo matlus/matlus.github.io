@@ -29,9 +29,10 @@ Before advancing the build, verify that:
 - The execution environment and provider choices are recorded.
 - No required comparison was removed merely to obtain a green result.
 
-The [completeness article](/writing/knowing-which-scenarios-a-feature-requires/) explains the
-review, and [infrastructure](/writing/testing-against-real-infrastructure/) explains the
-arrangements. Source inspection, local execution, CI execution, and deployed
+[Knowing Which Scenarios a Feature Requires](/writing/knowing-which-scenarios-a-feature-requires/)
+explains the review, and
+[Testing Against Real Infrastructure](/writing/testing-against-real-infrastructure/)
+explains the arrangements. Source inspection, local execution, CI execution, and deployed
 verification are distinct evidence. Keep their receipts tied to the relevant
 version rather than treating the most recent passing run as proof for any build.
 
@@ -116,7 +117,8 @@ it cannot supply the before-exposure evidence missing from an unverified feature
 Rollback also has limits. Restoring old application code does not unsend an email,
 withdraw a fulfillment instruction, or remove every record already consumed by
 another system. Recovery and compensation need explicit policies and verification.
-The [ambiguous completion scenario](/writing/refusals-failures-and-work-still-owed/#observe-acceptance-when-completion-recording-fails)
+The ambiguous completion scenario in
+[Refusals, Failures, and Work Still Owed](/writing/refusals-failures-and-work-still-owed/#observe-acceptance-when-completion-recording-fails)
 shows why durable state and an external effect can disagree.
 
 ## Return production lessons to the maintained suite
@@ -134,4 +136,4 @@ for what it sends to production because those decisions are explicit.
 
 ---
 
-[Previous article](/writing/refactoring-and-adopting-boundary-testing/) | [Series contents](/acceptance-testing/) | [Next article](/writing/questions-about-functional-acceptance-testing-at-the-boundary/)
+Previous: [Refactoring and Adopting Boundary Testing](/writing/refactoring-and-adopting-boundary-testing/) | [Series contents](/acceptance-testing/) | Next: [Questions About Functional Acceptance Testing at the Boundary](/writing/questions-about-functional-acceptance-testing-at-the-boundary/)

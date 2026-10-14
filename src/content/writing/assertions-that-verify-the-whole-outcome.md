@@ -20,7 +20,7 @@ requirements, and non-functional requirements must be established, and the
 scenarios and expectations verified as correct. Deep comparisons then give meaning
 to a green suite and support confidence to go to production.
 
-The [complete order test](/writing/one-order-every-obligation/) shows the entire flow.
+[One Order, Every Obligation](/writing/one-order-every-obligation/) shows the entire flow.
 This article follows its actual results into the asserters.
 
 ## Gather actual values before comparing them
@@ -225,8 +225,8 @@ public static string? CompareEmailContent(
 ```
 
 Meridian captures the request and returns an arranged response. It does not read
-an inbox message. With a real provider, the
-[Test Mediator arrangement](/writing/the-test-mediator-and-the-transport-spy/) preserves
+an inbox message. With a real provider, the arrangement in
+[The Test Mediator and the Transport Spy](/writing/the-test-mediator-and-the-transport-spy/) preserves
 the original customer recipient, redirects delivery, and adds inbox observations.
 Assertions verify both the intended submission and the delivered message.
 
@@ -415,4 +415,4 @@ the behavior the business continues to depend on.
 
 ---
 
-[Previous article](/writing/arranging-scenarios-that-stay-true/) | [Series contents](/acceptance-testing/) | [Next article](/writing/the-test-mediator-and-the-transport-spy/)
+Previous: [Arranging Scenarios That Stay True](/writing/arranging-scenarios-that-stay-true/) | [Series contents](/acceptance-testing/) | Next: [The Test Mediator and the Transport Spy](/writing/the-test-mediator-and-the-transport-spy/)

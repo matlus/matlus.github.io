@@ -19,26 +19,33 @@ together. I worked with an intern who understood the architecture
 within two days by walking through its tests. That is an experience from systems
 where I used this discipline, not a promised onboarding time for every team.
 
-The following checkpoints show that approach using Meridian. Readers with access to a comparable project can follow the same sequence in their own debugger.
+The following checkpoints show that approach using Meridian. You can follow its
+complete on-page test and asserter listings in
+[One Order, Every Obligation](/writing/one-order-every-obligation/). Readers with
+access to a comparable project can follow the same sequence in their own debugger.
 
 ## Find one complete feature scenario
 
-Open the Place Order requirements
-and find AC-01. Then open the
-expected-path test class.
-Read the scenario name and the Arrange, Act, and Assert phases before stepping
-into helpers.
+Start with the complete AC-01 test in
+[One Order, Every Obligation](/writing/one-order-every-obligation/#read-the-whole-test-before-its-helpers).
+It is the valid-order scenario in `TestPlaceOrderExpectedPaths`. If you have access
+to the private Meridian project, open that class locally. In a comparable
+project, choose its matching complete feature scenario. Read the scenario name
+and the Arrange, Act, and Assert phases before following helpers on the page
+or stepping into them in your debugger.
 
 Write down its obligations: accepted caller result, correct order and lines,
 one complete fulfillment notification, and the correct captured confirmation.
-The [obligation map](/writing/knowing-which-scenarios-a-feature-requires/#place-order-obligation-map) connects those
-facts with their observations and comparisons.
+The Place Order obligation map in
+[Knowing Which Scenarios a Feature Requires](/writing/knowing-which-scenarios-a-feature-requires/#place-order-obligation-map)
+connects those facts with their observations and comparisons.
 
 ## Prepare the same runnable environment
 
-Within the private Meridian project, this exercise uses its documented SDK and the
-[infrastructure setup](/writing/testing-against-real-infrastructure/). Start SQL Server
-and RabbitMQ, provision schema and topology, and run the selected scenario:
+Within the private Meridian project, this exercise uses its documented SDK and
+the setup explained in [Testing Against Real Infrastructure](/writing/testing-against-real-infrastructure/).
+Start SQL Server and RabbitMQ, provision schema and topology, and run the selected
+scenario:
 
 ```powershell
 dotnet run --project setup/MeridianOrdering.Setup -- run-tests --project tests/MeridianOrdering.Tests/MeridianOrdering.Tests.csproj --filter "FullyQualifiedName~PlaceOrder_WhenActiveCustomerPlacesValidOrder"
@@ -90,9 +97,11 @@ scenario still provides the input and actual readback needed to understand it.
 
 After the operation, watch the test independently query the order and lines,
 receive the correlated broker payload, listen for an extra notification, and
-snapshot email captures. Step into the
-aggregate asserter
-and then its field comparisons.
+snapshot email captures. Follow
+`AsserterSuccessfulOrderPlacement.AssertAllAc01ObligationsAreMet` and its field
+comparisons in [One Order, Every Obligation](/writing/one-order-every-obligation/#compare-every-obligation-and-report-the-complete-failure).
+With project access, step into that method in the debugger; in a comparable
+project, follow the corresponding aggregate comparison.
 
 The teammate now sees both the implementation and how the team verifies it.
 Ask them to explain why a correct returned total would not establish that each
@@ -105,9 +114,9 @@ Next follow Held for Review. The order is still recorded, but fulfillment is
 not required and the confirmation content changes. Then follow unknown-customer
 refusal, which must leave no accepted order or outgoing work.
 
-The [failure scenarios](/writing/refusals-failures-and-work-still-owed/) supply another
-lesson: a downstream failure after commit preserves acceptance and outstanding
-work. Learning only the happy path would leave those requirements undiscovered.
+The scenarios in [Refusals, Failures, and Work Still Owed](/writing/refusals-failures-and-work-still-owed/)
+supply another lesson: a downstream failure after commit preserves acceptance
+and outstanding work. Learning only the happy path would leave those requirements undiscovered.
 
 ## Maintain the explanation by maintaining the suite
 
@@ -127,4 +136,4 @@ teammates and experienced maintainers can use the same starting point.
 
 ---
 
-[Previous article](/writing/testing-against-real-infrastructure/) | [Series contents](/acceptance-testing/) | [Next article](/writing/the-regression-suite-the-business-is-paying-for/)
+Previous: [Testing Against Real Infrastructure](/writing/testing-against-real-infrastructure/) | [Series contents](/acceptance-testing/) | Next: [The Regression Suite the Business Is Paying For](/writing/the-regression-suite-the-business-is-paying-for/)

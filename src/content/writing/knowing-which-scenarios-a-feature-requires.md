@@ -126,8 +126,8 @@ var actualPlacementWindowEndUtc = DateTime.UtcNow;
 The order total in the return value, database record, and fulfillment message must
 each match the total established during Arrange. Reading actual values from the
 system is necessary: comparing two expected models would tell us nothing about
-what the operation did. The [full test and aggregate asserter](/writing/one-order-every-obligation/)
-show those comparisons together.
+what the operation did. [One Order, Every Obligation](/writing/one-order-every-obligation/)
+shows those comparisons together.
 
 Here is the stored-total comparison inside AsserterOrderStore. It compares the
 expected amount with the value read from the order record and adds a useful
@@ -161,13 +161,13 @@ service. With a stable real provider, the production arrangement can preserve th
 original request, redirect delivery to a controlled test address, and read the
 message from that inbox. The map then records two observations: the original
 customer recipient and content, and the delivered message at the test destination.
-The [email explanation](/writing/functional-acceptance-testing-at-the-boundary/#the-email-problem-and-the-two-ways-to-handle-it)
+The email explanation in [Functional Acceptance Testing at the Boundary](/writing/functional-acceptance-testing-at-the-boundary/#the-email-problem-and-the-two-ways-to-handle-it)
 shows why both matter.
 
-The [Place Order obligation map](/writing/knowing-which-scenarios-a-feature-requires/#place-order-obligation-map) records the feature-level
-requirements and the detailed AC-01 connections. The [complete walkthrough](/writing/one-order-every-obligation/)
+The [Place Order obligation map](#place-order-obligation-map) records the feature-level
+requirements and the detailed AC-01 connections. [One Order, Every Obligation](/writing/one-order-every-obligation/)
 shows the test and the mechanisms behind those connections.
-The [Customer Registration map](/writing/knowing-which-scenarios-a-feature-requires/#customer-registration-obligation-map) applies the same
+The [Customer Registration map](#customer-registration-obligation-map) applies the same
 review to its 25 BR/AC identifiers and records the expected observations for its no-return operation.
 
 ## Review the arrangement as carefully as the expectation
@@ -398,7 +398,7 @@ checks recorded above.
 
 ### Reading the evidence together
 
-Use [the complete walkthrough](/writing/one-order-every-obligation/) for the full
+Use [One Order, Every Obligation](/writing/one-order-every-obligation/) for the full
 test, composite method, supporting techniques, and recorded selected-run results.
 Use the feature specification for the intended outcomes and production source for
 structural facts. A passing selected run records execution in that environment.
@@ -459,11 +459,27 @@ has been executed.
 
 ### Follow no-return success into its actual state
 
-The accepted-registration comparison follows the recorded values all the way into the stored customer:
+After RegisterCustomerAsync completes, the test independently counts customers
+for the reserved email and reads the stored customer. It passes those actuals
+and the arranged expectation to the accepted-registration asserter:
 
+<!-- Listing source: tests/MeridianOrdering.Tests/Acceptance/DomainFacade/TestRegisterCustomerExpectedPaths.cs; revision: 501e097f66b884615f517c5252d1ab719709f421; excerpt: accepted-registration actuals and comparison -->
 
+```csharp
+int actualCustomerCount = DataManagerForTest.CountCustomersByEmail(_expectedRegistrationEmail);
+var actualRegisteredCustomer = DataManagerForTest.GetRegisteredCustomer(_expectedRegistrationEmail);
+var expectedRegistrationWindowEndUtc = DateTime.UtcNow;
 
-
+// Assert - every accepted-registration obligation, reported together: exactly
+// one customer recorded, every provided value held (email in its lowercase
+// form), and the system-added identifier, Active status, and registration time
+AsserterAcceptedRegistration.AssertAllAcceptedRegistrationObligationsAreMet(
+    expectedRegisteredCustomer: expectedRegisteredCustomer,
+    actualCustomerCount: actualCustomerCount,
+    actualRegisteredCustomer: actualRegisteredCustomer,
+    expectedRegistrationWindowStartUtc: expectedRegistrationWindowStartUtc,
+    expectedRegistrationWindowEndUtc: expectedRegistrationWindowEndUtc);
+```
 
 Its helper compares email, names, company, status, optional fields, and opt-in.
 The aggregate then checks a nonblank customer identifier and registration time
@@ -483,4 +499,4 @@ was part of a business maximum that the source explicitly does not define.
 
 ---
 
-[Previous article](/writing/functional-acceptance-testing-at-the-boundary/) | [Series contents](/acceptance-testing/) | [Next article](/writing/one-order-every-obligation/)
+Previous: [Functional Acceptance Testing at the Boundary](/writing/functional-acceptance-testing-at-the-boundary/) | [Series contents](/acceptance-testing/) | Next: [One Order, Every Obligation](/writing/one-order-every-obligation/)

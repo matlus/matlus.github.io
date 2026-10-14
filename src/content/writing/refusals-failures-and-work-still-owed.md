@@ -152,7 +152,7 @@ public static void AssertLeavesNoTrace(
 Its three checks are order count, correlated broker observation, and captured
 email count. It does not independently count order lines or messaging-state rows.
 Read helper bodies when judging assertion depth. The
-[rollback scenario](/writing/testing-against-real-infrastructure/#verify-rollback-after-the-real-transaction-starts)
+rollback scenario in [Testing Against Real Infrastructure](/writing/testing-against-real-infrastructure/#verify-rollback-after-the-real-transaction-starts)
 separately reads counts for all affected tables.
 
 The complete refused-path class
@@ -357,7 +357,7 @@ the forms people use to investigate incidents.
 Safe diagnostics are also requirements. The email response-body scenarios verify
 bounded reads, bounded excerpts, Unicode integrity, and absence of credential
 fragments. A mid-body read failure must preserve the already known response
-classification. The [Test Mediator article](/writing/the-test-mediator-and-the-transport-spy/#observe-bytes-consumed-when-bounded-reads-matter)
+classification. [The Test Mediator and the Transport Spy](/writing/the-test-mediator-and-the-transport-spy/#observe-bytes-consumed-when-bounded-reads-matter)
 shows how the test observes actual consumption.
 
 Unexpected defects should remain visible. Catching a known operational failure
@@ -367,4 +367,4 @@ diagnostic obligations it implements.
 
 ---
 
-[Previous article](/writing/the-test-mediator-and-the-transport-spy/) | [Series contents](/acceptance-testing/) | [Next article](/writing/idempotency-and-concurrent-requests/)
+Previous: [The Test Mediator and the Transport Spy](/writing/the-test-mediator-and-the-transport-spy/) | [Series contents](/acceptance-testing/) | Next: [Idempotency and Concurrent Requests](/writing/idempotency-and-concurrent-requests/)
