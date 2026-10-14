@@ -10,6 +10,11 @@ complete metadata, assets and publication checks. Original blog articles and
 their published copies remain protected. GitHub deployment repeats automated
 checks rather than the editorial sessions.
 
+Article edits preserve the exact `datePublished` and `dateModified` values and
+whether each field exists. Add neither field when absent. Keep displayed dates
+and homepage ordering stable; editorial revision history belongs in Git and the
+review receipt.
+
 ## Blog voice and teaching flow
 
 Use the [blog-writing skill](../.agents/skills/blog-writing/SKILL.md) for every

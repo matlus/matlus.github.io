@@ -149,3 +149,33 @@ typography. The workflow PR's final diff contains no article or deployment chang
 
 Local trial records are retained at
 `D:/Source/Workspaces/matlus-article-publication-workflow-2026-10-13/verification/`.
+
+## Date-preservation follow-up
+
+Shiv requested that article edits preserve both publication and update dates,
+including the absence of either field. The workflow and revision/comparison
+prompts now state this explicitly. The previous general instruction to record
+editorial work in dateModified was removed. Revision history remains in Git.
+
+A fresh revision session applied the same small, supported Score clarification
+to five isolated Jev copies: both dates present and equal, dates present but
+different, no update date, no publication date, and neither date present.
+All five candidates changed prose while preserving their complete frontmatter
+exactly. Copies without the required publication field stayed outside the public
+content collection; the schema was unchanged.
+
+A separate fresh comparison checked those five pairs plus four deliberately
+altered candidates. It identified all four date regressions: adding an absent
+update date, adding an absent publication date, changing an existing update date,
+and removing an existing update date. It found no regression in the five
+date-preserving revisions. These are focused examples, not a general detection
+guarantee.
+
+Candidate writing audits found no new flags; two existing copy advisories were
+retained as substantive distinctions in unchanged prose. All six repository
+publication checks passed again. The homepage HTML was byte-identical before
+and after the build, and the follow-up diff contains no public article, asset,
+schema, sorting or deployment changes. The cold comparison correctly left
+rendered date inspection pending because its packet contained no rendered pages.
+The date-trial inputs, outputs and exact comparisons are retained under
+`verification/date-preservation/` in the external workspace above.
