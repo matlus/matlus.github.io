@@ -5,7 +5,7 @@ description: >-
   Expense totals need verifiable source coverage and reproducible calculations.
   Two prompts show how parsing, category rules, refunds, and code shape the evidence.
 datePublished: 2026-09-30
-dateModified: 2026-10-13
+dateModified: 2026-09-30
 tags:
   - verified-not-trusted
   - verification

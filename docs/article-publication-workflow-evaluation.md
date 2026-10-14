@@ -141,3 +141,8 @@ prompts passed the professional-writing audit with zero flags; the handoff's
 three existing review flags were retained in their historical context.
 
 The publication PR records its exact merge commit and deployment verification.
+
+During adoption, PRs #87 and #88 landed the approved typography and expense-series
+date policy on `main`. Both changes were retained when resolving the handoff-note
+conflict. Candidate rendering and repository checks were refreshed with that
+typography. The workflow PR's final diff contains no article or deployment changes.

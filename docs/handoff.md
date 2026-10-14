@@ -25,6 +25,34 @@ Later article work can use the retained findings; do not apply trial candidates
 as an automatic publication sweep. Deferred draft cleanup remains untouched.
 GitHub deploys repeat automated checks and do not rerun editorial model sessions.
 
+## Expense Analysis series dates, October 13, 2026
+
+Shiv requested that the four-part series retain its original publication dates
+and appear newest part first on the homepage. Each part's `dateModified` now
+matches its `datePublished`, suppressing the updated label and restoring the
+relative order Four, Three, Two, One. Part Four already had matching dates.
+The dates are September 30, October 6, October 11 and October 12, respectively.
+Later revision history remains in Git; preserve this owner-approved date policy
+when editing this series. Other articles retain the existing homepage rule of
+sorting by the later publication or update date.
+
+## Shared Google typography, October 13, 2026
+
+Shiv approved applying the Gemini typography experiment across the website and
+publishing through commit, push, PR and merge. The approved version uses the
+full article width with consistent left and right boundaries for paragraphs,
+headings, callouts, tables and code fences. The hero and body share a left edge.
+
+The shared fonts are self-hosted Google Sans Flex and Google Sans Code. Body
+text is 17px with a 24px line height and 16px paragraph gaps. Article headings
+are 20px with a 24px line height, 40px above and 8px below. Code text is 15px.
+The Flex shape settings and font provenance are recorded in
+[the typography reference](typography.md). The style guide reflects these rules.
+
+Article and chapter prose, code examples, metadata and images are preserved.
+Publication uses an isolated checkout to retain the primary checkout's drafts
+and artwork. The publication PR records checks and deployment verification.
+
 ## Expense Analysis, Part Three teaching revision, October 13, 2026
 
 Shiv approved revising Part Three and publishing through commit, push, PR and
