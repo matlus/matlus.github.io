@@ -99,9 +99,42 @@ evaluation must not become a claim that an evaluation was performed.
 Apply description and tag changes without altering either date field or adding
 a missing one. Recheck date preservation before committing.
 
-Follow the image guide for required hero and card assets; keep approved artwork
-unless replacement is authorized. Run the complete
+### Hero and listing card
+
+Treat the article hero and its listing card as separate deliverables. Once the
+title and hero are settled, run
+[the card generation prompt](../prompts/generate-article-card.md) with the approved
+hero as its image reference. Measure the source and derive the 1200 × 500 card
+at its own 12:5 ratio. Preserve the scene through outpainting; if its defining
+action remains too small at card size, recompose that action using the hero as
+reference while keeping every person and meaningful companion. Record the reason.
+A hero already at 12:5 can use a direct export.
+Follow [the image guide](image-and-diagram-guide.md) and preserve the source hero.
+For new artwork, attach its approved brightness and colour reference. Compare
+the hero and card as a pair for consistent saturation and light after export.
+
+Save the complete generation brief, refinements, measured source/output dimensions
+and export method beside the card. Inspect the actual full card with its title
+and description at about 366 × 153 image pixels in the desktop grid and at phone
+widths. Check recognizable subjects, complete faces and hands, defining objects,
+scene relationships and legibility. Compare the cast with the hero: every person
+and meaningful companion must remain. Correct stretching, missing subjects, harmful
+cropping or unreadable composition before publishing. File dimensions and a
+nonempty prompt alone do not establish a usable card.
+
+For an existing article, first check its approved companion and saved prompt.
+Keep approved artwork when it still passes this inspection; editorial changes
+alone do not require generating new images. Inspect the card again when the
+title, image or listing layout changes. Record the hero/card asset names,
+derivation method and rendered inspection in the publication receipt.
+
+### Automated checks
+
+Run the complete
 publication checks in [AGENTS.md](../AGENTS.md), including both writing audits.
+The build validates companion dimensions and prompts, then checks that both the
+homepage and Writing index render companion cards. Visual inspection remains a
+separate required check.
 Review all flags in context. Resolve consequential evidence conflicts before
 publication, or state a justified scope limitation in the relevant explanation.
 Keep unfinished editorial tasks outside published prose.

@@ -2,8 +2,17 @@
 
 Settle the article title and hero first. Read the article and inspect its approved
 hero. Use the built-in image tool with the hero as the edit target. Preserve its
-scene, identities, relationships and subject scale. The owner should not need to
+scene, identities, relationships and subject scale. Keep every person from the
+hero in the card, with the same identities and roles; retain meaningful companions
+such as a robot participating in the action. Record that cast in the brief.
+The owner should not need to
 write the brief.
+
+Match the approved hero's brightness, contrast and saturation. New hero briefs
+use the gently bright, moderately saturated colour guidance specified in
+[the image guide](../docs/image-and-diagram-guide.md#brightness-and-colour-reference).
+Preserve that treatment in the companion and compare the pair after export.
+Keep approved existing palettes unless the owner requests a colour adjustment.
 
 The card export is **1200 x 500**, exact **12:5 (2.4:1)**. Measure the source:
 
@@ -22,6 +31,8 @@ Do not stretch or enlarge an undersized source.
 Use case: faithful outpainting, companion website article-card illustration.
 Edit target: <approved hero, supplied as an image; measured dimensions>.
 Article: <settled title and the important action or relationship>.
+Cast to retain: <every person in the hero, plus meaningful companions; identities,
+count, poses and roles must remain recognizable in the card>.
 Canvas: exact 12:5 (2.4:1) landscape; final export 1200 x 500 pixels.
 Generate at least this resolution, ideally 1944 x 810, for downsampling.
 Geometry: preserve the complete original as a centered <width x height> region
@@ -31,6 +42,9 @@ subject sizes, faces, poses, working hands, objects and important relationships.
 Continue only the environment at the new edges, matching its perspective,
 textures, linework and existing palette. Keep sparse backgrounds sparse and
 extend edge-crossing forms naturally.
+Colour and light: preserve the approved hero's brightness, contrast, saturation,
+natural skin tones, warm hair colour and luminous paper. Keep rich accents and
+fine ink detail; avoid a duller grey/brown wash, clipped highlights or neon colours.
 Avoid: cropping, stretching, zooming out within the retained region, rearranging
 subjects, simplifying the central scene, invented people, new focal objects,
 new labels, lettering, logos, watermarks, decorative borders or padding bands.
@@ -42,8 +56,35 @@ Inspect the generated image. Prompted geometry is a request; a generative edit
 may redraw details. Compare its people, objects, relationships and scale with
 the source. Reject missing subjects, distorted anatomy or changed meaning.
 If faithful outpainting remains unreadable at card size, recompose the strongest
-action using the hero as reference and record why the exception was needed.
+action using the hero as reference, retaining every person and meaningful
+companion. Reduce empty space and peripheral clutter before changing the group's
+framing. Record why the exception was needed.
 Previously approved card compositions can remain.
+
+For a closer composition, keep the same situation as well as the same cast.
+Retain the recognizable environment, important surrounding props and the activity
+connecting the people. Simplify peripheral detail while preserving those anchors.
+The Breadcrumbs hero/card pair is an approved example: the wider hero establishes
+the workshop, while the card brings the woman, robot and inspected document closer.
+
+Use this brief when recomposing:
+
+```text
+Use case: companion article-card composition, using the approved hero as reference.
+Article: <settled title and defining activity>.
+Canvas: exact 12:5 landscape, final export 1200 x 500; generate at sufficient
+resolution for downsampling.
+Cast: retain <all people and meaningful companions>, their identities, relative
+physical scale, expressions, poses and roles. Keep complete heads and working hands
+comfortably inside the frame. Make the shared activity readable at 366 x 153.
+Situation: retain <recognizable setting and important surrounding props>. Bring
+the complete group and its work closer together within that same environment.
+Reduce empty space and peripheral clutter while preserving the defining objects
+and relationships. The result should look like a closer view of the same situation.
+Appearance: match the approved hero's ink style, palette, brightness and saturation.
+Avoid missing or invented people, merged bodies, changed activity, a new setting,
+cut-off heads or hands, stretching, lettering, logos, watermark and padding bands.
+```
 
 Measure the returned dimensions; regenerate if export would require enlargement
 or crop important content. Keep the source hero unchanged. Export with:
