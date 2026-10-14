@@ -1,5 +1,15 @@
 # Writing guide
 
+## Article publication workflow
+
+For new articles and substantive edits, follow the
+[article publication workflow](article-publication-workflow.md): draft with the
+blog-writing skill, review teaching and evidence in a fresh session, adjudicate
+and revise, independently check the revision, inspect the rendered page, then
+complete metadata, assets and publication checks. Original blog articles and
+their published copies remain protected. GitHub deployment repeats automated
+checks rather than the editorial sessions.
+
 ## Blog voice and teaching flow
 
 Use the [blog-writing skill](../.agents/skills/blog-writing/SKILL.md) for every
@@ -10,8 +20,9 @@ opinions and purposeful questions. Pronouns follow the context.
 
 The [recovered Matlus archive](source-material/matlus-wayback/README.md) contains
 53 original articles as writing samples and source material. Read a relevant
-sample when preparing a substantial draft. Preserve the archive and make
-editorial changes in publication copies.
+sample when preparing a substantial draft. Preserve the archive and its existing
+publication copies. Historical article edits require explicit owner direction
+for that article and stay outside automatic revision sweeps.
 
 ## Standalone articles
 

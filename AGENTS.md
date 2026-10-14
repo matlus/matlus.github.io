@@ -14,13 +14,22 @@ decisions, and the reasoning behind choices that look arbitrary without it.
 
 ## Standing rules
 
+**New articles and substantive edits follow the
+[article publication workflow](docs/article-publication-workflow.md).**
+It sequences drafting with the blog-writing skill, fresh-session teaching and
+evidence review, verified revision, rendered inspection and publication checks.
+The review is a separate step. Protect Shiv's original blog articles and their
+published copies; this workflow does not authorize rewriting them. GitHub
+deployment runs automated checks and does not repeat editorial model sessions.
+
 **Every website article and article edit must use the
 [blog-writing skill](.agents/skills/blog-writing/SKILL.md), regardless of source.**
 This includes original writing and articles derived from transcripts, notes or code.
 The skill preserves Shiv's voice and teaching flow. It includes the shared clarity
 principles and adds guidance from the 53 recovered originals in
-`docs/source-material/matlus-wayback/`. Keep those originals unchanged; edit
-publication copies. Preserve opinions and purposeful questions in context.
+`docs/source-material/matlus-wayback/`. Keep those originals and their existing
+publication copies unchanged unless Shiv explicitly authorizes an edit to a
+particular historical article. Preserve opinions and purposeful questions in context.
 Other site copy uses the professional-writing skill, which remains unchanged.
 Run the applicable writing audit and `tools/audit-copy.py` on authored copy.
 Shiv specifically objects to the antithesis tic ("it's not
