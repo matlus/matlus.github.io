@@ -1,0 +1,25 @@
+/* Self-hosted Latin subsets. Provenance and licenses: docs/typography.md. */
+@font-face {
+  font-family: 'Google Sans Flex';
+  src: url('/fonts/google-sans-flex-latin.woff2') format('woff2');
+  font-weight: 100 1000;
+  font-stretch: 25% 151%;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Google Sans Code';
+  src: url('/fonts/google-sans-code-latin.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Google Sans Code';
+  src: url('/fonts/google-sans-code-italic-latin.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
