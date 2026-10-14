@@ -5,7 +5,7 @@ description: >-
   Imperative Python controls expense analysis and verifies model contributions through source evidence,
   reconciliation, and exact calculations. Models handle bounded judgments.
 datePublished: 2026-10-06
-dateModified: 2026-10-13
+dateModified: 2026-10-06
 hero: verified-not-trusted-expense-analysis-part-two
 repositories:
   - label: Expense Analysis Workflow
