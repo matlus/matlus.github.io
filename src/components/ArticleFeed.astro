@@ -40,14 +40,17 @@ const { posts, pageSize = 6 } = Astro.props;
 
 <script>
   class ArticleFeed extends HTMLElement {
+    private resizeObserver?: ResizeObserver;
+
     connectedCallback() {
       const items = Array.from(this.querySelectorAll<HTMLElement>('[data-feed-item]'));
+      const results = this.querySelector<HTMLElement>('[data-feed-results]');
       const controls = this.querySelector<HTMLElement>('[data-feed-paging]');
       const previous = this.querySelector<HTMLButtonElement>('[data-feed-previous]');
       const next = this.querySelector<HTMLButtonElement>('[data-feed-next]');
       const status = this.querySelector<HTMLElement>('[data-feed-status]');
       const size = Number(this.dataset['pageSize']);
-      if (!controls || !previous || !next || !status || !Number.isInteger(size) || size < 1 || !items.length) return;
+      if (!results || !controls || !previous || !next || !status || !Number.isInteger(size) || size < 1 || !items.length) return;
 
       let page = 0;
       const pages = Math.ceil(items.length / size);
@@ -61,22 +64,55 @@ const { posts, pageSize = 6 } = Astro.props;
       const move = (direction: number) => {
         page = Math.max(0, Math.min(pages - 1, page + direction));
         showPage();
-        this.scrollIntoView({ block: 'start', behavior: 'instant' });
       };
       previous.addEventListener('click', () => move(-1));
       next.addEventListener('click', () => move(1));
       showPage();
       controls.hidden = pages <= 1;
+
+      if (pages > 1) {
+        // Reserve each row's tallest card across batches, including empty rows
+        // on the last page. Measure synchronously so other batches never paint.
+        let measuredWidth = 0;
+        const sizeRows = () => {
+          measuredWidth = results.getBoundingClientRect().width;
+          results.style.gridTemplateRows = '';
+          results.style.alignItems = 'start';
+          items.forEach((item) => { item.hidden = false; });
+          const columns = getComputedStyle(results).gridTemplateColumns.split(' ').length;
+          const heights = Array<number>(Math.ceil(size / columns)).fill(0);
+          items.forEach((item, index) => {
+            const row = Math.floor((index % size) / columns);
+            heights[row] = Math.max(heights[row] ?? 0, Math.ceil(item.getBoundingClientRect().height));
+          });
+          results.style.alignItems = '';
+          results.style.gridTemplateRows = heights.map((height) => `${height}px`).join(' ');
+          showPage();
+        };
+        sizeRows();
+        this.resizeObserver = new ResizeObserver(() => {
+          if (results.getBoundingClientRect().width !== measuredWidth) sizeRows();
+        });
+        this.resizeObserver.observe(results);
+        void document.fonts.ready.then(() => { if (this.isConnected) sizeRows(); });
+      }
+    }
+
+    disconnectedCallback() {
+      this.resizeObserver?.disconnect();
     }
   }
   if (!customElements.get('article-feed')) customElements.define('article-feed', ArticleFeed);
 </script>
 
 <style>
-  article-feed { display: block; scroll-margin-top: var(--anchor-offset); }
+  article-feed { display: block; overflow-anchor: none; }
   [hidden] { display: none !important; }
   .feed-paging { display: flex; flex-wrap: wrap; gap: var(--space-s); justify-content: center; align-items: center; margin-top: var(--space-l); }
-  .feed-paging p { margin: 0; font-size: var(--step--1); color: var(--color-text-muted); }
+  .feed-paging p { width: 36ch; max-width: 100%; margin: 0; text-align: center; font-size: var(--step--1); font-variant-numeric: tabular-nums; color: var(--color-text-muted); }
   button { font: inherit; font-size: var(--step--1); color: var(--color-accent); background: var(--color-surface); border: 1px solid var(--color-border-strong); border-radius: var(--radius); padding: var(--space-xs) var(--space-s); cursor: pointer; }
   button:disabled { opacity: 0.45; cursor: default; }
+  @media (max-width: 48rem) {
+    .feed-paging p { flex-basis: 100%; order: -1; }
+  }
 </style>
