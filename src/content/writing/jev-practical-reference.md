@@ -8,6 +8,7 @@ datePublished: 2026-09-25
 dateModified: 2026-09-25
 hero: jev-practical-reference
 tags:
+  - applied-ai-engineering
   - jev
   - llm-systems
   - model-evaluation

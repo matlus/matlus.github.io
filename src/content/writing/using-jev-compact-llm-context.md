@@ -8,6 +8,7 @@ datePublished: 2026-09-25
 dateModified: 2026-09-25
 hero: using-jev-compact-llm-context
 tags:
+  - applied-ai-engineering
   - jev
   - llm-systems
   - context-compaction

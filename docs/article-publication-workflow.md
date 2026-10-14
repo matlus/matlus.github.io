@@ -96,6 +96,15 @@ Use the existing independent
 on the final article.
 Check proposed metadata against the article before accepting it. A recommended
 evaluation must not become a claim that an evaluation was performed.
+Choose tags from the article's substance, even when their exact labels do not
+appear in its prose. Broad subjects such as Applied AI Engineering can be evident
+in the application design, model decisions, workflow control and evaluation it
+teaches. Language tags can also come from an implementation substantially
+explained in a linked public repository, after inspecting the relevant source.
+Record supporting passages or source paths in the metadata assessment; a link or
+incidental mention alone is insufficient. Follow the extraction prompt's scope
+rules for umbrella, language and provider tags. Preserve article prose rather
+than inserting tag phrases to satisfy keyword matching.
 Apply description and tag changes without altering either date field or adding
 a missing one. Recheck date preservation before committing.
 

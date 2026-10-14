@@ -75,6 +75,14 @@ for the sibling.
 A tag names a subject a reader might come looking for. The vocabulary is
 `src/data/tags.ts`. Read each tag's description as well as its slug.
 
+Choose tags from what the complete post teaches, rather than requiring the tag's
+exact words to appear in the text. A post can teach Applied AI Engineering through
+its application design, model decisions, workflow control or evaluation without
+using that phrase. This umbrella covers engineering AI applications and workflows;
+using AI to develop software alone belongs under `ai-assisted-development`.
+Ground each association in substantial explanations or worked examples. Do not
+add keywords to article prose just to justify a tag.
+
 There are three kinds of tag, each with its own rule.
 
 **Subject tags: two to five.** A subject the post is substantially about, meaning it
@@ -113,11 +121,23 @@ budget.
   `strategy-pattern`.
 
 **Language tags.** `python`, `csharp` or `typescript` for each language the post has
-code in. These do not count toward the subject budget either.
+code in, or whose implementation it substantially explains in a linked public
+repository. For a repository-based association, inspect the relevant source and
+record the file paths supporting it. The language name need not appear in the
+prose. A repository link, its language statistics or incidental files alone do
+not establish that the post teaches that language. These tags do not count toward
+the subject budget either.
+
+**Provider and integration tags.** Apply these when the post substantially teaches
+the provider's API, configuration or integration behavior. A model comparison or
+an example that happens to use a provider does not earn its provider tag.
 
 **Procedure for every candidate tag.**
 
 1. List the candidate subjects and patterns in plain words.
+   For each association, identify the explanation, worked example or inspected
+   repository implementation that supports it, even when the tag's wording is
+   absent from the post.
 2. Use an existing tag when one covers the candidate. A tag covers it when a reader
    following that tag would expect to find this post.
 3. For a candidate no existing tag covers, run

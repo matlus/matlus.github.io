@@ -12,6 +12,8 @@ repositories:
     url: https://github.com/matlus/Analyze-Expenses-Workflow
     context: Python controller, bounded model decisions, and verification for Part Two.
 tags:
+  - applied-ai-engineering
+  - llm-systems
   - verified-not-trusted
   - verification
   - jev
