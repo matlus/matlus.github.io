@@ -1,5 +1,5 @@
 ---
-title: "Pipeline Breadcrumbs"
+title: "Logs and Artifacts: Pipeline Breadcrumbs"
 hero: "pipeline-breadcrumbs-v3-crop"
 description: "Make long-running pipelines explain their work through numbered steps, ordered artifacts and a run manifest. Preserve evidence to investigate exceptions and incorrect results."
 datePublished: 2026-10-05

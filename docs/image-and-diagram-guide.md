@@ -43,8 +43,8 @@ Consistent traits:
 
 - Fine black ink linework and cross-hatching
 - Off-white or warm paper background
-- Mostly monochrome rendering
-- Very limited accent colours: red, orange, blue, green, cyan
+- Detailed ink drawing with warm natural colour
+- A limited palette with richer accents: red, orange, blue, green, cyan
 - Engineering, blueprint, and workshop imagery when it serves the article
 - Slightly retro instructional-manual aesthetic
 - Realistic objects, illustrated rather than photorealistic
@@ -58,6 +58,47 @@ Engines, machinery, gears, testing devices, and blueprints lean toward **industr
 design sketch and patent-style technical illustration**, though more expressive than a
 true patent drawing. Choose the subject from the article, then choose the treatment
 that makes that subject legible.
+
+### Brightness and colour reference
+
+Shiv prefers warm, moderately saturated colour over a dull palette, with brightness
+kept gentle. For new heroes, inspect and attach
+[its hero](../src/assets/heroes/verified-not-trusted-expense-analysis-part-two.webp)
+as a colour reference, aiming for slightly gentler brightness. Use its warm ivory paper, readable
+dark ink, rich brass and copper accents, and warm copper/auburn hair when that hair
+colour belongs to the selected character. Keep skin tones natural and retain fine
+linework and detail in bright areas. Use the reference for colour and light;
+the article determines the scene, people and relationships.
+
+Put that choice in the generation brief. Ask for moderate saturation and clear
+contrast, avoiding a dull grey/brown wash, clipped highlights or neon colours.
+Compare the returned image with the reference at full size and card size.
+Prompt wording guides the result; visual inspection confirms the actual palette.
+
+The card should match its approved hero's brightness, contrast and saturation.
+Compare them directly so generation or export does not leave the card duller.
+Record the colour reference in both prompts. Preserve approved existing images;
+a requested colour adjustment to an existing article covers its hero and card
+as a matched pair and should retain their composition and identities.
+
+### People in companion cards
+
+Keep every person from the approved hero in its card: one person stays one, two
+stay two, and larger groups stay complete. Preserve identities, relative physical
+scale, poses and relationships. Keep meaningful companions such as the Breadcrumbs
+robot when they participate in the action. Record the cast in the card brief and
+compare it with the source after generation.
+
+If a closer composition is needed, reduce empty space and peripheral background
+detail while retaining the complete group and its important work. Keep heads,
+faces and working hands comfortably inside the frame. Reject a derivative that
+drops or merges people, cuts off heads, invents a new person or changes who is
+doing what.
+Keep recognizable surroundings and important nearby props, so the card depicts
+the same situation in a closer view. The approved Breadcrumbs card preserves
+the woman, robot, workbench, inspection and workshop while compressing the wider
+scene. A wide hero and a closer card can have different perspectives while
+remaining visibly connected.
 
 ### Shiv's likeness in scenes
 
@@ -121,8 +162,8 @@ technical explanation with labelled components and relationships.
 
 ```
 Hand-drawn technical editorial illustration, fine pen-and-ink linework and
-cross-hatching, warm ivory paper background, mostly monochrome with sparse selective
-color accents, visible pencil construction marks, slightly retro instructional-manual
+cross-hatching, luminous warm ivory paper, warm natural colours and richer selective
+accents, visible pencil construction marks, slightly retro instructional-manual
 character, sophisticated conceptual metaphor, clean white space, detailed but not
 photorealistic.
 
@@ -131,7 +172,12 @@ Subject: <one concrete scene or action that makes the idea visible>
 People: <cast suited to the subject, or none; when a man is included, use Shiv
 for the principal male character unless another identity is requested>
 References: <attach the saved Shiv portrait when applicable; identify any
-additional image as a style, expression or composition reference>
+additional image as a style, expression or composition reference; attach Expense
+Analysis Part Two as the default colour reference>
+Colour and light: use gently luminous paper, clear dark ink and moderate saturation,
+with rich brass/copper accents and natural skin tones. Keep brightness slightly
+gentler than the reference. Preserve detail
+in highlights; avoid a dull grey/brown wash or neon colours.
 Likeness when applicable: Preserve Shiv's facial proportions, brown eyes, strong
 eyebrows, short salt-and-pepper hair and trimmed peppered beard and mustache.
 Head angle, gaze and expression: <choose these for the action; vary them from

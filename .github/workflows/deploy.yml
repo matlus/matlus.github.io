@@ -50,6 +50,9 @@ jobs:
       - name: External link policy tests
         run: npm run test:links
 
+      - name: Homepage article order tests
+        run: npm run test:feed
+
       - name: Article card validation tests
         run: npm run test:images
 
