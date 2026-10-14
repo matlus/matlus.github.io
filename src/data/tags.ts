@@ -260,6 +260,14 @@ export const TAGS = [
       'guidance, currently illustrated in Python.',
   },
   {
+    slug: 'applied-ai-engineering',
+    label: 'Applied AI Engineering',
+    description:
+      'Designing, implementing and evaluating applications that use AI models. ' +
+      'Workflow control, bounded model judgments and verification determine how ' +
+      'model contributions become reliable application behavior.',
+  },
+  {
     slug: 'llm-systems',
     label: 'LLM Systems',
     description:

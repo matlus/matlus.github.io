@@ -6,6 +6,7 @@ description: >-
 datePublished: 2026-06-19
 dateModified: 2026-10-09
 tags:
+  - applied-ai-engineering
   - prompting
   - verification
   - verified-not-trusted

@@ -15,6 +15,10 @@ repositories:
     url: https://github.com/matlus/Skills-and-Evals
     context: The prompt-based eval suite and recorded results used in Part Three.
 tags:
+  - applied-ai-engineering
+  - ai-workflow-patterns
+  - jev
+  - python
   - verified-not-trusted
   - verification
   - model-evaluation

@@ -12,6 +12,8 @@ repositories:
     url: https://github.com/matlus/Skills-and-Evals
     context: The expense-analysis eval suite, the one-file eval, and recorded results for six models.
 tags:
+  - applied-ai-engineering
+  - ai-workflow-patterns
   - verified-not-trusted
   - verification
   - model-evaluation

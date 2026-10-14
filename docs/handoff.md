@@ -1,5 +1,28 @@
 # Handoff
 
+## Applied AI Engineering tags, October 14, 2026
+
+Shiv approved Applied AI Engineering for AI applications and workflows. Seven
+articles receive it: the two Jev articles, Skills versus Controlled Workflows and
+Expense Analysis Parts One through Four. Existing-tag additions cover LLM Systems
+in Part Two, AI Workflow Patterns in Parts Three and Four, and Jev/Python in Part
+Four. Public source inspection supports Part Four's Python association.
+The [association record](applied-ai-tag-associations.md) carries the evidence,
+nearby exclusions and scope. Article prose, descriptions, dates, URLs and artwork
+remain intact. Shiv authorized commit, push, PR and merge. Publication uses an
+isolated checkout based on current main to preserve unrelated local drafts and
+artwork; the publication PR records final checks and deployment verification.
+The topic hero now includes Shiv and the dark-haired woman from the left of Expense
+Analysis Part One's hero behind its application instrument,
+facing the viewer. Shiv approved the final image at its native 2120 x 742 size,
+with the exact 20:7 ratio and no upscaling. This is a resolution exception to the
+2400 x 840 standard after repeated smaller generation results.
+
+The extraction prompt and publication workflow now select tags from the content's
+meaning, without requiring exact tag words. A language can also be supported by
+an inspected implementation the article substantially explains in a linked public
+repository. The suggested successive AND filtering UI is recorded and deferred.
+
 ## Google Discover previews, issue 94, October 14, 2026
 
 Issue 94 is implemented on the isolated `codex/discover-94` branch, with
