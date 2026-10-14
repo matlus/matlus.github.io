@@ -1,0 +1,2682 @@
+[
+  {
+    "article": "src/content/writing/a-generic-restful-crud-httpclient.md",
+    "hero": "a-generic-restful-crud-httpclient",
+    "source": "src/assets/heroes/a-generic-restful-crud-httpclient-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "0bc660c8193e16d97fca7188ead95df5a4d8ebddb4a67c699b17ddccf6db6c4b",
+    "preview": "src/assets/heroes/a-generic-restful-crud-httpclient-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 190596,
+    "previewSha256": "ddae7eeb6388edc8ad1e64f22235ed4c00d4c6e1e42f326e62b2d8bc03d82e93",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/a-generic-restful-crud-httpclient-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/a-suite-the-team-can-keep-trusting.md",
+    "hero": "a-suite-the-team-can-keep-trusting",
+    "source": "src/assets/heroes/a-suite-the-team-can-keep-trusting-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "9afd5064d64b128ac1f5e2c56fddb5b354df483286d8acc0571ddea33be35c88",
+    "preview": "src/assets/heroes/a-suite-the-team-can-keep-trusting-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 99506,
+    "previewSha256": "ef452ea1c801f13972398fce99f3f11105c86fee3edf731fdaf0e8fc83160a37",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/a-suite-the-team-can-keep-trusting-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/abstraction-in-software-design-examples.md",
+    "hero": "abstraction-in-software-design-examples",
+    "source": "src/assets/heroes/abstraction-in-software-design-examples-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "144801ce79af3943f6aa69d5dd32e21c62d77ed7cd2dd6d9c56879a4f9de2fb6",
+    "preview": "src/assets/heroes/abstraction-in-software-design-examples-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 218224,
+    "previewSha256": "0455294d05b511a24c07d6c2b55418f03dbaba415e2d161d5742514e1af334d2",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/abstraction-in-software-design-examples-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/abstraction-in-software-design.md",
+    "hero": "abstraction-in-software-design",
+    "source": "src/assets/heroes/abstraction-in-software-design-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "63272a94b7766fcb5954f0f914ad90aeae3de1eca78c2db470e627a45789b995",
+    "preview": "src/assets/heroes/abstraction-in-software-design-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 219808,
+    "previewSha256": "7310ee21714d10bd3cd7b06b31550a792bde66bd84bc857432b0e3c08c0893d3",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/abstraction-in-software-design-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/adapter-pattern-rabbitmq.md",
+    "hero": "adapter-pattern-rabbitmq",
+    "source": "src/assets/heroes/adapter-pattern-rabbitmq-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "00d18a61bc7e41221862d831bb4b73d4cd589b991a42ea307dc19a76e17accc6",
+    "preview": "src/assets/heroes/adapter-pattern-rabbitmq-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 270914,
+    "previewSha256": "71213e8f1f45122a8cd3a11686726f26930fcd6a7c5987a0747ae52fe02018cb",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/adapter-pattern-rabbitmq-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/ai-native-sdlc.md",
+    "hero": "ai-native-lifecycle",
+    "source": "src/assets/heroes/ai-native-lifecycle-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "0b4efeb9227f397c196cf2de021aa71fa3e93f261a3b41d43ed7c59af6272470",
+    "preview": "src/assets/heroes/ai-native-lifecycle-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 81268,
+    "previewSha256": "67e9432253d3454c4471a6ff62126b5cdb7485ffe34081fe2f2b8da6aaaab83e",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/ai-native-lifecycle-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/always-use-as-operator-no-thank-you.md",
+    "hero": "always-use-as-operator-no-thank-you",
+    "source": "src/assets/heroes/always-use-as-operator-no-thank-you-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "d3d3a7f0c99235796b90feddae434ddc2b346fd1a25deec6c8ebd0f37c237d31",
+    "preview": "src/assets/heroes/always-use-as-operator-no-thank-you-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 246984,
+    "previewSha256": "0a6440c807472aaf04f23f2cde17bc5c925ecaa2ea2e7f69a147d3b26993747c",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/always-use-as-operator-no-thank-you-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/arranging-scenarios-that-stay-true.md",
+    "hero": "arranging-scenarios-that-stay-true",
+    "source": "src/assets/heroes/arranging-scenarios-that-stay-true-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "777e7db16b5afa25d21a6bd917fa547592de1132b2b1b18b2f5ed5a93efadcb3",
+    "preview": "src/assets/heroes/arranging-scenarios-that-stay-true-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 156754,
+    "previewSha256": "d91aae6a9cc435b22f50c8b7c684135ccf96bbe8e8bc50cf92b3495d6f3b9f23",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/arranging-scenarios-that-stay-true-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/as-net-web-api-supporting-restful-crud-operations.md",
+    "hero": "as-net-web-api-supporting-restful-crud-operations",
+    "source": "src/assets/heroes/as-net-web-api-supporting-restful-crud-operations-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "f610eeef0c2af6a97dafee1309889a4537e03df436c581b701c99c2c5d053d82",
+    "preview": "src/assets/heroes/as-net-web-api-supporting-restful-crud-operations-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 107972,
+    "previewSha256": "67d68d375f7529964e0eb03043d4f5f29fd9edc9e9e9c9f68f4edbf96c8aa240",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/as-net-web-api-supporting-restful-crud-operations-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/asp-net-mvc3-razor-view-engine.md",
+    "hero": "asp-net-mvc3-razor-view-engine",
+    "source": "src/assets/heroes/asp-net-mvc3-razor-view-engine-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "46c1c5c3272eb58827a2c6f0dce38d7abe4f434d7c32f49edfa9449ade6e077d",
+    "preview": "src/assets/heroes/asp-net-mvc3-razor-view-engine-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 161644,
+    "previewSha256": "6b2691463e07101493b80f4b019b0708590a2753dbf470090cdb0ee45f3da2a1",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/asp-net-mvc3-razor-view-engine-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/asp-net-response-redirect-performance-issue.md",
+    "hero": "asp-net-response-redirect-performance-issue",
+    "source": "src/assets/heroes/asp-net-response-redirect-performance-issue-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "b49940780cdac4754e0e3ad2cb362de78b0e903f146aa355cf6966a54db3a449",
+    "preview": "src/assets/heroes/asp-net-response-redirect-performance-issue-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 105600,
+    "previewSha256": "4241991e9855e9424eee940d93b72bef238897dd97ce726b2d69598fc8580f57",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/asp-net-response-redirect-performance-issue-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/asp-net-web-api-with-webforms.md",
+    "hero": "asp-net-web-api-with-webforms",
+    "source": "src/assets/heroes/asp-net-web-api-with-webforms-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "961a5a8a1c22bee4c30fad212f304b395574f7b9480ccdbb71c248a4fe5929f0",
+    "preview": "src/assets/heroes/asp-net-web-api-with-webforms-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 134468,
+    "previewSha256": "521e4e7664d4da27f4e0a00b542416c50432688201fc6fb90aecb9ff622e8d27",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/asp-net-web-api-with-webforms-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/aspnet-core-web-api-by-hand.md",
+    "hero": "aspnet-core-web-api-by-hand",
+    "source": "src/assets/heroes/aspnet-core-web-api-by-hand-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "60a5818c50f364f2f3e5a6977097297e73dd65c17c1706e8acf980ac5f03fbdb",
+    "preview": "src/assets/heroes/aspnet-core-web-api-by-hand-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 237470,
+    "previewSha256": "51880c439b85a3e422768842c8b8ae0b96607832e32f5ac202e9ec0fbe0f3815",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/aspnet-core-web-api-by-hand-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/assertions-that-verify-the-whole-outcome.md",
+    "hero": "assertions-that-verify-the-whole-outcome",
+    "source": "src/assets/heroes/assertions-that-verify-the-whole-outcome-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "16464b17e38fdd94c547adbe3aee4da8670f5542f860a508dab12de5a7b5356b",
+    "preview": "src/assets/heroes/assertions-that-verify-the-whole-outcome-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 135466,
+    "previewSha256": "9073c3e0df294485ce7016f376df970fca712e1c4500030c92ddd0d0b5caef7f",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/assertions-that-verify-the-whole-outcome-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/async-await-in-csharp.md",
+    "hero": "async-await-in-csharp",
+    "source": "src/assets/heroes/async-await-in-csharp-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "2a53f7b4f858268947f13083c3c4922cb1f045222fccd29b3101463aa3c5c35f",
+    "preview": "src/assets/heroes/async-await-in-csharp-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 42122,
+    "previewSha256": "76c4de24cc6f6ef7efb7dfd30739477693d46c611e6961fb01b57ad04992a52d",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/async-await-in-csharp-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/azure-startup-tasks-running-as-administrator.md",
+    "hero": "azure-startup-tasks-running-as-administrator",
+    "source": "src/assets/heroes/azure-startup-tasks-running-as-administrator-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "7fb0652be13798bd7c7334e1a1f22f6f9c4a302bc21a81f2b6ec4f9c825142fa",
+    "preview": "src/assets/heroes/azure-startup-tasks-running-as-administrator-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 222110,
+    "previewSha256": "cda6186929b8bf2bbc482d104f467524fd93660fe9f8badc26ab18509ab239ed",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/azure-startup-tasks-running-as-administrator-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/benchmarking-dotnet-applications.md",
+    "hero": "benchmarking-dotnet-applications",
+    "source": "src/assets/heroes/benchmarking-dotnet-applications-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "274a902002da4b08cd998fdf08d2a3579d4f1d792c66196532b9294ff9e8bcce",
+    "preview": "src/assets/heroes/benchmarking-dotnet-applications-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 227964,
+    "previewSha256": "bca07971c7b9d3f02b58a080a9d8fe169d8a4932871215cc94d3333b798d888b",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/benchmarking-dotnet-applications-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/builder-pattern-csharp-expressions.md",
+    "hero": "builder-pattern-csharp-expressions",
+    "source": "src/assets/heroes/builder-pattern-csharp-expressions-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "bcf1219dee60f03003f08a6470e12bd1e41a80257101e4af2fbb63d66c4d971f",
+    "preview": "src/assets/heroes/builder-pattern-csharp-expressions-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 218358,
+    "previewSha256": "f3bd21cb4599f6f5fd664deb55a6427d558cb56f7031551e9a22365136e0fa5e",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/builder-pattern-csharp-expressions-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/c-to-html-syntax-highlighter-using-roslyn.md",
+    "hero": "c-to-html-syntax-highlighter-using-roslyn",
+    "source": "src/assets/heroes/c-to-html-syntax-highlighter-using-roslyn-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "d5c5f477caabc311378eecb0076e94fdc4c961aa5be739c1926cec75f6b08c3d",
+    "preview": "src/assets/heroes/c-to-html-syntax-highlighter-using-roslyn-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 124288,
+    "previewSha256": "f526051801ecd79c1b7a309e7c45a61409e1fb1d50a679354e48b4cbfc7e2a82",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/c-to-html-syntax-highlighter-using-roslyn-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/changetypet-changing-the-type-of-a-variable-in-c.md",
+    "hero": "changetypet-changing-the-type-of-a-variable-in-c",
+    "source": "src/assets/heroes/changetypet-changing-the-type-of-a-variable-in-c-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "31e93b66461e95867b592cadb1ef23560fc21439ed40e85cd02988066ecbb2e2",
+    "preview": "src/assets/heroes/changetypet-changing-the-type-of-a-variable-in-c-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 88956,
+    "previewSha256": "c34a81e1493f3162e96094098add16c1448683933b1cd313bb1b8817c4fd9b51",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/changetypet-changing-the-type-of-a-variable-in-c-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/clean-abstractions-around-libraries.md",
+    "hero": "clean-abstractions-around-libraries-v2",
+    "source": "src/assets/heroes/clean-abstractions-around-libraries-v2-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "b9062e31a334b448c1f6d0e0d572898626f6e3354c743014cc1ee171a4fe25d1",
+    "preview": "src/assets/heroes/clean-abstractions-around-libraries-v2-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 208730,
+    "previewSha256": "7102e8bd8dee521dc40130acca233a57ccf8dfea45754afeceef6938675fa8e8",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/clean-abstractions-around-libraries-v2-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/configuration-provider-design-pattern.md",
+    "hero": "configuration-provider-design-pattern-v2",
+    "source": "src/assets/heroes/configuration-provider-design-pattern-v2-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "c7177b26cbe33414400999dd2481d930ad86e051a2e1db66a9df13c1d1b91a0c",
+    "preview": "src/assets/heroes/configuration-provider-design-pattern-v2-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 50248,
+    "previewSha256": "4f7a8ac0b61c7797c08ffdae95f36644bca068ab638575890ce8584181fb4f49",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/configuration-provider-design-pattern-v2-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/creating-instances-using-inheritance.md",
+    "hero": "creating-instances-using-inheritance",
+    "source": "src/assets/heroes/creating-instances-using-inheritance-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "f0e6bf9ca53403fcab80e354f0433fa6cc76fa9ef50b1f859e82e52d6b235571",
+    "preview": "src/assets/heroes/creating-instances-using-inheritance-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 241390,
+    "previewSha256": "644a4be2c4d260805fb0a10d3317ffd30affdef0f0f8a313aa621f3c61ee09eb",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/creating-instances-using-inheritance-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/cross-domain-restful-crud-operations-using-jquery.md",
+    "hero": "cross-domain-restful-crud-operations-using-jquery",
+    "source": "src/assets/heroes/cross-domain-restful-crud-operations-using-jquery-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "7664df8d96f511b40ff4918a893cf6db76601014286b25f3736b8596279cbf51",
+    "preview": "src/assets/heroes/cross-domain-restful-crud-operations-using-jquery-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 111792,
+    "previewSha256": "e9e41519d26e0c6b6c17038b94180b6b80a14924aafac09266a93af6769b50f0",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/cross-domain-restful-crud-operations-using-jquery-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/csharp-8-async-streams.md",
+    "hero": "csharp-8-async-streams",
+    "source": "src/assets/heroes/csharp-8-async-streams-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "99f4f9cc890364e2d67649711a1d64b5e267c2195e3e00f712b7d82ca121539d",
+    "preview": "src/assets/heroes/csharp-8-async-streams-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 23926,
+    "previewSha256": "11ab72788ec345dc8d82473a0bc113540e50e270ee0bbb3aff51218a122491dc",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/csharp-8-async-streams-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/csharp-constants-default-parameters.md",
+    "hero": "csharp-constants-default-parameters",
+    "source": "src/assets/heroes/csharp-constants-default-parameters-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "42d9eb1d3b838a5664ca2869439ea044d08dfb910234f6159a75c351de9d810e",
+    "preview": "src/assets/heroes/csharp-constants-default-parameters-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 68296,
+    "previewSha256": "d7836eacc77240d0d58f1d17dbdf274d1a068d04053fc89605112c525fbb5880",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/csharp-constants-default-parameters-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/csharp-constructors.md",
+    "hero": "csharp-constructors",
+    "source": "src/assets/heroes/csharp-constructors-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "07627dfb3f6858b38d2db7904eb8bb88459369f372a5f5b6041491c53017143b",
+    "preview": "src/assets/heroes/csharp-constructors-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 52528,
+    "previewSha256": "89ba4c26331453ef7cca238f61404c55d8b97c7b171c31e928ce896dfe6a8c6b",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/csharp-constructors-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/csharp-delegates-higher-order-functions.md",
+    "hero": "csharp-delegates-higher-order-functions-hardware",
+    "source": "src/assets/heroes/csharp-delegates-higher-order-functions-hardware-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "f2cac34e480f0897c458d520693d64656384bebbd54d2826e7a7a5afbd008451",
+    "preview": "src/assets/heroes/csharp-delegates-higher-order-functions-hardware-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 126950,
+    "previewSha256": "b823472894ac0ab1f43f78f09c843a74601f42c891e4e16a8aff94fba2627b53",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/csharp-delegates-higher-order-functions-hardware-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/csharp-for-foreach.md",
+    "hero": "csharp-for-foreach",
+    "source": "src/assets/heroes/csharp-for-foreach-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "23885c97aa56fb4e8a87cb5f9bacf4a86aa8059bc74aee1c8b3b8bf633a8f7fe",
+    "preview": "src/assets/heroes/csharp-for-foreach-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 48060,
+    "previewSha256": "81684a50e7e031d0e692126f3b234cf4dddb4ba66ca8fe9875c843da32016a6b",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/csharp-for-foreach-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/csharp-generics-under-the-hood.md",
+    "hero": "csharp-generics-under-the-hood",
+    "source": "src/assets/heroes/csharp-generics-under-the-hood-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "b1a72c193803f1929ee8430f6fde3287ae3ec962661ec99bc14fb5a963fb5df0",
+    "preview": "src/assets/heroes/csharp-generics-under-the-hood-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 41868,
+    "previewSha256": "166f2c2a9f48de866353b205c1a31bd869547313fd93bb54a1da9a81a447e558",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/csharp-generics-under-the-hood-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/csharp-linq-execution.md",
+    "hero": "csharp-linq-execution-profiler",
+    "source": "src/assets/heroes/csharp-linq-execution-profiler-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "6c7a02b101bf96add6428ca805108e8a8e1e22044e3fb7c756c494cd58cecce2",
+    "preview": "src/assets/heroes/csharp-linq-execution-profiler-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 247260,
+    "previewSha256": "8f04d7c94397c8c691db472dffd61b78fd06c704d4a839a5e43aa521defff26e",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/csharp-linq-execution-profiler-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/csharp-one-to-many-mapping.md",
+    "hero": "csharp-one-to-many-mapping",
+    "source": "src/assets/heroes/csharp-one-to-many-mapping-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "af99ddf7bea4cf97304f72a6b30f3def4ab9d73475d0a0eeb4b0a107ff45ff65",
+    "preview": "src/assets/heroes/csharp-one-to-many-mapping-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 218472,
+    "previewSha256": "11da5d3ccd5e0835ed24fc58fde6480341d373306bc3603963c8fd9a19600905",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/csharp-one-to-many-mapping-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/csharp-static-classes.md",
+    "hero": "csharp-static-classes",
+    "source": "src/assets/heroes/csharp-static-classes-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "568432e0beda1644cd73f8735a7c81440008165863216dae26cad20ed10d26ff",
+    "preview": "src/assets/heroes/csharp-static-classes-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 32486,
+    "previewSha256": "04a34030f2427928ceacd532e36085afc86b73a0597abecdfe393ef3ef347bf1",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/csharp-static-classes-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/csharp-stringbuilder-myth.md",
+    "hero": "csharp-stringbuilder-myth-assembly",
+    "source": "src/assets/heroes/csharp-stringbuilder-myth-assembly-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "e35c2ee729739879ad732bea05d6ff62a540525a61f327311f249759c57ee64c",
+    "preview": "src/assets/heroes/csharp-stringbuilder-myth-assembly-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 260182,
+    "previewSha256": "d8b6d11fba5a1e412ea65d9d7f92ca751c252300a9fbe61bbc5d7bf1ebd60df3",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/csharp-stringbuilder-myth-assembly-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/csharp-value-reference-fundamentals.md",
+    "hero": "csharp-value-reference-fundamentals-shared-object",
+    "source": "src/assets/heroes/csharp-value-reference-fundamentals-shared-object-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "09223044d7b3f00e2e3ee5d013e6382be2bf9eb8345f21c81c36f8ba94d3c707",
+    "preview": "src/assets/heroes/csharp-value-reference-fundamentals-shared-object-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 211878,
+    "previewSha256": "1acf3665a87111795b597dd1820b00b55e733c0914b3aad6da61952af0816695",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/csharp-value-reference-fundamentals-shared-object-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/csharp-valuetuples-deconstruction.md",
+    "hero": "csharp-valuetuples-deconstruction-workbench",
+    "source": "src/assets/heroes/csharp-valuetuples-deconstruction-workbench-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "00fe9ff4411f68cc14615f96d80379be1bc2e6d3fd472ce9366520f84bd6cf8b",
+    "preview": "src/assets/heroes/csharp-valuetuples-deconstruction-workbench-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 237302,
+    "previewSha256": "ac28c3991a3fc863637d4939de035bbc5f0386332d167a81962ce3af944db890",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/csharp-valuetuples-deconstruction-workbench-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/data-access-layer-codegen.md",
+    "hero": "data-access-layer-codegen",
+    "source": "src/assets/heroes/data-access-layer-codegen-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "3361d4ee1c8edeea5c216a35fce071393d625006ad055e1a255c8d9843575361",
+    "preview": "src/assets/heroes/data-access-layer-codegen-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 96134,
+    "previewSha256": "9be77f0a18b143845098fbcf64070cd5d6e4bfa2079f7faa18eae339207ef309",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/data-access-layer-codegen-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/data-parallel-parallel-programming-in-net.md",
+    "hero": "data-parallel-parallel-programming-in-net",
+    "source": "src/assets/heroes/data-parallel-parallel-programming-in-net-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "8a0a2e734eabbf7507728943942ac0f4f28b35994500068d090c6d54209ce983",
+    "preview": "src/assets/heroes/data-parallel-parallel-programming-in-net-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 135670,
+    "previewSha256": "4378bd351bdb848c8b8911ea6fd04bfaf52b50ad293f69f19bc6e467bf0fe6f3",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/data-parallel-parallel-programming-in-net-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/datareader-wrappers-typesafe.md",
+    "hero": "datareader-wrappers-typesafe",
+    "source": "src/assets/heroes/datareader-wrappers-typesafe-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "274f828236756f923e44660b8df53b29d0d9aa3d4a9f7c46ad87f4ffbf6677c4",
+    "preview": "src/assets/heroes/datareader-wrappers-typesafe-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 71750,
+    "previewSha256": "633e7f8c386aab75d34edc95ac39c5f6be8dcd130e491c1ef19557f62536b9e0",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/datareader-wrappers-typesafe-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/delegatinghandler-for-x-http-method-override.md",
+    "hero": "delegatinghandler-for-x-http-method-override",
+    "source": "src/assets/heroes/delegatinghandler-for-x-http-method-override-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "2d611c057163c714ec31736f5858591f896b23c2ba7ad4fd277ce02585b5a220",
+    "preview": "src/assets/heroes/delegatinghandler-for-x-http-method-override-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 139480,
+    "previewSha256": "2a65e6bcff1bf386d6ac9cb02b3baad6842ae4ffdcece5319e35b301cc1d24e3",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/delegatinghandler-for-x-http-method-override-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/dependency-injection-no-thank-you.md",
+    "hero": "dependency-injection-no-thank-you",
+    "source": "src/assets/heroes/dependency-injection-no-thank-you-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "bb16f4ba77c3e06216031fbdec40b5f79b53e984ae1f1cd51a0dfdcdad8400f4",
+    "preview": "src/assets/heroes/dependency-injection-no-thank-you-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 249862,
+    "previewSha256": "ab6fd82876635d1ad52042ebb034868bbf0b79742ac553e349cbb0bd533be156",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/dependency-injection-no-thank-you-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/design-nugget-evolution-to-strategy.md",
+    "hero": "design-nugget-evolution-to-strategy",
+    "source": "src/assets/heroes/design-nugget-evolution-to-strategy-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "de0f5e14b97a650ae873584cfc22478a5f8b7c1afc8cdd7954eb72f89a6bc9c9",
+    "preview": "src/assets/heroes/design-nugget-evolution-to-strategy-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 79960,
+    "previewSha256": "914bf149da867ace7b40c0cf5af154d132a17dbe2322d34a813975dcf1ea8260",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/design-nugget-evolution-to-strategy-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/dotnet-memory-allocations-part-2.md",
+    "hero": "dotnet-memory-allocations-part-2",
+    "source": "src/assets/heroes/dotnet-memory-allocations-part-2-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "73706e939d34ce043aff55786ecc2f11f38c31083ef035f5cd3cd28c6dada150",
+    "preview": "src/assets/heroes/dotnet-memory-allocations-part-2-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 251598,
+    "previewSha256": "9c05cb646ac040f34e24e300cf1bd702047a5f744dfd828ac808bc9ba8d31a37",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/dotnet-memory-allocations-part-2-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/dotnet-memory-allocations.md",
+    "hero": "dotnet-memory-allocations",
+    "source": "src/assets/heroes/dotnet-memory-allocations-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "ad04054a4dfeac454bdf06c03dca0ae226046b6812be34d7613ac38b0eae882a",
+    "preview": "src/assets/heroes/dotnet-memory-allocations-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 54662,
+    "previewSha256": "e80a38cb6e8195378772672f5d72b50c377ae721044ca08ae56c3b7d6ba74f61",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/dotnet-memory-allocations-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/expanding-code-listings.md",
+    "hero": "expanding-code-listings",
+    "source": "src/assets/heroes/expanding-code-listings-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "465cf7b4065764e9e609ef197fbdcc54b9cfe24f81b34ef08670e22d28e0d4a7",
+    "preview": "src/assets/heroes/expanding-code-listings-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 91708,
+    "previewSha256": "b6a379527af091f20bd8dd936898e1fd0bcd00500172108d5080a5218b6e20a7",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/expanding-code-listings-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/extension-methods-no-thank-you.md",
+    "hero": "extension-methods-no-thank-you",
+    "source": "src/assets/heroes/extension-methods-no-thank-you-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "4614c96ac28ea2dd976d4535041470cbfda03ea18707a8379f163c823258d7e0",
+    "preview": "src/assets/heroes/extension-methods-no-thank-you-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 161574,
+    "previewSha256": "fae8971b1d7c49fe5b1d2f56ebff1e37cb3e9c5238fc7622ed6d837481834bad",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/extension-methods-no-thank-you-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/factory-method-pattern.md",
+    "hero": "factory-method-pattern",
+    "source": "src/assets/heroes/factory-method-pattern-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "311aa2dea7af5145b323ef0cda77953066e089d3d7a9f7b9b6f9d379c14524cd",
+    "preview": "src/assets/heroes/factory-method-pattern-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 216648,
+    "previewSha256": "b58ea75c4bf24d5e5c9a6292e3725753e404198755a944a6815414dd308f5753",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/factory-method-pattern-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/factory-pattern.md",
+    "hero": "factory-pattern",
+    "source": "src/assets/heroes/factory-pattern-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "109d406fac6dc2b1524dfa4eaa8c9b6fcea4723de6f7b037d8aac631f728e5df",
+    "preview": "src/assets/heroes/factory-pattern-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 278164,
+    "previewSha256": "d41f91687d54794e7f20113031955f9da69d1f70cc226b79a180e9cf9173be02",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/factory-pattern-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/fastest-website-on-the-planet.md",
+    "hero": "fastest-website-on-the-planet",
+    "source": "src/assets/heroes/fastest-website-on-the-planet-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "563387bd6efefa20d5e5835ab57b875fc81b75d0ea08ea7c9e3fd5494593bdd0",
+    "preview": "src/assets/heroes/fastest-website-on-the-planet-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 118412,
+    "previewSha256": "eb9df7b354384efff5814d759dcc09f9a73b2a522ad23e4727cdd012a8600b09",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/fastest-website-on-the-planet-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/finding-links-on-a-web-page.md",
+    "hero": "finding-links-on-a-web-page",
+    "source": "src/assets/heroes/finding-links-on-a-web-page-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "ce7bef524238e560391edb344e328450b137e402673fe631dad571f132503c66",
+    "preview": "src/assets/heroes/finding-links-on-a-web-page-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 140972,
+    "previewSha256": "7ad1fa8c2d2a876f94578be3e4849785e4528cc9098f8aae7bb8bc79f302c297",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/finding-links-on-a-web-page-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/flash-mobile-10-1-is-slow.md",
+    "hero": "flash-mobile-10-1-is-slow",
+    "source": "src/assets/heroes/flash-mobile-10-1-is-slow-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "c5c56886a76c04732275e54acb9fd5728ecd72b66588a3aafe1d8d1519e11acf",
+    "preview": "src/assets/heroes/flash-mobile-10-1-is-slow-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 69160,
+    "previewSha256": "31e500076d25c921e937dd0d069d7981a091854d4686292e5e6d06e70d67de10",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/flash-mobile-10-1-is-slow-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/from-a-green-suite-to-a-release.md",
+    "hero": "from-a-green-suite-to-a-release",
+    "source": "src/assets/heroes/from-a-green-suite-to-a-release-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "635dabf0267452d98df1846bb6bae5f825b006ec5e4581e6d86121be3106a2d2",
+    "preview": "src/assets/heroes/from-a-green-suite-to-a-release-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 142816,
+    "previewSha256": "6f374ec64e7818ca5fc45195ac9a1b3a4096631c5be6e194cf5adb0416c58219",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/from-a-green-suite-to-a-release-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/functional-acceptance-testing-at-the-boundary.md",
+    "hero": "functional-acceptance-testing-at-the-boundary",
+    "source": "src/assets/heroes/functional-acceptance-testing-at-the-boundary-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "fd3ab199afabba09389526d5eabb191a363e3d3dd4b3148cd8a29e146f3b3503",
+    "preview": "src/assets/heroes/functional-acceptance-testing-at-the-boundary-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 129936,
+    "previewSha256": "091c17fa189ad056757f2075f4c3ff5bd29fa6958c7a0d2298087f202dafd46e",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/functional-acceptance-testing-at-the-boundary-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/gateway-design-pattern.md",
+    "hero": "gateway-design-pattern",
+    "source": "src/assets/heroes/gateway-design-pattern-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "c5d4dc2f769be7ed04884c52c792cc72ed2fe51d7189cd934448b3053a18eea7",
+    "preview": "src/assets/heroes/gateway-design-pattern-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 58872,
+    "previewSha256": "e97f15a34ed191f38c51ba900c1ff6bf9aed327ac60feb58a81e3d5f8eaa7868",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/gateway-design-pattern-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/getting-the-no-of-cpus-and-cores.md",
+    "hero": "getting-the-no-of-cpus-and-cores",
+    "source": "src/assets/heroes/getting-the-no-of-cpus-and-cores-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "277821e747765c3402bb04733620029a7019ca628c0c0f50bca3d42ad22bead4",
+    "preview": "src/assets/heroes/getting-the-no-of-cpus-and-cores-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 174004,
+    "previewSha256": "3fac756044731a35a24f1bf395d15da952b5eff142e322da49fb7647cdfb6851",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/getting-the-no-of-cpus-and-cores-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/google-tv-apple-tv-or-just-a-computer.md",
+    "hero": "google-tv-apple-tv-or-just-a-computer",
+    "source": "src/assets/heroes/google-tv-apple-tv-or-just-a-computer-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "f6927d36da9459958f2b84da4a38ef0a327b424ad3d3aa5945a3921bf085e343",
+    "preview": "src/assets/heroes/google-tv-apple-tv-or-just-a-computer-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 197468,
+    "previewSha256": "97c3632cdba586d2d4b261be1fa6bf7b3782f6bb03240847d19048c9e952222e",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/google-tv-apple-tv-or-just-a-computer-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/h-264-free-for-internet-broadcast.md",
+    "hero": "h-264-free-for-internet-broadcast",
+    "source": "src/assets/heroes/h-264-free-for-internet-broadcast-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "26d77e8c110212d885fb3774b99d07231cf9303047a1d7c2e8fda89f6c25436b",
+    "preview": "src/assets/heroes/h-264-free-for-internet-broadcast-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 116808,
+    "previewSha256": "db9b23c860d184de80955d2a285bd497b0c97152527f66d87bc57fba8cba2b01",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/h-264-free-for-internet-broadcast-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/high-performance-class-factory.md",
+    "hero": "high-performance-class-factory",
+    "source": "src/assets/heroes/high-performance-class-factory-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "015b101f1213cce6cf23c3927f06188efca9779e9fb40a2740155335eb63c113",
+    "preview": "src/assets/heroes/high-performance-class-factory-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 113454,
+    "previewSha256": "e08c7a99817b876d3badcd655db26368788e4d69ac3a88ae00b0e81abaf84a7e",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/high-performance-class-factory-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/high-performance-logging-custom-objects.md",
+    "hero": "high-performance-logging-custom-objects",
+    "source": "src/assets/heroes/high-performance-logging-custom-objects-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "938663d92b2b0924cfaec4e7b3928a743a41930d18b9b02fbd9e0ca2246c5e05",
+    "preview": "src/assets/heroes/high-performance-logging-custom-objects-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 226896,
+    "previewSha256": "9366d02f4e60454597c4ec61136bca469f82a498123e6cfd96941bf5668f24be",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/high-performance-logging-custom-objects-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/html-5-video-and-flash.md",
+    "hero": "html-5-video-and-flash",
+    "source": "src/assets/heroes/html-5-video-and-flash-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "bdad1e91385597e090a28f1f231baa7e43833e327f6e79468ac8f5e317634d21",
+    "preview": "src/assets/heroes/html-5-video-and-flash-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 79296,
+    "previewSha256": "4512eefcb96a51cf7b22407667d7d8c7381fc810c34f882707e60e5612480d0b",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/html-5-video-and-flash-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/html-5-video-element-poster.md",
+    "hero": "html-5-video-element-poster",
+    "source": "src/assets/heroes/html-5-video-element-poster-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "464fc6f68d0d97da835bec423b073adb18eaf348032fcfb56dce09e60602d2a1",
+    "preview": "src/assets/heroes/html-5-video-element-poster-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 130086,
+    "previewSha256": "b7b7455755c5834109c182b6c8ecd6f1a92fb4b4d06256b0931d6e6c0855b438",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/html-5-video-element-poster-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/html5-file-upload-with-progress.md",
+    "hero": "html5-file-upload-with-progress",
+    "source": "src/assets/heroes/html5-file-upload-with-progress-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "a16bd2f21660242f1b66e08d0855c03160692f7e2408ab95254081ce702bba99",
+    "preview": "src/assets/heroes/html5-file-upload-with-progress-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 111956,
+    "previewSha256": "133f14a04923e354cef8703e928cc47ad1cae95f441bcf7636d06beee3d8acef",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/html5-file-upload-with-progress-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/httpclient-net-4-5.md",
+    "hero": "httpclient-net-4-5",
+    "source": "src/assets/heroes/httpclient-net-4-5-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "85919eb83f030700311fe2bb1bba0d2246b1056150b1e4a983080d1e393511f1",
+    "preview": "src/assets/heroes/httpclient-net-4-5-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 130486,
+    "previewSha256": "b9d5c904d504efd9be9284a12998f98a927f551f95dd5baa841d0c49b439c03a",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/httpclient-net-4-5-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/httpwebrequest-asynchronous-programming.md",
+    "hero": "httpwebrequest-asynchronous-programming",
+    "source": "src/assets/heroes/httpwebrequest-asynchronous-programming-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "51e7e954af185e3c6b8afe98fcea8defa174d8ec57894f3b65815017bc1906c3",
+    "preview": "src/assets/heroes/httpwebrequest-asynchronous-programming-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 83582,
+    "previewSha256": "a1fa0334ac753506420f435ff6842fa0e3b4d02504ad3c049cabb91275c3e948",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/httpwebrequest-asynchronous-programming-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/iasyncresult-making-existing-methods-asnchronous.md",
+    "hero": "iasyncresult-making-existing-methods-asnchronous",
+    "source": "src/assets/heroes/iasyncresult-making-existing-methods-asnchronous-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "ff77492399b0ba2384e77035b1b9b99d82353e8dc2557cd5d266b224d6bbff69",
+    "preview": "src/assets/heroes/iasyncresult-making-existing-methods-asnchronous-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 78054,
+    "previewSha256": "fb33a7a435aa6816a45135578fe18e1d3252bace5216924cf028cff4e36633d9",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/iasyncresult-making-existing-methods-asnchronous-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/idempotency-and-concurrent-requests.md",
+    "hero": "idempotency-and-concurrent-requests",
+    "source": "src/assets/heroes/idempotency-and-concurrent-requests-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "9b76c6e7643cf355636a5bcfd42643440df81557bd30beefc77fb8211e666e77",
+    "preview": "src/assets/heroes/idempotency-and-concurrent-requests-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 121884,
+    "previewSha256": "cf068dbe75bdedf9f206a1a84ef8c40dfbd5a82d893e6eb27c95da99b46f56d7",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/idempotency-and-concurrent-requests-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/ie-9-beta-whats-hot-and-whats-not.md",
+    "hero": "ie-9-beta-whats-hot-and-whats-not",
+    "source": "src/assets/heroes/ie-9-beta-whats-hot-and-whats-not-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "8836a5ff57f97e2e7cc79338a363d672d26a94b7a752518c5c4b09e6fbff9888",
+    "preview": "src/assets/heroes/ie-9-beta-whats-hot-and-whats-not-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 158102,
+    "previewSha256": "fbb653e82c7c4eaf66a96a15862ea5b37aafec3330af98b009a1f0eaf425f6c9",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/ie-9-beta-whats-hot-and-whats-not-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/ienumerablet-datacontractserializer.md",
+    "hero": "ienumerablet-datacontractserializer",
+    "source": "src/assets/heroes/ienumerablet-datacontractserializer-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "c2619421f73d6ad6df427663a5109bf8853ff69773444afca627cdebe3340673",
+    "preview": "src/assets/heroes/ienumerablet-datacontractserializer-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 75988,
+    "previewSha256": "6a2a7585affb6b561ea4a95288eb97b943cf56f99fe452bbe30676b9e756f987",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/ienumerablet-datacontractserializer-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/iis-manager-users.md",
+    "hero": "iis-manager-users",
+    "source": "src/assets/heroes/iis-manager-users-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "264952ad12aacffbe4051eef1103c9be62f87968392ed13378fe63ad71242d2e",
+    "preview": "src/assets/heroes/iis-manager-users-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 105160,
+    "previewSha256": "4bb0d4a417784f4e078505102af953285c5e9e48c53d9d60cbea74efeffe4d84",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/iis-manager-users-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/innovating-the-world-wide-net.md",
+    "hero": "innovating-the-world-wide-net",
+    "source": "src/assets/heroes/innovating-the-world-wide-net-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "6fad7d700fa3788a660d05be7be445d618b5ff6849030e6be9025bffa0e10470",
+    "preview": "src/assets/heroes/innovating-the-world-wide-net-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 110742,
+    "previewSha256": "edb549a6ba1d481e4efbb6caf5e855e7c60674f20994336a61a7af7daf9548f4",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/innovating-the-world-wide-net-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/installing-msmq-in-an-azure-webrole-instance.md",
+    "hero": "installing-msmq-in-an-azure-webrole-instance",
+    "source": "src/assets/heroes/installing-msmq-in-an-azure-webrole-instance-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "66bee404074b1eee3d4fe56ed82177dceb1e036c1287cfdb1c44dbfa60e750fd",
+    "preview": "src/assets/heroes/installing-msmq-in-an-azure-webrole-instance-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 78892,
+    "previewSha256": "2d0831df5636884926c36881c35723549c859d11640f4d6d581ca4dc1928eb96",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/installing-msmq-in-an-azure-webrole-instance-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/instantiating-business-layers-asp-net-performance.md",
+    "hero": "instantiating-business-layers-asp-net-performance",
+    "source": "src/assets/heroes/instantiating-business-layers-asp-net-performance-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "b8cc06713273a9403ceda35182388e23912fcbbb41e057c567f6067bc7c93c89",
+    "preview": "src/assets/heroes/instantiating-business-layers-asp-net-performance-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 93750,
+    "previewSha256": "fec5d5264982931863562323cc7e852ab14bdb85f68c2f25817ff23f2ca95e99",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/instantiating-business-layers-asp-net-performance-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/intentional-model-design.md",
+    "hero": "intentional-model-design",
+    "source": "src/assets/heroes/intentional-model-design-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "8a2f402fdf7054aa8c6df9c2e743ecaf97013fc86a7de6da9e0a40be89dcdc9a",
+    "preview": "src/assets/heroes/intentional-model-design-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 130438,
+    "previewSha256": "dc8dd7024413c98c5705edc9270de78868c2489a5416ec8aa3b3a15840bd26ab",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/intentional-model-design-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/interfaces-no-thank-you.md",
+    "hero": "interfaces-no-thank-you",
+    "source": "src/assets/heroes/interfaces-no-thank-you-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "676b4fbb8131b306e2eecf59c41073628f8145baabdb0086b878aa064cd59e9e",
+    "preview": "src/assets/heroes/interfaces-no-thank-you-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 157480,
+    "previewSha256": "5c58a91807755e42640a279588f334b5c661a1d6903ccf3de02c5b94f4c81f1b",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/interfaces-no-thank-you-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/jev-practical-reference.md",
+    "hero": "jev-practical-reference",
+    "source": "src/assets/heroes/jev-practical-reference-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "d2b5f3abe337e4dcea095088666614d224fcc42ed950bec2aa8e55a377ac95a6",
+    "preview": "src/assets/heroes/jev-practical-reference-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 178596,
+    "previewSha256": "8fe076386aa8f4cf23fbbb47ca0086250e98c00bd8f18dad37a70b57dd459e27",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/jev-practical-reference-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/jquery-data-assigning-objects-to-dynamic-elements.md",
+    "hero": "jquery-data-assigning-objects-to-dynamic-elements",
+    "source": "src/assets/heroes/jquery-data-assigning-objects-to-dynamic-elements-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "c0c952d10dc7e856c8987b7c28acb582bbf38fe5edc038695ae8a54311914a9e",
+    "preview": "src/assets/heroes/jquery-data-assigning-objects-to-dynamic-elements-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 153848,
+    "previewSha256": "b8c15f9524b92f1b0e11b0dcd0fd46616f0561da789bb983ad516abbe6a97a81",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/jquery-data-assigning-objects-to-dynamic-elements-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/jsonpmediatypeformatter-web-api-jsonp.md",
+    "hero": "jsonpmediatypeformatter-web-api-jsonp",
+    "source": "src/assets/heroes/jsonpmediatypeformatter-web-api-jsonp-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "a6dde3e2be7266d7967324e77b163ae3834c15bd08e5cade9ff57e347d3a5075",
+    "preview": "src/assets/heroes/jsonpmediatypeformatter-web-api-jsonp-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 104916,
+    "previewSha256": "b0cc3c12fd97584cee5421152d3531a5d9686cb1a8adebfb8f495aea07083937",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/jsonpmediatypeformatter-web-api-jsonp-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/knowing-which-scenarios-a-feature-requires.md",
+    "hero": "knowing-which-scenarios-a-feature-requires",
+    "source": "src/assets/heroes/knowing-which-scenarios-a-feature-requires-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "8b071522d9c36b68c6e7bbccd05b0df01fccb480107c7064e5bb65171621a544",
+    "preview": "src/assets/heroes/knowing-which-scenarios-a-feature-requires-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 99204,
+    "previewSha256": "82ca3e0da60ec448106ea1aee61bde31e88edc0a9f6e2246743fcb3fb0f42796",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/knowing-which-scenarios-a-feature-requires-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/learning-a-system-through-its-tests.md",
+    "hero": "learning-a-system-through-its-tests",
+    "source": "src/assets/heroes/learning-a-system-through-its-tests-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "e4cf27f030b40f8d9a01cc28b1cadc37ae3e9570519b27ff56028cc573ed4012",
+    "preview": "src/assets/heroes/learning-a-system-through-its-tests-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 174806,
+    "previewSha256": "4b7994048b739e085ac1728eb86775ce7becc2d823961b5541da36a1bc7d6f3c",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/learning-a-system-through-its-tests-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/linq-group-by-finding-duplicates.md",
+    "hero": "linq-group-by-finding-duplicates",
+    "source": "src/assets/heroes/linq-group-by-finding-duplicates-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "3b1f2aee421da497015d6aa87e51ee8ac026bfdd2a0da5fb583e5d4f1dd24de5",
+    "preview": "src/assets/heroes/linq-group-by-finding-duplicates-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 89998,
+    "previewSha256": "9262743dc9dd1c750d733ed70ec00b1e9fe8043dd9da29b258ad93bf566a8bd0",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/linq-group-by-finding-duplicates-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/linq-selectmany.md",
+    "hero": "linq-selectmany",
+    "source": "src/assets/heroes/linq-selectmany-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "738409324a521b14a57293c62ef4baaef251da552b3455efc04bbf41c8f9bafc",
+    "preview": "src/assets/heroes/linq-selectmany-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 110570,
+    "previewSha256": "a9c02bf6eee7b0dcb998219a72579a189cc949828d78c613d00d6c2ad5231a16",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/linq-selectmany-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/metaweblog-api-c-library.md",
+    "hero": "metaweblog-api-c-library",
+    "source": "src/assets/heroes/metaweblog-api-c-library-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "08acfaa2325ed2e4597d8ec0c791519eef9aa9897cec3d0652cc5081543658a1",
+    "preview": "src/assets/heroes/metaweblog-api-c-library-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 71594,
+    "previewSha256": "aff77fce4e357d001a0943c964e63aedcb64441f3b8c358d1260181331db915e",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/metaweblog-api-c-library-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/mocking-no-thank-you.md",
+    "hero": "mocking-no-thank-you",
+    "source": "src/assets/heroes/mocking-no-thank-you-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "75139cd8149eda000cb8cd9e1e1699fff4a5f10b7e65ad4382e2c063debb3ad1",
+    "preview": "src/assets/heroes/mocking-no-thank-you-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 91896,
+    "previewSha256": "16846e6947021f5e9be9191ed18963281e71ebf9b9ad7c82550e06d747c39a15",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/mocking-no-thank-you-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/mssql-reset-identity-seed.md",
+    "hero": "mssql-reset-identity-seed",
+    "source": "src/assets/heroes/mssql-reset-identity-seed-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "104d354b645ddaa1c907013458d9bf2bc15b53fc67b6cd6a750ba88597d6895c",
+    "preview": "src/assets/heroes/mssql-reset-identity-seed-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 93968,
+    "previewSha256": "cc0c63454e8c093dabd4ee5a34ea9cea232b7591ded10ef62f565beb6d0a7440",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/mssql-reset-identity-seed-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/null-conditional-operator-no-thank-you.md",
+    "hero": "null-conditional-operator-no-thank-you",
+    "source": "src/assets/heroes/null-conditional-operator-no-thank-you-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "765762f22d6893182301797e8f788e82406ec9970cb99f02479dd455986c9cd6",
+    "preview": "src/assets/heroes/null-conditional-operator-no-thank-you-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 166800,
+    "previewSha256": "221f6b51c8479f40b196abc090a0fc68279913b8e10455bd66c6fbfaf2010fed",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/null-conditional-operator-no-thank-you-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/oauth-c-library.md",
+    "hero": "oauth-c-library",
+    "source": "src/assets/heroes/oauth-c-library-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "bdc65f1b1194c74a3d561cc0e926d9003e2828003eede1b970d3d560d1488c65",
+    "preview": "src/assets/heroes/oauth-c-library-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 119666,
+    "previewSha256": "56c444d584337f11b8de7de773ca319920996cb1770e618c4acd3542e7882240",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/oauth-c-library-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/one-order-every-obligation.md",
+    "hero": "one-order-every-obligation",
+    "source": "src/assets/heroes/one-order-every-obligation-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "793b8cfa10fa178c91a0c6b3af715c158933edea0131a86914df261f180caf3a",
+    "preview": "src/assets/heroes/one-order-every-obligation-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 61774,
+    "previewSha256": "00a704d08fe14e1ddc03b183bfc33cd787578613fbd64b23d47870e2ff2b53aa",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/one-order-every-obligation-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/orion.md",
+    "hero": "orion",
+    "source": "src/assets/heroes/orion-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "cf765d5f0594ae043f1c9a354550d9354e5977d565aa036c8e91d170218f85a3",
+    "preview": "src/assets/heroes/orion-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 130634,
+    "previewSha256": "36f6849e79bf6a286f2159fa5683359414251bfd42ee628dfc8245a91ed2f1e7",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/orion-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/pipeline-breadcrumbs.md",
+    "hero": "pipeline-breadcrumbs-v3-crop",
+    "source": "src/assets/heroes/pipeline-breadcrumbs-v3-crop-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "c62f6861211cea6e36e875b96f6e7231906bcfebfad684756bca327515b87889",
+    "preview": "src/assets/heroes/pipeline-breadcrumbs-v3-crop-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 242516,
+    "previewSha256": "aba3a95dd817a3ef3d2c3e91179cc295034c14d05d82ba16cbef6a1c86596c03",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/pipeline-breadcrumbs-v3-crop-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/prefer-composition-over-inheritance.md",
+    "hero": "prefer-composition-over-inheritance",
+    "source": "src/assets/heroes/prefer-composition-over-inheritance-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "ef9ae0f9660109021bd43aae6be0cc6ffd10f1a57375c9667c1843bdbd97de01",
+    "preview": "src/assets/heroes/prefer-composition-over-inheritance-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 162864,
+    "previewSha256": "5294654efdba427dadbe3cd24ad3461d040bbb765d573df4b9b640b5e7ae2188",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/prefer-composition-over-inheritance-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/problems-with-asp-net-mvc-framework-design.md",
+    "hero": "problems-with-asp-net-mvc-framework-design",
+    "source": "src/assets/heroes/problems-with-asp-net-mvc-framework-design-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "d4258d8aa3a9dc6f5bdf80d329656d0a8da98dfaabf94394ca4bc892034cd702",
+    "preview": "src/assets/heroes/problems-with-asp-net-mvc-framework-design-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 83174,
+    "previewSha256": "d7dd0d45876daae5f473e7ce769f91e61f277631439cc90cd23d8a1b28dd57d2",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/problems-with-asp-net-mvc-framework-design-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/programming-to-exceptions-diagnostics-and-boundaries.md",
+    "hero": "programming-to-exceptions-diagnostics-and-boundaries",
+    "source": "src/assets/heroes/programming-to-exceptions-diagnostics-and-boundaries-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "7fc89856b9ef4718458c954d8a45aeac192d8e09f95676f947031eb50927a0b4",
+    "preview": "src/assets/heroes/programming-to-exceptions-diagnostics-and-boundaries-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 194682,
+    "previewSha256": "84ed64de24a22216a46403d7d8ea055a9784149753f57568603ead091c6ba4c6",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/programming-to-exceptions-diagnostics-and-boundaries-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/programming-to-exceptions-logging-and-progress.md",
+    "hero": "programming-to-exceptions-logging-and-progress",
+    "source": "src/assets/heroes/programming-to-exceptions-logging-and-progress-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "481cbaf939df2fd8ad292758b88aa137521e387471d293f1259c24c893d874fe",
+    "preview": "src/assets/heroes/programming-to-exceptions-logging-and-progress-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 194392,
+    "previewSha256": "14d641ac7449f51bb157bd2cafe14fee901bb06f1783e8632a251835895f024f",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/programming-to-exceptions-logging-and-progress-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/programming-to-exceptions-method-contracts.md",
+    "hero": "programming-to-exceptions-method-contracts",
+    "source": "src/assets/heroes/programming-to-exceptions-method-contracts-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "29935a92c9a600c35173a9082a903488162624b6b3eb16b7a4e2ea17fc4b3504",
+    "preview": "src/assets/heroes/programming-to-exceptions-method-contracts-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 169970,
+    "previewSha256": "24cc5400f54d506f734d7d7ea9bd13dd68b7889a60420210f70831027e907c6f",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/programming-to-exceptions-method-contracts-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/quartz-for-aspnet.md",
+    "hero": "quartz-for-aspnet",
+    "source": "src/assets/heroes/quartz-for-aspnet-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "39705253a3e8715da4b9cdec954e6396f5b06a960933446f59a46f525c180178",
+    "preview": "src/assets/heroes/quartz-for-aspnet-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 89370,
+    "previewSha256": "30e1344821014181b96c3a9624f44def3f8c2f57aa8c0594723d1abcfdc9f428",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/quartz-for-aspnet-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/questions-about-functional-acceptance-testing-at-the-boundary.md",
+    "hero": "questions-about-functional-acceptance-testing-at-the-boundary",
+    "source": "src/assets/heroes/questions-about-functional-acceptance-testing-at-the-boundary-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "d9e0eca8a90eaec27f9e5363fc0f7372a24bbcaab76071d53fea0358220373e0",
+    "preview": "src/assets/heroes/questions-about-functional-acceptance-testing-at-the-boundary-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 228138,
+    "previewSha256": "4761d1e235174428aaa6619f82b540501172addf707ffea654fa0573ea4b0da2",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/questions-about-functional-acceptance-testing-at-the-boundary-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/razor-engine-host.md",
+    "hero": "razor-engine-host",
+    "source": "src/assets/heroes/razor-engine-host-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "0a055918b79deb3d6abf939bf928f4448b67812e98611cb6e458ab52d97f523d",
+    "preview": "src/assets/heroes/razor-engine-host-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 100976,
+    "previewSha256": "475e122e7d93f1331d24c59171d9403f9d6f82fcf5bd7f54fd1f5319294e4e36",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/razor-engine-host-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/refactoring-and-adopting-boundary-testing.md",
+    "hero": "refactoring-and-adopting-boundary-testing",
+    "source": "src/assets/heroes/refactoring-and-adopting-boundary-testing-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "06e1f4bc3623031167f7c245811cf17666bab05b373d52438b45c70a18a2fa8e",
+    "preview": "src/assets/heroes/refactoring-and-adopting-boundary-testing-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 201366,
+    "previewSha256": "8715e5dbbe2175cdc0a8c14b289d53896020aa41fafb0de2aa35b865ed50e529",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/refactoring-and-adopting-boundary-testing-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/refusals-failures-and-work-still-owed.md",
+    "hero": "refusals-failures-and-work-still-owed",
+    "source": "src/assets/heroes/refusals-failures-and-work-still-owed-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "7e06333f61b99b9f0657f0617b6c67c0eb85bf9e3920cdf6c486da9849059268",
+    "preview": "src/assets/heroes/refusals-failures-and-work-still-owed-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 109194,
+    "previewSha256": "1bb2895fe6e19603c2ada4aa1dbf6aebe8097a6aa52418b2e9be8e1b97d8f4ca",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/refusals-failures-and-work-still-owed-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/rest-apis-put-and-delete-cause-http-error-404.md",
+    "hero": "rest-apis-put-and-delete-cause-http-error-404",
+    "source": "src/assets/heroes/rest-apis-put-and-delete-cause-http-error-404-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "d1d2abbca79d97a735be60ed01f180ef0540dda0fa97462e225311748e4b0fbc",
+    "preview": "src/assets/heroes/rest-apis-put-and-delete-cause-http-error-404-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 123270,
+    "previewSha256": "d0b85351ca54d1318241eebe13779c3dc738b266a1536483808368ce5f6ced81",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/rest-apis-put-and-delete-cause-http-error-404-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/self-host-asp-net-web-api.md",
+    "hero": "self-host-asp-net-web-api",
+    "source": "src/assets/heroes/self-host-asp-net-web-api-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "6cdb7e89c47efc5dad2bd532685f12ed0a5d66dd105e50eb2d07c8ebf095e47a",
+    "preview": "src/assets/heroes/self-host-asp-net-web-api-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 137810,
+    "previewSha256": "b0d9eed7adc2d55a407ae689577db53c46cb23c49ebc5511b9cc4239da21b1a0",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/self-host-asp-net-web-api-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/separate-state-from-behavior.md",
+    "hero": "separate-state-from-behavior",
+    "source": "src/assets/heroes/separate-state-from-behavior-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "cad4f12691fcdc73ee964aefa674eac4eb5831c3d88f53cb76a8fba23a8d93d3",
+    "preview": "src/assets/heroes/separate-state-from-behavior-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 107434,
+    "previewSha256": "b34a0419fa80855c519cbc8a1cf4efcd2bd47c2cb33d1e934ece018b5df97f94",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/separate-state-from-behavior-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/skills-versus-controlled-workflows.md",
+    "hero": "controlled-workflows",
+    "source": "src/assets/heroes/controlled-workflows-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "addc905ac3c44cab47f382740774b09465ffd1260a6e0e5a66d030d2b2233ea2",
+    "preview": "src/assets/heroes/controlled-workflows-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 220298,
+    "previewSha256": "76ecd2d8ef6b0ee6a7c93c70c800e50e3be6f2714cff3d6324844ae5f6ac0eac",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/controlled-workflows-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/solid-is-old.md",
+    "hero": "solid-is-old",
+    "source": "src/assets/heroes/solid-is-old-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "5093408ac81c54028a7068535bdfe6c883ee4e477944ebfa3ad18c2db91e724c",
+    "preview": "src/assets/heroes/solid-is-old-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 235342,
+    "previewSha256": "69325530856ccd96037fefdc0fe291b6a5cb09b2113a473571d3df6a2e2ea51d",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/solid-is-old-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/stampede-at-the-gates.md",
+    "hero": "stampede-at-the-gates-bulls",
+    "source": "src/assets/heroes/stampede-at-the-gates-bulls-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "a54e88f2e8c2a9eef734fe9f3b2788e75fb283ca6cd32c0d2545f2af31ec6368",
+    "preview": "src/assets/heroes/stampede-at-the-gates-bulls-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 128954,
+    "previewSha256": "cadeaae486d476fed63efaab973170121a200e1b744abdc7b8793df6bc2935c4",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/stampede-at-the-gates-bulls-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/stopstart-windows-service.md",
+    "hero": "stopstart-windows-service",
+    "source": "src/assets/heroes/stopstart-windows-service-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "40a8d9043b9288116121d761ae58078d1fc363b47e9d94dac08f75295b6185f1",
+    "preview": "src/assets/heroes/stopstart-windows-service-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 136958,
+    "previewSha256": "e41f6a2c2bc7ade4735f8519653f737dba0ae351a77fc3c84626502db4797900",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/stopstart-windows-service-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/svctraceviewer-debugging-wcf-sevices.md",
+    "hero": "svctraceviewer-debugging-wcf-sevices",
+    "source": "src/assets/heroes/svctraceviewer-debugging-wcf-sevices-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "852d431375b3ba7ab906b5c21f67f26e97f59eebbd0113223a00c706549af2aa",
+    "preview": "src/assets/heroes/svctraceviewer-debugging-wcf-sevices-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 119292,
+    "previewSha256": "f8dd4570375069759045825490f83b3b0fa225206ecb8cb877f7401823f28175",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/svctraceviewer-debugging-wcf-sevices-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/testing-against-real-infrastructure.md",
+    "hero": "testing-against-real-infrastructure",
+    "source": "src/assets/heroes/testing-against-real-infrastructure-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "05b4946443cdd8b73b85896f34736ae055767c3f6d892f4195dbf9013fd1f642",
+    "preview": "src/assets/heroes/testing-against-real-infrastructure-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 185742,
+    "previewSha256": "b6c3c7377053c6fe43279b129cce9d72ffece1f0149462d8b958bb5803759fb8",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/testing-against-real-infrastructure-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/testing-the-service-interface.md",
+    "hero": "testing-the-service-interface",
+    "source": "src/assets/heroes/testing-the-service-interface-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "7151057ef9591ba62fb672603af34f02404508c3e5f3565c5fdf7ece91b67244",
+    "preview": "src/assets/heroes/testing-the-service-interface-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 83876,
+    "previewSha256": "8ffa550b1bfbd029ee32c88513e33460a5ec899e1ad85ddeb484f4f0ee82f9e1",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/testing-the-service-interface-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/the-future-of-flash-player.md",
+    "hero": "the-future-of-flash-player",
+    "source": "src/assets/heroes/the-future-of-flash-player-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "88e2213a5559726d92c175d02c77be0515fd718964f22060f511c6c6738fd44e",
+    "preview": "src/assets/heroes/the-future-of-flash-player-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 75686,
+    "previewSha256": "d1fa6a72a23c701251fc785d621b9d5b0bceeed5c643501a9807f5c7a81d6962",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/the-future-of-flash-player-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/the-purpose-and-function-of-a-data-access-layer.md",
+    "hero": "the-purpose-and-function-of-a-data-access-layer",
+    "source": "src/assets/heroes/the-purpose-and-function-of-a-data-access-layer-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "1f4dbb75f55f45ad64cfe5138437f01efd6990aaef42fa6ddff61036ba75e622",
+    "preview": "src/assets/heroes/the-purpose-and-function-of-a-data-access-layer-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 109680,
+    "previewSha256": "73baeb899ba6e45a311a7ca0f1c8e23fe181e7506c60cf8e34ee8bf0fbdba6c6",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/the-purpose-and-function-of-a-data-access-layer-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/the-regression-suite-the-business-is-paying-for.md",
+    "hero": "the-regression-suite-the-business-is-paying-for",
+    "source": "src/assets/heroes/the-regression-suite-the-business-is-paying-for-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "70ccfc8c239e710a7e5d534025e96228f3126b66be54f0f9186b87ccbb94e97e",
+    "preview": "src/assets/heroes/the-regression-suite-the-business-is-paying-for-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 144314,
+    "previewSha256": "3ebacf44c483377c015dc5db0391c94accf8518341f8109db29780f6b9c2892d",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/the-regression-suite-the-business-is-paying-for-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/the-test-mediator-and-the-transport-spy.md",
+    "hero": "the-test-mediator-and-the-transport-spy",
+    "source": "src/assets/heroes/the-test-mediator-and-the-transport-spy-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "589eafb1c52c9edd4999ce6ec80f2069c65cdfab9c8baf6233d2a43bff671560",
+    "preview": "src/assets/heroes/the-test-mediator-and-the-transport-spy-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 202918,
+    "previewSha256": "801e6b1511aaef583e28ce7f8af0b86ed2f92717e01efe24e57c43ce9420ddf7",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/the-test-mediator-and-the-transport-spy-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/to-linq-or-not-to-linq.md",
+    "hero": "to-linq-or-not-to-linq",
+    "source": "src/assets/heroes/to-linq-or-not-to-linq-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "88a12f9e7029dc18e268e6aa81f622c59bd7903c8df095f541ae4b760e19252d",
+    "preview": "src/assets/heroes/to-linq-or-not-to-linq-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 259972,
+    "previewSha256": "05f438b59d4fa75dca3f31e688802f77b997930f202a01f2bf61005aec4a96e3",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/to-linq-or-not-to-linq-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/urlencode-the-correct-encoding.md",
+    "hero": "urlencode-the-correct-encoding",
+    "source": "src/assets/heroes/urlencode-the-correct-encoding-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "ee16c8774de8018ca435e27f49ea2f2b19fb94a2cd7a5c5f11f24c83a3c6bd34",
+    "preview": "src/assets/heroes/urlencode-the-correct-encoding-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 126294,
+    "previewSha256": "88c50ab569075745304ef24d02acc12ddd7f36ffabdd028b45c0a1f774d495da",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/urlencode-the-correct-encoding-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/using-jev-compact-llm-context.md",
+    "hero": "using-jev-compact-llm-context",
+    "source": "src/assets/heroes/using-jev-compact-llm-context-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "07ba40fd5c7e389c53243da725d169e6764e3aad117e4a9f8489675fb2ba5503",
+    "preview": "src/assets/heroes/using-jev-compact-llm-context-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 204604,
+    "previewSha256": "fb98b8cbb1ef5fd919451a894732537ab4cef59f6d9c7f6ad25a2d4ea446cd97",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/using-jev-compact-llm-context-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/using-localdb-in-visual-studio-online.md",
+    "hero": "using-localdb-in-visual-studio-online",
+    "source": "src/assets/heroes/using-localdb-in-visual-studio-online-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "0e05ad99affcfd89305e768dfd5c6210023cc94757d709d0321fa810082a55fd",
+    "preview": "src/assets/heroes/using-localdb-in-visual-studio-online-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 169302,
+    "previewSha256": "50b8dca967eb0b459ce1ec6f7c0d87c3ae67dd1c374e0f150dc385e099c577d9",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/using-localdb-in-visual-studio-online-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/validating-formal-arguments-no-thank-you.md",
+    "hero": "validating-formal-arguments-no-thank-you",
+    "source": "src/assets/heroes/validating-formal-arguments-no-thank-you-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "f708997157c01b278e82f44865d09b9471ade6c81bdb093640aa2a72993e5bb7",
+    "preview": "src/assets/heroes/validating-formal-arguments-no-thank-you-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 208294,
+    "previewSha256": "4e60afca476d68a09c467062dc5bb19fb24a0e133695a883e93e947f4b56d228",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/validating-formal-arguments-no-thank-you-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/verified-not-trusted-expense-analysis-part-four.md",
+    "hero": "verified-not-trusted-expense-analysis-part-four",
+    "source": "src/assets/heroes/verified-not-trusted-expense-analysis-part-four-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "c8a28d25ce5d023c65e8978d38ca427787d1ff7f0da2bd1da69126c7ea178130",
+    "preview": "src/assets/heroes/verified-not-trusted-expense-analysis-part-four-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 132410,
+    "previewSha256": "fe46cc97c2f23d605e9c60e7be1d5923fad01b125c8033b5e9ef751c0671d78a",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/verified-not-trusted-expense-analysis-part-four-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/verified-not-trusted-expense-analysis-part-one.md",
+    "hero": "verified-not-trusted-expense-analysis-part-one",
+    "source": "src/assets/heroes/verified-not-trusted-expense-analysis-part-one-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "45a1e70f5fcfb8d8d2c29d8c74ac4e31c1e1512d28ea33beeda88026cbc6ccfd",
+    "preview": "src/assets/heroes/verified-not-trusted-expense-analysis-part-one-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 108260,
+    "previewSha256": "96052dd7461a6168d0cc3761eaa6d801a9a763fec8f57537513a2fa375eb4b89",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/verified-not-trusted-expense-analysis-part-one-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/verified-not-trusted-expense-analysis-part-three.md",
+    "hero": "verified-not-trusted-expense-analysis-part-three",
+    "source": "src/assets/heroes/verified-not-trusted-expense-analysis-part-three-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "9c32575d7154b275d3703bc78f668c1545d2a8bafb51b97af7efc0360bed4607",
+    "preview": "src/assets/heroes/verified-not-trusted-expense-analysis-part-three-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 194934,
+    "previewSha256": "411ed5854dd1e8912f5911b50d208bf2f338f1d2a060d973e4ba6d4ade35ffe9",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/verified-not-trusted-expense-analysis-part-three-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/verified-not-trusted-expense-analysis-part-two.md",
+    "hero": "verified-not-trusted-expense-analysis-part-two",
+    "source": "src/assets/heroes/verified-not-trusted-expense-analysis-part-two-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "1e260126a2b2ee6c84d876715fdacf39dc3851d645a4ae39ad07595303d2e667",
+    "preview": "src/assets/heroes/verified-not-trusted-expense-analysis-part-two-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 116386,
+    "previewSha256": "03b67e008d47c2e74f7354dddff08ca8ed885e690fa2baf440541ac76f4e81e5",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/verified-not-trusted-expense-analysis-part-two-preview.prompt.md"
+  },
+  {
+    "article": "src/content/writing/wcf-4-0-getting-started.md",
+    "hero": "wcf-4-0-getting-started",
+    "source": "src/assets/heroes/wcf-4-0-getting-started-card.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 500,
+    "sourceSha256": "fd86fec39236e2981dec6b0d6594c0868d09a0741fa5746c17397cf6e7d05d00",
+    "preview": "src/assets/heroes/wcf-4-0-getting-started-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 131384,
+    "previewSha256": "12b72a9d42c59887ba7434c1196e61e9cccf0418795e91a2d339f0389fb39b55",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/wcf-4-0-getting-started-preview.prompt.md"
+  },
+  {
+    "article": "src/content/chapters/architecture-layers-csharp.md",
+    "hero": "chapter-architecture-layers-csharp",
+    "source": "src/assets/heroes/chapter-architecture-layers-csharp.webp",
+    "sourceWidth": 1916,
+    "sourceHeight": 821,
+    "sourceSha256": "cdbce596e0b50a0e77e13cf6e28e169122c2966f486e5b9e8bbff3e45a14a5a1",
+    "preview": "src/assets/heroes/chapter-architecture-layers-csharp-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 152710,
+    "previewSha256": "cb1940a620424f6114b472e2244dfbf5afd255f5c7161474f3e5c3778777ddb7",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/chapter-architecture-layers-csharp-preview.prompt.md"
+  },
+  {
+    "article": "src/content/chapters/architecture-layers-python.md",
+    "hero": "chapter-architecture-layers-python",
+    "source": "src/assets/heroes/chapter-architecture-layers-python.webp",
+    "sourceWidth": 1916,
+    "sourceHeight": 821,
+    "sourceSha256": "3c321d2b6b1840200b00987a85833829189a11502d0b22221618dd18f7d419d2",
+    "preview": "src/assets/heroes/chapter-architecture-layers-python-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 195348,
+    "previewSha256": "53f1b9c79f48f29fd2897404b9f8d4ea49a56d99058c5dabbd655110c1dbee62",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/chapter-architecture-layers-python-preview.prompt.md"
+  },
+  {
+    "article": "src/content/chapters/class-design-csharp.md",
+    "hero": "chapter-class-design-csharp",
+    "source": "src/assets/heroes/chapter-class-design-csharp.webp",
+    "sourceWidth": 1916,
+    "sourceHeight": 821,
+    "sourceSha256": "e1dc34f791cbff2a2960418852b6203622b253bb1714367931b4cce2b9e4fd87",
+    "preview": "src/assets/heroes/chapter-class-design-csharp-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 123548,
+    "previewSha256": "176b6b6149602619458b9eef92597e56009e31a159c03905a1ee699b7e21b66e",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/chapter-class-design-csharp-preview.prompt.md"
+  },
+  {
+    "article": "src/content/chapters/class-design-python.md",
+    "hero": "chapter-class-design-python",
+    "source": "src/assets/heroes/chapter-class-design-python.webp",
+    "sourceWidth": 1942,
+    "sourceHeight": 809,
+    "sourceSha256": "a5a96134c69e32934c505f290302d603e7858c6a9c962641c708dfcf8ed21422",
+    "preview": "src/assets/heroes/chapter-class-design-python-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 86592,
+    "previewSha256": "ebb0c0a9821036f4cc8531947fbb91838e76ef7a388e3d62e4f4382dea9d116f",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/chapter-class-design-python-preview.prompt.md"
+  },
+  {
+    "article": "src/content/chapters/linq-query-semantics-csharp.md",
+    "hero": "chapter-linq-query-semantics-csharp",
+    "source": "src/assets/heroes/chapter-linq-query-semantics-csharp.webp",
+    "sourceWidth": 1916,
+    "sourceHeight": 821,
+    "sourceSha256": "a1b1329a50175e30da34fee0371e78fbc7f747632e6a58f435d07adc52cb3657",
+    "preview": "src/assets/heroes/chapter-linq-query-semantics-csharp-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 139714,
+    "previewSha256": "0e4d143d5e744929be49fe1fea03e81d90aa75c07f67c05427eb7db94c56d184",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/chapter-linq-query-semantics-csharp-preview.prompt.md"
+  },
+  {
+    "article": "src/content/chapters/method-design-csharp.md",
+    "hero": "chapter-method-design-csharp",
+    "source": "src/assets/heroes/chapter-method-design-csharp.webp",
+    "sourceWidth": 2132,
+    "sourceHeight": 738,
+    "sourceSha256": "5345e785e09477b355f1bd69ecedbd857a3bc2d5551ce682fb2ed6c4bb0077e1",
+    "preview": "src/assets/heroes/chapter-method-design-csharp-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 220752,
+    "previewSha256": "7b06c10f9027d5a36ce10e055cfa80b329e8b7312455a20e037895dd1eded2ae",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/chapter-method-design-csharp-preview.prompt.md"
+  },
+  {
+    "article": "src/content/chapters/method-design-python.md",
+    "hero": "chapter-method-design-python",
+    "source": "src/assets/heroes/chapter-method-design-python.webp",
+    "sourceWidth": 1916,
+    "sourceHeight": 821,
+    "sourceSha256": "5a24984b4d13236a0f0acd37fa0706aaeae8f2864a6f7a06a9d789db929af2b2",
+    "preview": "src/assets/heroes/chapter-method-design-python-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 98442,
+    "previewSha256": "194c0eecf432207f88be7d932cdb0789c2ea280eadf15b06d3273e21e21077b9",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/chapter-method-design-python-preview.prompt.md"
+  },
+  {
+    "article": "src/content/chapters/naming-conventions-csharp.md",
+    "hero": "chapter-naming-conventions-csharp",
+    "source": "src/assets/heroes/chapter-naming-conventions-csharp.webp",
+    "sourceWidth": 2056,
+    "sourceHeight": 765,
+    "sourceSha256": "dcd7047564cb290c2c5d1ab669df220346215d9af54fc2f93a3ab8194c509ea0",
+    "preview": "src/assets/heroes/chapter-naming-conventions-csharp-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 122284,
+    "previewSha256": "9cadd925495f38e669690f5f337f7e1b3d0a06a2d2c2e3409853e48ee65170be",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/chapter-naming-conventions-csharp-preview.prompt.md"
+  },
+  {
+    "article": "src/content/chapters/naming-conventions-python.md",
+    "hero": "chapter-naming-conventions-python",
+    "source": "src/assets/heroes/chapter-naming-conventions-python.webp",
+    "sourceWidth": 2006,
+    "sourceHeight": 784,
+    "sourceSha256": "54943fcc2e773b3c690de1edc5dfe8c5a4ff99f205698c1af836b0ba2f44a0f1",
+    "preview": "src/assets/heroes/chapter-naming-conventions-python-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 199910,
+    "previewSha256": "dbfa61c7d98cb3488d2d30b8287c8ae0ac5f7ffa10457bcb446a9a55ee9271c2",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/chapter-naming-conventions-python-preview.prompt.md"
+  },
+  {
+    "article": "src/content/chapters/type-annotations-python.md",
+    "hero": "chapter-type-annotations-python",
+    "source": "src/assets/heroes/chapter-type-annotations-python.webp",
+    "sourceWidth": 1942,
+    "sourceHeight": 809,
+    "sourceSha256": "a2e832b8a94cd8978f1a1160aa90c7a095e09fc4c6769fd1adb3b161bf6f7b7a",
+    "preview": "src/assets/heroes/chapter-type-annotations-python-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 112014,
+    "previewSha256": "60bae18fe73f7a29119435cb1d73c02c6d68d5cc57335c13d722b510418397d8",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/chapter-type-annotations-python-preview.prompt.md"
+  },
+  {
+    "article": "src/content/overviews/architecture-layers.md",
+    "hero": "pwi-architecture-layers",
+    "source": "src/assets/heroes/pwi-architecture-layers.webp",
+    "sourceWidth": 2056,
+    "sourceHeight": 765,
+    "sourceSha256": "b1018cfd709942eb576238ff9e0c7202343868490314c99d9eb58e4cca6443a1",
+    "preview": "src/assets/heroes/pwi-architecture-layers-preview.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 182834,
+    "previewSha256": "a7f75c8f8abe9f94479782c30a7e6b26f34dcceaa4f655326eccef4d3f8ba92a",
+    "derivation": "Built-in generated outpainting; full-frame downsample, WebP quality 82",
+    "inspection": {
+      "feedWidth": 366,
+      "phoneWidth": 320,
+      "sourceComparison": "Scene, cast, defining objects and relationships preserved"
+    },
+    "prompt": "src/assets/heroes/pwi-architecture-layers-preview.prompt.md"
+  }
+]

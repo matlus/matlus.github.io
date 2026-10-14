@@ -9,7 +9,7 @@
  * So originals stay out of the repo. This produces a WebP sized for the hero
  * slot, which is what gets committed.
  *
- *   node tools/prepare-image.mjs <source.png> <slug> [--role article|card|banner|section]
+ *   node tools/prepare-image.mjs <source.png> <slug> [--role article|card|preview|banner|section]
  *
  * Writes src/assets/heroes/<slug>.webp, which Astro then optimizes further per
  * breakpoint at build time.
@@ -23,6 +23,7 @@ import sharp from 'sharp';
 const SIZE_BY_ROLE = {
   article: { width: 1600, height: 534 },
   card: { width: 1200, height: 500 },
+  preview: { width: 1200, height: 675 },
   banner: { width: 2400, height: 840 },
   section: { width: 2400, height: 840 },
 };
@@ -37,7 +38,7 @@ async function main() {
       || (option !== undefined && option !== '--role')
       || (option === '--role' && roleArgument === undefined)
       || !Object.hasOwn(SIZE_BY_ROLE, role) || extra.length > 0) {
-    console.error('Usage: node tools/prepare-image.mjs <source.png> <slug> [--role article|card|banner|section]');
+    console.error('Usage: node tools/prepare-image.mjs <source.png> <slug> [--role article|card|preview|banner|section]');
     process.exitCode = 1;
     return;
   }
@@ -55,9 +56,15 @@ async function main() {
     throw new Error(`Source is ${width}x${height}; ${role} requires at least ${targetWidth}x${targetHeight}. Generate a larger original; do not upscale.`);
   }
 
+  // Preview inputs must already have their reviewed 16:9 composition.
+  if (role === 'preview' && Math.abs(width / height - 16 / 9) > 0.02) {
+    throw new Error(`Preview source is ${width}x${height}. Outpaint and inspect a 16:9 original before exporting; do not crop a hero or card.`);
+  }
+
   await mkdir(OUT_DIR, { recursive: true });
   await sharp(data, { raw: { width, height, channels: info.channels } })
-    .resize({ width: targetWidth, height: targetHeight, fit: 'cover', position: 'centre' })
+    .resize({ width: targetWidth, height: targetHeight, fit: role === 'preview' ? 'contain' : 'cover', position: 'centre',
+      background: { r: data[0], g: data[1], b: data[2], alpha: 1 } })
     .webp({ quality: QUALITY })
     .toFile(destination);
 

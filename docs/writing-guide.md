@@ -64,7 +64,18 @@ optimized assets and their exact prompts; verify the listing selects the compani
 Keep existing approved heroes for image-only card additions. Social preview images
 have their own dimensions and build process.
 
+The separate Discover/social preview exports at 1200 x 675, exact 16:9. After
+the title, hero and listing card are settled, use
+[the preview prompt](../prompts/generate-article-preview.md) to outpaint approved
+article artwork. Preserve its scene, cast and meaningful relationships and keep
+the approved hero/card. Save `<hero-name>-preview.webp` and its complete prompt,
+measure the export, and inspect it with the title at feed and phone sizes.
+The shared article layout aligns social and structured image metadata and links
+visible authorship to About. The build checks dimensions, provenance and built
+metadata; visual composition still requires inspection.
+
 ## Links and publication checks
+
 
 Use the destination article's exact title as the link text whenever linking to
 an article. Keep that title consistent across the site. Descriptions such as

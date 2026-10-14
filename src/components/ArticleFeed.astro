@@ -13,7 +13,7 @@ const { posts, pageSize = 6 } = Astro.props;
 
 <article-feed data-page-size={pageSize}>
   <ul class="card-grid" data-feed-results>
-    {posts.map((post) => (
+    {posts.map((post, index) => (
       <li data-feed-item>
         <ArticleCard
           href={`/writing/${post.id}/`}
@@ -26,6 +26,7 @@ const { posts, pageSize = 6 } = Astro.props;
           status={post.data.status}
           markdownHref={`/writing/${post.id}.md`}
           level={3}
+          imagePriority={index === 0}
         />
       </li>
     ))}

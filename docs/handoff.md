@@ -1,5 +1,31 @@
 # Handoff
 
+## Google Discover previews, issue 94, October 14, 2026
+
+Issue 94 is implemented on the isolated `codex/discover-94` branch, with
+publication authorized by Shiv. Shared article metadata now permits large
+previews and aligns absolute social/structured image URLs with 1200 x 675
+companions. Article bylines and structured authors link to About, which describes
+the source-grounded AI-assisted article workflow and Shiv's responsibility.
+
+All 134 published article/chapter/overview previews use generated outpainting of
+approved artwork. Heroes, listing cards, article prose, dates, URLs and ordering
+remain intact; all 1,373 protected file comparisons matched. The workflow and
+image guidance require future preview derivation, measured exports and feed/phone
+inspection. Source and generated-output checks enforce their metadata obligations.
+
+Mobile PageSpeed baselines and targeted image-loading fixes are recorded in
+[the implementation receipt](google-discover-issue-94.md). The public API was
+quota-limited, but browser reports completed; field data was unavailable. The
+build now reserves dimensions for local prose images without editing article
+sources. The six publication checks and preview/feed/card tests pass. Deployment
+must be verified against the exact authorized merge revision. Publication status
+and live verification are recorded in issue 94 and the implementation PR.
+
+The branch incorporates PR 95's homepage pagination fix. Its reserved grid rows,
+resize handling and stable paging controls remain intact alongside the new
+first-card image priority.
+
 ## Three closer listing cards, October 14, 2026
 
 Shiv selected Expense Analysis Parts Three and Four and Skills versus Controlled

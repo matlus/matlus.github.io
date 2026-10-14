@@ -128,12 +128,40 @@ alone do not require generating new images. Inspect the card again when the
 title, image or listing layout changes. Record the hero/card asset names,
 derivation method and rendered inspection in the publication receipt.
 
+### Discover and social preview
+
+Every published article also needs a separate **1200 x 675, 16:9 preview**.
+After the title, hero and listing card are settled, use
+[the preview generation prompt](../prompts/generate-article-preview.md) to outpaint
+approved article artwork. Choose the hero or approved card by its relevance and
+readability. Preserve the full scene, cast, meaningful objects and relationships;
+extend the existing environment into the new margins. Keep both approved images.
+
+Measure the generated original and optimized export; save the complete brief,
+refinements and export method beside `<hero-name>-preview.webp`. Inspect the
+preview with its title at about 366 x 206 pixels and 320 x 180 pixels. Compare it
+with the source for intact people, faces, hands, defining objects and connections.
+File dimensions alone do not establish a usable preview. Existing approved
+previews remain in use when they pass this inspection; a prose edit alone does
+not require regeneration. Record all three asset names and the inspection receipt.
+
+Confirm the built page permits large image previews, provides an absolute,
+accessible `og:image` with measured width/height and matching `twitter:image`,
+and identifies that same preview in article structured data. Check that the
+visible byline and structured author link to `/about/`. Preserve date values,
+field presence and their display behavior. The About page describes the actual
+article-production process separately from the byline.
+
 ### Automated checks
 
 Run the complete
 publication checks in [AGENTS.md](../AGENTS.md), including both writing audits.
 The build validates companion dimensions and prompts, then checks that both the
-homepage and Writing index render companion cards. Visual inspection remains a
+homepage and Writing index render companion cards. It also validates preview
+dimensions/provenance for published writing, chapters and overviews, then checks
+image URLs and bytes, matching social/structured metadata and authors in built
+article HTML. Run `npm run test:previews` for the generated-output validator.
+Visual inspection remains a
 separate required check.
 Review all flags in context. Resolve consequential evidence conflicts before
 publication, or state a justified scope limitation in the relevant explanation.

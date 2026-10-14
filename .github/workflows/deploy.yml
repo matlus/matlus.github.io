@@ -56,6 +56,9 @@ jobs:
       - name: Article card validation tests
         run: npm run test:images
 
+      - name: Article preview validation tests
+        run: npm run test:previews
+
       - name: Feedback Worker tests
         run: npm run test:feedback
 

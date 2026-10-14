@@ -52,7 +52,7 @@ in terms of the example's behavior or evidence, and keep source-comparison notes
 in editorial records. Follow the [standalone article workflow](prompts/transcript-to-standalone-teaching-article.md)
 and [writing guide](docs/writing-guide.md#standalone-articles).
 
-**Every article needs a hero and a listing-card derivative of that hero.**
+**Every article needs a hero, a listing card and a separate Discover/social preview.**
 New article heroes export at **1600 x 534 pixels, approximately 3:1**. Card images
 export at **1200 x 500 pixels, exact 12:5 (2.4:1)**. Use
 [the card prompt](prompts/generate-article-card.md) after the article title and hero
@@ -68,6 +68,15 @@ unless replacing them is part of the request; article headers show their natural
 ratio. Keep previously approved card compositions unless replacing them is requested.
 The build requires a 1200 x 500 companion and its prompt record for every
 non-draft article, including historical articles.
+The Discover/social preview exports at **1200 x 675 pixels, exact 16:9**.
+After the hero and card are settled, use
+[the preview prompt](prompts/generate-article-preview.md) to outpaint approved
+article artwork, preserving the full scene, cast and meaningful relationships.
+Keep approved heroes and cards. Save `<hero-name>-preview.webp` and its complete
+`.prompt.md` record beside them, measure the export, and inspect it with its title
+at feed/phone size. The shared article layout uses that companion for social and
+structured-data images. The build validates source companions and generated HTML,
+including absolute image URLs, measured dimensions and linked authorship.
 
 **When a hero scene includes a man, use Shiv's likeness by default.** Follow
 [the likeness guide](docs/image-and-diagram-guide.md#shivs-likeness-in-scenes)
