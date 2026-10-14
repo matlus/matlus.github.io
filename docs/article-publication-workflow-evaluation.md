@@ -135,7 +135,7 @@ remain separate from this workflow adoption.
 
 The workflow-only checkout passed typecheck with zero errors and warnings
 (34 existing hints), all six external-link tests, production build, full copy
-audit (720 files, zero hard findings, 62 existing advisories), tag validation
+audit (721 files, zero hard findings, 62 existing advisories), tag validation
 (178 tags), generated-link checks and whitespace checks. New workflow prose and
 prompts passed the professional-writing audit with zero flags; the handoff's
 three existing review flags were retained in their historical context.
@@ -146,3 +146,6 @@ During adoption, PRs #87 and #88 landed the approved typography and expense-seri
 date policy on `main`. Both changes were retained when resolving the handoff-note
 conflict. Candidate rendering and repository checks were refreshed with that
 typography. The workflow PR's final diff contains no article or deployment changes.
+
+Local trial records are retained at
+`D:/Source/Workspaces/matlus-article-publication-workflow-2026-10-13/verification/`.

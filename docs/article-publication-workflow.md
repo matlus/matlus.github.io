@@ -23,7 +23,8 @@ content collection. Use the article-review backlog for unresolved editorial work
 
 Record the article path and baseline revision, intended reader, central teaching
 claim, supplied author position, sources and revisions, related series parts,
-and protected material. Use the
+and protected material. Include applicable owner date and URL policies in the brief.
+Use the
 [blog-writing skill](../.agents/skills/blog-writing/SKILL.md). For video-derived
 articles, also use the
 [standalone transcript workflow](../prompts/transcript-to-standalone-teaching-article.md).
