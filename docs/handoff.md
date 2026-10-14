@@ -1,5 +1,45 @@
 # Handoff
 
+## Homepage series grouping, October 13, 2026
+
+Shiv requested uninterrupted homepage blocks for Expense Analysis and Programming
+to Exceptions. The feed places each series at its newest member's publication or
+update position, with parts in reverse reading order. Explicit part order resolves
+the equal dates on Programming to Exceptions. Standalone posts retain the existing
+date sorting. Pipeline Breadcrumbs remains a separate article outside the expense
+series. Pagination continues through the same ordered feed.
+
+Skills versus Controlled Workflows predates the expense series (June 19 versus
+September 30). Its October 9 update previously interrupted the parts. It now
+follows the complete expense block in the newest-first feed, with its dates intact.
+
+This changes listing behavior only. Article content, artwork and all date values
+and field presence remain untouched. Homepage ordering tests cover interruptions,
+equal dates, revisions, missing parts, preservation and standalone sorting; Pages
+deployment runs them before building.
+
+Shiv also requested a title that makes Pipeline Breadcrumbs understandable in a
+listing. Its title is now **Logs and Artifacts: Pipeline Breadcrumbs**. The existing
+URL, October 5 dates, description, tags, body and approved artwork remain intact.
+The publication register uses the full new article title; references to the
+library retain its own name.
+Independent metadata extraction read the complete article and confirmed the
+new title, existing description and all six tags.
+
+The publication workflow now explicitly runs the card generation prompt after
+the title and hero are settled, records the derivation and dimensions, and
+inspects the complete card with its title at desktop and phone sizes. Approved
+companions remain in use. The build checks card rendering on both the homepage
+and Writing index; visual composition still requires inspection.
+
+Shiv prefers warm, moderately saturated colour with gentle brightness. Expense
+Analysis Part Two supplies the colour reference, with brightness slightly softer.
+The image guide and card prompt require hero/card colour consistency and preserve
+every person and meaningful companion in the card, even when recomposing.
+Existing approved images remain untouched.
+The approved Breadcrumbs pair illustrates a closer card with the same situation:
+cast, environment, defining props and shared activity remain recognizable.
+
 ## Recent article workflow pass, October 13, 2026
 
 Shiv authorized applying the publication workflow to newer articles and publishing

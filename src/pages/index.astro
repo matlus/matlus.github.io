@@ -2,13 +2,9 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ArticleFeed from '../components/ArticleFeed.astro';
+import { orderHomepagePosts } from '../lib/homepage-posts';
 
-const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort((left, right) =>
-  Math.max(right.data.datePublished.getTime(), right.data.dateModified?.getTime() ?? 0) -
-  Math.max(left.data.datePublished.getTime(), left.data.dateModified?.getTime() ?? 0) ||
-  right.data.datePublished.getTime() - left.data.datePublished.getTime() ||
-  left.data.title.localeCompare(right.data.title),
-);
+const posts = orderHomepagePosts(await getCollection('writing', ({ data }) => !data.draft));
 ---
 
 <BaseLayout
@@ -22,7 +18,7 @@ const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort((
   </header>
   <section class="page latest" aria-labelledby="latest-articles-heading">
     <h2 id="latest-articles-heading">Latest articles</h2>
-    <p class="muted">New and updated articles, most recent first.</p>
+    <p class="muted">New and updated articles, most recent first. Series parts stay together.</p>
     <ArticleFeed posts={posts} />
   </section>
 </BaseLayout>

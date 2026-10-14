@@ -2,7 +2,7 @@
 
 The owner authorized publication on October 5, 2026, including commit, push,
 PR merge, live verification and a reciprocal repository link. The canonical
-article is [Pipeline Breadcrumbs](https://matlus.com/writing/pipeline-breadcrumbs/).
+article is [Logs and Artifacts: Pipeline Breadcrumbs](https://matlus.com/writing/pipeline-breadcrumbs/).
 Both publication and modification dates are October 5, 2026.
 
 ## Source and editorial review
