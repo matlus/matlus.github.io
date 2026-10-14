@@ -1,5 +1,22 @@
 # Handoff
 
+## Shared Google typography, October 13, 2026
+
+Shiv approved applying the Gemini typography experiment across the website and
+publishing through commit, push, PR and merge. The approved version uses the
+full article width with consistent left and right boundaries for paragraphs,
+headings, callouts, tables and code fences. The hero and body share a left edge.
+
+The shared fonts are self-hosted Google Sans Flex and Google Sans Code. Body
+text is 17px with a 24px line height and 16px paragraph gaps. Article headings
+are 20px with a 24px line height, 40px above and 8px below. Code text is 15px.
+The Flex shape settings and font provenance are recorded in
+[the typography reference](typography.md). The style guide reflects these rules.
+
+Article and chapter prose, code examples, metadata and images are preserved.
+Publication uses an isolated checkout to retain the primary checkout's drafts
+and artwork. The publication PR records checks and deployment verification.
+
 ## Expense Analysis, Part Three teaching revision, October 13, 2026
 
 Shiv approved revising Part Three and publishing through commit, push, PR and

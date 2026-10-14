@@ -756,6 +756,19 @@ const nav = NAV.map((item) => {
       padding: var(--space-3xs);
     }
   }
+  @media (max-width: 360px) {
+    .site-nav__inner {
+      gap: calc(var(--space-3xs) / 2);
+    }
+
+    .site-nav__mark {
+      width: var(--space-l);
+    }
+
+    .site-nav__tagline {
+      font-size: 0.75rem;
+    }
+  }
 </style>
 
 <script>
