@@ -26,6 +26,8 @@ interface Props {
   readonly videos?: readonly Recording[] | undefined;
   readonly audio?: Recording | undefined;
   readonly level?: 2 | 3;
+  /** Use for the first visible feed image, which can be the mobile LCP element. */
+  readonly imagePriority?: boolean;
 }
 
 const {
@@ -42,6 +44,7 @@ const {
   videos = [],
   audio,
   level = 2,
+  imagePriority = false,
 } = Astro.props;
 
 const Heading = `h${level}` as 'h2' | 'h3';
@@ -62,9 +65,10 @@ const cardImage = hero ? cardImageFor(hero) : undefined;
         src={cardImage ?? hero}
         alt=""
         class="card__thumb"
-        widths={[480, 800, 1200]}
+        widths={[480, 640, 800, 1200]}
         sizes="(max-width: 48rem) 100vw, 36rem"
-        loading="lazy"
+        loading={imagePriority ? 'eager' : 'lazy'}
+        fetchpriority={imagePriority ? 'high' : undefined}
       />
     )
   }

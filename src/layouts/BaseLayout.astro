@@ -14,12 +14,19 @@ interface Props {
   readonly isHome?: boolean;
   /** Published path of the raw markdown twin, where one exists. */
   readonly markdownHref?: string;
+  /** Existing indexing restrictions, combined with large-preview permission. */
+  readonly robots?: string;
+  readonly preview?: ImageMetadata | undefined;
 }
 
-const { title, description, isHome = false, markdownHref } = Astro.props;
+const { title, description, isHome = false, markdownHref, robots = '', preview } = Astro.props;
 
 const site = Astro.site ?? new URL('https://matlus.com');
 const canonical = new URL(Astro.url.pathname, site);
+const previewUrl = preview ? new URL(preview.src, site).href : undefined;
+// Keep restrictions such as noindex, nofollow, and nosnippet when supplied.
+const robotsContent = [...robots.split(',').map((value) => value.trim())
+  .filter((value) => value && !/^max-image-preview:/i.test(value)), 'max-image-preview:large'].join(', ');
 
 const SAME_AS = [
   'https://github.com/matlus',
@@ -30,7 +37,7 @@ const personLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: 'Shiv Kumar',
-  url: site.href,
+  url: new URL('/about/', site).href,
   sameAs: SAME_AS,
 };
 ---
@@ -42,6 +49,7 @@ const personLd = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content={robotsContent} />
     <link rel="canonical" href={canonical.href} />
 
     <meta property="og:type" content={isHome ? 'website' : 'article'} />
@@ -49,6 +57,12 @@ const personLd = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical.href} />
     <meta name="twitter:card" content="summary_large_image" />
+    {preview && previewUrl && <>
+      <meta property="og:image" content={previewUrl} />
+      <meta property="og:image:width" content={String(preview.width)} />
+      <meta property="og:image:height" content={String(preview.height)} />
+      <meta name="twitter:image" content={previewUrl} />
+    </>}
 
     {
       markdownHref && (

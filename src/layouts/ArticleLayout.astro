@@ -6,6 +6,7 @@ import ArticleResources from '../components/ArticleResources.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import type { MarkdownHeading } from 'astro';
 import { TAGS, tagHref } from '../data/tags';
+import { previewImageFor } from '../lib/heroes';
 
 interface Crumb {
   readonly label: string;
@@ -71,6 +72,8 @@ const tagsBySlug = new Map<string, (typeof TAGS)[number]>(
 
 const site = Astro.site ?? new URL('https://matlus.com');
 const canonical = new URL(Astro.url.pathname, site);
+const preview = hero ? previewImageFor(hero) : undefined;
+if (!preview) throw new Error(`Article requires a representative 16:9 preview: ${canonical.pathname}`);
 
 const articleLd = {
   '@context': 'https://schema.org',
@@ -79,12 +82,12 @@ const articleLd = {
   description,
   datePublished: datePublished.toISOString(),
   dateModified: (dateModified ?? datePublished).toISOString(),
-  author: { '@type': 'Person', name: 'Shiv Kumar', url: site.href },
+  author: { '@type': 'Person', name: 'Shiv Kumar', url: new URL('/about/', site).href },
   url: canonical.href,
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonical.href },
   inLanguage: 'en',
   keywords: tags.map((slug) => tagsBySlug.get(slug)?.label ?? slug).join(', '),
-  ...(hero ? { image: new URL(hero.src, site).href } : {}),
+  image: new URL(preview.src, site).href,
 };
 
 const breadcrumbLd = {
@@ -99,7 +102,7 @@ const breadcrumbLd = {
 };
 ---
 
-<BaseLayout title={`${title} | Matlus`} description={description} markdownHref={markdownHref}>
+<BaseLayout title={`${title} | Matlus`} description={description} markdownHref={markdownHref} preview={preview}>
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(articleLd)} />
     <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
@@ -116,7 +119,7 @@ const breadcrumbLd = {
     <header class="article-head">
       {
         hero
-          ? <Image src={hero} alt="" class="article-head__hero" widths={[640, 1024, 1600]} sizes="(max-width: 72rem) 100vw, 72rem" loading="eager" />
+          ? <Image src={hero} alt="" class="article-head__hero" widths={[640, 800, 1024, 1600]} sizes="(max-width: 93rem) 100vw, 93rem" loading="eager" fetchpriority="high" />
           : <PlaceholderImage seed={seed} ratio="wide" label="" />
       }
 
@@ -125,6 +128,8 @@ const breadcrumbLd = {
         <p class="article-head__lede">{description}</p>
 
         <p class="article-head__meta">
+          <span>By <a href="/about/" rel="author">Shiv Kumar</a></span>
+          {' '}
           {
             dateModified && (evergreen || dateModified.getTime() > datePublished.getTime())
               ? <>Published {fmt(datePublished)} · Updated {fmt(dateModified)}</>

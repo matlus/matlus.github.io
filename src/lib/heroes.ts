@@ -19,3 +19,11 @@ export function cardImageFor(hero: ImageMetadata): ImageMetadata | undefined {
     && heroes[key.replace(/\.webp$/, '-card.webp')] !== undefined);
   return source ? heroes[source.replace(/\.webp$/, '-card.webp')]?.default : undefined;
 }
+
+/** Preview companions retain their own 16:9 composition, separate from headers/cards. */
+export function previewImageFor(hero: ImageMetadata): ImageMetadata | undefined {
+  const source = Object.keys(heroes).find((key) =>
+    heroes[key]?.default.src === hero.src
+    && heroes[key.replace(/\.webp$/, '-preview.webp')] !== undefined);
+  return source ? heroes[source.replace(/\.webp$/, '-preview.webp')]?.default : undefined;
+}

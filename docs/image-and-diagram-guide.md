@@ -201,7 +201,7 @@ ink sketch**. Add **industrial design sketch** only when machinery is the subjec
 | Article listing card | 12:5 (2.4:1) | 1200 x 500 |
 | Homepage banner | 20:7 | 2400 x 840 |
 | Tag / section hero | 20:7 | 2400 x 840 |
-| OG social card | 40:21 | 1200 x 630, generated at build time |
+| Discover / social article preview | 16:9 | 1200 x 675 |
 
 Request the role's dimensions and ratio explicitly. For heroes, 1600 / 534 is
 about 2.996:1; the export dimensions are authoritative. These are website export
@@ -223,10 +223,28 @@ roughly 365 x 152 pixels on the desktop grid, scaling proportionally on phones.
 Every published article has a companion. The rendering fallback can still fit a
 hero completely, but the build rejects a missing companion for a non-draft article.
 
+### Required Discover/social preview workflow
+
+After the title, hero and card are settled, use
+[the preview brief](../prompts/generate-article-preview.md) to outpaint approved
+article artwork into a separate 16:9 **1200 x 675** preview. Choose the hero or
+approved card by its relevance and readable composition. Preserve the full scene,
+every person, meaningful objects and relationships. Extend the existing background
+instead of cropping the source to fill the frame. Preserve its brightness and colour.
+
+Save `<hero-name>-preview.webp` and the complete `.prompt.md` beside the hero,
+including measured source/output dimensions, references, refinements and export
+method. The original hero and card remain unchanged. Inspect the export with the
+article title at about 366 x 206 and 320 x 180 pixels, comparing cast, objects and
+connections with the source. The build validates these companions for published
+articles, corpus chapters and overview pages using the article layout. Its HTML
+check verifies accessible absolute image URLs and consistent social/structured
+metadata. Visual composition still needs inspection.
+
 ### Required article-card workflow
 
 Every new article, including a newly prepared historical article, needs both image
-roles. Settle the article title and hero, then read the final article and inspect
+roles plus a separate Discover/social preview. Settle the article title and hero, then read the final article and inspect
 the hero. Use
 [the reusable card brief](../prompts/generate-article-card.md) with the hero as an
 edit target and outpaint into the card frame. Preserve the complete scene,
@@ -245,7 +263,8 @@ Save the companion as `src/assets/heroes/<hero-name>-card.webp` and its full bri
 as `<hero-name>-card.prompt.md`. Use the frontmatter's **hero asset name**, which
 may differ from the article slug. The shared ArticleCard component resolves this
 companion automatically on the homepage, writing index, topic and related lists.
-No second frontmatter field is needed. OG social cards keep their separate process.
+No second frontmatter field is needed. Discover/social previews use the separate
+workflow below.
 
 ```bash
 node tools/prepare-image.mjs <hero-original.png> <hero-name> --role article
