@@ -1,37 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1090" viewBox="0 0 720 1090" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1640" viewBox="0 0 720 1640" role="img" aria-labelledby="title desc">
 <title id="title">The parts of an eval</title>
 <desc id="desc">The same task runs repeatedly in fresh sessions. Saved outputs are graded against a reference key by code or a model judge with a rubric. Each check's pass rate is compared with its chosen minimum; every check must meet its minimum to pass the gate. The reference key stays outside the trial's inputs.</desc>
-<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#637a8b"/></marker></defs>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="9" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#637a8b"/></marker></defs>
 <style>text{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#213c50}.heading{font-size:27px;font-weight:700}.label{font-size:23px;font-weight:650}.detail{font-size:19px}.small{font-size:17px}.path{fill:none;stroke:#637a8b;stroke-width:2.5;marker-end:url(#arrow)}.box{stroke:#91a8b9;stroke-width:1.5}</style>
-<rect width="720" height="1090" rx="20" fill="#faf9f4"/>
+<rect width="720" height="1640" rx="20" fill="#faf9f4"/>
 <text x="360" y="47" class="heading" text-anchor="middle">The parts of an eval</text>
 <rect x="38" y="75" width="644" height="100" rx="17" fill="#e4eef9" class="box"/>
 <text x="360" y="110" class="label" text-anchor="middle">Task + system under test</text>
 <text x="360" y="142" class="detail" text-anchor="middle">Expense log, budget note, prompt or workflow</text>
-<path d="M360 175V210" class="path"/>
-<rect x="38" y="215" width="644" height="145" rx="17" fill="#e3f2eb" class="box"/>
-<text x="360" y="251" class="label" text-anchor="middle">Repeated runs</text>
-<text x="360" y="281" class="detail" text-anchor="middle">Same input, fresh session each time</text>
-<g fill="#ffffff" stroke="#8faea2" stroke-width="1.5"><rect x="105" y="305" width="70" height="32" rx="7"/><rect x="215" y="305" width="70" height="32" rx="7"/><rect x="325" y="305" width="70" height="32" rx="7"/><rect x="435" y="305" width="70" height="32" rx="7"/><rect x="545" y="305" width="70" height="32" rx="7"/></g>
-<text x="140" y="327" class="small" text-anchor="middle">1</text><text x="250" y="327" class="small" text-anchor="middle">2</text><text x="360" y="327" class="small" text-anchor="middle">3</text><text x="470" y="327" class="small" text-anchor="middle">4</text><text x="580" y="327" class="small" text-anchor="middle">5</text>
-<path d="M360 360V392" class="path"/>
-<rect x="38" y="398" width="644" height="82" rx="17" fill="#e4eef9" class="box"/>
-<text x="360" y="430" class="label" text-anchor="middle">Save each output</text>
-<text x="360" y="459" class="detail" text-anchor="middle">Written answer, structured result and activity</text>
-<path d="M360 480V507H20V606H195" class="path"/><path d="M360 507H700V606H525" class="path"/>
-<rect x="38" y="525" width="644" height="65" rx="14" fill="#fff1cc" class="box"/>
-<text x="360" y="551" class="label" text-anchor="middle">Reference key + checks</text>
-<text x="360" y="576" class="small" text-anchor="middle">Known answers; kept outside the trial's inputs</text>
-<path d="M120 590V604" class="path"/><path d="M600 590V604" class="path"/>
-<rect x="38" y="612" width="314" height="142" rx="17" fill="#e3f2eb" class="box"/>
-<text x="195" y="649" class="label" text-anchor="middle">Code grader</text>
-<text x="195" y="682" class="detail" text-anchor="middle">Amounts, counts,</text><text x="195" y="710" class="detail" text-anchor="middle">categories and IDs</text><text x="195" y="737" class="small" text-anchor="middle">Extract prose facts first</text>
-<rect x="368" y="612" width="314" height="142" rx="17" fill="#fae7e0" class="box"/>
-<text x="525" y="649" class="label" text-anchor="middle">Model judge</text><text x="525" y="682" class="detail" text-anchor="middle">Findings supported</text><text x="525" y="710" class="detail" text-anchor="middle">by the numbers?</text><text x="525" y="737" class="small" text-anchor="middle">Apply a narrow rubric</text>
-<path d="M195 754V779H360V808" class="path"/><path d="M525 754V779H360" fill="none" stroke="#637a8b" stroke-width="2.5"/>
-<rect x="38" y="815" width="644" height="96" rx="17" fill="#e4eef9" class="box"/>
-<text x="360" y="852" class="label" text-anchor="middle">Pass rate for each check</text><text x="360" y="884" class="detail" text-anchor="middle">Passed runs ÷ all runs: 4 ÷ 5 = 80%</text>
-<path d="M360 911V943" class="path"/>
-<rect x="38" y="950" width="644" height="103" rx="17" fill="#fff1cc" class="box"/>
-<text x="360" y="987" class="label" text-anchor="middle">Gate</text><text x="360" y="1020" class="detail" text-anchor="middle">Every check reaches its chosen minimum</text>
+<path d="M360 175V275" class="path"/>
+<rect x="38" y="275" width="644" height="145" rx="17" fill="#e3f2eb" class="box"/>
+<text x="360" y="311" class="label" text-anchor="middle">Repeated runs</text>
+<text x="360" y="341" class="detail" text-anchor="middle">Same input, fresh session each time</text>
+<g fill="#ffffff" stroke="#8faea2" stroke-width="1.5"><rect x="105" y="365" width="70" height="32" rx="7"/><rect x="215" y="365" width="70" height="32" rx="7"/><rect x="325" y="365" width="70" height="32" rx="7"/><rect x="435" y="365" width="70" height="32" rx="7"/><rect x="545" y="365" width="70" height="32" rx="7"/></g>
+<text x="140" y="387" class="small" text-anchor="middle">1</text><text x="250" y="387" class="small" text-anchor="middle">2</text><text x="360" y="387" class="small" text-anchor="middle">3</text><text x="470" y="387" class="small" text-anchor="middle">4</text><text x="580" y="387" class="small" text-anchor="middle">5</text>
+<path d="M360 420V520" class="path"/>
+<rect x="38" y="520" width="644" height="82" rx="17" fill="#e4eef9" class="box"/>
+<text x="360" y="552" class="label" text-anchor="middle">Save each output</text>
+<text x="360" y="581" class="detail" text-anchor="middle">Written answer, structured result and activity</text>
+<path d="M360 602C360 660 20 660 20 720V875C20 930 195 930 195 995" class="path"/><path d="M360 602C360 660 700 660 700 720V875C700 930 525 930 525 995" class="path"/>
+<rect x="38" y="770" width="644" height="65" rx="14" fill="#fff1cc" class="box"/>
+<text x="360" y="796" class="label" text-anchor="middle">Reference key + checks</text>
+<text x="360" y="821" class="small" text-anchor="middle">Known answers; kept outside the trial's inputs</text>
+<path d="M360 835C360 900 195 920 195 995" class="path"/><path d="M360 835C360 900 525 920 525 995" class="path"/>
+<rect x="38" y="995" width="314" height="142" rx="17" fill="#e3f2eb" class="box"/>
+<text x="195" y="1032" class="label" text-anchor="middle">Code grader</text>
+<text x="195" y="1065" class="detail" text-anchor="middle">Amounts, counts,</text><text x="195" y="1093" class="detail" text-anchor="middle">categories and IDs</text><text x="195" y="1120" class="small" text-anchor="middle">Extract prose facts first</text>
+<rect x="368" y="995" width="314" height="142" rx="17" fill="#fae7e0" class="box"/>
+<text x="525" y="1032" class="label" text-anchor="middle">Model judge</text><text x="525" y="1065" class="detail" text-anchor="middle">Findings supported</text><text x="525" y="1093" class="detail" text-anchor="middle">by the numbers?</text><text x="525" y="1120" class="small" text-anchor="middle">Apply a narrow rubric</text>
+<path d="M195 1137C195 1210 360 1225 360 1305" class="path"/><path d="M525 1137C525 1210 360 1225 360 1305" class="path"/>
+<rect x="38" y="1305" width="644" height="96" rx="17" fill="#e4eef9" class="box"/>
+<text x="360" y="1342" class="label" text-anchor="middle">Pass rate for each check</text><text x="360" y="1374" class="detail" text-anchor="middle">Passed runs ÷ all runs: 4 ÷ 5 = 80%</text>
+<path d="M360 1401V1500" class="path"/>
+<rect x="38" y="1500" width="644" height="103" rx="17" fill="#fff1cc" class="box"/>
+<text x="360" y="1537" class="label" text-anchor="middle">Gate</text><text x="360" y="1570" class="detail" text-anchor="middle">Every check reaches its chosen minimum</text>
 </svg>

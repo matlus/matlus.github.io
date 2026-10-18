@@ -50,8 +50,16 @@ immediately recognisable.
 Use a predominantly frontal or very slightly elevated view. Arrange the objects
 in a clear diagrammatic composition with generous spacing. Keep depth shallow
 and consistent across the image. Use raised arrows, tracks, or connectors
-wherever the scene requires relationships. Make the intended reading order
-immediately apparent.
+wherever the scene requires relationships. Aligned top-to-bottom arrows are straight
+and perpendicular to both box edges. Offset connections, including branches,
+merges and routes around components, follow smooth curves.
+For top-to-bottom flows, leave generous vertical gaps between successive levels
+and increase canvas height so curves and arrowheads have room. Avoid right-angle
+turns and tight rounded elbows. Make the intended reading order immediately apparent.
+Connect arrows at edge centers, bottom center to top center for downward flow.
+Branches share a source anchor; converging paths share a destination anchor.
+Allow clear overlap near shared anchors. Use another edge's center when direction
+requires it.
 
 COLOUR:
 Use charcoal, midnight blue, slate blue-grey, and cool silver for structural

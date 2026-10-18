@@ -1,5 +1,46 @@
 # Handoff
 
+## Expense Analysis Part Four diagram spacing, October 17, 2026
+
+The owner identified Part Four as the article needing more vertical room in its
+flow diagrams. The eval anatomy and two-verifications SVGs now leave wider gaps
+between rows. Aligned vertical connections are straight; offset, branching and
+merging connections use smooth curves ending in downward arrowheads. Labels, colours,
+box sizes and connection meanings are retained. Article text and metadata,
+including both October 12 dates, remain unchanged. Breadcrumbs diagrams remain
+at their original versions. The owner authorized commit, push, PR and merge.
+Build and typecheck pass. Desktop and phone inspections confirm the revised
+curves; phone diagrams retain their existing horizontal scrolling within figures.
+The owner's endpoint clarification is applied throughout both diagrams: arrows
+start and finish at edge centers, with shared anchors for branches and merges.
+The reference-key arrows share bottom center and enter each grader's top center;
+the grader outputs converge at the pass-rate box's top center. Existing box
+geometry and vertical spacing are preserved. Shared diagram guidance records
+the same anchoring convention and the straight-versus-curved connection rule.
+
+## Pipeline Breadcrumbs synchronization, October 17, 2026
+
+The owner requested synchronizing **Logs and Artifacts: Pipeline Breadcrumbs**
+with its reviewed public source. The article now pins
+`ccdc37fa80cd54e8bbcbc9f6ed12e8cb2c09bf30`, uses the current sink names and blob
+constructor, and describes the real gateway with substituted HTTP transports.
+Small lifecycle and manifest-failure clarifications match that implementation.
+Both dates remain exactly October 5; the article remains sixth on the homepage.
+
+The owner requested more vertical room between diagram levels and smooth curved
+arrows as guidance for future diagrams, then clarified that this article's mainly
+horizontal diagrams should stay unchanged. Both article SVGs are restored to their
+original versions. The image guide and four diagram prompts retain the future
+flow guidance. The article's hero and card also remain unchanged.
+
+Fresh teaching/evidence review, independent comparison and metadata extraction
+are complete. The example, four demo profiles and 144 source tests pass; site
+checks and rendered inspection are recorded in the
+[synchronization receipt](pipeline-breadcrumbs-synchronization-2026-10-17.md).
+The full-folder copy audit retains 21 pre-existing hard findings in unrelated
+untracked narration trials in the primary checkout. The owner authorized
+commit, push, PR and merge; publication uses an isolated current-main checkout.
+
 ## Applied AI Engineering tags, October 14, 2026
 
 Shiv approved Applied AI Engineering for AI applications and workflows. Seven
