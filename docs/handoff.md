@@ -25,7 +25,8 @@ with its reviewed public source. The article now pins
 `ccdc37fa80cd54e8bbcbc9f6ed12e8cb2c09bf30`, uses the current sink names and blob
 constructor, and describes the real gateway with substituted HTTP transports.
 Small lifecycle and manifest-failure clarifications match that implementation.
-Both dates remain exactly October 5; the article remains sixth on the homepage.
+Both dates remain exactly October 5; the article retains its relative homepage
+order among the previously published posts.
 
 The owner requested more vertical room between diagram levels and smooth curved
 arrows as guidance for future diagrams, then clarified that this article's mainly

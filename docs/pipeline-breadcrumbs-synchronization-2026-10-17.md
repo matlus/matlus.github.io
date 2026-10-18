@@ -97,15 +97,17 @@ comparison, metadata and logs are retained outside the repository under
   The tracked copy audit passes. The full-folder audit has 21 existing hard
   findings in unrelated untracked narration trials in the primary checkout;
   those files remain untouched. The isolated publication checkout's full-folder
-  audit passes with zero hard findings across 861 files.
+  audit passes with zero hard findings across 886 files after the upstream merge.
 - Inspected the final desktop and 390-pixel phone renderings, both figures,
   captions, the runnable example, setup instructions, contents links and tables.
   Images load, code scrolls within its blocks and the page has no horizontal
   overflow. Wide diagrams retain their existing links to full-size SVGs.
 - Baseline and candidate builds have identical article heading IDs and rendered
   date values. The page still displays Published October 2026 without an Updated
-  label. All 123 homepage article links retain identical order; this article
-  remains sixth. The generated Markdown twin contains the updated API and pin.
+  label. In the initial 123-article baseline, all homepage article links retain
+  identical order and this article remains sixth. A separate new article was
+  published during this publication; this edit preserves the relative order of
+  existing posts. The generated Markdown twin contains the updated API and pin.
 
 Article SHA-256 before:
 `16007414870a13d96190f2dcb85dbafabfedd991e96a511e095e08c5f1afd1b7`.
@@ -113,14 +115,15 @@ Article SHA-256 after:
 `e0d770cefabaaccd0a7f114d7b544f8b38d06d51e99761d03a621bf5823b0208`.
 
 Publication is authorized and prepared in an isolated checkout of current remote
-main at 5e7e96ae53736c35180e4faa779465c541cfb346. Only the reviewed article,
+main at 5e7e96ae53736c35180e4faa779465c541cfb346, then integrates the separately
+published article from main at 7340fd573d4aebab5b0a4799c59856cf85bbeeb3. Only the reviewed article,
 Part Four diagrams, shared diagram guidance and this task's editorial records
 are included. The publication PR records checks, merge identity, deployment and
 live verification. The source repository and unrelated local changes are preserved.
 
 All six publication checks pass in that isolated checkout. The 49 site tests pass
 across external-link policy, homepage order, cards, previews and feedback.
-The build validates all 123 listing cards, 134 preview companions and 329 indexed
+The build validates all 124 listing cards, 135 preview companions and 331 indexed
 pages. The source README's existing article backlink is verified. Full logs and
 the before/after live verification manifest are retained under
 `D:/Source/Workspaces/matlus-breadcrumbs-publication-2026-10-17/`.
