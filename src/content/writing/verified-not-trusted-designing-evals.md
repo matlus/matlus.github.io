@@ -45,6 +45,16 @@ The direction is to keep as much grading as possible in deterministic code. A mo
 
 This article develops that design using an expense-analysis eval implemented in Python. We will follow one requirement from the user's input through a written grading rubric, a separate model judge, a validated result and the final acceptance decision. Along the way, we will use code to verify amounts and tool activity, examine failures and distinguish what the evaluation measures from what it leaves unmeasured.
 
+The Python excerpts assume you can read dataclasses, type annotations and ordinary test code, and that you know how an assistant requests a tool call. The eval vocabulary is introduced as we need it.
+
+Here is the route through the example:
+
+1. Establish the required outcome and its reference facts.
+2. Choose deterministic checks or a rubric and judge for each obligation.
+3. Repeat isolated trials and turn per-check results into an acceptance decision.
+4. Report the evaluated configuration, then apply the same evidence standard to published skills.
+5. Preserve and diagnose failures, regrade saved answers, and decide what the application itself must enforce.
+
 The implementation is in [Skills and Evals](https://github.com/matlus/Skills-and-Evals/tree/29104e777bd33bc707f0662573631d6682c70e9e). The examples below refer to that revision. You can understand the design without opening the repository.
 
 ## Start with the outcome the user requires
@@ -60,7 +70,7 @@ The budget notes give us two targets:
 
 The user also worries that shopping might quietly reach $2,000. The notes explicitly say the other categories have no numeric budget.
 
-The requested result includes monthly totals by category, comparisons against those targets, data-cleaning notes and exactly three important findings. The prompt requires the system to compute its totals using code and to present the tables before interpreting them.
+The requested result includes monthly totals by category, comparisons against those targets, data-cleaning notes and exactly three important findings. We will work through the `robust-tables-first` prompt, which requires the system to compute its totals using code and to present the tables before interpreting them. The other prompt variants are compared later against the same checks.
 
 These requirements lead to several different questions. Is August dining $398.69? Does the refund reduce spending? Did the assistant actually execute Python? Did it invent a travel budget? Do its findings agree with both its tables and the source facts?
 
@@ -218,6 +228,8 @@ The check is defined as data:
 }
 ```
 
+The `minimum_pass_rate` of `0.8` is a threshold across repeated trials: this check must pass in at least four of five attempts. It does not assign an 80% confidence to a single tool call. We will return to how the per-check thresholds determine acceptance.
+
 The grader selects shell calls, matches their command text against the regular expression and requires at least one matching call to have succeeded. A failed or unfinished call does not satisfy it. The provider adapters extract the command itself, excluding a model's descriptive narration of the call.
 
 Be precise about what that proves. The implemented predicate establishes that a successful shell command matching `\bpython` was recorded. It does not inspect the program's arithmetic or establish that its output supplied every total in the final answer. The description expresses the intended behavior; the predicate gives us the actual evidence the check collects.
@@ -329,7 +341,9 @@ There are two comparisons here. Agreement with the answer's tables establishes i
 
 The policy alternatives matter again. If the rubric supplied only one travel total, it could reject an answer that legitimately leaves Uber in Transport. The shopping facts likewise explain what changes when books or Steam are placed in Shopping.
 
-Here are the four shopping policies accepted by this reference. The table expands the rubric's paragraphs and its stated $47.58 Steam adjustment. Three-month totals are summed to the cent here; the rubric rounds those period totals for its narrative reference facts.
+The policy choice changes the budget finding: putting books in Shopping takes August from below the roughly $1,200 target to $18.31 above it. Moving Steam changes June only. Read the four accepted policies below with that August decision in mind.
+
+The table expands the rubric's paragraphs and its stated $47.58 Steam adjustment. Three-month totals are summed to the cent here; the rubric rounds those period totals for its narrative reference facts.
 
 | Shopping policy | June | July | August | Three-month total |
 | --- | --- | --- | --- | --- |
@@ -440,6 +454,8 @@ The repository's [README results](https://github.com/matlus/Skills-and-Evals/blo
 
 The rate shown is the lowest observed pass rate among the suite's 16 checks for that configuration. The full scorecards retain every check's rate. The gate requires every check to reach 80%.
 
+The model names are the identifiers recorded for these runs. They identify this historical comparison; selecting a similarly named model today would require its own evaluation.
+
 | Provider | Model identifier | Effort | Lowest per-check pass rate | Gate |
 | --- | --- | --- | --- | --- |
 | Anthropic | `claude-opus-5-5` | medium | 5/5 (100%) | Passed |
@@ -482,6 +498,8 @@ The repository compares three prompt versions against the same inputs and gradin
 These versions change instructions. They demonstrate how to evaluate a proposed prompt change while keeping the examination fixed. They are not a controlled study of equivalent paraphrases.
 
 If you also need to know whether the application tolerates different user phrasings, make that a separate set of cases. Preserve the intended business requirement, vary the request wording deliberately and inspect whether the outcome still meets it. Keep that question separate from whether adding new instructions improves the result.
+
+For example, construct two requests: "Show monthly category totals and comparisons with the supplied budgets, then give exactly three supported findings" and "Before explaining exactly three findings supported by the totals, show each month's spending by category against my budget notes." Give both the same expense log and budget notes, tools, cleaning and category rules, and grading criteria. Run each repeatedly with the same model configuration. That tests sensitivity to wording. Adding "preserve refunds as negative amounts" to only one request would add a procedural instruction and change the comparison. This is a proposed experiment; the results above do not measure it.
 
 When comparing models or effort settings, retain the same cases, reference criteria and grader configuration. Compare each configuration against those criteria and keep its observed pass rates separately.
 
