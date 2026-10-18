@@ -18,6 +18,14 @@ was removed or sections moved. Compare tested prompts, code, recorded outputs,
 reference tables, title, and established anchors. Explain any
 authorized evidence-backed change to these protected elements.
 
+For changes to the reader's path, follow the article from its opening through
+its demanding examples and final decision. Verify that a roadmap matches the
+actual sections, a domain change explains what transfers, and a concrete example
+preserves the distinction it is meant to teach. Check the Markdown version's
+explanation of essential diagram relationships. Report added ceremony, repeated
+orientation or weakened authorial positions as regressions when they impede the
+lesson. The review checklist does not require every article to add these devices.
+
 Compare `datePublished` and `dateModified` against the baseline, including exact
 values and whether each field exists. Adding, removing or altering a date field
 is a regression unless a separate, explicit owner instruction authorizes that

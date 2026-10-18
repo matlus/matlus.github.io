@@ -1,5 +1,24 @@
 # Handoff
 
+## Hana critique revisions, October 18, 2026
+
+Shiv authorized selective revisions for issues #98, #99, #100 and #103 and
+publication through commit, push, PR and merge. Skills reaches its decision
+table before the review transfer; Factory bridges its domains; Stampede separates
+capacity, standards and study scopes; Designing Evals adds orientation and a
+constructed paraphrase experiment. Fresh independent comparisons find all four
+improved. Titles, URLs, code, measured results, approved art and every date value
+and field's presence are retained. Independent metadata removes one overlapping
+Skills subject tag and makes Stampede's description conditional.
+
+The [revision receipt](hana-article-revisions-2026-10-18.md) records decisions,
+source limits, preservation, rendered inspection and checks. The
+[workflow evaluation](hana-reader-path-workflow-evaluation.md) records new
+reader-path questions and an unchanged control; blog-writing remains unchanged.
+Publication uses an isolated checkout of current main, preserving the primary
+checkout's unrelated and unpublished work. The PR carries exact merge/deployment
+identity and live verification after publication.
+
 ## Expense Analysis Part Four diagram spacing, October 17, 2026
 
 The owner identified Part Four as the article needing more vertical room in its

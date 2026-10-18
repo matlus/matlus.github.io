@@ -12,7 +12,9 @@ The Factory pattern enables client code to program to an interface. Someone has 
 
 The Factory itself is not polymorphic. Its importance is that it enables the client to use another class family polymorphically.
 
-This is a different pattern from [Factory Method](/writing/factory-method-pattern/). The names are close enough that people often use them interchangeably, but their structures differ.
+This is a different pattern from [Factory Method Pattern: The Most Beautiful Pattern We Lost](/writing/factory-method-pattern/). The names are close enough that people often use them interchangeably, but their structures differ.
+
+The C# example assumes you can read abstract classes and overrides. We will follow the construction decision into a Factory, then watch the caller use the returned object without naming its concrete class.
 
 ## A family alone is not enough
 
@@ -83,6 +85,8 @@ The caller sees `CreateThumbnail`. The protected `CreateThumbnailCore` operation
 
 The Factory constructs the descendant that fits the supplied media type and returns it as `ThumbnailerBase`:
 
+Look for two separate responsibilities in the next listings: the Factory chooses and constructs an object; the client uses that object through the shared contract.
+
 ```csharp
 public static class ThumbnailerFactory
 {
@@ -128,14 +132,14 @@ When another descendant can satisfy the same contract, the Factory can select it
 
 `MimeType` is useful because it describes the media. A Factory might instead receive a state, an order type, several arguments, or a request model. Those values should say what the caller needs in the business, rather than act as disguised class names.
 
-Suppose a system needs the rules for a particular state. The caller should supply the state and receive the appropriate rules through a common contract. It should not have to request `RulesVirginia` by name. If the selection grows beyond one switch, the Factory can delegate parts of that decision without changing what its caller asks for.
+The same naming decision appears outside media handling. Suppose a system needs the rules for a particular state. The caller should supply the state and receive the appropriate rules through a common contract, just as it supplies a media type to obtain a thumbnailer. It should not have to request `RulesVirginia` by name. If the selection grows beyond one switch, the Factory can delegate parts of that decision without changing what its caller asks for.
 
 ## When it earns its place
 
-A Factory is useful when the selection recurs during the life of the application. One request may need a V6 engine, the next a V12, and the next a V8. The Factory owns that choice while callers use the shared engine contract.
+A Factory is useful when the selection recurs during the life of the application. Our thumbnail service may handle an image, then audio, then video. The same recurring choice could select a V6 engine for one request, a V12 for the next, and a V8 for another. The Factory owns that choice while callers use the shared engine contract.
 
 When configuration chooses one implementation at startup and it stays fixed, construction at startup may be sufficient. There is little recurring decision for a Factory to contain.
 
-The distinction from Strategy is also about who uses the selected object. Here the Factory hands the object to its client, which uses it through the base contract. In the Strategy shape I prefer, a context uses its selected behavior internally and returns the result. Both forms can be useful; the ownership of the object differs.
+The distinction from Strategy is also about who uses the selected object. Here the Factory hands the object to its client, which uses it through the base contract. In the Strategy shape I prefer, a context uses its selected behavior internally and returns the result. For thumbnailing, that context would select a thumbnailing behavior, use it and return the thumbnail, while our Factory returns the thumbnailer for the client to use. Both forms can be useful; the ownership of the object differs.
 
-I name a Factory for the family, such as `ThumbnailerFactory`, and use `CreateInstance` for its construction method. I use `Make` for the creation hook in [Factory Method](/writing/factory-method-pattern/), so the two patterns are easier to recognize in code.
+I name a Factory for the family, such as `ThumbnailerFactory`, and use `CreateInstance` for its construction method. I use `Make` for the creation hook in [Factory Method Pattern: The Most Beautiful Pattern We Lost](/writing/factory-method-pattern/), so the two patterns are easier to recognize in code.

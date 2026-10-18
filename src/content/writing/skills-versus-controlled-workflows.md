@@ -9,7 +9,6 @@ tags:
   - applied-ai-engineering
   - prompting
   - verification
-  - verified-not-trusted
   - agent-orchestration
   - code-review
   - ai-workflow-patterns
@@ -34,6 +33,8 @@ That gives us a spectrum to work through. At one end, the stakes are low and a p
 
 To choose among them, we need to understand what improves as a prompt becomes more precise, what remains under the model's control, and what changes when imperative code takes charge.
 
+This discussion is for software engineers who use AI assistants and want to decide what an application must enforce. We will hold the expense task constant, choose where its control belongs, then carry that distinction into code review.
+
 <span id="7-choosing-an-approach"></span>
 
 ## The stakes and the person in the loop
@@ -46,6 +47,8 @@ There are two dimensions to consider: the consequences of an error, and whether 
 | High stakes | Use executable checks for mandatory obligations and give the reviewer the evidence and authority to stop the work. | Put imperative code in charge of required steps, validation, and acceptance. Delegate only bounded judgments to models. |
 
 The personal-budgeting example belongs in the first cell because we are exploring a household budget and checking the result. A system that changes financial records or makes consequential decisions belongs elsewhere, even if its input looks like the same expense table.
+
+A bounded judgment has an assigned question and limited authority. A model might propose a transaction's category; it does not thereby decide whether the complete report is ready for the accounting system.
 
 Human involvement also needs to mean something. A person who sees a polished report and clicks Approve has not necessarily verified it. The reviewer needs access to the source entries, assumptions, computed results, and unresolved issues, with time to examine them before the result takes effect.
 
@@ -60,7 +63,9 @@ For worked examples of this spectrum, see [Verified, Not Trusted: Expense Analys
 
 A **skill** packages instructions, domain knowledge, and supporting resources. Those resources can include executable scripts. A **workflow** describes the procedure for doing the work. A skill can describe a workflow or invoke an application that implements one.
 
-Coordinating the steps, their inputs, and what happens after each result is **orchestration**. The **controller** carries out that orchestration. In a model-controlled session, the model chooses actions to request, examines their results, and decides what to do next. That repeated process is the **control loop**.
+For our expenses, the workflow might require preparation, validation, calculation and reporting. Coordinating those steps, their inputs, and what happens after each result is **orchestration**. The **controller** carries it out: either the model or application code decides when calculation may begin and what happens if validation fails.
+
+In a model-controlled session, the model chooses actions to request, examines their results, and decides what to do next. That repeated process is the **control loop**. The skill supplies instructions and resources; the controller determines which action actually follows.
 
 Here are three arrangements we can use for the expense task:
 
@@ -215,6 +220,23 @@ Even a bounded response needs validation. Code can check that the transaction id
 We can narrow report generation in the same way. Python can calculate and retain the amounts, while a model proposes findings tied to specific computed rows. The application checks those references and assembles the authoritative figures directly from the accepted records. Asking a final model to rewrite everything freely would reopen the returned-value problem at the last step.
 
 The worked example in [Verified, Not Trusted: Expense Analysis, Part Two](/writing/verified-not-trusted-expense-analysis-part-two/) follows this separation through a Python implementation. Here, the architectural point is that Python governs the decisions we can specify imperatively, including whether a model contribution is admissible and what happens next.
+
+<span id="15-teaching-examples-at-a-glance"></span>
+
+### Choose where control belongs
+
+We can now make the choice for the expense task and for other uses of the same arrangements:
+
+| Task and use | Suitable starting point | Why |
+| --- | --- | --- |
+| Explore household expenses while checking entries and totals | Explicit prompt or skill, with calculation helpers | A person verifies and resolves ambiguity before using the findings. |
+| Evaluate a codebase for maintainability advice | Skill with investigation guidance | Useful observations can meet the goal without claiming exhaustive coverage. |
+| Perform an advisory code review | Procedural skill with useful helpers | A developer checks suggestions; the required scope remains explicit. |
+| Render a report interactively from validated records | Skill invoking maintained rendering code | Code preserves the mechanical output, while the person checks that the intended records were used. |
+| Review every required unit-rule pairing or execute a prescribed verification protocol | Imperative controller, optionally invoked through a skill | Coverage, evidence separation, validation, and incomplete outcomes are mandatory obligations. |
+| Feed consequential business records or decisions without per-run human verification | Imperative controller with narrowly bounded model judgments | Required checks and use of accepted values must be part of execution. |
+
+The expense example showed why a checked value must survive into the report. Code review adds a different obligation: accounting for every required assessment and controlling the evidence each reviewer receives. Follow that transfer next if your workflow needs to establish completeness or independence.
 
 <span id="3-three-claims-that-should-not-be-confused"></span>
 <span id="8-example-exploratory-codebase-evaluation"></span>
@@ -431,18 +453,7 @@ The runtime supplies evidence about what executed. Reviewing what the tests asse
 
 These prompts improve model-controlled work. They make the intended procedure and its limits easier to inspect. When acceptance depends on demonstrating that every prescribed obligation was fulfilled, implement those obligations in the controller.
 
-<span id="15-teaching-examples-at-a-glance"></span>
-
 ## Choose for the consequences of the result
-
-| Task and use | Suitable starting point | Why |
-| --- | --- | --- |
-| Explore household expenses while checking entries and totals | Explicit prompt or skill, with calculation helpers | A person verifies and resolves ambiguity before using the findings. |
-| Evaluate a codebase for maintainability advice | Skill with investigation guidance | Useful observations can meet the goal without claiming exhaustive coverage. |
-| Perform an advisory code review | Procedural skill with useful helpers | A developer checks suggestions; the required scope remains explicit. |
-| Render a report interactively from validated records | Skill invoking maintained rendering code | Code preserves the mechanical output, while the person checks that the intended records were used. |
-| Review every required unit-rule pairing or execute a prescribed verification protocol | Imperative controller, optionally invoked through a skill | Coverage, evidence separation, validation, and incomplete outcomes are mandatory obligations. |
-| Feed consequential business records or decisions without per-run human verification | Imperative controller with narrowly bounded model judgments | Required checks and use of accepted values must be part of execution. |
 
 The number of steps does not decide this. A short task can have serious consequences. A lengthy investigation can remain exploratory and useful under human review.
 

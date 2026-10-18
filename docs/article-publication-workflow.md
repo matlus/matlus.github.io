@@ -33,6 +33,10 @@ Record the article path and baseline revision, intended reader, central teaching
 claim, supplied author position, sources and revisions, related series parts,
 and protected material. Record both date fields' exact values or absence, along
 with applicable owner date and URL policies, in the brief.
+State the reader's assumed knowledge and the difficulty the example will resolve.
+For a sustained explanation, identify the path from that difficulty to the final
+decision, including any change of domain or second thesis. This is a planning
+check, not a requirement for a fixed outline or a prerequisites box.
 Use the
 [blog-writing skill](../.agents/skills/blog-writing/SKILL.md). For video-derived
 articles, also use the
@@ -58,6 +62,15 @@ Require a coverage record, ranked findings with passages and evidence, and up to
 three priority changes. Missing evidence leaves the affected checks unverified.
 An incomplete article cannot receive a complete review. A zero-finding review
 is valid; optional stylistic preferences do not create a revision requirement.
+
+Include a reader-path assessment in the coverage record: assumed knowledge,
+early orientation, terminology introduced at the point of need, transitions to
+other examples, framing before dense evidence, and the availability of essential
+diagram relationships in Markdown. Report a concern only with a passage and a
+concrete reader difficulty. When studies use different populations or methods,
+check that their roles and limits remain distinct. Preserve useful transfer
+examples and the author's conviction; a roadmap or glossary is an option when
+it helps this article, rather than a requirement for every article.
 
 ## 3. Adjudicate and revise
 
@@ -197,6 +210,10 @@ Markdown twin and changed assets against the checked build. Complete existing
 public source-video and repository backlink requirements within authorization.
 
 ## Workflow trials
+
+The [reader-path evaluation](hana-reader-path-workflow-evaluation.md) records the
+October 18 follow-up across four varied revisions and an unchanged control,
+including rejected suggestions and the limits of that small trial.
 
 Test workflow changes on four or five varied, non-archival articles before broad
 use. Include different teaching forms and subjects, plus an unchanged control.

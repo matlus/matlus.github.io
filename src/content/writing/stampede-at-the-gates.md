@@ -1,7 +1,7 @@
 ---
 title: Stampede at the Gates
 description: >-
-  AI generation exposed an already flawed SDLC: faster code review moves the queue
+  AI generation exposed an already flawed SDLC: faster code review can move the queue
   to verification, which needs functional acceptance testing at the boundary.
 datePublished: 2026-07-04
 dateModified: 2026-09-26
@@ -40,6 +40,11 @@ Because that equilibrium was never evidence the system worked. The defects retur
 production were evidence it did not. They simply arrived slowly enough to be accepted as
 normal, a cost of doing business. The old SDLC was already flawed. Human coding speed kept
 the volume within reach of the people compensating for it.
+
+Follow the work through two gates: code review, then verification. The studies below
+show different kinds of pressure on that path. We will examine why relieving review
+alone leaves verification carrying the next queue, and what it takes to engineer
+both gates as one system.
 
 ## The warning light was already flashing
 
@@ -123,8 +128,11 @@ The herd is the changesets, never the engineers producing them.
 
 ## The numbers are already in
 
-This is not a prediction. The studies below report pressure on review, verification and
-production reliability.
+The studies below examine different questions. The enterprise study measures a change
+in pull request throughput and reviewer load. The repository sample counts recorded
+reviews. Faros compares telemetry across adoption levels; DORA and CloudBees report
+survey findings. Read them as evidence about particular parts of delivery, rather
+than estimates of one shared failure rate.
 
 **Code output roughly doubles.** An enterprise that mandated AI assistance saw pull request
 throughput reach 2.09 times its baseline, with reviewer load doubling alongside it. The
@@ -138,36 +146,43 @@ that same population, only 10.14% received human-only review. That is thin recor
 oversight of the arriving volume.
 ([Duma and others, 2026](https://arxiv.org/html/2605.02273v1), in-the-wild data.)
 
-**Waving it through has a price.** Telemetry across 22,000 developers shows bugs per
+**Reliability pressure grows alongside adoption.** Telemetry across 22,000 developers shows bugs per
 developer up 54%, production incidents per pull request up 242.7%, and median review time
-up 441%.
+up 441%, comparing periods of lowest and highest AI adoption within each organization.
 ([Faros AI, 2026](https://www.faros.ai/blog/ai-acceleration-whiplash-takeaways), 4,000 or
 more teams.)
 
-**Deployments break more often.** Every 25% increase in AI adoption correlates with a 7.2%
+**Deployments break more often.** In DORA's 2024 analysis, every 25% increase in AI adoption correlates with a 7.2%
 drop in delivery stability, meaning how often changes break production and how long
 recovery takes. That association has been negative for two annual reports running.
 ([DORA, 2024](https://cloud.google.com/blog/products/devops-sre/announcing-the-2024-dora-report)
-to [2025](https://dora.dev/insights/balancing-ai-tensions/), around 5,000 respondents.)
+to [2025](https://dora.dev/research/2025/dora-report/), with around 5,000 respondents
+in the 2025 study.)
 
-**Tests multiply, verification does not.** 81% of enterprise leaders report more production
-issues, and 70% say maintaining the test suite now outweighs writing the code itself. AI
-multiplies tests too, but tests coupled to the implementation break with every change.
-Volume went up. Verification realism did not.
+**Test maintenance becomes a burden.** 81% of enterprise leaders report more production
+issues attributable to AI-generated code, and 70% say maintaining the test suite now
+outweighs writing the code itself. Those are reported outcomes and workload, rather
+than a measurement of what each suite verifies. The question remains: do the tests
+establish that the feature meets its requirements?
 ([CloudBees, 2026](https://www.cloudbees.com/newsroom/enterprise-technology-leaders-report-production-failures-from-ai-generated-code),
 200 or more enterprise technology leaders.)
 
-Different studies, different methods, different commercial incentives, downstream pressure.
+These studies do not test whether my proposed verification approach fixes delivery.
+They establish the pressures it needs to address, in different populations and with
+different methods and commercial incentives. The release evidence I rely on is
+developed below through the testing approach and my experience using it.
 DORA's own phrase for the mechanism is that AI amplifies what is already there, including
 your weaknesses.
 
 ## Why widening gate one fails
 
-The intuitive response is to relieve the first gate. Add reviewers, loosen the bar, accept
-more on trust, point a generic AI reviewer at the queue.
+The intuitive response is to relieve the first gate. Adding qualified reviewers can
+increase capacity while preserving its standard. Loosening the bar or accepting more
+on trust lowers the standard. Pointing a generic AI reviewer at the queue introduces
+another question: what can that reviewer actually detect?
 
-Every one of those increases the flow rate through gate one. None of them reduces the
-herd.
+Any of those may let more work through gate one. None by itself reduces the incoming
+volume or establishes that verification can absorb it.
 
 Two of them fail on their own terms before we even get to the relocation problem. Waving
 work through abandons the review gate's purpose. In Duma's sample, 61% of agent-authored
@@ -175,9 +190,11 @@ pull requests had no recorded review to examine. Pointing a generic AI reviewer 
 problem runs into [SWE-PRBench](https://arxiv.org/html/2603.26130v1): its eight evaluated
 models detected between 15% and 31% of human-flagged issues in the diff-only configuration.
 
-But suppose you did relieve gate one. You have not removed the queue. You have relocated
-it to gate two, the last checkpoint before production, where a miss costs the most and is
-caught the latest.
+But suppose you did relieve gate one. Delivery can improve until another stage limits
+it. Once reviewed changes arrive faster than gate two can verify them, the queue grows
+there instead. The illustration shows that condition: verification capacity stays fixed
+while reviewed arrivals rise beyond it. This is the last checkpoint before production,
+where a miss costs the most and is caught the latest.
 
 <!-- diagram:start stampede-gates -->
 <figure class="article-diagram article-gates-comparison">
@@ -241,13 +258,15 @@ caught the latest.
 </figure>
 <!-- diagram:end stampede-gates -->
 
-This is textbook Theory of Constraints. Speed up a non-constraint and system throughput
-does not move. All you have done is accumulate inventory in front of the real constraint,
-and in software that inventory is unverified code sitting in a holding pen.
+Theory of Constraints asks which stage currently limits the throughput of the whole
+system. While review is that constraint, faster generation adds to the review queue.
+Improve review enough and verification can become the constraint. After that point,
+further acceleration upstream adds inventory in front of verification, without raising
+completed delivery. In software, that inventory is unverified code sitting in a holding pen.
 
-The traffic analogy works too. What causes a motorway pile-up is speed differential between
-adjacent lanes rather than speed by itself, and generation now moves at a radically
-different speed from everything downstream of it.
+Think of fast motorway traffic arriving at a slow-moving queue. That speed mismatch is
+the useful part of the analogy: generation now moves at a radically different speed
+from everything downstream of it.
 
 ## Who is checking whom
 
@@ -386,8 +405,10 @@ if I had to choose where to spend my time, I would choose functional acceptance 
 at the boundary. Maintainability matters throughout the life of the code. These tests
 give me the evidence I need to decide whether to ship it.
 
-You do not relieve a stampede by opening the gates wider. Widening a gate means lowering
-its standard, and a gate with no standard is a hole in the fence.
+You do not relieve a stampede by letting more through without the required checks.
+When widening a gate means lowering its standard, a gate with no standard is a hole
+in the fence. Adding review capacity can be useful; leaving verification unchanged
+still leaves the next constraint waiting.
 
 Engineer both gates as one system, so the pipeline moves as fast as the code being written
 without quietly losing what review and verification were there to catch.
