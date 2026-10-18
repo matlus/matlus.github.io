@@ -21,6 +21,11 @@ export interface Tag {
 
 export const TAGS = [
   {
+    slug: "grading-rubrics",
+    label: "Grading Rubrics",
+    description: "Written criteria that tell a human reviewer or model judge how to assess a requirement. Reference facts, pass and fail conditions, and accepted alternatives bound the judgment and make its basis inspectable.",
+  },
+  {
     slug: "null-conditional-operator",
     label: "Null-Conditional Operator",
     description: "Conditional member or element access that stops evaluation when its receiver is null. Its use determines whether missing objects legitimately skip work or conceal a broken assumption.",
