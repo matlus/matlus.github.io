@@ -58,6 +58,17 @@ clear focal point and arrange supporting stations around it. Use paths, changes
 in elevation, and colour to guide the eye through the scene. Keep important
 relationships visible and unobstructed.
 
+When the scene includes flow arrows, use straight arrows for aligned top-to-bottom
+connections, perpendicular to both box edges. Use smooth curves for offset
+connections, including branches, merges and routes around components.
+For top-to-bottom flows, leave generous vertical gaps between successive levels
+and increase canvas height so curves and arrowheads have room. Avoid right-angle
+turns and tight rounded elbows; preserve each connection's origin and destination.
+Connect arrows at edge centers, bottom center to top center for downward flow.
+Branches share a source anchor; converging paths share a destination anchor.
+Allow clear overlap near shared anchors. Use another edge's center when direction
+requires it.
+
 COLOUR:
 Build the environment from charcoal, midnight navy, slate blue-grey, and cool
 metallic grey. Use cyan and teal for selected active systems, amber and gold for

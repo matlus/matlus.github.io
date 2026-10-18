@@ -1,26 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="720" height="855" viewBox="0 0 720 855" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1175" viewBox="0 0 720 1175" role="img" aria-labelledby="title desc">
 <title id="title">Verify during the run, then evaluate the outcome</title>
 <desc id="desc">Inside a workflow, a bounded model decision passes through a code check before it can be used. Invalid answers enter correction or stop without being used. The completed structured result is separately compared with an independent reference key across repeated runs. Code grades ledger facts and a judge grades the findings; the scorecard measures the whole outcome.</desc>
-<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#637a8b"/></marker></defs>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="9" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#637a8b"/></marker></defs>
 <style>text{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#213c50}.heading{font-size:26px;font-weight:700}.label{font-size:22px;font-weight:650}.detail{font-size:18px}.path{fill:none;stroke:#637a8b;stroke-width:2.5;marker-end:url(#arrow)}.box{stroke:#91a8b9;stroke-width:1.5}</style>
-<rect width="720" height="855" rx="20" fill="#faf9f4"/>
+<rect width="720" height="1175" rx="20" fill="#faf9f4"/>
 <text x="360" y="43" text-anchor="middle" class="heading">Two places to verify</text>
-<rect x="28" y="68" width="664" height="389" rx="20" fill="#f2f7fb" stroke="#91a8b9" stroke-dasharray="7 6"/>
+<rect x="28" y="68" width="664" height="580" rx="20" fill="#f2f7fb" stroke="#91a8b9" stroke-dasharray="7 6"/>
 <text x="360" y="105" text-anchor="middle" class="label">During each workflow run</text>
 <rect x="65" y="128" width="395" height="77" rx="14" fill="#e4eef9" class="box"/>
 <text x="262" y="158" text-anchor="middle" class="label">Bounded model decision</text><text x="262" y="187" text-anchor="middle" class="detail">Category, source span or finding IDs</text>
-<path d="M262 205V235" class="path"/>
-<rect x="65" y="242" width="395" height="91" rx="14" fill="#fff1cc" class="box"/>
-<text x="262" y="274" text-anchor="middle" class="label">Code checks the answer</text><text x="262" y="304" text-anchor="middle" class="detail">Allowed values, evidence and required IDs</text>
-<path d="M460 286H491" class="path"/><text x="478" y="231" text-anchor="middle" class="detail">Invalid</text>
-<rect x="502" y="242" width="162" height="91" rx="14" fill="#fae7e0" class="box"/><text x="583" y="279" text-anchor="middle" class="label">Correct</text><text x="583" y="308" text-anchor="middle" class="label">or stop</text>
-<path d="M262 333V366" class="path"/><text x="313" y="355" class="detail">Valid</text>
-<rect x="65" y="373" width="395" height="60" rx="14" fill="#e3f2eb" class="box"/><text x="262" y="409" text-anchor="middle" class="label">Use the verified result</text>
-<path d="M262 433V480H360V503" class="path"/>
-<rect x="65" y="510" width="590" height="80" rx="14" fill="#e3f2eb" class="box"/><text x="360" y="541" text-anchor="middle" class="label">Completed report + structured ledger</text><text x="360" y="570" text-anchor="middle" class="detail">The outcome the user receives</text>
-<path d="M360 590V622" class="path"/>
-<rect x="28" y="629" width="664" height="198" rx="20" fill="#fffaf0" stroke="#91a8b9" stroke-dasharray="7 6"/>
-<text x="360" y="665" text-anchor="middle" class="label">Afterward: the eval</text>
-<text x="360" y="703" text-anchor="middle" class="detail">Compare with an independent reference key</text><text x="360" y="735" text-anchor="middle" class="detail">Code grades facts; a judge grades supported findings</text><text x="360" y="774" text-anchor="middle" class="label">Repeat → pass rates → gate</text>
-<text x="360" y="806" text-anchor="middle" class="detail">A valid model answer can still be the wrong answer</text>
+<path d="M262.5 205V320" class="path"/>
+<rect x="65" y="320" width="395" height="91" rx="14" fill="#fff1cc" class="box"/>
+<text x="262" y="352" text-anchor="middle" class="label">Code checks the answer</text><text x="262" y="382" text-anchor="middle" class="detail">Allowed values, evidence and required IDs</text>
+<path d="M262.5 411C262.5 466 583 466 583 525" class="path"/><text x="583" y="447" text-anchor="middle" class="detail">Invalid</text>
+<rect x="502" y="525" width="162" height="91" rx="14" fill="#fae7e0" class="box"/><text x="583" y="562" text-anchor="middle" class="label">Correct</text><text x="583" y="591" text-anchor="middle" class="label">or stop</text>
+<path d="M262.5 411V525" class="path"/><text x="313" y="475" class="detail">Valid</text>
+<rect x="65" y="525" width="395" height="60" rx="14" fill="#e3f2eb" class="box"/><text x="262" y="561" text-anchor="middle" class="label">Use the verified result</text>
+<path d="M262.5 585C262.5 675 360 675 360 765" class="path"/>
+<rect x="65" y="765" width="590" height="80" rx="14" fill="#e3f2eb" class="box"/><text x="360" y="796" text-anchor="middle" class="label">Completed report + structured ledger</text><text x="360" y="825" text-anchor="middle" class="detail">The outcome the user receives</text>
+<path d="M360 845V950" class="path"/>
+<rect x="28" y="950" width="664" height="198" rx="20" fill="#fffaf0" stroke="#91a8b9" stroke-dasharray="7 6"/>
+<text x="360" y="986" text-anchor="middle" class="label">Afterward: the eval</text>
+<text x="360" y="1024" text-anchor="middle" class="detail">Compare with an independent reference key</text><text x="360" y="1056" text-anchor="middle" class="detail">Code grades facts; a judge grades supported findings</text><text x="360" y="1095" text-anchor="middle" class="label">Repeat → pass rates → gate</text>
+<text x="360" y="1127" text-anchor="middle" class="detail">A valid model answer can still be the wrong answer</text>
 </svg>

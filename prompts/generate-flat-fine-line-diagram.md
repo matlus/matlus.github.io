@@ -75,11 +75,19 @@ Avoid doubled borders, thick edge shadows, bevels, extrusion, or dimensional
 platforms. Keep card fills and outlines visually flat.
 
 CONNECTIONS
-Draw crisp navy connectors through open space, using restrained rounded bends
-where needed. Connectors may be slightly heavier than card borders, approximately
+Draw navy arrows through open space. Use straight arrows for aligned top-to-bottom
+connections, perpendicular to both box edges. Use smooth curves for offset
+connections, including branches, merges and routes around components. For top-to-bottom flows,
+leave generous vertical gaps between successive levels of cards and increase
+the canvas height to give each curve room. Avoid right-angle turns and tight
+rounded elbows. Connectors may be slightly heavier than card borders, approximately
 2.5 pixels at an image width of 1820 pixels, with clearly visible arrowheads.
 Keep every endpoint and arrow direction faithful to the drawing brief. Maintain
 clear gaps around unrelated cards and text. Keep independent paths distinct.
+Anchor connectors at edge centers, bottom center to top center for downward flow.
+Branches share a source anchor; converging paths share a destination anchor.
+Allow clear overlap near shared anchors. Use another edge's center when direction
+requires it.
 For inheritance diagrams, arrowheads point from descendants toward ancestors.
 For other diagrams, use the directions and relationship meanings in the brief.
 

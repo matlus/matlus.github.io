@@ -353,6 +353,28 @@ their own art; the tag check prevents a new tag from shipping with the fallback.
 
 ## 2. Diagrams
 
+### Flow spacing and connectors
+
+Use straight arrows for directly aligned top-to-bottom connections, perpendicular
+to both box edges. Use smooth curves for offset connections, including branches,
+merges and routes around another component. Apply this across all diagram styles,
+including authored SVG. For flows arranged in levels from top to bottom, leave generous
+vertical gaps between the box edges on successive levels. Increase the canvas
+height to give curves and arrowheads room; keep box sizes and label text readable.
+Route each curve through open space, with a clear origin, destination and approach
+to the destination edge. Avoid right-angle turns and tight rounded elbows.
+Attach connectors at the centers of the relevant box edges. A downward flow
+leaves bottom center and enters top center. Branches share their source connection;
+converging paths share the destination connection. Let curves overlap near those
+shared points when the flow remains clear, rather than moving endpoints off center.
+Use another edge's center when the connection's direction requires it.
+
+When adjusting an existing diagram's spacing and arrows, preserve its components,
+labels, colours, groups and connection meanings. Inspect the result at article
+width and phone width for cramped curves, overlapping labels and ambiguous
+arrowheads. Apply this guidance to new diagrams; revise existing diagrams when
+their layout is part of the requested work.
+
 ### Diagrams recovered from recordings
 
 Inspect the actual frames before reproducing a diagram from a video-derived

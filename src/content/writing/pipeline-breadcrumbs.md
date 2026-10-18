@@ -147,7 +147,7 @@ from pipeline_breadcrumbs import (
     StepHostProtocol, StepScope, WorkItem, WorkItemScope,
 )
 from pipeline_breadcrumbs.hosting import (
-    FileSystemArtifactSink, attached_run_log, create_run_folder,
+    ArtifactSinkFileSystem, attached_run_log, create_run_folder,
 )
 
 LOAD_PAGES: Final[Step] = Step(1, "Load Pages")
@@ -176,7 +176,7 @@ async def main() -> None:
     logger: logging.Logger = logging.getLogger("article_pipeline")
     logger.setLevel(logging.INFO)
     logger.propagate = False
-    artifact_sink: ArtifactSinkProtocol = FileSystemArtifactSink(run_directory)
+    artifact_sink: ArtifactSinkProtocol = ArtifactSinkFileSystem(run_directory)
     pipeline_run: PipelineRun
     work_item_scope: WorkItemScope
 
@@ -228,11 +228,11 @@ A callback can capture those things in a closure, or the application can pass a 
 |---|---|---|
 | Where does state live? | In a closure or an object behind the callback | In the sink instance supplied to the run |
 | What names the operation? | The callable's signature describes its input and result | `ArtifactSinkProtocol.persist` names the responsibility |
-| How does a test receive artifacts? | An async function can append to a captured list | `ArtifactRecorder` collects them and provides inspection helpers |
+| How does a test receive artifacts? | An async function can append to a captured list | `ArtifactSinkTesting` collects them and provides inspection helpers |
 
-I chose the class. `FileSystemArtifactSink`, the demo's `BlobStorageArtifactSink` and `ArtifactRecorder` implement the same protocol. The application selects an implementation just as it selects its other services. The processors continue to call `step_scope.emit(...)`; none of them needs to know which class was selected.
+I chose the class. `ArtifactSinkFileSystem`, the demo's `ArtifactSinkBlobStorage` and `ArtifactSinkTesting` implement the same protocol. The application selects an implementation just as it selects its other services. The processors continue to call `step_scope.emit(...)`; none of them needs to know which class was selected.
 
-The protocol fits the other contracts already in use, including `StepHostProtocol` and the model gateway protocol. It also gives callers one supported form. `PipelineRun` accepts an `artifact_sink` object with `persist`; it does not offer a second callback API that callers and maintainers must account for.
+The protocol fits the other contracts already in use, including `StepHostProtocol`. It also gives callers one supported form. `PipelineRun` accepts an `artifact_sink` object with `persist`; it does not offer a second callback API that callers and maintainers must account for.
 
 The sink raises the error appropriate to its destination. `RunContext.persist` calls the sink and wraps an ordinary exception in `ArtifactSinkError`, retaining the artifact identity and original cause. Each storage implementation can concentrate on persistence while the run supplies the common diagnostic behavior.
 
@@ -253,7 +253,7 @@ The classifier opens step 3. It then hands that scope to the prompt builder, sco
 
 There is no renumbering code in the processors. Place the classifier under a different parent and the scope composes the new paths. The same component can operate directly under a work item or inside a larger pipeline.
 
-The scope travels as a method argument. A reusable processor should not retain one run's scope on a long-lived instance, where another invocation could accidentally use it. The scope belongs to the work currently being performed.
+The scope travels as a method argument. A reusable processor should not retain one run's scope on a long-lived instance, where another invocation could accidentally use it. The scope belongs to the work currently being performed. Open steps and emit their artifacts inside the work item's `async with` block; these operations raise `WorkItemNotOpenError` before entry or after the work item closes.
 
 A conditional step also needs an explanation. If every section already has sufficient confidence, the classifier calls:
 
@@ -272,7 +272,7 @@ Suppose the model returns malformed JSON for page 2. Where do you save that repl
 If you save only successfully parsed results, the most useful evidence disappears precisely when you need it. The model processor therefore follows this order, shown here as an excerpt from its page-processing method:
 
 ```python
-raw_reply: str = await self._model_gateway_protocol.detect_section(page_number, page_text)
+raw_reply: str = await self._gateway_model_service.detect_section(page_number, page_text)
 await step_scope.emit(
     RAW_DETECTION_RESPONSE,
     raw_reply.encode("utf-8"),
@@ -340,7 +340,7 @@ This is also useful when nothing throws. A step can complete successfully and pr
 
 The manifest is built from immutable events rather than a dictionary that replaces a record whenever the same step path appears again. Reopening a step or work item retains its execution history. However, retaining manifest records does not automatically version file contents: the filesystem sink writes to the artifact's derived filename. Re-emitting the same identity writes to the same path. Use distinct discriminators or separate runs when multiple attempts' files must coexist.
 
-The manifest is written at run exit, not continuously checkpointed. An abrupt process termination or a storage outage can leave earlier artifacts without a completed manifest. While a run is still active, its log and already persisted artifacts are the evidence available.
+The manifest is written at run exit, not continuously checkpointed. An abrupt process termination or a storage outage can leave earlier artifacts without a completed manifest. The demo catches a manifest-persistence failure at the outer run boundary, logs it once with its traceback and reports a failed run even if both documents completed. While a run is still active, its log and already persisted artifacts are the evidence available.
 
 ## Keep storage and logging decisions in the application
 
@@ -372,7 +372,7 @@ One application-owned logger is shared through the scopes. Each handler can sele
 
 That JSON-lines handler is an offline stand-in. The demo does not connect to Application Insights. A real host can attach its telemetry integration to the same logger; the core library has no OpenTelemetry dependency and does not create spans.
 
-Storage is a separate choice. The local profile constructs `FileSystemArtifactSink(run_directory)`. The hosted profile constructs `BlobStorageArtifactSink(container_directory, run_name)`, which lives in the demo application. Both implement `ArtifactSinkProtocol`, and both receive every artifact, including the manifest.
+Storage is a separate choice. The local profile constructs `ArtifactSinkFileSystem(run_directory)`. The hosted profile sets `run_blob_directory` to `output_root / "artifact-container" / run_directory.name` and constructs `ArtifactSinkBlobStorage(run_blob_directory)`, which lives in the demo application. Both implement `ArtifactSinkProtocol`, and both receive every artifact, including the manifest.
 
 The hosted demonstration represents a container with a local directory called `artifact-container`. It names each simulated blob `<run name>/<work item>/<filename>`, with the manifest directly under the run name. The step-bearing filenames stay the same. For an output root called `artifacts`, a failed hosted run has this arrangement:
 
@@ -404,7 +404,7 @@ The same trail proved useful when working with coding assistants. An assistant c
 
 There is no special assistant API in that arrangement. The useful capability comes from exposing understandable evidence through ordinary files. A step name supplies intent; its artifacts supply the material needed to check whether the result matches that intent.
 
-You can test that contract at the application's public boundary too. The library provides an `ArtifactRecorder` sink and a `RecordCapture` logging handler. Pass the recorder instance as `artifact_sink`; its `persist` method retains the artifacts in memory. An acceptance test can then inspect which artifacts were emitted, what they contain, and which statuses and attributes were logged. The offline demo replaces the model gateway while exercising the processors and scopes.
+You can test that contract at the application's public boundary too. The library provides an `ArtifactSinkTesting` sink and a `RecordCapture` logging handler in `pipeline_breadcrumbs.testing`. Pass the sink instance as `artifact_sink`; its `persist` method retains the artifacts in memory. An acceptance test can then inspect which artifacts were emitted, what they contain, and which statuses and attributes were logged. The demo's acceptance tests use `ServiceLocatorTesting` to replace the HTTP transport with a Test Mediator. The real `GatewayModelService`, configuration provider, processors and scopes still run.
 
 Those assertions concern what a consumer can observe. Reorganizing the classes should not require rewriting an expectation that a malformed reply is preserved before its parse error escapes.
 
@@ -420,12 +420,12 @@ For normal execution, keep passing results from one processor to the next in mem
 
 ## Try a successful run, then a failure
 
-The repository includes the complete document-analysis example. It uses a fake model gateway and deliberate pauses, so these commands require no model credentials or outbound model calls. The checkout is pinned so the code and examples agree:
+The repository includes the complete document-analysis example. `ServiceLocatorDemo` connects the real `GatewayModelService` to an in-process `ModelServiceSimulator` through its HTTP transport. Requests and responses still pass through the gateway, with deliberate pauses to make progress visible, but these commands require no model credentials or outbound model calls. The checkout is pinned so the code and examples agree:
 
 ```bash
 git clone https://github.com/matlus/pipeline-breadcrumbs.git
 cd pipeline-breadcrumbs
-git checkout 13c6b48bfb089c0de7f7c894488205a61d967eb6
+git checkout ccdc37fa80cd54e8bbcbc9f6ed12e8cb2c09bf30
 uv sync --all-packages --all-groups
 uv run pipeline_breadcrumbs_app
 uv run pipeline_breadcrumbs_app --fail-page 2

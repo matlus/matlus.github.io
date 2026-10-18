@@ -77,7 +77,18 @@ Choose a composition that explains the subject. A dependency fan, a sequence, a 
 
 ### Arrows and curves
 
-- Smooth, sweeping curved ribbon connectors with a pale luminous interior, coloured edges, subtle transparency, and clear arrowheads.
+- Straight arrows for aligned top-to-bottom connections, perpendicular to both
+  box edges. Use smooth, sweeping curves for offset connections, including branches,
+  merges and routes around components. Keep the pale luminous interior, coloured
+  edges, subtle transparency and clear arrowheads.
+- For top-to-bottom flows, separate successive levels with generous vertical
+  gaps between box edges. Increase the canvas height so curves can sweep through
+  open space and approach their destination clearly. Keep boxes and labels at
+  readable sizes; avoid right-angle turns and tight rounded elbows.
+- Anchor arrows at edge centers: bottom center to top center for downward flow.
+  Branches share a source anchor and converging paths share a destination anchor.
+  Allow clear overlap near shared anchors. Use another edge's center when the
+  connection's direction requires it.
 - Use arrows only for connections specified by the article or source diagram. A
   spatial hierarchy with no arrows retains that structure without added ribbons.
 - Route ribbons through open space. Leave visible gaps around unrelated components and labels.
@@ -109,7 +120,7 @@ of the supplied approved reference. Match its pale paper and subtle watercolor
 texture, fine blue outlines, dark navy text, soft blue, translucent mint,
 butter-yellow and salmon-coral palette, rounded dimensional isometric platforms,
 layered tinted rims, gentle shadows and highlights, simple outlined pictograms,
-rounded heading capsules, luminous curved ribbon arrows, lightly dashed rounded
+rounded heading capsules, luminous ribbon arrows, lightly dashed rounded
 group enclosures, faint peripheral architectural drafting lines, and airy spacing.
 
 Subject: [the assistant's complete description derived from the source].
@@ -123,10 +134,17 @@ Composition: [choose from the subject; honour any user preference].
 
 Make the actual subject the main heading at a balanced, moderate scale.
 Keep labels upright, accurate and readable. Use illustrated dimensional boxes
-and platforms, softly outlined icons and smooth curved ribbon arrows. Clearly
+and platforms, softly outlined icons and clear ribbon arrows. Use straight arrows
+for aligned top-to-bottom connections, perpendicular to both box edges. Curve
+offset connections, including branches, merges and routes around components. Clearly
 show every connection's true source and destination. Route independent paths
-around unrelated nodes. Include each complete component inside its intended
+around unrelated nodes. Give successive top-to-bottom levels generous vertical
+gaps, increasing canvas height so curves have room to flow. Avoid right-angle
+turns and tight rounded elbows. Include each complete component inside its intended
 enclosure. Preserve the described relationships and level of specificity.
+Anchor each connector at the centers of its source and destination edges, using
+bottom center to top center for downward flow. Branches and converging paths share
+those anchors; allow clear overlap near a shared point.
 
 Use the approved reference for visual style. Use any supplied source diagram
 for subject and relationships. No copied reference subject, invented components,
@@ -139,7 +157,7 @@ fits the subject. Report the actual delivered resolution.
 
 ## Produce and check
 
-Use generated PNG or JPEG for the richly illustrated treatment. Authored SVG is suitable for simple boxology; apply the same palette, rounded platforms, and curved connections using the site's design tokens and real SVG text.
+Use generated PNG or JPEG for the richly illustrated treatment. Authored SVG is suitable for simple boxology; apply the same palette, rounded platforms, straight aligned connections and smooth curves for offset connections, using the site's design tokens and real SVG text.
 
 Inspect the image against the article and supplied source. Check exact lettering,
 numeric values, repeated component counts, alignment and layer order, arrow origins
