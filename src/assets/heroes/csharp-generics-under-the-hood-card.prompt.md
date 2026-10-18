@@ -1,5 +1,16 @@
 # csharp-generics-under-the-hood: article card
 
+## Current card: owner-supplied replacement, 2026-10-18
+
+Source: `C:/Users/shivk/Downloads/csharp-generics-card.png`, 2048 x 1152.
+Exact workspace copy: `csharp-generics-under-the-hood-card.original.png` (Git-ignored).
+Export: `csharp-generics-under-the-hood-card.webp`, 1200 x 500, WebP quality 82,
+using `tools/prepare-image.mjs --role card`. Center-cropped to 12:5 and downscaled
+without stretching or upscaling. The owner supplied the finished image; its
+generation prompt was not supplied.
+
+## Previous card record (superseded)
+
 Source hero: `csharp-generics-under-the-hood.webp`, 1905 x 825.
 Article: `csharp-generics-under-the-hood`.
 Method: built-in image generation, outpainting; 2026-10-06.
