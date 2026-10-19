@@ -19,6 +19,8 @@ tags:
   - ai-workflow-patterns
 ---
 
+This reference synthesizes TypeSafe's documentation and separates its documented behavior from my design recommendations. For a worked use of Jev inside a Python-controlled application, see [Verified, Not Trusted: Expense Analysis, Part Two](/writing/verified-not-trusted-expense-analysis-part-two/). That example illustrates the division of work; it does not establish accuracy for a new task.
+
 ## Contents
 
 1. [The short version](#1-the-short-version)
@@ -106,6 +108,8 @@ A Choice selects *relative to its offered options*. It can still pick the “bes
 
 For Choice, Jev returns a probability distribution across the options. For Score, it returns a distribution across the levels. **Confidence** is TypeSafe's one-number summary of how concentrated that distribution is; it is not simply the winning option's probability, and it is not a measured accuracy rate. Noul returns its yes probability but no separate confidence value. TypeSafe recommends setting action thresholds according to the consequences of an error, then testing them on the application's own data. [Confidence](https://docs.typesafe.ai/confidence) · [Score](https://docs.typesafe.ai/primitives/score)
 
+For an illustrative three-level Score rubric numbered 0, 1 and 2, probabilities `(0, 1, 0)` and `(0.5, 0, 0.5)` both produce a mean score of 1. The first puts all its weight on the middle level; the second splits it between the extremes. The score alone hides that difference, so inspect the distribution or its confidence alongside the score. These are constructed values, not a recorded response.
+
 Useful distinctions:
 
 | Quantity | Meaning | What it does **not** establish |
@@ -116,7 +120,7 @@ Useful distinctions:
 | Score | Weighted position on the rubric's level indexes. | An exact amount, count, percentage, or physical magnitude. |
 | Repeatability | Whether repeated runs tend to return the same decision. | Whether that decision matches ground truth. |
 
-TypeSafe's [Choice self-consistency cookbook](https://docs.typesafe.ai/cookbooks/consistency_choice_cookbook) repeats eight moderation questions about one borderline post 15 times. The post and rubric stayed fixed, but each request carried a fresh uid, so these results do not isolate variation on identical complete inputs. Jev's raw picked-label agreement with its plurality labels is reported as 90.8%; adding an uncertain outcome below the cookbook's illustrative top-option probability threshold of 0.60 increases reported application-decision agreement to 99.2%, with automatic decisions on 74.2% of answers. **That is a repeatability and abstention experiment, not proof that majority voting improves classification accuracy.** The [Noul version](https://docs.typesafe.ai/cookbooks/consistency_noul_cookbook) similarly uses a review band around uncertain probabilities. Use repeated calls to study stability; adopt voting only if a labeled evaluation shows it improves the intended metric.
+TypeSafe's [Choice self-consistency cookbook](https://docs.typesafe.ai/cookbooks/consistency_choice_cookbook) repeats eight moderation questions about one borderline post 15 times. The post and rubric stayed fixed, but each request carried a fresh uid, so these results do not isolate variation on identical complete inputs. Jev's raw picked-label agreement with its plurality labels is reported as 90.8%; adding an uncertain outcome below the cookbook's illustrative top-option probability threshold of 0.60 increases reported application-decision agreement to 99.2%, with automatic decisions on 74.2% of answers. The agreement measure counts the uncertain/review outcome as an application decision. Automatic coverage counts only answers that receive a concrete label. Consistently sending a question to review can therefore raise agreement while reducing automatic decisions. **That is a repeatability and abstention experiment, not proof that majority voting improves classification accuracy.** The [Noul version](https://docs.typesafe.ai/cookbooks/consistency_noul_cookbook) similarly uses a review band around uncertain probabilities. Use repeated calls to study stability; adopt voting only if a labeled evaluation shows it improves the intended metric.
 
 ## 5. When Jev is a good fit
 
@@ -146,6 +150,8 @@ Common good fits are ticket and document triage; fixed-taxonomy classification; 
 **Use code for exact operations.** TypeSafe explicitly identifies arithmetic, counting, date comparison, and exact validation as poor Jev tasks. Extract a date's stated components with Jev if needed; assemble and compare dates in code. Find candidate amount strings with a parser or regular expression; let Jev select the relevant span if its *role* is ambiguous; copy the span and parse its number in code. [Jev 1.13 jaggedness](https://docs.typesafe.ai/model-jaggedness/jev-1.13) · [Date extraction](https://docs.typesafe.ai/cookbooks/date_extraction_cookbook) · [Pre-parsed value extraction](https://docs.typesafe.ai/cookbooks/pre_parsed_value_extraction_cookbook)
 
 **Use a generative LLM when the output must be created rather than selected.** Jev does not write a customer response, report, contract revision, or program. It also cannot reliably produce arbitrary new strings for unconstrained extraction. A generative model may draft or propose candidates; Jev can choose among them or check specific claims against source text. Jev is not a replacement for the LLM that operates a coding agent. [Jev with coding agents](https://docs.typesafe.ai/introduction/coding-agents) · [SDE cascade](https://docs.typesafe.ai/cookbooks/sde_cascade)
+
+For a closed decision, compare Jev with rules and a small LLM on the same labeled cases. Measure error rate at the automatic coverage you need, end-to-end latency, and cost per accepted case, including fallback calls and review. That comparison establishes whether a separate decision model is useful for your application; a typed output contract alone establishes no economic advantage.
 
 **Use a person when the evidence is missing or the cost of a mistaken action warrants review.** A high-confidence distribution can still be wrong. The review decision should use the actual consequences of the action and measured error rates on similar cases; illustrative cookbook thresholds are starting examples, not portable defaults. [Confidence](https://docs.typesafe.ai/confidence) · [Confidence-gated routing](https://docs.typesafe.ai/patterns/confidence-routing)
 
