@@ -98,6 +98,10 @@ An LLM can perform classification too. The architectural decision is to isolate 
 
 Notice how small those jobs are. The model does not receive authority to remove transactions, change the category policy, calculate a total, or invent a report finding.
 
+The walkthrough assumes you can read asynchronous Python, dataclasses and typed models. Follow three responsibilities through the code: preserve each source line, check model proposals against that source, and build the report from values Python calculated. The eight numbered steps show where each responsibility is enforced.
+
+The excerpts and eight-line walkthrough correspond to [this source revision](https://github.com/matlus/Analyze-Expenses-Workflow/tree/6da2912fe69b41537b19c3d828515b6ffb562615). The repository may evolve; use that revision to follow the members shown here.
+
 ## The graph is visible in the controller
 
 The main operation in `ManagerExpenseAnalysis` shows the order of work. The excerpts below retain the implementation's members with their outer class indentation removed; imports and surrounding members are omitted. The processor methods provide the details we'll examine next.
@@ -147,7 +151,7 @@ We'll use a small, invented log so we can follow every entry. The line numbers b
 2026-07-03 | Unknown store | amount missing
 ```
 
-For this example, the caller confirms line 2 as a duplicate of line 1. We'll use monthly targets of $100 for Dining & Coffee and $100 for Shopping. These are example targets, separate from Part One's budgets.
+For this example, the application calling `analyze_expenses` supplies its confirmation that line 2 duplicates line 1 before the run starts; the workflow does not pause to ask a person. We'll use monthly targets of $100 for Dining & Coffee and $100 for Shopping. These are example targets, separate from Part One's budgets.
 
 To make the path reproducible, the walkthrough fixes the model responses: Jev leaves line 3's amount unresolved, the LLM identifies the $7.50 charge, and the missing amount on line 8 stays unknown. Later category proposals are stated where they matter. These choices illustrate execution paths; they are not measurements of model accuracy.
 
@@ -233,7 +237,7 @@ def _accepted_candidate_index(self, choice_decision: ChoiceDecision, candidate_d
 
 There are three checks worth noticing. The choice must belong to the supplied set. The probability associated with that choice must meet the configured minimum. And `none` remains a valid way to decline selection.
 
-The gate uses `probabilities[choice]`. Jev also returns a separate `confidence` value; the two fields are not interchangeable. This implementation's routing decision uses the selected option's probability.
+The gate uses `probabilities[choice]`: the probability assigned to the selected option among the offered candidates. Jev's separate `confidence` summarizes how concentrated the whole distribution is. This implementation asks whether that particular choice meets the minimum probability, so it reads the choice's probability directly. Neither field measures observed accuracy on our expenses.
 
 After selection, Python retrieves the original occurrence, parses it again, rejects an occurrence identified as a balance, and applies the amount's sign and refund rules. The model supplies an index into evidence that the application already holds.
 
@@ -436,7 +440,7 @@ Here are the classified amounts for our example:
 | July 2026 | Groceries | $50.00 | 6 |
 | July 2026 | Other | $20.00 | 7 |
 
-The processor separately totals unresolved outflow and adds it to classified spending to produce its defined measure of *observed outflow*:
+Here, *observed outflow* means classified spending plus unresolved money leaving the account. The processor totals those two parts separately and then adds them:
 
 ```text
 June: 82.18 + 7.50 = 89.68 classified
