@@ -18,7 +18,7 @@ related:
   - jev-practical-reference
 ---
 
-A long assistant conversation can contain old checks, repeated results, and facts that still matter. When a new question arrives, one way to reduce the material sent to the answering model is to ask which earlier pieces are still needed. Jev can make those narrow relevance judgments. Ordinary code decides how to use them and keeps the original conversation intact.
+A long assistant conversation can contain old checks, repeated results, and facts that still matter. When a new question arrives, one way to reduce the material sent to the answering model is to ask which earlier pieces are still needed. Jev, TypeSafe AI's model for typed judgments, can make those narrow relevance judgments. Ordinary code decides how to use them and keeps the original conversation intact.
 
 This article follows one small example from a Codex style JSONL log to a Jev request, a recorded Jev response, and the resulting shorter context. The website and tool outputs are **constructed teaching data**; no check against `example.org` was performed. The Jev response shown below came from a live call against this exact constructed request on 25 September 2026. The teaching log, generated JSON files, and source modules are available as downloads below. The modules are snapshots for inspecting the implementation; they are not a standalone package. The separate [trial record](/downloads/using-jev-compact-llm-context/trial-record.md) covers a larger, real Codex task.
 
@@ -54,7 +54,7 @@ Our [reader](/downloads/using-jev-compact-llm-context/rollout.py) assigns IDs ba
 
 The [state builder](/downloads/using-jev-compact-llm-context/selection.py) builds a `state` containing the current goal and the ordered timeline. The [question builder](/downloads/using-jev-compact-llm-context/questions.py) creates one yes/no [Noul question](https://docs.typesafe.ai/primitives/noul) per tool event. Each question asks whether removing that event risks losing a still valid fact, caveat, error, or source needed for the current goal. Jev sees the tool call and result text and the surrounding messages. It judges the supplied records without browsing the website or rerunning `curl`.
 
-This is the **complete request body** used for the live teaching call, also saved as [jev-request.json](/downloads/using-jev-compact-llm-context/jev-request.json):
+This is the **complete request body** used for the live teaching call, also saved as [jev-request.json](/downloads/using-jev-compact-llm-context/jev-request.json). Each question uses the same retention criterion; its key and the event ID named in its instruction change together. The repetition below preserves the actual request:
 
 ```json
 {
@@ -177,17 +177,19 @@ retained = tuple(
 
 The first condition protects user and assistant messages without asking Jev to score them. The second keeps a tool event when its score reaches the threshold. For this response:
 
-| Event | Jev's yes probability | Code's decision | Reason visible in the source |
+| Event | Jev's yes probability | Code's decision | Source evidence (our reading) |
 | --- | ---: | --- | --- |
 | `tool_3`: `www` redirect | `0.50` | Keep, because `0.50 >= 0.50` | Only observed `www` result |
 | `tool_5`: earlier root `503` | `0.47` | Omit | Later root check reports success |
 | `tool_7`: later root `200` | `0.70` | Keep | Current root and certificate evidence |
 
-The “reason visible in the source” column records our reading of the evidence. Jev supplied only probabilities. In particular, `tool_3` sits exactly on the threshold. A stricter threshold would remove it. An application that needs stronger assurance should keep borderline events or ask for review instead of treating `0.5` as a safety guarantee.
+The final column records our reading of the evidence. Jev supplied only probabilities. In particular, `tool_3` sits exactly on the threshold. A stricter threshold would remove it. An application that needs stronger assurance should keep borderline events or ask for review instead of treating `0.5` as a safety guarantee.
+
+The `0.5` cutoff is this trial's setting. For deployment, label which events must survive representative questions, compare thresholds against those decisions, and check how the resulting answers change. [Jev: A Practical Reference](/writing/jev-practical-reference/#12-evaluation-and-deployment) describes the evaluation procedure. The cost of losing a required fact should determine how conservatively code retains borderline events.
 
 ## See the resulting context
 
-Code reassembles the retained events in their original order. This is the actual [compacted-context.json](/downloads/using-jev-compact-llm-context/compacted-context.json) produced from the response:
+Code reassembles the retained events in their original order. The saved format calls a paired event `tool`, with the call under `text` and its output under `result`; it is the same unit called `tool_call_and_result` in the request. This is the actual [compacted-context.json](/downloads/using-jev-compact-llm-context/compacted-context.json) produced from the response:
 
 ```json
 [
@@ -221,7 +223,11 @@ Code reassembles the retained events in their original order. This is the actual
 ]
 ```
 
-The `503` tool event is gone; all three chat messages remain, along with both pieces of evidence needed to discuss the root and `www`. The request called a paired event `tool_call_and_result`; the saved context calls that same retained segment `tool`, with its call under `text` and its output under `result`. In this small example the measured chat and tool text falls from 443 to 356 characters, a 19.6% reduction. That number describes this input only. The original JSONL is unchanged and can be consulted if a later question makes the old failure relevant.
+The `503` tool event is gone; all three chat messages remain, along with both pieces of evidence needed to discuss the root and `www`. In this small example the measured chat and tool text falls from 443 to 356 characters, a 19.6% reduction. That number describes this input only. The original JSONL is unchanged and can be consulted if a later question makes the old failure relevant.
+
+Change the question to “Why did HTTPS fail before it worked?” and that old `503` becomes relevant again. Select from the original record for the new goal. Keeping the source enables recovery, but it does not protect an answer already written from a context that dropped a needed caveat. Use the complete record when the task is to reconstruct the full history.
+
+The larger [trial record](/downloads/using-jev-compact-llm-context/trial-record.md) reports two careful-loss checkpoints starting from 18,253 and 67,099 characters of context. They achieved 48.1% and 58.0% text reduction while retaining their designated tool evidence. Those retention decisions matched a simple keep-newest-tool baseline. The trial did not replay downstream answers, so it supplies no measured answer-quality benefit or advantage over that baseline.
 
 This process **selects existing events** and preserves their text. Jev proposes which existing events matter; code checks the response and constructs the smaller input. Another model could then write the answer using that input. Neither the Noul scores nor the size reduction prove that such an answer would be correct.
 
