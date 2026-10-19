@@ -4,7 +4,7 @@ hero: "pipeline-breadcrumbs-v3-crop"
 description: "Make long-running pipelines explain their work through numbered steps, ordered artifacts and a run manifest. Preserve evidence to investigate exceptions and incorrect results."
 datePublished: 2026-10-05
 dateModified: 2026-10-05
-tags: ["progress-reporting", "structured-logging", "debugging", "error-handling", "dependency-injection", "python"]
+tags: ["progress-reporting", "structured-logging", "debugging", "error-handling", "dependency-injection", "strategy-pattern", "design-patterns", "python"]
 repositories:
   - label: "Pipeline Breadcrumbs"
     url: "https://github.com/matlus/pipeline-breadcrumbs"
@@ -23,6 +23,10 @@ Those are different questions, and a traceback cannot answer all of them.
 I want a pipeline to leave an account of its work that somebody else can follow. That person might be a developer, an operations team member with no access to the running application, or a coding assistant investigating a defect. They should be able to open the run's folder, understand its sequence and find the evidence relevant to the failure.
 
 That is the purpose of **Pipeline Breadcrumbs**: numbered progress logs and self-describing artifacts that tell the same story about one execution.
+
+The Python library below is one implementation of that contract. You can follow the design through the folder layout, step identity, persist-before-parse example and manifest-reading procedure. The sink and hosted-profile sections explain how this implementation fits into an application; the final section gives a runnable demonstration.
+
+This is the same need behind saving each answer and event stream in [Verified, Not Trusted: Expense Analysis, Part Three](/writing/verified-not-trusted-expense-analysis-part-three/): a failed check needs inspectable evidence. The document-analysis example here organizes a different pipeline's trail using that same principle.
 
 ## Start with the trail somebody needs to read
 
@@ -336,11 +340,19 @@ The full record also contains timing, outcomes, failure details and artifact rec
 
 Start with the failed work item and step. Open that step's available summary and raw response files. Then inspect the preceding step's output. A scoring failure may originate in detection, and an incorrect report may be the faithful assembly of already incorrect scores. Follow the values back until you find the first point where they departed from what you expected. Use the local `run.log`, or the hosted process log, to fill in the progress between the saved results.
 
+For example, the pinned demo's `--fail-page 2` run records `Contract 12.pdf` as failed at step 2, Detect Sections, with a JSON parsing error on page 2. Its saved `Contract 12_step_02_raw_detection_response_page_0002.txt` contains:
+
+```text
+Sure! Here is the JSON you asked for: {"title": "Miscellaneous", "category":
+```
+
+That reply starts with prose and ends before supplying a category or closing the object. A parser expecting a JSON object rejects it at the first character. The preceding `Contract 12_step_01_page_text_page_0002.txt` contains the page headed `SECTION: Miscellaneous` and the marker that deliberately triggers the demo's malformed reply. The input explains the scripted failure, and the saved reply shows exactly what the parser received. Page 2 is zero-based here. This is an offline demonstration of the diagnostic path, with no outbound model call.
+
 This is also useful when nothing throws. A step can complete successfully and produce the wrong answer. Its outcome and artifacts give you something more useful than a green completion flag.
 
 The manifest is built from immutable events rather than a dictionary that replaces a record whenever the same step path appears again. Reopening a step or work item retains its execution history. However, retaining manifest records does not automatically version file contents: the filesystem sink writes to the artifact's derived filename. Re-emitting the same identity writes to the same path. Use distinct discriminators or separate runs when multiple attempts' files must coexist.
 
-The manifest is written at run exit, not continuously checkpointed. An abrupt process termination or a storage outage can leave earlier artifacts without a completed manifest. The demo catches a manifest-persistence failure at the outer run boundary, logs it once with its traceback and reports a failed run even if both documents completed. While a run is still active, its log and already persisted artifacts are the evidence available.
+While a run is active, start with its log and already persisted artifacts. The manifest is written at run exit, not continuously checkpointed. An abrupt process termination or a storage outage can leave earlier artifacts without a completed manifest. The demo catches a manifest-persistence failure at the outer run boundary, logs it once with its traceback and reports a failed run even if both documents completed.
 
 ## Keep storage and logging decisions in the application
 
@@ -404,7 +416,7 @@ The same trail proved useful when working with coding assistants. An assistant c
 
 There is no special assistant API in that arrangement. The useful capability comes from exposing understandable evidence through ordinary files. A step name supplies intent; its artifacts supply the material needed to check whether the result matches that intent.
 
-You can test that contract at the application's public boundary too. The library provides an `ArtifactSinkTesting` sink and a `RecordCapture` logging handler in `pipeline_breadcrumbs.testing`. Pass the sink instance as `artifact_sink`; its `persist` method retains the artifacts in memory. An acceptance test can then inspect which artifacts were emitted, what they contain, and which statuses and attributes were logged. The demo's acceptance tests use `ServiceLocatorTesting` to replace the HTTP transport with a Test Mediator. The real `GatewayModelService`, configuration provider, processors and scopes still run.
+You can test that contract at the application's public boundary too. The library provides an `ArtifactSinkTesting` sink and a `RecordCapture` logging handler in `pipeline_breadcrumbs.testing`. Pass the sink instance as `artifact_sink`; its `persist` method retains the artifacts in memory. An acceptance test can then inspect which artifacts were emitted, what they contain, and which statuses and attributes were logged. The demo's acceptance tests use `ServiceLocatorTesting` to replace the HTTP transport with a Test Mediator. It supplies the test's scripted HTTP responses and records the requests that reach it, so the test can check both sides of the exchange. The real `GatewayModelService`, configuration provider, processors and scopes still run.
 
 Those assertions concern what a consumer can observe. Reorganizing the classes should not require rewriting an expectation that a malformed reply is preserved before its parse error escapes.
 
