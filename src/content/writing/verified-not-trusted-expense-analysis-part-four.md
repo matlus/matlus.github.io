@@ -22,7 +22,7 @@ tags:
   - verified-not-trusted
   - verification
   - model-evaluation
-  - acceptance-testing
+  - grading-rubrics
 related:
   - verified-not-trusted-expense-analysis-part-one
   - verified-not-trusted-expense-analysis-part-two
@@ -43,6 +43,11 @@ using a handful of lines from the same expense log.
 
 By the end you should be able to look at your own prompt, skill or workflow and answer three questions: what has to be
 right, how will I check it, and how often does it have to be right before I rely on it?
+
+We will build those checks from six expense situations, then compare a written
+report with a structured workflow result. The workflow sections show why the
+output's shape changes what code can grade. The full implementation walkthrough
+is in Part Two; here we follow the checks.
 
 ## One run cannot establish reliability
 
@@ -117,8 +122,11 @@ For each one, ask the same three questions: what is the right answer, what could
 
 **1. An ordinary purchase (line 31).** Local Coffee Co, $34.22, belongs in Dining & Coffee for June. Before anything
 else, the line has to be read correctly: the date, the merchant and the amount, with the sign kept when there is one. Then
-it has to go in the right category. A model can get any of that wrong, or skip the line; one GPT-6 Luna run in the prompt
-eval left this line out, which made June dining $178.52 instead of $212.74.
+it has to go in the right category. A model can get any of that wrong, or skip the line. One GPT-6 Luna answer reported
+June dining as $178.52 instead of $212.74, a gap equal to this line's $34.22. That points to a candidate cause, not a proven
+omission: the [saved execution](https://github.com/matlus/Skills-and-Evals/blob/5ec0b0a9bd4c9361cb059984675cd2e62352c699/results/pwi/expense_analysis/20261010T110135Z-regrade-codex-gpt-6-luna-medium-43f5c3/trials/robust-tables-first/june-august-2026/run-01/event_stream.jsonl)
+read this line as negative and calculated $144.30 for June dining. The final answer and that calculation disagree; the
+final total alone cannot establish which step caused the reported $178.52.
 
 Ideally you verify every line: each one read correctly and put in the right category. Whether you can depends on what the
 output shows you. A prompt's answer is a written report with tables of totals, and the model's line-by-line reading never
@@ -179,12 +187,11 @@ the check tells you whether it worked.
 The checks above are the ones this eval makes. They don't cover everything the task asks for, and it's worth being clear
 about what isn't checked and what it would take to check it:
 
-| Check | Graded by | What it needs |
+| Check | Graded by | Additional reference material it needs |
 |---|---|---|
 | Every category total for every month, beyond the five checked | code | nothing new; code can add them up from the reference key's lines |
 | Every budget comparison and every month-to-month change | code | nothing new, for the same reason |
 | Each uncategorized entry is explained ("tell me what it is") | judge | a rubric |
-| The findings and tables agree with each other | code if the report is built from data, judge if it's prose | a rubric for prose |
 
 Each line's date and merchant used to be on this list. Before code could check them, someone had to write down the right
 date and merchant for all 198 lines, independently of the workflow's parser. That's the usual trade-off: building the
@@ -200,25 +207,38 @@ date, merchant, amount, category and what happened to it (counted, excluded as a
 
 That turns two checks graded by a judge in Part Three into code checks. The workflow also adds the entry-by-entry reference check, which the prompt report cannot expose. "Transfers are not forced into a category" is now
 code reading each line's category. "Only the two stated budgets are used" is code comparing the budget table with the
-budget note. This workflow's reference also accepts merchant-only Amazon, Target and Costco charges in Other, because the log does not say what was bought. Its July Shopping total is therefore $526.62, alongside the accepted merchant-based total of $756.72. The two evals share the input and most checks, but this policy difference matters when comparing their scores.
+budget note.
+
+Category policy still matters. The workflow's reference accepts two treatments of
+merchant-only Amazon, Target and Costco charges:
+
+- Count them as Shopping under the merchant-based policy: July Shopping is $756.72.
+- Keep them in Other because the log does not identify the purchased items: July Shopping is $526.62, as in this workflow's report.
+
+Both totals follow a stated policy. The two evals share the input and most checks,
+but their scores must be read with those accepted policies in mind. A difference
+between these totals alone does not establish an arithmetic error.
 
 The more structure your output has, the more of your eval code can grade. Of the workflow's checks, only the
 findings still need a judge.
 
 ## Check every step, and the totals follow
 
-The workflow runs in steps: read each line, put it in a category, add up the totals, choose the findings. If you verify
-what each step produces, you don't need to verify the same thing again further on.
+The workflow runs in steps: read each line, put it in a category, add up the totals, choose the findings. Maintaining
+the calculation in code lets us test its rules directly instead of asking a model to repeat the arithmetic on every run.
 
 The line check covers the first two steps. Every line's date, merchant, amount and sign are compared with the reference
 key, and so are its category and whether it was counted. The third step is code, and that code has its own unit tests.
-Tested code adding up verified lines gives the right totals, so a total can only be wrong if a line is wrong, and the line
-check would already have caught it. For the workflow, the complete set of checks is short: every line, the findings, and
-the unit tests of the calculation code.
+We also need to test that the checked ledger reaches that calculation and its returned values reach the correct report
+fields. Budgets are another input: correct transaction lines do not establish that the calculation received the right
+targets. The workflow's separate budget check covers that requirement.
 
-The workflow's eval still makes the five total checks and the fact checks. They are the same checks the prompt eval makes,
-and keeping them is what makes the two results comparable. For the workflow, they confirm what the line check has already
-established.
+Once that data path and the calculation rules are tested, the workflow can reuse the maintained calculation. A line
+check plus a few passing unit tests alone does not rule out an aggregation or report-wiring defect.
+
+The workflow's eval still makes the five total checks and the fact checks. They provide regression evidence for the
+delivered result as well as common comparison points with the prompt eval. Their coverage remains specific: they do
+not check every report field.
 
 The prompt is different. The model does its own adding up, so its totals don't follow from its lines. It can read every
 line correctly and still add them up wrong, or total a different set of lines from the ones it read. That's why the prompt
@@ -233,7 +253,7 @@ matches.
 ## Verifying inside the run
 
 An eval checks the answer after it is written. The workflow also checks each step while it runs, before the next step
-uses the result. Two kinds of model take part. Jev is a System 1 model: it answers a multiple-choice question at once,
+uses the result. Two kinds of model take part. Jev, TypeSafe AI's decision model, is a System One model: it answers a multiple-choice question at once,
 without reasoning step by step first, and gives a probability for each choice. A large language model is used only where
 code and Jev can't do the job.
 
@@ -306,6 +326,9 @@ the same verified outcome every time, and any failed check is something to inves
 After extending the entry-by-entry check to include dates and merchants and fixing the REI merchant, I reran both eval
 rounds: seven model-and-effort configurations, five runs each, twice. All 70 completed runs passed every graded check,
 including all 198 lines, and produced identical report text. The suite requires 100% for every graded check.
+
+The [recorded workflow runs](https://github.com/matlus/Analyze-Expenses-Workflow/tree/e13c09b533f7b85e394f247ac2b15f2a70e6e57d/results/workflow/expense_analysis)
+retain the scorecards, per-run grades and report artifacts for those two rounds.
 
 Those 70 reports establish consistency on this one expense log. They do not prove that every future log will produce the
 right answer. A separate earlier attempt failed before producing a report. Completion failures matter too, so a release
