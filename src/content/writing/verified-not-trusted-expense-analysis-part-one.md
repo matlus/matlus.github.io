@@ -491,7 +491,7 @@ To compare responses yourself, give each prompt the same expense log and budget 
 
 ## The recorded response
 
-Here is the response and the supplied code from a run with the more precise prompt. Look for its treatment of the duplicate, refund, and unknown-purpose transfers. Then check whether the code carries out the requested steps. These excerpts show what happened in one run; they do not establish how reliably either prompt works.
+Here is the response and the supplied code from a run with the more precise prompt. Look for its treatment of the duplicate, refund, and unknown-purpose transfers. Then check whether the code carries out the requested steps. These excerpts exhibit one response for inspection; its findings have not been graded here. They do not establish how reliably either prompt works.
 
 <details class="expense-example-output">
 <summary>Recorded model output</summary>
@@ -707,7 +707,11 @@ To check whether the supplied code could reproduce the recorded figures, it was 
 
 Those introductory lines matter. Retaining them shifts the row numbers, assigns some transactions to the wrong month, and makes `df.drop(index=108)` remove a $54.22 AMC Theatres charge instead of the $54.12 Trader Joe's entry. The original assignment to `raw` was not included in the supplied excerpts, so the replay establishes how to reproduce the figures, without establishing how the original chat prepared its input.
 
+The replay supplies a reproducible input preparation, but the missing original assignment prevents us from checking whether the chat used that preparation. Matching the totals cannot recover that missing evidence.
+
 We have reproduced a result under specific input and category decisions. We have also found a requirement the code did not implement: parsing each transaction's date. A matching total alone does not establish that every requested step happened.
+
+One requested comparison remains incomplete: the displayed change table gives selected percentages, without ranking every category by a stated measure of "largest." Reproducing those percentages does not establish that the response found the largest changes the prompt requested.
 
 ## What still needs a rule or a check
 
