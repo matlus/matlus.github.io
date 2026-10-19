@@ -81,10 +81,14 @@ anything exists to be judged, is what keeps the definition honest.
 
 You do not widen the review gate. You re-architect it.
 
-The architecture team writes the review standard once, stricter than the default rather
+The architecture team owns one review standard, stricter than the default rather
 than looser, and compiles it into a versioned rules package. Written guidance becomes
 operationalized rules: specific enough that a reviewer, human or machine, applies each one
 the same way twice.
+
+The standard is maintained. When a rule changes, publish a new package version and
+certify the affected rule/model combinations again. Receipts bound to the old standard
+cannot certify a review against the new one.
 
 That single package drives two enforcement points. The assistant on the developer's own
 machine reviews against it while the code is being written, and the same package backs the
@@ -94,7 +98,10 @@ The piece that makes this more than paperwork is the integrity receipt. A file t
 local review travels with a checksum proving it reaches the merge gate unchanged. If the
 receipt is to be reused, it must bind that exact content, the review-standard version, and
 the relevant reviewed context and dependencies. A change to any of those inputs invalidates
-it. If the receipt checks out, that file is not reviewed again. Review workload gets absorbed
+it. A trusted review runner issues an authenticated receipt only after the required
+certified checks pass. CI verifies that issuer and verdict as well as the bound inputs;
+the implementation assistant cannot issue its own trusted receipt. If the receipt checks
+out, that file is not reviewed again. Review workload gets absorbed
 in parallel at every developer's desk instead of piling up at one central chokepoint, and
 nobody pays for the same AI review twice.
 
@@ -149,9 +156,16 @@ the broker is picked up by an actual subscriber on the far end and its attribute
 
 None of that is a shallow check that something ran without error.
 
+[Functional Acceptance Testing at the Boundary](/writing/functional-acceptance-testing-at-the-boundary/)
+works through an ordering example in code, from its customer and product arrangements to
+the returned result, stored rows, fulfillment message, and confirmation. It distinguishes
+Meridian's captured email request from the real-provider and inbox arrangement described
+here. The observation must establish the delivery obligation you are claiming.
+
 The arrangements must establish the exact scenario and the assertions must demonstrate
-its required outcomes. AI assistance follows explicit guidelines for functional acceptance
-testing at the boundary, and the human sponsor judges the result before ratification.
+its required outcomes. AI assistance with test scaffolding and examination follows explicit
+guidelines for functional acceptance testing at the boundary. The human sponsor authors the
+arrangements and assertions and judges the complete test before ratification.
 
 Verified, not trusted. Verification compares the feature specification with the functional
 acceptance tests at the boundary to establish whether the tests demonstrate every required
@@ -176,6 +190,20 @@ project is write-protected and the signature is verified at the build server.
 A human authors the verdict, signs it, and the machine is physically unable to touch it.
 That is the answer to who is checking whom.
 
+Take the order confirmation above. Before implementation, the sponsor establishes the
+customer, ordered items, expected total, and required confirmation content, then signs the
+failing scenario. The assistant implements the operation. Gate one checks its code;
+gate two runs that protected scenario and compares the actual outcomes with those prior
+expectations. If the total is right in the return value but wrong in the email, the
+scenario still fails. The assistant must fix the implementation.
+
+This requires human work for every feature. Defining the scenarios and writing their
+arrangements and assertions takes time, as does verifying their coverage against the
+specification. That investment is part of engineering the gate. The return is a retained
+check on every later implementation, rather than another manual reconstruction of what
+correct should mean. [Refactoring and Adopting Boundary Testing](/writing/refactoring-and-adopting-boundary-testing/)
+shows how to begin with one complete feature and build that asset over time.
+
 ## The inversion
 
 Because these tests never look inside the system, they are decoupled from the
@@ -183,8 +211,10 @@ implementation. That is the property the industry has discussed for years withou
 many working examples.
 
 In an AI-native lifecycle the property changes what a test is for. These tests stay valid
-when the code underneath them is rewritten, provided the required behaviour and public
-contract stay the same. Rewrites happen constantly once generation is cheap.
+when the code underneath them is rewritten, provided the required behaviour and observed
+boundary contracts stay the same: the public operation, stored outcomes, and emitted
+messages. Test support may need to adapt to a reorganized storage schema while preserving
+the same required outcome comparisons. Rewrites happen constantly once generation is cheap.
 
 So the relationship inverts. The tests become the durable asset, the executable statement
 of business intent, the thing you own and accumulate. The code becomes regenerable output.
@@ -200,6 +230,12 @@ checks. Those checks become part of the UI regression suite. Previous features r
 that automation instead of requiring a complete manual retest every sprint. Backend
 verification is already carried by the functional acceptance tests at the boundary.
 
+The team still owns backend scenario discovery and the correctness of those tests.
+Security, capacity, and deployed environment readiness also need assigned owners and
+appropriate evidence. [From a Green Suite to a Release](/writing/from-a-green-suite-to-a-release/)
+explains those release responsibilities. Moving repeatable backend verification into the
+suite does not remove the human work of deciding what must be verified.
+
 Gate two stops being the bottleneck.
 
 ## What this adds up to
@@ -207,12 +243,18 @@ Gate two stops being the bottleneck.
 Two principles run underneath all of it. Push every check to the leftmost point it can
 exist. Let nothing certify its own output.
 
-Two gates enforce the result. One reviews the code against a standard authored once and
+Two gates enforce the result. One reviews the code against a single maintained standard
 enforced everywhere. The other verifies behaviour through the system's real boundary,
 against tests a human signed and the machine cannot edit.
 
 Verified, not trusted. The tests themselves are verified against the specification before
 their passing results become evidence for the release decision.
+
+Capacity has to be engineered too. Plan human scenario design and ratification before
+generation, distribute review, and provision the accumulated regression suite to keep pace
+with incoming changes. Measure the arrival and completion rates at both gates. Removing
+the queues is the result those capacities must achieve; faster generation alone supplies
+none of them.
 
 Engineer both, and the pipeline moves as fast as the code being written without quietly
 losing what review and verification were there to catch.
