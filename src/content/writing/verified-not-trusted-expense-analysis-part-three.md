@@ -47,6 +47,11 @@ In [Verified, Not Trusted: Expense Analysis, Part One](/writing/verified-not-tru
 
 This article, the third of four, is that evaluation. We take the same expense log, the same budget notes and the prompts from Part One, and measure how often each prompt produces correct results. Then we do the same across six models from two vendors.
 
+Follow the argument through the failure example, the acceptance-test comparison
+and the results. The Arrange, Act and Assert sections show the implementation;
+they assume Python, pytest and JSON familiarity. You can return to those details
+when you want to build the eval yourself.
+
 ## One run is an anecdote
 
 Part One explained why a model can answer the same request differently each time. It generates text a token at a time, and the selection among likely next tokens can vary from one run to the next. The same prompt, the same model and the same files can produce different answers.
@@ -252,7 +257,7 @@ The suite uses three grading paths. The extractor and the judge have different j
 
 The tempting approach is to ask another model whether the answer is right. But a model grading arithmetic is one more non-deterministic answer we would have to verify. ***Verified, not trusted*** applies to the grader too.
 
-So the amounts are graded in two steps. First, a separate session with no tools reads the answer and fills a JSON schema with the facts the checks need, such as `travel_august_total` and `refund_treatment`. That model only reports what the answer says. Then code decides whether each reported value is correct:
+So the amounts are graded in two steps. First, a separate session with no tools reads the answer and fills a JSON schema with the facts the checks need, such as `travel_august_total` and `refund_treatment`. That model only reports what the answer says. Then code decides whether each reported value is correct. The small function below belongs to the readable one-file version; the recorded results use the library's Decimal grader. We will examine the float boundary immediately afterward:
 
 ```python
 def is_amount_accepted(actual_amount: str | None, expected_amounts: Iterable[str]) -> bool:
@@ -324,11 +329,23 @@ assert not actual_rows_below_minimum, (
 
 Here the eval and the acceptance test look alike again. The assertion is binary. What it asserts is different: every gated check met the minimum you chose, across the runs you made. Before the assertion, the eval writes a scorecard with the pass rate of every check for every prompt variant, so a failing gate tells you which checks fell short and by how much.
 
+That is a rate for each check. Suppose check A fails only the first of five runs
+and check B fails only the second. Each passes 4/5 and meets an 80% gate, but
+only three reports pass both. If you need the proportion of reports meeting every
+requirement together, measure that as well.
+
 ## What the runs show
 
 Each run below used medium reasoning effort, and each answer was graded in Claude Code by Sonnet at low effort. The recorded runs in the repository were produced by the library version of this eval, which reads the same eval suite and applies the same checks.
 
-First, the three prompts on the same task. Every check has an 80% minimum here, so 4/5 meets the gate. The table also lists checks below 5/5, including a 4/5 check in a variant that failed because other checks fell below the minimum:
+This suite checks five selected totals and specified facts and findings. It does
+not check every parsed entry, category total or month-to-month change. Read the
+results as evidence about those checks; passing them does not establish that
+every figure in the report is correct.
+
+The [recorded result batches](/downloads/expense-analysis-part-three/result-batches.md) identify the exact scorecards behind both tables, including the separate one-run and four-run batches combined for Opus and Sol. The saved answers and grades are inspectable. The folders name the prompt variant but do not retain per-run prompt snapshots or hashes, so those artifacts cannot independently establish the exact historical prompt revision. Save that binding alongside the results in a reproducible eval.
+
+First, the three prompts on the same task. Here "Fails" means that at least one check fell below the 80% benchmark; 4/5 meets that benchmark. The saved standard and more-precise batches were diagnostic runs with no overall gate evaluated. The suite's recorded gate applies to the final, tables-first variant. The table also lists checks below 5/5, including a 4/5 check where other checks fell below the minimum:
 
 | Prompt | Claude Opus 5.5, 5 runs | Claude Sonnet 5.5, 5 runs |
 | --- | --- | --- |
@@ -338,7 +355,7 @@ First, the three prompts on the same task. Every check has an 80% minimum here, 
 
 The standard prompt fell short where Part One said it leaves decisions unstated. The answers kept the transfers and cash withdrawals apart from spending; Opus, for example, grouped them under "Transfers & cash." But in no run did either model identify the eight entries whose purpose the log does not state. The standard prompt never asked for that, and the eval checks it. The findings and the month-over-month comparison also missed in several runs.
 
-The more precise prompt fixed every analysis problem. Its one remaining failure is instructive. Step 5 of that prompt says, "Show me the computed tables before your interpretation." Opus led with its conclusions in all five runs anyway. That is **instruction is not assurance**, measured: the instruction was in the prompt, and the models did not reliably follow it.
+The more precise prompt passed the analysis checks in this suite. Its one remaining failure is instructive. Step 5 of that prompt says, "Show me the computed tables before your interpretation." Opus led with its conclusions in all five runs anyway. That is **instruction is not assurance**, measured: the instruction was in the prompt, and the models did not reliably follow it.
 
 The third variant makes the reply order explicit, stating that the tables come first. It also requires exactly three findings, tells the model to check every number and comparison against its tables, and limits budget judgments to the two stated targets. With those changes, Opus passed every check in every run.
 
