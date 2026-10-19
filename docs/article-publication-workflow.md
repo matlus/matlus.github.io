@@ -63,6 +63,15 @@ three priority changes. Missing evidence leaves the affected checks unverified.
 An incomplete article cannot receive a complete review. A zero-finding review
 is valid; optional stylistic preferences do not create a revision requirement.
 
+The same review includes a skeptical first-time reader's assessment. State the
+learning outcome and article form, locate the clearest and any muddy explanation,
+and identify teaching moves the revision should preserve. The
+[reader-critique prompt supplied by Hana](https://drive.google.com/file/d/1aYRycUeTu20bFzzlfZ-BFNIXo36QWUqV/view)
+informed these checks. They extend the existing review rather than adding a
+second mandatory criticism session. A reference, walkthrough and argument can
+need different structures. Keep series observations separate from fixes to one
+article, and treat the final three priorities as proposals to verify.
+
 Include a reader-path assessment in the coverage record: assumed knowledge,
 early orientation, terminology introduced at the point of need, transitions to
 other examples, framing before dense evidence, and the availability of essential
@@ -210,6 +219,10 @@ Markdown twin and changed assets against the checked build. Complete existing
 public source-video and repository backlink requirements within authorization.
 
 ## Workflow trials
+
+The [reader-critique prompt evaluation](hana-reader-critique-prompt-evaluation.md)
+records the follow-up trial of article-form, explanation and preservation checks
+against five complete baseline/candidate pairs.
 
 The [reader-path evaluation](hana-reader-path-workflow-evaluation.md) records the
 October 18 follow-up across four varied revisions and an unchanged control,

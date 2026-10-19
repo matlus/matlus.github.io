@@ -19,6 +19,13 @@ Inputs
 
 Use the supplied reader profile. If none is supplied, infer a reasonable profile from the article and state it as an assumption. Apply supplied voice guidance, including the blog-writing skill when reviewing Shiv's articles.
 
+Read as a careful, skeptical first-time reader trying to learn from the page.
+State what the reader should be able to do or decide afterward, in your own
+words. Identify the article's form: a reference organizes knowledge for lookup;
+a walkthrough develops a working example; an argument supports a position.
+Judge the explanation against that purpose. Do not require a reference to build
+like an essay or turn an opinion piece into an API tutorial.
+
 Establish coverage
 Read the complete article, including code, tables, captions, footnotes, and collapsed material. Prefer the complete source or page over a search excerpt or limited extraction. Record the source version, every article heading read in order, and the final sentence of the article body, excluding site navigation and footer. These document coverage; they do not substitute for reading.
 
@@ -34,6 +41,21 @@ Review
 
 Report
 Start with coverage, reader assumptions, and evidence limitations. Rank substantive findings by their effect on understanding or correctness, placing defects before optional preferences.
+
+Name the clearest explanation and explain its teaching mechanism with a passage:
+for example, a worked trace, concrete numbers or a comparison that resolves a
+specific confusion. Name the muddiest passage if there is one, explaining the
+precise inference a first-time reader must supply. These observations may also
+support a ranked finding; do not duplicate it to fill a report template.
+
+Record teaching moves worth preserving, including purposeful questions, honest
+scope, fair treatment of alternatives and failures used to develop understanding.
+Generic praise supplies no preservation guidance. For dense code, repeated JSON
+or raw data, check whether readers can follow the conceptual thread and whether
+collapsing material would hide a necessary step. Figures and tables should have
+understandable labels and an explained role in the lesson. Distinguish an
+article-level correction from a series-level observation; read the relevant
+parts before claiming a series pattern.
 
 For each finding, provide its status, exact passage or location, the reader's difficulty, supporting evidence, and the smallest effective correction. Distinguish confirmed defects, supported editorial concerns, unverified claims, and preferences. Do not manufacture findings to fill categories.
 
