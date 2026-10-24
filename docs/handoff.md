@@ -1,5 +1,17 @@
 # Handoff
 
+## Pipeline Breadcrumbs artifact clarification, October 23, 2026
+
+The owner authorized publishing the explanation of typed step results, serialized
+artifacts, raw evidence, per-kind formats and interchangeable persistence sinks.
+The revision includes the page-image and 22-step experiences and a brief generic
+account of the design's evolution. It preserves current main's later teaching
+improvements, all metadata and exact October 5 dates, existing code, anchors and
+approved artwork. The primary checkout's unrelated work remains untouched.
+The [publication receipt](pipeline-breadcrumbs-artifact-clarity-2026-10-23.md)
+records scope and evidence. The PR carries check results and exact deployment
+verification; a local build alone does not establish publication.
+
 ## Hana critique revisions, October 18, 2026
 
 Shiv authorized selective revisions for issues #98, #99, #100 and #103 and
