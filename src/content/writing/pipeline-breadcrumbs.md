@@ -22,7 +22,9 @@ Those are different questions, and a traceback cannot answer all of them.
 
 I want a pipeline to leave an account of its work that somebody else can follow. That person might be a developer, an operations team member with no access to the running application, or a coding assistant investigating a defect. They should be able to open the run's folder, understand its sequence and find the evidence relevant to the failure.
 
-That is the purpose of **Pipeline Breadcrumbs**: numbered progress logs and self-describing artifacts that tell the same story about one execution.
+That is the purpose of **Pipeline Breadcrumbs**: numbered progress logs and self-describing artifacts that tell the same story about one execution. Those artifacts preserve the results of processing steps and the raw material needed to check them: serialized domain objects, model replies, extracted text, images and reports.
+
+This design evolved through my experience across several real systems, with each one revealing something the next version needed to handle.
 
 The Python library below is one implementation of that contract. You can follow the design through the folder layout, step identity, persist-before-parse example and manifest-reading procedure. The sink and hosted-profile sections explain how this implementation fits into an application; the final section gives a runnable demonstration.
 
@@ -36,6 +38,51 @@ Consider a document-analysis pipeline. For each document it loads page text, det
   <a href="/images/diagrams/pipeline-breadcrumbs-steps.svg"><img src="/images/diagrams/pipeline-breadcrumbs-steps.svg" alt="A document moves through Load Pages, Detect Sections, Classify Sections and Assemble Report. Classification contains Prepare Prompts, Score Sections and conditional Reconcile Scores steps, numbered 3.1 through 3.3." loading="lazy" /></a>
   <figcaption>Each processor owns its step. Passing the classification scope to its processors places their local steps under step 3.</figcaption>
 </figure>
+
+The orchestration passes values between these steps. Here are the calls from `DocumentAnalysisManager.analyze_document`, after input validation:
+
+```python
+loaded_pages: list[str] = await self._page_loader.load(step_host, pages)
+detected_sections: list[DetectedSection] = await self._section_detector.detect(step_host, loaded_pages)
+classified_scored_sections: list[ScoredSection] = await self._section_classifier.classify(step_host, detected_sections)
+report: str = await self._report_assembler.assemble(step_host, classified_scored_sections)
+```
+
+These are ordinary typed values in memory. A `DetectedSection` is a domain object with `page_number` and `title` properties. A `ScoredSection` adds `category` and `confidence`. Detection returns objects that classification consumes; classification returns objects that report assembly consumes.
+
+This example follows a simple sequence. In another workflow, a later step might need the page text from step 1, detected sections from step 2 and scores from step 3 together. The orchestrator supplies those inputs. A step's inputs can come from several earlier steps, and its result can be used by several later ones.
+
+When we persist a result as an artifact, we save a representation of those values. The detector does this before returning its list:
+
+```python
+await step_scope.emit(DETECTED_SECTIONS, to_json_document(detected_sections))
+```
+
+`to_json_document` converts the dataclass objects to dictionaries with `asdict`, serializes them with `json.dumps` and encodes the JSON as UTF-8 bytes. The resulting file contains records with the objects' `page_number` and `title` values. The next processor still receives `detected_sections` directly in memory. It does not open that file to continue the normal execution.
+
+The persisted JSON lets somebody inspect what detection produced after the process has finished or failed. An application could also deserialize it back into domain objects for a later run, with the validation and compatibility checks that reuse requires.
+
+## Preserve both results and raw material
+
+A serialized domain object is one kind of artifact. Useful evidence can also exist before an object has been successfully constructed.
+
+- **Detected sections or classification scores**, serialized as JSON, preserve the property values passed to later processing.
+- **A raw model reply**, saved as text, JSON or CSV according to the expected format, preserves exactly what came back, even when decoding or validation failed.
+- **Extracted page text or a prepared prompt**, saved as text or JSON, preserves the material supplied to the model.
+- **A rendered document page**, saved as PNG or JPEG, preserves the actual image supplied for processing.
+- **An assembled report**, saved as Markdown, preserves the deliverable produced from the earlier results.
+
+The extension identifies the intended representation; it does not prove that the content is valid. A raw reply saved as `.json` may still contain a missing double quote or unquoted property names. A reply can also be valid JSON with the wrong structure or property types. Preserve the original response before decoding and validation so those failures leave evidence.
+
+Images matter for the same reason. I've had a document page produce an image nine feet wide when rendered at 300 DPI. Azure rejected it. Without the saved image, you're left wondering how a page could be too large. With it, you can inspect the actual dimensions and resolution of what you sent.
+
+Rendering those pages also takes time. If an application can reuse the saved image on a later run, it can avoid rendering it again. The same artifact can support diagnosis and reuse. This demonstration uses page text; rendered images are another application of the same persistence contract. The current library's restart limitations are explained under “What saved artifacts make possible next.”
+
+Each processor chooses the artifact kinds it emits. An `ArtifactKind` declares a content name, file extension, MIME type and role. One step can emit several kinds: the detector saves each raw reply as `.txt` with `text/plain`, and its parsed section collection as `.json` with `application/json`. The report assembler emits `.md` with `text/markdown`. A page-rendering processor could declare `.png` with `image/png`; another processor could declare `.csv` with `text/csv`.
+
+The processor supplies the encoded content to `emit`. The sink receives bytes and the artifact's metadata; it does not need to understand the domain model, parse the JSON or interpret an image to persist it. The content name and step identity explain why those bytes matter to this execution.
+
+## Name artifacts so the trail is readable
 
 One run processes `Contract 12.pdf` and `Lease 4.pdf`. Its folder has this shape:
 
@@ -202,7 +249,19 @@ Notice where the decisions belong. `main` chooses the directory, sink and logger
 
 The context manager logs `STARTED` on entry and `COMPLETE` on a clean exit. If an exception escapes, it records `FAILED` and lets the exception continue. The processor supplies the meaningful outcome; it does not repeat the mechanics of starting a timer and closing the step.
 
-`ArtifactKind` describes the content with a key, extension and media type. The artifact derives its own filename. Keys such as `result`, `data` and `payload` are rejected because they do little to help somebody find the right file later.
+The `PAGE_TEXT` declaration gives this step's artifact kind the key `page_text`, extension `txt` and MIME type `text/plain`. The processor encodes each page's text as UTF-8 bytes before calling `emit`. The artifact derives its filename from that declaration and the current step. Keys such as `result`, `data` and `payload` are rejected because they do little to help somebody find the right file later.
+
+## Give persistence one owner
+
+Some of the production workflows this design grew out of had 22 steps. Imagine each processor writing its own artifacts: choosing a directory, assembling paths, creating folders and managing the write. Now the team has 22 places where storage decisions and file-handling code can drift apart. A common naming convention is difficult to maintain when every processor implements it for itself.
+
+Even if all those writes target the local filesystem today, each implementation needs correct handling of writes, buffer flushing and file closure. Changing the output directory means finding every place that chose a path. Moving to blob storage means finding every place that opened a file.
+
+The sink gives that responsibility one owner. A processor chooses what to preserve, declares its artifact kind and supplies the bytes through `step_scope.emit(...)`. The artifact derives its filename from its identity. The sink maps that identity to a destination and performs the write. Processors need no output paths, file handles or storage clients.
+
+Correct file handling can then be implemented, reviewed and tested in the filesystem sink for all its callers. In this implementation, the sink creates the parent directory and calls `Path.write_bytes`, which writes the bytes and closes the file before persistence completes. A real blob sink would own the storage client's upload operation. The common protocol gives every processor the same way to request persistence.
+
+That is also an organizational decision. A developer adding step 23 follows the existing artifact declarations and emission contract. The application supplies the run's sink, so the new step's evidence goes through the same storage implementation as the rest. The team can inspect and change its storage policy in one place.
 
 ## Why use a sink class instead of a callback?
 
@@ -287,7 +346,9 @@ detected_section: DetectedSection = self._parse(page_number, raw_reply)
 
 `RAW_DETECTION_RESPONSE` is a text artifact kind. The page discriminator identifies which reply you are examining. Only after the sink has accepted the raw bytes does parsing begin.
 
-Now a parse error leaves something you can inspect. You can distinguish a malformed model reply from a valid reply the parser mishandled. You can compare it with the page text and with replies from other pages.
+For example, `{"title": "Payment Terms"}` supplies the title this parser expects. A reply such as `{"title": "Payment Terms}` is missing a closing quote; `{"title": 42}` decodes as JSON but fails the text-field check. These illustrate two different reasons the saved response may never become a `DetectedSection`.
+
+Now a parse error leaves something you can inspect. A missing quote or unquoted property name prevents JSON decoding. Valid JSON with a missing or invalid `title` fails the subsequent field check. Only after those checks succeed does this processor construct a `DetectedSection`. The raw reply survives either failure, even when no domain object or completed section collection can be produced. You can compare it with the page text and with replies from other pages.
 
 The demonstration processes up to three pages concurrently. One page can finish before an earlier page, and the progress log reflects that. For this workload, the detector uses `asyncio.gather(..., return_exceptions=True)` to collect every page outcome, then raises the first failure in page order. A malformed reply on one page does not immediately cancel the others, so their available replies can also be captured.
 
@@ -338,7 +399,7 @@ The manifest records each work item, each step opening, statuses, elapsed times,
 
 The full record also contains timing, outcomes, failure details and artifact records. You can identify the step without having to infer whether an unqualified `name` belongs to the document or the operation.
 
-Start with the failed work item and step. Open that step's available summary and raw response files. Then inspect the preceding step's output. A scoring failure may originate in detection, and an incorrect report may be the faithful assembly of already incorrect scores. Follow the values back until you find the first point where they departed from what you expected. Use the local `run.log`, or the hosted process log, to fill in the progress between the saved results.
+Start with the failed work item and step. Open that step's available serialized results and raw responses. Then inspect the earlier results that supplied its inputs, including more than one earlier step when necessary. A scoring failure may originate in detection, and an incorrect report may be the faithful assembly of already incorrect scores. Follow the values back until you find the first point where they departed from what you expected. Use the local `run.log`, or the hosted process log, to fill in the progress between the saved results.
 
 For example, the pinned demo's `--fail-page 2` run records `Contract 12.pdf` as failed at step 2, Detect Sections, with a JSON parsing error on page 2. Its saved `Contract 12_step_02_raw_detection_response_page_0002.txt` contains:
 
@@ -406,7 +467,9 @@ This listing is shortened. The hosted profile creates no `run.log`; informationa
 
 The blob sink is still a local stand-in, so no cloud upload occurs. A production implementation would own the storage SDK's container client and implement the same `persist` method. Moving the bytes to a real service is work still to be done; choosing between the two sink classes already works in the demo.
 
-The important separation is already present: moving the application to a different environment does not require each processor to learn a new logging service or storage API.
+This is polymorphism at the persistence boundary. The application constructs the sink appropriate to its environment and supplies it to `PipelineRun`. Every processor continues to emit the same artifacts through the same scope. Changing the implementation selected by the application changes where and how those artifacts are stored without changing the processors.
+
+If production storage later moves to another provider, or to a database, the work belongs in a sink implementation and the application's construction of it. The persistence contract keeps that change out of the processors. The same application-owned approach to logging lets processors report progress without selecting a logging service.
 
 ## Give people and coding assistants the same evidence
 
@@ -426,7 +489,7 @@ Preserving intermediate results creates a useful starting point for resuming exp
 
 The current library does not implement restart-from-step. That would require an artifact reader and an orchestration decision about which saved values replace earlier computations. It also needs an explicit agreement about whether a saved result is complete and compatible with the inputs and code being run now.
 
-Summary artifacts such as `detected_sections.json` are plausible inputs to that design. Raw model replies serve a different purpose: they preserve evidence, and still need interpretation before they become the typed values the next processor expects.
+Serialized results such as `detected_sections.json` are plausible inputs to that design: a reader would deserialize and validate them into the typed values the next processor expects. A saved page image could be loaded for reuse too. Raw model replies preserve evidence from before validation; they must still pass decoding and validation before they can supply domain objects. The orchestrator would need to restore every required earlier result when a resumed step has several inputs.
 
 For normal execution, keep passing results from one processor to the next in memory. Persisting an artifact should not turn every ordinary method call into a write followed by a read. The saved trail supplies diagnostics today and an opportunity for a separately designed restart mechanism later.
 
