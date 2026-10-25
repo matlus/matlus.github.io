@@ -1,5 +1,18 @@
 # Article review backlog
 
+## Mocking source attribution, October 25, 2026
+
+The targeted transport/Test Mediator revision is recorded in
+[the issue assessment](article-issues-82-124-2026-10-25.md). Its independent review
+also flagged the historical Beck attribution in **Mocking? No Thank You!**. Before
+a separate correction, compare the original recording and book evidence with the
+claims about production-quality green code, refactoring only tests and designing
+later. The author's own testing practice and argument must remain distinguishable
+from what Beck explicitly prescribed. Sources supplied by the reviewer are the
+[publisher-distributed preview](https://api.pageplace.de/preview/DT0400.9780137585281_A43279227/preview-9780137585281_A43279227.pdf)
+and [authorized Chapter 13 preview](https://www.oreilly.com/library/view/test-driven-development/0321146530/ch13.xhtml).
+This attribution passage remains unchanged in the scoped revision.
+
 ## Recent article workflow pass, October 13, 2026
 
 The [review record](recent-article-review-2026-10-13.md) covers 26 recent articles,

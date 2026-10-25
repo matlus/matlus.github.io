@@ -1,5 +1,28 @@
 # Handoff
 
+## Article issues and Search Console follow-up, October 25, 2026
+
+The owner authorized assessment of article issues #82 and #124, supported edits
+and publication through PR and merge. Issue #82 was already implemented in PR #83
+and current Part Four retains later evidence qualifications. The three #124
+articles now explain the intentional framework transport seam and the test/Test
+Mediator/spy dependencies. Pure-state wording applies to a separate carrier;
+Meridian's combined class retains its documented behavior. Dates, all frontmatter,
+code, headings, diagrams and approved art remain exactly as before.
+
+Fresh independent teaching, comparison and metadata passes are complete. The
+comparison verdict is improved. Desktop/phone inspection and local publication
+checks pass. The [editorial receipt](article-issues-82-124-2026-10-25.md) records
+sources, dispositions, preservation and validation. The historical Beck attribution
+question remains a separate editorial backlog item.
+
+The signed-in Search Console follow-up is recorded in
+[the October 25 audit](search-console-audit-2026-10-25.md). All nine URLs requested
+on October 7 are now indexed. Both current sitemaps succeed. The audit separates
+delayed summary counts from individual inspections and records the nine-click
+page breakdown. Publication identity and exact live verification accompany the PR;
+the local build alone does not establish deployment.
+
 ## Pipeline Breadcrumbs artifact clarification, October 23, 2026
 
 The owner authorized publishing the explanation of typed step results, serialized

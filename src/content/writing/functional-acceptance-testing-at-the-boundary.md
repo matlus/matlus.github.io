@@ -378,6 +378,18 @@ A Test Mediator and a transport spy give the test access to that information:
 - **The Test Mediator** makes the recorded information available to the test and
   carries any instructions the spy needs for this scenario.
 
+The test knows the Test Mediator. The spy knows that same Test Mediator. The test
+has no reference to the spy, and the spy has no reference to the test. The test
+arranges the conditions; the spy reads them and records its observations for the
+test to inspect afterward. A separate Test Mediator is pure state: it carries
+those instructions and observations without deciding what either side should do.
+
+For this email interaction, the transport spy is the test double. HttpClient
+provides the replaceable HttpMessageHandler seam as part of .NET itself. The
+application's email composer and production gateway remain in place: they build
+the real request and process the response. Controlling that framework transport
+lets us arrange the outside world's behavior while exercising our own code.
+
 The production code still builds the email for the customer's address on file.
 The test can therefore verify that intended destination before any redirection.
 
@@ -408,6 +420,8 @@ testMediatorEmailService.CapturedRequestPaths.ToArray()
 ```
 
 Meridian combines the Test Mediator and its private transport spy in one class.
+That combined class includes the capture and response behavior that a separate
+spy would perform; it is more than the pure state carrier described above.
 The controlled HttpMessageHandler is the spy beneath the production HTTP gateway.
 That implementation detail explains where capture happens; it does not change
 which email fields the scenario must verify.
