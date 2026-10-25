@@ -39,11 +39,21 @@ Arrange can specify a service-unavailable response. The spy turns that instructi
 into the HTTP response seen by the production gateway. After Act, the test reads
 the recorded recipient, subject, body, path, and request timing.
 
+The test knows the Test Mediator, and the spy knows the same Test Mediator. Neither
+needs a reference to the other. The test writes the conditions it needs; the spy
+reads them when a request reaches its transport and records what it observes.
+The test then reads those observations from the Test Mediator. That shared state
+lets the two sides exchange information without depending on each other's code.
+
 The PWI pattern has two implementation shapes. A separate carrier can be shared
-by several spies. Alternatively, one service's Test Mediator can contain its spy.
+by several spies. In that shape, the Test Mediator is pure state, with no business
+logic or capture and response behavior of its own. That behavior belongs to the
+spies. Alternatively, one service's Test Mediator can contain its spy.
 Meridian uses the second shape: TestMediatorEmailService contains a private HTTP
 message handler. The test uses its public instructions and captures without
-depending on how internal production classes pass the request along.
+depending on how internal production classes pass the request along. The combined
+class includes the spy's behavior; the test still has no reference to that private
+spy, and the spy has no reference to the test.
 
 This Test Mediator is the testing pattern described in the
 PWI chapter.
@@ -64,7 +74,13 @@ It is distinct from the GoF Mediator pattern.
 <!-- diagram:end mediator-transport-seam -->
 
 The real email gateway constructs an HTTP request. Its HttpClient receives a
-handler supplied by the service locator. In the test graph, that handler comes
+handler supplied by the service locator. HttpClient's handler constructor is an
+extension point provided by .NET: the framework authors left the transport
+replaceable. The spy uses that seam beneath our gateway, so request construction
+and response handling still run through our production code. For this email
+interaction, the handler is the only transport component we replace.
+
+In the test graph, that handler comes
 from TestMediatorEmailService:
 
 <!-- Listing source: tests/MeridianOrdering.TestSupport/MediatorEmailService.cs; method: CreateHttpMessageHandler -->
