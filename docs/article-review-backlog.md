@@ -12,9 +12,9 @@ existing links resolve.
 Part 2, **Programming to Exceptions, Part 2: Diagnostics and Boundaries**, now
 publishes the same kind of eight-step teaching rewrite, also reviewed directly by
 Shiv without the independent fresh-session review. Its sixteen earlier section
-anchors are retained the same way. The reused middleware diagram,
-`exception-middleware-enrichment.webp`, misspells "failure" as "faiilure" and does
-not show the redaction step the article now describes; regenerate it.
+anchors are retained the same way. Its middleware diagram,
+`exception-middleware-enrichment.webp`, was regenerated the same day to fix a
+misspelling and show the redaction step.
 
 ## Mocking source attribution, October 25, 2026
 
