@@ -90,3 +90,38 @@ Six principal cards plus two inputs equals seven total: Incoming request, Throw-
 Correct the custom dimension labels to match the article's C# contract:
 `ExceptionType`, `Failure.OriginatingService`, `Order.Reference`,
 `CorrelationId`, and `CauseChain`. Preserve all other content and styling.
+
+# Label correction, November 2, 2026
+
+Regenerated for **Programming to Exceptions, Part 3: Logging and Progress** by
+editing the published drawing with the built-in image generator. The current
+drawing was attached as the input image, and the request changed only the
+dimension list, so it matches the article's property names: `CorrelationId`
+became `Request.CorrelationId`, and `CauseChain` became `DownstreamFailure`.
+Native output was 1944 x 809 pixels.
+
+```text
+Reproduce the attached diagram faithfully: the same title, background, paper texture, typography, card shapes, colours, outline weights, connectors, arrowheads, layout, wide landscape proportions and footer. Change only the lines listed inside the blue "Application Insights / customDimensions" card.
+
+That card must list exactly these five property names, one per line, in this order, left-aligned in the same blue condensed lettering:
+"ExceptionType"
+"Failure.OriginatingService"
+"Order.Reference"
+"Request.CorrelationId"
+"DownstreamFailure"
+
+Preserve their exact spelling, capitalization and dots. Do not add spaces or hyphens inside a name. Widen the blue card slightly if needed so every name fits on one line with comfortable padding, and keep the three output arrows leaving its right edge cleanly.
+
+Keep every other label exactly as it is now:
+Title "CONTEXT YOU CAN SEARCH".
+"Incoming request" / "Input + correlation".
+"Throw-site context" / "Values + operation + cause".
+"Exception diagnostic record".
+"Application Insights" / "customDimensions".
+"Filter and search" / "Find the exact service and order".
+"Alert on frequency" / "Recognize recurring failures".
+"Reproduce and fix" / "Use captured input and state".
+Footer "Capture useful context once. Make each diagnostic field available."
+
+No new cards, icons, logos, watermark or decoration. All text crisp and readable when the image is shown about 700 pixels wide.
+```
