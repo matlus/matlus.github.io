@@ -1,5 +1,15 @@
 # Article review backlog
 
+## Programming to Exceptions rewrite, November 2, 2026
+
+Part 1 now publishes Shiv's teaching rewrite, with code aligned to Part 2's
+exception hierarchy and PWI naming. Shiv reviewed each change directly during
+the editing session; the independent fresh-session teaching and evidence review
+from the publication workflow was not run. Run it before the next substantive
+edit. Part 2, **Programming to Exceptions, Part 2: Diagnostics and Boundaries**,
+still needs a rewrite in the same step-by-step teaching style. Part 1's twelve
+earlier section anchors are retained as hidden spans so existing links resolve.
+
 ## Mocking source attribution, October 25, 2026
 
 The targeted transport/Test Mediator revision is recorded in
