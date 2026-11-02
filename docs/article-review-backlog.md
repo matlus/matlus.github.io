@@ -6,9 +6,15 @@ Part 1 now publishes Shiv's teaching rewrite, with code aligned to Part 2's
 exception hierarchy and PWI naming. Shiv reviewed each change directly during
 the editing session; the independent fresh-session teaching and evidence review
 from the publication workflow was not run. Run it before the next substantive
-edit. Part 2, **Programming to Exceptions, Part 2: Diagnostics and Boundaries**,
-still needs a rewrite in the same step-by-step teaching style. Part 1's twelve
-earlier section anchors are retained as hidden spans so existing links resolve.
+edit. Part 1's twelve earlier section anchors are retained as hidden spans so
+existing links resolve.
+
+Part 2, **Programming to Exceptions, Part 2: Diagnostics and Boundaries**, now
+publishes the same kind of eight-step teaching rewrite, also reviewed directly by
+Shiv without the independent fresh-session review. Its sixteen earlier section
+anchors are retained the same way. The reused middleware diagram,
+`exception-middleware-enrichment.webp`, misspells "failure" as "faiilure" and does
+not show the redaction step the article now describes; regenerate it.
 
 ## Mocking source attribution, October 25, 2026
 
