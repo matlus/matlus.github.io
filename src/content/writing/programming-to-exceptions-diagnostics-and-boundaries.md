@@ -1,696 +1,463 @@
 ---
 title: "Programming to Exceptions, Part 2: Diagnostics and Boundaries"
-description: "Specific exceptions preserve failure meaning, causes, and context. A shallow C# hierarchy, Gateway translation, and middleware enrichment carry diagnostic records across service boundaries."
+description: "One log record should explain a failure to the support team. Exceptions carry a message, reason, action and context, are translated where meaning is known, and are logged once."
 datePublished: 2019-10-28
 dateModified: 2026-10-02
-tags: ["error-handling", "class-design", "architecture", "service-interface-layer", "structured-logging", "gateway-pattern", "data-manager", "architectural-patterns", "csharp"]
+tags: ["error-handling", "structured-logging", "class-design", "architecture", "csharp"]
 draft: false
 hero: programming-to-exceptions-diagnostics-and-boundaries
 youtube: "https://www.youtube.com/watch?v=5IKczyor-f4"
 ---
 
-A useful exception tells the application why an operation could not complete. It also gives the people investigating the failure enough information to identify the responsible component, examine the relevant input, and decide what to do next.
+[Programming to Exceptions, Part 1: Method Contracts and Failure](../programming-to-exceptions-method-contracts/) ended with a failure arriving at the entry point. A method couldn't keep its promise, so it threw. The exception traveled up the call stack without anyone checking for it, and the middleware caught it, logged it, and sent the caller a response.
 
-[Part 1](../programming-to-exceptions-method-contracts/) established the method contract: complete the promised work, return the promised data, or throw. This part follows the exception from the point of detection to the application boundary. [Part 3](../programming-to-exceptions-logging-and-progress/) explains the resulting logs and progress reporting. Along the way, its type expresses the failure, its context records the facts, and any translation preserves the original cause.
+This part looks at what that exception should carry when it arrives.
 
-That propagation lets ordinary orchestration describe the happy path as a sequence of method calls. Reaching the next step means the earlier calls fulfilled their contracts. The callers need no success check after each call, and a failed call cannot be overlooked merely because someone ignored a return value. The diagnostic and boundary design in this part makes those escaping failures useful to the component that can act on them.
+Here is the test I use. Someone on the support team opens the log and finds one failure. Can they tell what happened, where it happened, and what to do about it, from that one record, without calling the developer who wrote the code? If they can't, the system isn't finished. The information they need has to be captured somewhere, and the best place to capture it is in the exception itself.
 
-The caller's intent determines what a query method promises. `GetCustomer` promises a particular customer the caller expects to use. `Find` and `Search` allow no match, expressed as `null` for a nullable single result or an empty collection for multiple results. `CustomerExists` promises a Boolean answer. Each must return what its contract promises or throw if it cannot provide that answer. [Part 1's retrieval, search, and existence section](../programming-to-exceptions-method-contracts/#retrieval-search-and-existence-have-different-contracts) and [Method Design's query-method guidance](/pwi/method-design/csharp/#query-methods-return-the-information-they-promise) explain the distinction.
+We'll build that one step at a time:
 
-My aim is that a support or triage person can understand a failure from one diagnostic record without first asking the developer to reconstruct what happened. Clear exception messages and structured context are part of the system's design work.
+1. A quick recap of the exception hierarchy from Part 1.
+2. The message, written for the person who has to act on it.
+3. The handful of facts every exception carries.
+4. Contextual data: capturing the facts where the failure happens, and adding to them on the way up.
+5. Translating a failure where you understand what it means.
+6. The entry point, in full.
+7. What each kind of failure asks of the people running the system.
+8. Carrying a failure across several services, all the way back to the UI.
 
-## A shallow hierarchy with specific leaves
+<span id="a-shallow-hierarchy-with-specific-leaves"></span>
+<span id="business-and-technical-describe-responsibility"></span>
 
-Each application has its own base exception, named for that application. It descends from `System.Exception`. Two abstract branches distinguish business refusals from technical failures. Concrete exception types descend from those branches.
+## Step 1: The hierarchy, briefly
 
-For an application that registers customers and places orders, the hierarchy could look like this:
+Part 1 introduced the exception hierarchy. Here it is again, because everything in this part hangs off it:
 
 ```text
 System.Exception
 └── MeridianOrderingException                    abstract
     ├── MeridianOrderingBusinessException        abstract
-    │   ├── OrderPlacementCustomerNotFoundException
+    │   ├── CustomerRetrievalNotFoundException
+    │   ├── CustomerAlreadyRegisteredException
     │   ├── CustomerNotActiveException
-    │   ├── UnknownProductsException
-    │   └── OrderReferenceConflictException
+    │   ├── CustomerRegistrationRequestValidationException
+    │   └── UnknownProductsException
     └── MeridianOrderingTechnicalException       abstract
-        ├── OrderStoreUnavailableException
-        ├── EmailServiceUnavailableException
-        ├── EmailServiceTooBusyException
-        └── MessageBrokerPublishException
+        ├── ConfirmationEmailRetryExhaustedException
+        ├── FulfillmentNotificationRetryExhaustedException
+        └── OrderStoreUnavailableException
 ```
 
-The hierarchy is broad and shallow. Depending on its complexity, a project can have 100, 150, or 200 concrete custom exceptions without needing many inheritance levels. The number follows the failure scenarios the system needs to distinguish.
+The application has one base class, named for the application. Below it are two abstract branches: business exceptions, where a business rule refused the request, and technical exceptions, where something broke. Below those are the specific exceptions you actually throw.
 
-The abstract types establish the diagnostic contract and shared defaults. Throw the concrete types. Throwing the application base would identify the application while saying little about what failed.
+Two rules shape the bottom row. Each specific exception describes one failure, and it is thrown in one place. When you see `CustomerRetrievalNotFoundException` in a log, you already know which operation failed and where to look, before you read a word of the message. A type called `ValidationException` or `TimeoutException` could have come from anywhere.
 
-<!-- diagram:start custom-exceptions-hierarchy -->
-<figure id="custom-exceptions-hierarchy" class="article-diagram article-diagram--raster">
-  <img class="article-diagram__image" src="/images/diagrams/custom-exceptions-hierarchy.webp" alt="A custom exception hierarchy: Exception is the ancestor of AppNameBaseException, which branches into abstract business and technical bases. The business branch includes validation exceptions and an abstract critical-business base with a concrete unsupported-state exception. The technical branch includes concrete timeout, downstream-service, and message-broker exceptions. Circles mark abstract classes, stars mark concrete classes, and arrows point toward ancestors." width="1820" height="864" loading="lazy" decoding="async" />
-  <figcaption>Application-specific abstract bases separate business refusals from technical failures. Concrete types identify individual failure scenarios. Circles mark abstract classes; stars mark concrete classes. Arrows point to ancestors. In this example, AppName is a placeholder for the application's name; the critical-business branch groups exceptions with a shared policy.</figcaption>
-  <p class="article-diagram__full"><a href="/images/diagrams/custom-exceptions-hierarchy.webp">Open full-size exception hierarchy</a></p>
-</figure>
-<!-- diagram:end custom-exceptions-hierarchy -->
+A real system ends up with a lot of these, often a hundred or more. That's fine. The hierarchy stays shallow and wide: three levels of your own classes, with many specific exceptions at the bottom. You never throw the base class or the branches. They exist to hold what the specific exceptions have in common.
 
-Define each concrete exception for one specific failure scenario and one originating throw location. Do not design concrete exceptions for reuse across unrelated operations. When you see the type in a log, you should already know which operation failed and where to look. A service-specific timeout or retry-exhaustion type identifies that dependency immediately; a generic reusable timeout type does not. A type named `CustomerRegistrationRequestValidationException` immediately narrows the operation to investigate. A type named `ValidationException` could have come from anywhere.
+<span id="write-the-message-for-the-person-who-must-act"></span>
 
-A shared implementation can centralize parsing, context extraction, and translation without making the concrete exceptions generic. One leaf identifies one originating failure scenario. Keep timeout and retry-exhaustion types specific to the service and operation that failed.
+## Step 2: Write the message for the person who must act
 
-A single validator can report several related input violations together. Those violations belong to the same request-validation scenario. That does not justify reusing its exception for an unrelated provider timeout or a different operation's rules.
+The message is the first thing anyone reads, so start there.
 
-The intended hierarchy is for the failures the application deliberately defines. Framework and vendor exceptions can still occur. Translate the ones understood at their boundary; the final unexpected-exception handler remains necessary for the rest.
-
-## Business and technical describe responsibility
-
-A **business exception** says that the request cannot proceed under the business requirements. An unknown customer, an inactive customer, or a reference reused with different order content can all prevent order placement. The system is working correctly when it recognizes and reports that refusal. The exception does not, by itself, imply a defect in the system, the user, the UI, or the calling service. The consumer receives the business explanation and decides whether to correct the request or choose another action.
-
-A **technical exception** says that the system cannot carry out the work because of an infrastructure, configuration, integration, or implementation problem. An unavailable store and a malformed provider request generated by the application are examples. Asking the user to change an otherwise valid order cannot fix them.
-
-Classify the meaning of the failure at your application's abstraction level. A database exception can report a business refusal enforced by a stored procedure. Conversely, an external HTTP 400 can be a technical failure when your Gateway built the bad request. The source technology and status number do not decide responsibility on their own.
-
-Severity is a separate decision. A business refusal can demand critical attention, and a technical interruption can be temporary. If several business failures share a meaningful critical policy, an abstract critical-business branch can express it. If only one leaf needs a different severity, override that leaf. Add hierarchy levels only for shared behavior or policy.
-
-## Which failures need attention
-
-Programming to Exceptions also determines how I operate a system. I rely on failures reaching the boundary, where the application records them and answers the caller. I do not routinely search the logs for evidence that the successful path ran. Most custom exceptions, business or technical, describe conditions the system already knows how to report.
-
-A business exception is the system doing exactly what we designed it to do. We threw it intentionally. There is no system defect to fix: the application enforced its rule, and the consuming UI or service deals with the refusal. Do not treat the presence of that exception as a reason to scatter try-catch blocks through the code.
-
-A custom technical exception can also describe a known operating condition. A downstream service timed out, or bounded retries were exhausted. The request could not complete, so the web service reports a technical failure, normally an HTTP 500 under this policy. There is only so much the application can do about an unavailable dependency. A single occurrence does not necessarily need someone to intervene.
-
-Frequency can change that decision. Define an alert for a particular exception type occurring more than an agreed number of times within an agreed interval. Application Insights custom dimensions let the rule distinguish a recurring timeout from unrelated failures and identify the downstream service involved. Set the threshold from the service's operating requirements; it is not a fixed number for every application.
-
-Unexpected framework exceptions have a different meaning. A `NullReferenceException`, `IndexOutOfRangeException`, or similar failure in application code indicates a programming defect to investigate. The outer handler initially classifies it as an unexpected technical failure, returns HTTP 500, and records it for notification and diagnosis. Fix the defect or the missing boundary guarantee. Wrapping it in a custom type without correcting the cause would leave the problem in place.
-
-These policies let us distinguish a designed refusal, an occasional dependency failure, and an unexpected bug. Exceptions give us that evidence because we let them propagate and preserve their specific meaning.
-
-## Write the message for the person who must act
-
-“Payment plan validation failed” names a category without explaining the failed requirement. A useful message names the value, the constraint, and, where appropriate, the available correction:
+"Payment plan validation failed" tells you the category of the problem and nothing else. Which payment plan? Which rule? What should the user do now? Compare it with this:
 
 > Payment plan amount $5,000 exceeds the $3,000 limit for Basic accounts. Premium accounts allow up to $10,000. Choose an amount within your account's limit or change the account tier.
 
-Those amounts are illustrative policy values. The production message must use the actual rule and account facts.
-
-For a missing customer, include the requested identifier. For an invalid date range, include the range and the ordering rule. For an unsupported state, name the state and the permitted options when revealing them is appropriate.
-
-If someone on the team cannot understand the failure from the message, fix the message. Do not make them depend on a developer's private explanation. The message must identify the received value, explain exactly what violates the requirement, and give the correction when one is available:
+That message names the value that was received, the rule it broke, and the ways to fix it. A good message almost always has those three parts:
 
 > First name 'AlexandertheGreat' has 17 characters. Enter a first name with 1 to 15 characters.
 
-For a small bounded set, provide the actual supported values:
+When the valid choices are a small, fixed set, list them:
 
 > Genre 'Sci-fi' is not supported. Possible values are Action, Comedy, Drama, and Science Fiction.
 
-Those are illustrative constraints and choices. Use the application's real values. The component owning a bounded set should also expose its displayable choices, so messages stay consistent with the accepted values. Boundary acceptance tests can verify that a message contains the value they supplied, the violated constraint, and the available correction. That also reveals whether the system received the same value the caller sent. Keep credentials and other values that must not be disclosed out of messages and diagnostic records.
+Including the value you received does something else, too. It shows whether the system received what the caller thinks they sent. More than one "impossible" bug has turned out to be a value that was changed somewhere between the UI and the server.
 
-Keep a short, stable `Reason` alongside the detailed `Message`. The reason supports classification and response translation. The message explains this particular occurrence. A stable log-event identifier identifies the operation or stage without requiring log queries to parse prose.
+Write the message where you throw, because that's where you have the values. The method that knows the first name is 17 characters long is the one that throws, so it's the one that can say so.
 
-The message must also be suitable for its audience. A user needs a business explanation. An operator may need the provider's original error, the attempted operation, and configuration identifiers. Preserve those internal facts in diagnostics while deliberately choosing the caller-facing information.
+If someone on your team can't understand a failure from its message, fix the message. Nobody should need a developer's private knowledge to understand what went wrong.
 
-## The base exception's diagnostic contract
+<span id="the-base-exceptions-diagnostic-contract"></span>
+<span id="the-application-base"></span>
+<span id="branch-defaults-and-a-concrete-failure"></span>
 
-The following C# implementation gives the application base a shared diagnostic contract. Its concrete exceptions supply the meaning of each failure. The principles apply independently of the host: an API, worker, and command-line application can all consume the same domain exception.
+## Step 3: What every exception carries
 
-| Field or capability | Purpose |
-| --- | --- |
-| Application name and concrete exception type | Identify the owning application and failure scenario. |
-| Message and reason | Explain this occurrence and classify its meaning. |
-| Action | State the remedy category, such as user correction, retry, infrastructure repair, or developer investigation. |
-| Log event | Identify the operation or failure stage using a stable value. |
-| Severity | Supply a default suitable for logging and alerting, overridable by a leaf. |
-| Suggested HTTP status | Supply the application's default translation policy; the host writes the response. |
-| Contextual data | Carry relevant input, local facts, operation details, and service identifiers. |
-| Original exception and cause chain | Preserve the failures underneath a translation, including their stack traces. |
-| Boundary enrichment | Attach request facts and correlation information that the throw site did not have. |
-| Diagnostic text and JSON | Render the same diagnostic snapshot for reading and structured storage. |
-| Unexpected-exception adapter | Record a foreign failure without pretending that it is a known application scenario. |
+The message explains one occurrence of a failure. The people and tools that deal with failures need a few more facts, and every exception in the application should carry them. That's the job of the base class.
 
-An action expresses what kind of response is appropriate. It is not an instruction to retry automatically. A retry still requires an owning component, a bounded policy, and knowledge that repeating the work is safe.
-
-The suggested HTTP status is metadata in this design. It introduces no dependency on ASP.NET. Use `System.Net.HttpStatusCode` in C# and convert it to its numeric wire representation at the host boundary. A non-HTTP host can use the reason, action, and severity without constructing an HTTP response.
-
-### Values that can be recorded predictably
-
-Diagnostic context should have a defined shape. The C# compiler can restrict callers to supported values through overloads. The container copies input context, returns snapshots, and normalizes dates, enums, paths, and bytes explicitly. That avoids retaining arbitrary mutable application objects in a failure record.
+Here are the parts of `MeridianOrderingException` that matter for this discussion. The complete class does more, but these are the pieces you need to understand the design:
 
 ```csharp
-using System.Collections;
-using System.Globalization;
-using System.Net;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
-public enum Severity
+public abstract class MeridianOrderingException : Exception
 {
-    Verbose, Information, Warning, Error, Critical
-}
+    protected MeridianOrderingException(string message, LogEventBase logEvent, ContextualData? context = null, Exception? innerException = null) : base(message, innerException)
+    {
+        LogEvent = logEvent;
+        ContextualData = context ?? new ContextualData();
+    }
 
+    public LogEventBase LogEvent { get; }
+    public ContextualData ContextualData { get; }
+    public abstract string Reason { get; }
+    public abstract ExceptionAction Action { get; }
+    public abstract HttpStatusCode HttpStatusCode { get; }
+    public virtual Severity Severity => Severity.Error;
+
+    public void AddContextualData(ContextualData contextualData) => ContextualData.Merge(contextualData);
+}
+```
+
+Let's take those one at a time.
+
+**The message** comes from `Exception` itself. It's the explanation of this particular occurrence, written as Step 2 describes.
+
+**The reason** is short and stable, such as "Customer does not exist." Every occurrence of the exception has the same reason, while the messages differ. Tools and dashboards group by the reason. People read the message.
+
+**The action** says what kind of response the failure needs:
+
+```csharp
 public enum ExceptionAction
 {
     UserActionRequired,
     RetryActionNeeded,
     InfraActionRequired,
     DeveloperActionRequired,
-    DependencyMissingActionRequired,
-    ManualIngestionUnforeseen,
-    ManualIngestionAnticipated,
-    ManualReattemptAutomatedIngestion,
-    RetrySnapshotRecovery,
-    RetrySnapshotDeletion,
     NoActionNeeded
 }
-
-public abstract class LogEventBase
-{
-    protected LogEventBase(string value) => Value = value;
-    public string Value { get; }
-}
-
-public sealed class ContextualData : IEnumerable<KeyValuePair<string, object?>>
-{
-    private readonly Dictionary<string, object?> _values = new();
-
-    public ContextualData() { }
-
-    public ContextualData(ContextualData source)
-    {
-        foreach (var entry in source)
-            _values[entry.Key] = entry.Value;
-    }
-
-    public void Add(string name, string? value) => _values[name] = value;
-    public void Add(string name, bool value) => _values[name] = value;
-    public void Add(string name, int value) => _values[name] = value;
-    public void Add(string name, long value) => _values[name] = value;
-    public void Add(string name, decimal value) => _values[name] = value;
-    public void Add(string name, float value) => Add(name, (double)value);
-    public void Add(string name, double value) =>
-        _values[name] = double.IsFinite(value)
-            ? (object)value : value.ToString(CultureInfo.InvariantCulture);
-    public void Add(string name, DateTime value) =>
-        _values[name] = value.ToString("O", CultureInfo.InvariantCulture);
-    public void Add(string name, DateTimeOffset value) =>
-        _values[name] = value.ToString("O", CultureInfo.InvariantCulture);
-    public void Add(string name, Guid value) => _values[name] = value.ToString();
-    public void Add(string name, Enum value) => _values[name] = value.ToString();
-    public void Add(string name, FileSystemInfo value) => _values[name] = value.FullName;
-    public void Add(string name, byte[] value) =>
-        _values[name] = Convert.ToBase64String(value);
-
-    internal void Merge(ContextualData source)
-    {
-        foreach (var entry in source)
-            _values[entry.Key] = entry.Value;
-    }
-
-    internal Dictionary<string, object?> Snapshot() => new(_values);
-
-    public IEnumerator<KeyValuePair<string, object?>> GetEnumerator() =>
-        _values.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-}
-
-public sealed record ExceptionCause(
-    string ExceptionType, string Message, string? StackTrace);
-
-public sealed record ServiceFailureData(
-    string ApplicationName,
-    string OriginatingService,
-    string Operation,
-    string CorrelationId,
-    string ExceptionType,
-    string Reason,
-    string Message,
-    string Action,
-    string Severity,
-    int HttpStatusCode,
-    IReadOnlyDictionary<string, object?> Context,
-    string? ExceptionDetails,
-    ServiceFailureData? DownstreamFailure);
 ```
 
-The ingestion and snapshot actions illustrate application-specific remedies from systems doing that work. An ordering application can keep the categories it actually needs. Explicit action values preserve the difference between “retry this known operation,” “ask the user to correct input,” and “someone must repair infrastructure.”
+`UserActionRequired` means the caller has to change something, such as supplying a customer that exists. `RetryActionNeeded` means trying again later may work. `InfraActionRequired` means someone has to repair infrastructure. `DeveloperActionRequired` means there's a defect in the code. Your application can add its own values as it needs them. An action never retries anything by itself. It tells the people and tools reading the log what kind of problem they are looking at.
 
-Repeated context keys replace their prior value. Adding boundary information must not fail merely because a key already exists. The base below reserves its identity and policy fields by writing them after supplemental context, so enrichment cannot rename the exception or change its status.
-
-Use names such as `Order.Reference`, `Customer.Id`, and `DownstreamService` consistently. For a nested request, capture approved scalar fields or an explicitly serialized, redacted snapshot. Binary encoding makes bytes representable; it does not make their contents safe to log.
-
-### The application base
-
-The base requires a message and log event when constructed. Leaves supply the reason, remedy, and default HTTP translation. The diagnostic snapshot reads those overridden properties after construction, rather than invoking subclass policy while the base constructor is running.
+**The log event** names the operation that failed, as a stable value:
 
 ```csharp
-public abstract class MeridianOrderingException : Exception
+public sealed class CustomerLogEvent : LogEventBase
 {
-    public const string ApplicationName = "MeridianOrdering";
-    private readonly ContextualData _context;
+    public static readonly CustomerLogEvent GetCustomer = new("GetCustomer");
+    public static readonly CustomerLogEvent RegisterCustomer = new("RegisterCustomer");
 
-    protected MeridianOrderingException(
-        string message,
-        LogEventBase logEvent,
-        ContextualData? context = null,
-        Exception? innerException = null)
-        : base(message, innerException)
-    {
-        LogEvent = logEvent;
-        _context = context is null ? new() : new(context);
-    }
-
-    public LogEventBase LogEvent { get; }
-    public abstract string Reason { get; }
-    public abstract ExceptionAction Action { get; }
-    public abstract HttpStatusCode HttpStatusCode { get; }
-    public virtual Severity Severity => Severity.Error;
-    public ServiceFailureData? DownstreamFailure { get; private set; }
-
-    public ExceptionCause? Cause => InnerException is null ? null :
-        new(InnerException.GetType().Name,
-            InnerException.Message, InnerException.StackTrace);
-
-    public void AddContextualData(ContextualData context) => _context.Merge(context);
-
-    public void AttachDownstreamFailure(ServiceFailureData failure) =>
-        DownstreamFailure = failure;
-
-    public ServiceFailureData ToServiceFailureData(
-        string originatingService, string operation, string correlationId) =>
-        new(ApplicationName, originatingService, operation, correlationId,
-            GetType().Name, Reason, Message, Action.ToString(),
-            Severity.ToString(), (int)HttpStatusCode, _context.Snapshot(),
-            ToString(), DownstreamFailure);
-
-    public IReadOnlyDictionary<string, object?> GetDiagnosticData(
-        bool includeStackTrace = true)
-    {
-        Dictionary<string, object?> data = _context.Snapshot();
-        data["ApplicationName"] = ApplicationName;
-        data["ExceptionType"] = GetType().Name;
-        data["Message"] = Message;
-        data["Reason"] = Reason;
-        data["Action"] = Action.ToString();
-        data["LogEvent"] = LogEvent.Value;
-        data["Severity"] = Severity.ToString();
-        data["HttpStatusCode"] = (int)HttpStatusCode;
-        if (DownstreamFailure is not null)
-            data["DownstreamFailure"] = DownstreamFailure;
-
-        if (Cause is { } cause)
-        {
-            data["CausedBy"] = cause.ExceptionType;
-            data["Cause"] = cause.Message;
-            data["CauseStackTrace"] = includeStackTrace ? cause.StackTrace : null;
-            data["CauseChain"] = includeStackTrace
-                ? InnerException!.ToString() : cause.Message;
-        }
-
-        if (includeStackTrace)
-            data["StackTrace"] = StackTrace;
-
-        return data;
-    }
-
-    public string ToDiagnosticString(bool includeStackTrace = true) =>
-        string.Join(Environment.NewLine,
-            GetDiagnosticData(includeStackTrace).Select(entry =>
-                $"{entry.Key}: {FormatValue(entry.Value)}"));
-
-    private static string FormatValue(object? value) => value switch
-    {
-        null => string.Empty,
-        string text => text,
-        _ => JsonSerializer.Serialize(value, DiagnosticJson.Options)
-    };
-
-    public string ToJson(bool useCustomDimensionsEnvelope = false)
-    {
-        IReadOnlyDictionary<string, object?> data = GetDiagnosticData();
-        object payload = useCustomDimensionsEnvelope
-            ? new Dictionary<string, object?> { ["custom_dimensions"] = data }
-            : data;
-        return JsonSerializer.Serialize(payload, DiagnosticJson.Options);
-    }
-
-    public static string GetExceptionDetails(Exception exception) =>
-        exception is MeridianOrderingException known
-            ? known.ToDiagnosticString()
-            : UnhandledExceptionDiagnostics.ToJson(exception);
-}
-
-public static class UnhandledExceptionDiagnostics
-{
-    public static string ToJson(
-        Exception exception, string logEvent = "UnexpectedException",
-        ContextualData? context = null)
-    {
-        Dictionary<string, object?> data = context?.Snapshot() ?? new();
-        data["ApplicationName"] = MeridianOrderingException.ApplicationName;
-        data["ExceptionType"] = exception.GetType().FullName;
-        data["Message"] = exception.Message;
-        data["Reason"] = "Unexpected application failure";
-        data["Action"] = ExceptionAction.DeveloperActionRequired.ToString();
-        data["LogEvent"] = logEvent;
-        data["Severity"] = Severity.Critical.ToString();
-        data["HttpStatusCode"] = (int)HttpStatusCode.InternalServerError;
-        data["Source"] = exception.Source;
-        data["HResult"] = exception.HResult;
-        data["HelpLink"] = exception.HelpLink;
-        data["StackTrace"] = exception.StackTrace;
-        data["ExceptionDetails"] = exception.ToString();
-
-        if (exception.InnerException is { } cause)
-        {
-            data["CausedBy"] = cause.GetType().Name;
-            data["Cause"] = cause.Message;
-            data["CauseStackTrace"] = cause.StackTrace;
-        }
-
-        var attributes = new Dictionary<string, object?>();
-        foreach (DictionaryEntry entry in exception.Data)
-        {
-            if (entry.Key is string name)
-                attributes[name] = Normalize(entry.Value);
-        }
-        data["Attributes"] = attributes;
-        return JsonSerializer.Serialize(data, DiagnosticJson.Options);
-    }
-
-    private static object? Normalize(object? value) => value switch
-    {
-        null or string or bool or int or long or decimal => value,
-        float number => Normalize((double)number),
-        double number => double.IsFinite(number)
-            ? (object)number : number.ToString(CultureInfo.InvariantCulture),
-        DateTime date => date.ToString("O", CultureInfo.InvariantCulture),
-        DateTimeOffset date => date.ToString("O", CultureInfo.InvariantCulture),
-        Enum enumeration => enumeration.ToString(),
-        Guid identifier => identifier.ToString(),
-        FileSystemInfo path => path.FullName,
-        byte[] bytes => Convert.ToBase64String(bytes),
-        Exception cause => new ExceptionCause(
-            cause.GetType().Name, cause.Message, cause.StackTrace),
-        _ => $"<{value.GetType().FullName}>"
-    };
-}
-
-public sealed class ApplicationExceptionJsonConverter
-    : JsonConverter<MeridianOrderingException>
-{
-    public override void Write(Utf8JsonWriter writer,
-        MeridianOrderingException value, JsonSerializerOptions options) =>
-        JsonSerializer.Serialize(writer, value.GetDiagnosticData(), options);
-
-    public override MeridianOrderingException Read(ref Utf8JsonReader reader,
-        Type typeToConvert, JsonSerializerOptions options) =>
-        throw new NotSupportedException("Diagnostics are output-only.");
-}
-
-public static class DiagnosticJson
-{
-    public static readonly JsonSerializerOptions Options = new()
-    {
-        WriteIndented = true,
-        Converters = { new ApplicationExceptionJsonConverter() }
-    };
+    private CustomerLogEvent(string value) : base(value) { }
 }
 ```
 
-`InnerException` retains the original exception object and its causal chain within the process. `Cause` supplies a small immediate-cause view. The diagnostic snapshot includes both the immediate cause and the complete causal rendering, including multiple inner failures when the cause is an aggregate exception. `DownstreamFailure` separately preserves the structured failure received over HTTP, because a remote exception object cannot travel across that boundary as an in-process object.
+With a log event, you can ask the logs for every failure in `GetCustomer` without searching through message text.
 
-`ToJson` supports a flat diagnostic object and a `custom_dimensions` envelope for a telemetry adapter requiring that shape. The converter supports writing a value declared as the application base through `System.Text.Json`. Diagnostics describe a failure; reconstructing a throwable exception from stored JSON is a separate capability this example deliberately does not provide.
+**The HTTP status** is the response the failure should produce. The application's own code doesn't depend on ASP.NET to carry it, because `HttpStatusCode` is a plain .NET enum. The entry point reads it when it writes the response.
 
-The unexpected adapter records the standard exception properties and supported values in `Exception.Data`. Provider-specific attributes, such as an SDK's nested error body or source exception, need a provider adapter that extracts their useful facts deliberately. Avoid blindly evaluating every property of a foreign object during failure reporting. Preserve the original provider message after redacting any credentials it contains.
+**The severity** defaults to `Error`. A specific exception can raise or lower it when that failure deserves more or less attention.
 
-The exception instance belongs to one failing operation. Its supplemental context can be enriched as that failure travels outward; snapshots prevent a diagnostic consumer from altering its stored context. Do not share and mutate one exception instance across unrelated requests.
+**The inner exception** also comes from `Exception`. When you translate one exception into another, the original goes here, with its own message and stack trace. Step 5 shows this.
 
-### Branch defaults and a concrete failure
+**Contextual data** gets a step of its own, next.
+
+Most of these facts belong to the exception type, not to the place it's thrown. So the branches supply sensible defaults, and the specific exceptions fill in the rest:
 
 ```csharp
-public abstract class MeridianOrderingBusinessException
-    : MeridianOrderingException
+public abstract class MeridianOrderingBusinessException : MeridianOrderingException
 {
-    protected MeridianOrderingBusinessException(string message,
-        LogEventBase logEvent, ContextualData? context = null,
-        Exception? innerException = null)
-        : base(message, logEvent, context, innerException) { }
+    protected MeridianOrderingBusinessException(string message, LogEventBase logEvent, ContextualData? context = null, Exception? innerException = null) : base(message, logEvent, context, innerException) { }
 
     public override HttpStatusCode HttpStatusCode => HttpStatusCode.BadRequest;
 }
 
-public abstract class MeridianOrderingTechnicalException
-    : MeridianOrderingException
+public abstract class MeridianOrderingTechnicalException : MeridianOrderingException
 {
-    protected MeridianOrderingTechnicalException(string message,
-        LogEventBase logEvent, ContextualData? context = null,
-        Exception? innerException = null)
-        : base(message, logEvent, context, innerException) { }
+    protected MeridianOrderingTechnicalException(string message, LogEventBase logEvent, ContextualData? context = null, Exception? innerException = null) : base(message, logEvent, context, innerException) { }
 
-    public override HttpStatusCode HttpStatusCode =>
-        HttpStatusCode.InternalServerError;
+    public override HttpStatusCode HttpStatusCode => HttpStatusCode.InternalServerError;
 }
+```
 
-public sealed class OrderPlacementLogEvent : LogEventBase
+A business exception defaults to 400 Bad Request. A technical exception defaults to 500 Internal Server Error. A specific exception overrides that default only when its API needs something different:
+
+```csharp
+public sealed class CustomerRetrievalNotFoundException : MeridianOrderingBusinessException
 {
-    public static readonly OrderPlacementLogEvent PlaceOrderDataOperation =
-        new("PlaceOrderDataOperation");
-
-    private OrderPlacementLogEvent(string value) : base(value) { }
-}
-
-public sealed class OrderPlacementCustomerNotFoundException
-    : MeridianOrderingBusinessException
-{
-    public OrderPlacementCustomerNotFoundException(string message, LogEventBase logEvent,
-        ContextualData? context = null, Exception? innerException = null)
-        : base(message, logEvent, context, innerException) { }
+    public CustomerRetrievalNotFoundException(string message, LogEventBase logEvent, ContextualData? context = null, Exception? innerException = null) : base(message, logEvent, context, innerException) { }
 
     public override string Reason => "Customer does not exist";
     public override ExceptionAction Action => ExceptionAction.UserActionRequired;
+    public override HttpStatusCode HttpStatusCode => HttpStatusCode.NotFound;
+}
+
+public sealed class ConfirmationEmailRetryExhaustedException : MeridianOrderingTechnicalException
+{
+    public ConfirmationEmailRetryExhaustedException(string message, LogEventBase logEvent, ContextualData? context = null, Exception? innerException = null) : base(message, logEvent, context, innerException) { }
+
+    public override string Reason => "Email service too busy";
+    public override ExceptionAction Action => ExceptionAction.RetryActionNeeded;
 }
 ```
 
-Keep branch bases abstract and concrete leaves sealed. Build the occurrence-specific message at the originating throw site, where the rejected values and corrective information are available. The leaf supplies the stable reason and response policy. Context carries diagnostic facts; add a typed payload property when a programmatic consumer actually needs one. The application base requires the log event and other diagnostic inputs so a convenient constructor cannot quietly omit them.
+Notice what the specific exceptions don't do. They don't build their own messages. The message changes with every occurrence, so it comes from the place that throws. The reason, the action and the status are the same every time, so the class supplies them. Notice, too, that the base class's constructor requires a log event. Nobody can create one of these exceptions and forget to say which operation failed.
 
-The branch defaults of 400 and 500 are starting policies. A leaf can specify conflict, not found, unavailable, or another status when the API contract requires it. A customer missing during order placement is a refusal of that request; a missing resource at a customer retrieval endpoint may need a different HTTP translation. Choose deliberately.
+<span id="values-that-can-be-recorded-predictably"></span>
 
-## Translate where you understand the external failure
+## Step 4: Contextual data
 
-A Gateway owns the application's conversation with an external service. It translates models and failures at that boundary. A Data Manager owns the corresponding store conversation. Their callers should use the application's domain language.
+The message tells a person what went wrong. Contextual data records the facts they'll need to investigate it, and often to reproduce it: the inputs the method received, the values it was working with, and the identifiers of the things involved.
 
-For example, a stored procedure may report that an order's customer does not exist using a documented SQL error number. The Data Manager can translate that number into `OrderPlacementCustomerNotFoundException`:
+### Capture it where you throw
+
+The best time to capture those facts is the moment you throw, because that's when you have them. Once the method has thrown, its local variables are gone.
+
+Here is the email gateway, the class that talks to the email service, at the point where it gives up. It has retried, as Part 1 described, and the service is still too busy:
 
 ```csharp
-try
+throw new ConfirmationEmailRetryExhaustedException($"The email service was still too busy after {attemptCount} attempts. The confirmation email was not sent.", EmailLogEvent.SendConfirmationEmail, new ContextualData { { "Email.TemplateName", confirmationEmail.TemplateName }, { "EmailService.AttemptCount", attemptCount }, { "EmailService.LastStatusCode", (int)httpResponseMessage.StatusCode } });
+```
+
+Look at where each fact comes from. `confirmationEmail` is the method's input argument. `attemptCount` is a local variable. `httpResponseMessage` is the last response the service sent back. The gateway records all three, because when someone investigates this failure later, those are exactly the facts they'll want, and nobody else has them.
+
+Give the keys consistent names across the application, such as `Customer.Id`, `Order.Reference` and `EmailService.AttemptCount`. When every exception that involves an order records it as `Order.Reference`, you can search the logs for one order and find every failure it was part of.
+
+Leave credentials out of contextual data entirely. Personal information is a separate case, because sometimes it's what you need to understand the failure. The entry point redacts it before anything is logged, as Step 6 shows.
+
+### Add to it on the way up
+
+There's a gap in that throw. The gateway sends emails. It doesn't know which order this email was confirming. That isn't a flaw in the gateway. It was given a `ConfirmationEmail` to send, and it shouldn't need to know anything about orders.
+
+The method that asked for the email does know. It composed the email from an order, so it has the order reference right there. It can add the order reference to the exception's contextual data as the exception passes through, and then let it keep going:
+
+```csharp
+private async Task SendConfirmationEmailAsync(OrderPlacementResult orderPlacementResult)
 {
-    await orderCommand.ExecuteNonQueryAsync();
-}
-catch (SqlException sqlException) when (sqlException.Number == 50001)
-{
-    throw new OrderPlacementCustomerNotFoundException(
-        $"Order placement was rejected because customer '{customerId}' " +
-        "does not exist. Supply an existing customer identifier.",
-        OrderPlacementLogEvent.PlaceOrderDataOperation,
-        new ContextualData
-        {
-            { "Order.Reference", orderReference },
-            { "Order.CustomerId", customerId },
-            { "OrderStore.Error", sqlException.Message }
-        },
-        innerException: sqlException);
+    ConfirmationEmail confirmationEmail = ComposeConfirmationEmail(orderPlacementResult);
+    try
+    {
+        await _gatewayEmailService.SendAsync(confirmationEmail);
+    }
+    catch (MeridianOrderingException meridianOrderingException)
+    {
+        meridianOrderingException.AddContextualData(new ContextualData { { "Order.Reference", orderPlacementResult.OrderReference } });
+        throw;
+    }
 }
 ```
 
-This translation preserves the original exception as the cause and retains the store's message for diagnosis. Other documented SQL failures need their own translations; the catch above makes no claim to handle them.
+This catch adds the order reference to the contextual data and rethrows, and that's all it does. `throw;` on its own rethrows the same exception object with its original stack trace, so nothing about where the failure started is lost. The exception continues up the call stack to the entry point, exactly as it would have without the catch. It just arrives knowing which order it belonged to.
 
-A file-backed customer store can similarly translate `FileNotFoundException` into customer absence if its storage contract says that a missing customer file means no such customer. If a shared storage file vanished, it represents a storage failure instead. The same framework exception can have different domain meanings.
+Don't mistake this for handling the exception. Nobody handles `ConfirmationEmailRetryExhaustedException`. The gateway threw it on purpose, and from that moment it's on its way to the entry point. The method that adds the order reference didn't throw it and isn't trying to recover from it. While the exception passes through, it adds contextual data that will help someone understand the problem, debug it and reproduce it. Step 5 looks at what handling really means.
 
-Translate at the level that knows that meaning. Do not wrap every exception at every method merely because it passed through. An already meaningful application exception can propagate unchanged.
+I ran into this all the time in a document-processing system. Code deep inside the system would find a problem with a page or a field, and it had no idea which document it was working on. It didn't need to. A few levels up, the code that had picked up the document knew its name and type. That's where we added them, and then let the exception carry on.
 
+This isn't something every method does, and it's not a rule you have to follow. Most methods never catch anything, as Part 1 said. When you're deciding whether to add a catch like this, ask yourself one question: when this exception shows up in the log, what will I need to know to understand the problem and reproduce it? If a method up the call stack has some of that information and the throwing code doesn't, that method is the place to add it. Otherwise, leave the exception alone.
 
-For a service Gateway, preserve the attempted operation, originating application service, downstream service, correlation or originating message identifier, and relevant outbound request data. Keep both a domain explanation and the redacted original provider message. Those facts identify which system failed and what it was trying to do.
+<span id="translate-where-you-understand-the-external-failure"></span>
 
-The [Gateway article](/writing/gateway-design-pattern/) develops this responsibility. Together with resource-model mapping, exception translation forms an anticorruption boundary: the external service's vocabulary and protocol do not spread through the domain.
+## Step 5: Translate where you understand the failure
 
-Centralize the provider classification and context extraction when several Gateway operations need them. Keep each operation's meaning explicit: downloading a document, deleting one, and publishing a message are different contracts. Their translations must not collapse into a reusable operations exception. Catch the provider's documented exception family or use a filter for a known status; a broad catch in the Gateway can conceal a programming defect as a provider failure.
+<span id="meaningful-handling-changes-the-outcome"></span>
+<span id="preserve-every-failure-from-concurrent-work"></span>
 
-A helper designed to throw on every path can use C#'s [`DoesNotReturn` attribute](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.codeanalysis.doesnotreturnattribute). It declares the helper's terminal intent for analysis. Verify that every reachable path actually throws. A validator returns normally for valid input, so it must not carry that attribute. This is an application of the [method-contract guidance](../programming-to-exceptions-method-contracts/#an-action-or-command-method-completes-its-work-or-throws).
+### What handling means
 
-## Meaningful handling changes the outcome
+The word "handling" gets used loosely, so it's worth being precise about it.
 
-Catching an exception intercepts its propagation. Handling it requires a meaningful action. Logging alone is observation; swallowing a failure without a recovery decision conceals it. Catch only when the component understands how to act on that failure. Otherwise, let it travel up the call stack to a component with that responsibility.
+You handle an exception at the first catch: the first place your code meets an exception it didn't throw. A database driver, a file API or a third-party SDK has thrown its own exception, in its own vocabulary, and your code catches it. That catch is your one chance to handle it, and handling means doing something that changes the outcome. You can translate it into one of your own exceptions, so the rest of the system understands what happened. You can retry, when waiting and trying again might succeed. You can roll back work you own before letting the failure continue.
 
-Catching merely to log and rethrow repeats observations without changing the application's ability to proceed. Leave failures alone until a component has a defined responsibility for them. The middleware's HTTP translation is such a responsibility: it turns the escaping domain failure into the response the caller must receive.
+Once your code throws one of its own exceptions, there's nothing left to handle. It was thrown on purpose, it says what went wrong, and it travels to the entry point. A method that catches it on the way up, as in Step 4, is augmenting it: adding contextual data that will help someone understand the problem, debug it and reproduce it. That's worth doing, but it doesn't change the outcome, so it isn't handling.
 
-A bounded retry is meaningful when the component understands a transient failure and can repeat the operation safely. It needs a maximum number of attempts, an appropriate delay, and a final specific failure carrying the cause and attempt context. Rate limiting can call for a different remedy from a service outage. A malformed request should not spend the same retry ladder as a connection interruption.
+Plenty of catch blocks look like handling and aren't. The most common is catch, log and rethrow, and it rarely happens just once. I've seen call chains six levels deep where every method catches the exception, logs it and throws it again. The same failure ends up in the log six or seven times, and none of those copies adds anything. Ask why, and the answer is usually: "I don't know if somebody logged it before me, and I don't know if somebody will log it after me, so I'm logging it." That's the wrong reason. In this design, the answer is known: the entry point logs every failure, once.
 
-For example, an HTTP 429 can tell an email Gateway to wait through `Retry-After`, add suitable jitter, and retry within a bounded attempt limit. An SDK may present that condition as an exception; a direct HTTP client may present a response. The Gateway owns the same recovery decision in either case. If an attempt succeeds, it completes the promised work. If the attempts are exhausted, it throws a specific exception such as `ConfirmationEmailRetryExhaustedException`, retaining the final cause and attempt context. The catch earned its place by implementing recovery. It did not make the failed work disappear.
+Swallowing an exception isn't handling either. Neither is catching one and returning `false`, `null` or an error code. None of these changes the outcome, and the last two hide the failure.
 
-A fallback provider is meaningful when it fulfills the same requirement. A circuit breaker can prevent repeated calls to a known failing dependency. These policies belong with the component owning that conversation. They are not reasons to put broad catch blocks around unrelated business orchestration.
+### Translating a database failure
 
-Consider an order-placement requirement that allows a caller to resubmit an order using the same reference: identical content must receive the original outcome, while different content must be refused as an order-reference conflict. The store's unique constraint can report that the reference already exists. The coordinating Manager catches that specific exception, retrieves the existing order, and compares its content with the request to enforce the resubmission rule. A pre-check could lose a concurrent race, so handling the authoritative constraint outcome is part of the business policy.
+Translation is the most common way to handle an exception. Part 1 showed one case: a duplicate-key error from SQL Server, translated into `CustomerAlreadyRegisteredException`.
 
-That is different from catching missing-customer retrieval merely to implement a Boolean existence query method. Here, an attempted write meets an authoritative constraint, and the owning component resolves what that means.
-
-Cleanup and rollback can also justify a catch followed by propagation. Preserve the original failure with `throw;` when rethrowing it from its catch, or attach it as `InnerException` when translating. The [C# reference](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/exception-handling-statements) explains the stack-trace distinction. A cleanup failure must not silently replace the failure that initiated cleanup.
-
-## Preserve every failure from concurrent work
-
-Independent operations can fail together. When a component owns a concurrent document-ingestion batch, its diagnostic responsibility covers every failed item. Reporting only the first exception leaves part of the failed work unexplained.
-
-C#'s `await` propagates one exception from a faulted `Task.WhenAll`. The combined task's `Exception` retains the complete fault set. Preserve that task and translate the set into a specific domain exception at the batch owner. [Microsoft's task exception guidance](https://learn.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-exception-handling) explains that distinction.
+Part 1 also said that a missing product could be left to the database. The foreign key on the order's line items rejects any product that doesn't exist, and the data access code translates that rejection. Here is that translation:
 
 ```csharp
-Task documentIngestion = Task.WhenAll(documentIngestionTasks);
-
-try
-{
-    await documentIngestion;
-}
-catch (Exception) when (documentIngestion.IsFaulted)
-{
-    AggregateException failures = documentIngestion.Exception!.Flatten();
-
-    throw new DocumentIngestionBatchException(
-        $"Document ingestion failed for {failures.InnerExceptions.Count} " +
-        "operation(s). Inspect the item failures before reattempting the batch.",
-        DocumentIngestionLogEvent.IngestBatch,
-        new ContextualData
-        {
-            { "DocumentIngestion.RunId", runId },
-            { "DocumentIngestion.FailureCount", failures.InnerExceptions.Count },
-            { "DocumentIngestion.ItemFailures", JsonSerializer.Serialize(
-                failures.InnerExceptions.Select(
-                    MeridianOrderingException.GetExceptionDetails)) }
-        },
-        innerException: failures);
-}
-```
-
-This is a teaching example using the base from this article. The ingestion application supplies its own application name, `DocumentIngestionBatchException`, and log event. Each child failure already carries the item identity and context captured by that operation. The context projection retains those diagnostic records; the aggregate retains the original exception objects and their causal chains. The catch owns a specific transformation at the batch boundary and lets the transformed failure propagate.
-
-Do not expose a bare aggregate to callers as the domain explanation, or discard siblings merely to fit a single-exception response. Keep one application failure with all of its item failures. Successful items and durable side effects also matter when deciding what a reattempt may repeat. Cancellation follows the owning operation's cancellation policy; the filter above handles a faulted combined task, not a task whose only outcome is cancellation.
-
-## The outer boundary records and translates
-
-A web API normally has two failure categories at its exception boundary:
-
-1. An application exception with a known diagnostic contract and translation policy.
-2. An unexpected exception that escaped without that contract.
-
-The first handler adds the request facts available at the boundary, records the failure at its declared severity, and creates the appropriate response. The second records an unexpected failure with critical diagnostic attention and returns a caller-safe 500 response. An unexpected exception is a reason to investigate missing validation, a missing translation, or an implementation defect.
-
-The following is the shape of that boundary. Its collaborators represent the application's explicit request-capture, logging, and HTTP policies:
-
-```csharp
-public async Task InvokeAsync(HttpContext httpContext)
+public async Task SaveOrderAsync(OrderPlacementRequest orderPlacementRequest)
 {
     try
     {
-        await _next(httpContext);
+        await _sqlConnection.ExecuteAsync(InsertOrderSql, orderPlacementRequest);
     }
-    catch (MeridianOrderingException applicationException)
+    catch (SqlException sqlException) when (sqlException.Number == 547 && sqlException.Message.Contains("FK_OrderLineItems_Products"))
     {
-        applicationException.AddContextualData(
-            _requestDiagnostics.CaptureApprovedContext(httpContext));
-
-        _exceptionLogger.Record(applicationException);
-        await _httpTranslator.WriteAsync(httpContext, applicationException);
-    }
-    catch (Exception unexpectedException)
-    {
-        ContextualData requestContext =
-            _requestDiagnostics.CaptureApprovedContext(httpContext);
-
-        _exceptionLogger.RecordUnexpected(unexpectedException, requestContext);
-        await _httpTranslator.WriteUnexpectedFailureAsync(httpContext);
+        throw new UnknownProductsException($"Order '{orderPlacementRequest.OrderReference}' names one or more products that don't exist. Check the product IDs and submit the order again.", OrderPlacementLogEvent.SaveOrder, new ContextualData { { "Order.Reference", orderPlacementRequest.OrderReference }, { "Order.ProductIds", string.Join(",", orderPlacementRequest.LineItems.Select(orderPlacementLineItem => orderPlacementLineItem.ProductId)) }, { "OrderStore.Error", sqlException.Message } }, innerException: sqlException);
     }
 }
 ```
 
-In the usual application, this middleware is the outermost try-catch. The domain detects failures and throws them; ordinary callers let them propagate. The narrowly scoped catches described above exist to satisfy particular business and recovery requirements. An ASP.NET application and a FastAPI application use the same arrangement, although their host APIs differ.
+Why translate at all? A `SqlException` with error number 547 is cryptic, and it's specific to SQL Server. If it escaped the data access code, every method above it would need to understand SQL Server's error numbers to know what went wrong. That's a leaky abstraction: a detail of how one class does its work leaking into the rest of the system. Translated, the rest of the system sees `UnknownProductsException`, which says what happened in words anyone can read.
 
-Ordinary domain failures need these two categories. The host must honor its own lifecycle rules. A recognized caller cancellation should propagate under the host's cancellation policy rather than be recorded as a defect and answered with HTTP 500. Once an HTTP response has started, the translator cannot replace it with a new error response; it must follow the host's termination policy. Streaming endpoints require particular care around that boundary.
+Translation also protects you from change. Suppose you move to a different database tomorrow. The new database reports a missing product with a different error, so the catch inside the data access code changes. But the same scenario still throws the same `UnknownProductsException`, and nothing above the data access code has to change at all.
 
-Malformed JSON or other input that cannot bind also belongs to the Service Interface Layer. Configure binding and formatting so callers receive the defined transport refusal before the domain operation starts. Keep domain validation and business decisions in the domain rather than duplicating them in controllers.
+Three things make this a good translation.
+
+**It's narrow.** SQL Server reports error 547 for any constraint violation, so the filter also checks which constraint failed. Every other database error passes through untouched.
+
+**It happens where the meaning is known.** The data access code knows that this particular constraint means "unknown product." The code above it doesn't know that, and shouldn't have to.
+
+**It keeps the original.** The `SqlException` goes in as the inner exception, with its stack trace, and its message is recorded in the contextual data. Nothing the database said is lost.
+
+The same exception can mean different things in different places. A missing file might mean "no such customer" in one store and "the storage is broken" in another. Translate it in the place that knows which one it is.
+
+Translate once, too. Don't wrap an exception at every level just because it passed through. Once it's one of yours, it already says what it means, and the methods above it should let it go by.
+
+<span id="the-outer-boundary-records-and-translates"></span>
+<span id="one-diagnostic-record-with-the-relevant-facts"></span>
+
+## Step 6: The entry point, in full
+
+Part 1 showed a simple version of the middleware and listed the four things the full version does: add the request's input data, redact personal information, log the failure, and translate it into a response. Here is the full version:
+
+```csharp
+public sealed class ExceptionHandlingMiddleware(RequestDelegate requestDelegate, RequestDiagnostics requestDiagnostics, PersonalDataRedactor personalDataRedactor, ExceptionLogger exceptionLogger, HttpErrorTranslator httpErrorTranslator)
+{
+    public async Task InvokeAsync(HttpContext httpContext)
+    {
+        try
+        {
+            await requestDelegate(httpContext);
+        }
+        catch (MeridianOrderingException meridianOrderingException)
+        {
+            meridianOrderingException.AddContextualData(requestDiagnostics.CaptureRequestData(httpContext));
+            DiagnosticRecord diagnosticRecord = personalDataRedactor.Redact(meridianOrderingException);
+            exceptionLogger.Log(diagnosticRecord);
+            await httpErrorTranslator.WriteAsync(httpContext, meridianOrderingException);
+        }
+        catch (Exception exception)
+        {
+            DiagnosticRecord diagnosticRecord = personalDataRedactor.Redact(exception, requestDiagnostics.CaptureRequestData(httpContext));
+            exceptionLogger.LogUnexpected(diagnosticRecord);
+            await httpErrorTranslator.WriteUnexpectedFailureAsync(httpContext);
+        }
+    }
+}
+```
+
+There are now two catches, one for each kind of failure that can arrive.
+
+**The first catch is for the application's own exceptions.** These are failures the system was designed to recognize, so they carry everything from Steps 2 to 4. The middleware adds the one thing nobody deeper in the call stack had: the request itself, including its path, its correlation identifier and the input fields you've decided are safe to record. Then the redactor removes personal information from the message and the contextual data, the logger writes the record, and the translator writes the response using the exception's status code and message.
+
+**The second catch is for everything else.** A `NullReferenceException`, an `IndexOutOfRangeException`, or any other exception the application didn't define. Nothing in the code expected it, so it's a bug until you find out otherwise. The middleware still records the request data, so there's something to investigate, but the caller gets a plain 500 with a generic message. Internal details of a bug don't belong in a response.
+
+Each collaborator is a small class with one job. `RequestDiagnostics` knows which parts of a request are worth recording. `PersonalDataRedactor` knows what personal information looks like in this application. `ExceptionLogger` writes to wherever your logs go, and [Programming to Exceptions, Part 3: Logging and Progress](../programming-to-exceptions-logging-and-progress/) covers that. `HttpErrorTranslator` turns a failure into a response. None of them needs to know anything about orders or customers.
 
 <!-- diagram:start exception-middleware-enrichment -->
 <figure id="exception-middleware-enrichment" class="article-diagram article-diagram--raster">
   <img class="article-diagram__image" src="/images/diagrams/exception-middleware-enrichment.webp" alt="Exception-handling middleware surrounds a domain operation. A propagated exception and the original request meet at diagnostic enrichment, then produce an internal log record and a separate caller-safe HTTP response." width="1821" height="864" loading="lazy" decoding="async" />
-  <figcaption>The exception-handling middleware has both the incoming request and the exception's local context. It combines them for logging, then writes the appropriate HTTP response. Catching here does not resume the failed domain operation.</figcaption>
+  <figcaption>The middleware has both the exception and the incoming request. It combines them into one diagnostic record for the log, and writes a separate response for the caller.</figcaption>
   <p class="article-diagram__full"><a href="/images/diagrams/exception-middleware-enrichment.webp">Open full-size diagram</a></p>
 </figure>
 <!-- diagram:end exception-middleware-enrichment -->
 
-The response needs the correct status and a stable machine-readable explanation. It can use a JSON error body, or an agreed header contract with a human-readable body. The caller should not have to parse an English message to decide whether an error is a business refusal or a temporary failure.
+Now look at what reaches the log when the confirmation email fails. This is the record from Step 4's failure, after the order placement method added the order reference and the middleware added the request:
 
-HTTP reason phrases cannot carry that contract across protocol versions: [HTTP/2 has no reason phrase](https://www.rfc-editor.org/rfc/rfc9113.html#section-8.3.2). Put the reason in an explicit response field or header. A service consuming that response can map its defined error contract into its own exception hierarchy at its Gateway.
+```json
+{
+  "ApplicationName": "MeridianOrdering",
+  "ExceptionType": "ConfirmationEmailRetryExhaustedException",
+  "Message": "The email service was still too busy after 4 attempts. The confirmation email was not sent.",
+  "Reason": "Email service too busy",
+  "Action": "RetryActionNeeded",
+  "LogEvent": "SendConfirmationEmail",
+  "Severity": "Error",
+  "HttpStatusCode": 500,
+  "Email.TemplateName": "OrderConfirmation",
+  "EmailService.AttemptCount": 4,
+  "EmailService.LastStatusCode": 429,
+  "Order.Reference": "ORD-20261102-0042",
+  "Request.Method": "POST",
+  "Request.Path": "/orders",
+  "Request.CorrelationId": "7f3c9a1e"
+}
+```
 
-The service-to-service diagnostic response and the message displayed to an end user have different audiences. A service participating in the diagnostic chain must transport the context its upstream consumer needs. The UI application can record that full approved chain while showing the user only the appropriate business explanation. Define those transport and display policies deliberately, and keep credentials out of either record.
+Read it as the person on the support team would. Which operation failed? Sending the confirmation email. Why? The email service kept answering 429 Too Many Requests, four times. What kind of problem is it? A retry later should work. Which order? `ORD-20261102-0042`. Which request? A `POST` to `/orders`, with a correlation identifier that ties it to everything else that request did.
 
-## Carry the failure chain across services
+That's the test from the beginning of this article, passed. One record, and nobody had to call a developer. Three different places contributed to it: the gateway that threw, the method that added the order reference, and the middleware that added the request. Each one recorded what only it knew.
 
-Consider a UI application calling service A, which calls B, which calls C. The requests travel inward through the service chain. A failure detected in C travels back through B and A to the UI application.
+<span id="which-failures-need-attention"></span>
+<span id="turn-an-unexpected-failure-into-an-explicit-contract"></span>
 
-C's exception-handling middleware has both the exception thrown by its domain and the incoming request from B. It augments the exception with that request before producing the diagnostic error response. The response includes the concrete failure, its reason and action, the originating service, the correlation identifier, the throw-site context, and the relevant request data. C can also write a service-local log before returning that response.
+## Step 7: What each kind of failure asks of you
 
-B's Gateway receives C's HTTP failure. It reads the defined diagnostic payload, translates the failure into B's domain language, and preserves C's complete failure record as `DownstreamFailure`. It adds what B was attempting to do and what it sent to C. If the failure escapes B's domain, B's middleware adds the incoming request from A and sends that combined record upstream.
+The hierarchy also changes how you run the system. Each kind of failure that reaches the entry point asks something different of the people watching it.
 
-A follows the same rule. It preserves B's record, including C's record, adds the facts of its own call to B, and includes the incoming UI request at A's boundary. Finally, the UI application records the resulting chain in its **main application log**. That main log is the place used to investigate the UI operation; it can contain the complete failure chain without requiring a separate centralized logging system for all services.
+**A business exception asks nothing of you.** The system did exactly what it was designed to do. A rule refused a request, and the caller got a message explaining why. There's no defect to fix. Whoever made the request, a user or another service, reads the message and decides what to do next. Seeing business exceptions in the log is no reason to add try/catch blocks anywhere.
 
-Services may keep their own local logs as well. Those records can help their owners, but reproducing the UI failure should not depend on manually gathering and joining them. The required diagnostic chain already travelled upstream with the failure.
+**A technical exception asks for attention when it repeats.** A service timed out, or retries ran out. One occurrence usually doesn't need anyone. There's only so much the application can do about a service that's down, and the next request may succeed. But if `ConfirmationEmailRetryExhaustedException` shows up fifty times in ten minutes, something is wrong with the email service. So set alerts on specific exception types, triggered when one occurs more often than you've agreed it should within a given period. The specific type tells you which service is in trouble before you open a single record. Part 3 shows how these records become searchable in Application Insights.
+
+**An unexpected exception asks you to find a bug.** Anything the application didn't define, caught by the middleware's second catch, means the code did something nobody designed it to do. Treat each one as a bug until you find out otherwise. Then fix the cause. Usually that means adding a missing check at one of the doors from Part 1, or translating a vendor exception in the place that understands it, as in Step 5. Wrapping the bug in a custom exception without fixing its cause only hides it.
+
+Put together, this is why I can tell a team that silence means success. Every business refusal is reported to the person who can act on it. Every technical failure is recorded with the facts to diagnose it, and repeated ones raise an alert. Every bug arrives as an unexpected exception that asks to be fixed. Nothing fails quietly.
+
+<span id="carry-the-failure-chain-across-services"></span>
+
+## Step 8: Carry the failure across services
+
+So far, everything has happened inside one application. Most systems today are several services calling each other, and that's where this design pays off the most.
+
+Picture a UI application that calls service A. Service A calls service B, and service B calls service C. Something fails in C.
+
+In many systems, here's what the person investigating sees. The UI log says the request to A failed. A's log says the call to B failed. B's log says the call to C failed. C's log, if they can find it, has the actual failure. Four logs, often owned by four teams, and someone has to line them up by timestamp to piece together one story.
+
+Now follow the same failure through services that each use the entry point from Step 6.
+
+1. **C throws.** Its middleware adds the request it received from B, and logs the failure locally if C keeps its own log. Then it sends back an error response that contains the whole diagnostic record: the exception type, message, reason, action, contextual data and request.
+2. **B receives C's error response.** The class in B that calls C reads that record. It throws one of B's own exceptions, which says in B's terms what went wrong, and attaches C's record to it, unchanged. It also adds what B was trying to do and what it sent to C.
+3. **B's middleware catches it.** It adds the request B received from A and sends back B's record, with C's record nested inside.
+4. **A does the same.** It keeps B's record, which already contains C's, and adds its own.
+5. **The UI receives the whole chain** and writes it to its own log.
 
 <!-- diagram:start service-failure-diagnostic-chain -->
 <figure id="service-failure-diagnostic-chain" class="article-diagram article-diagram--raster">
   <img class="article-diagram__image" src="/images/diagrams/service-failure-diagnostic-chain.webp" alt="Requests travel from a UI through services A and B to C. A failure at C returns over HTTP; B and A each retain the downstream failure record inside their own enriched record. The UI's main log contains the complete A, B, C diagnostic chain." width="1821" height="864" loading="lazy" decoding="async" />
-  <figcaption>C supplies the original failure record. B and A preserve that record while adding their own context and incoming request. The UI application receives the whole chain and records it in its main log; services may also log locally.</figcaption>
+  <figcaption>C supplies the original failure record. B and A each keep the record they received and add their own facts around it. The UI receives the whole chain and records it in its log.</figcaption>
   <p class="article-diagram__full"><a href="/images/diagrams/service-failure-diagnostic-chain.webp">Open full-size diagram</a></p>
 </figure>
 <!-- diagram:end service-failure-diagnostic-chain -->
 
-The wire model above makes that nesting explicit. Each `ServiceFailureData` records one service's view and links to the downstream record. `ToServiceFailureData` builds the current hop from the enriched exception; the HTTP translator serializes that value as the service's diagnostic error body. Its originating-service field names where that hop's exception arose. Following the downstream records identifies the original failure in C. Keep that root distinguishable from the service currently translating the failure. A failure detected in C must not appear to have originated in A merely because A sent the final HTTP response.
+Here is a trimmed version of what the UI's log holds. Each record keeps the one it received under `DownstreamFailure`:
 
-Within one process, `InnerException` preserves an exception object. Across HTTP, serialize a defined diagnostic model. Recreating only an exception with the remote message loses the structured request and failure facts that make the chain useful. The Gateway can attach the received model directly:
-
-```csharp
-ServiceFailureData downstreamFailure =
-    await _failureReader.ReadAsync(errorResponse, cancellationToken);
-
-var applicationException = new DownstreamOrderServiceException(
-    "The order service could not complete the request.",
-    ServiceLogEvent.RequestOrder,
-    new ContextualData
-    {
-        { "Operation", "Request order from service B" },
-        { "DownstreamService", "B" },
-        { "CorrelationId", correlationId },
-        { "Order.Reference", orderReference }
-    });
-
-applicationException.AttachDownstreamFailure(downstreamFailure);
-throw applicationException;
+```json
+{
+  "Service": "A",
+  "ExceptionType": "OrderServiceRequestFailedException",
+  "Message": "The order service could not place order 'ORD-20261102-0042'.",
+  "Request.Path": "/checkout",
+  "DownstreamFailure": {
+    "Service": "B",
+    "ExceptionType": "InventoryServiceRequestFailedException",
+    "Message": "The inventory service could not reserve stock for order 'ORD-20261102-0042'.",
+    "Request.Path": "/orders",
+    "DownstreamFailure": {
+      "Service": "C",
+      "ExceptionType": "WarehouseStoreUnavailableException",
+      "Message": "The warehouse store did not respond within 30 seconds.",
+      "Reason": "Warehouse store unavailable",
+      "Action": "InfraActionRequired",
+      "Warehouse.Id": "WH-07",
+      "Request.Path": "/reservations"
+    }
+  }
+}
 ```
 
-This sketch leaves the operation-specific exception, log event, and validated wire reader to that service. The reader must check the agreed payload contract. A response that cannot supply valid diagnostic data is itself an integration failure; preserve the available response status and approved response content instead of inventing a remote cause.
+Read it from the outside in, and you have the whole story in one place. The checkout failed because the order service couldn't place the order. The order service failed because the inventory service couldn't reserve stock. The inventory service failed because warehouse store `WH-07` didn't respond, and that needs someone to look at the infrastructure. Every service along the way said what it was doing and what it received, in its own words.
 
-At each hop, capture relevant inputs and outputs, including the outbound request and downstream diagnostic response. Use service-qualified names so B's incoming request cannot overwrite C's throw-site facts. Carry the same operation correlation identifier through the chain. Give the transport model a version when its shape becomes a shared service contract.
+That's the advantage. Whoever is looking at the UI's log, or at any service at the top of a call chain, can see exactly what happened and where, without collecting logs from four services and lining them up. The record that explains the failure traveled back with the failure. It's especially valuable in a microservices system, where a single user action can pass through many services and the services are often owned by different teams.
 
-That record lets a developer reproduce the problem at C using C's request and local values, or follow the full UI call using the captured requests and responses at each hop. The speed of diagnosis depends heavily on how much useful information survives into the main log. Capturing it when the failure occurs avoids relying on someone's memory of the call.
+A few things keep the chain trustworthy:
 
-## One diagnostic record with the relevant facts
+- **Each service records its own name.** The failure started in C. A must not look like the origin just because A sent the last response.
+- **Each service keeps the record it received unchanged.** It adds its own facts around that record, and never edits the record itself.
+- **Every service passes along the same correlation identifier.** That ties the chain to everything else the original request did.
+- **The UI decides what to show the user.** It logs the whole chain, but the person at the screen sees only the business explanation, such as "We couldn't place your order. Please try again in a few minutes."
 
-The outermost responsible handler combines approved incoming request facts with the exception's meaning, local context, and original causes. Intermediate callers can enrich that record without logging the same escaping failure again. Capture permitted request data before processing consumes it.
+The mechanics are the same steps you've already seen. Each service throws specific exceptions with context (Steps 3 and 4), translates the failure it received into its own terms while keeping the original (Step 5), and lets its middleware add the request and respond (Step 6). The only addition is that the error response carries the record, so the next service up has something to keep.
 
-[Part 3](../programming-to-exceptions-logging-and-progress/) develops the logging policy, provider wiring, retained reproduction state, and progress events for long-running work.
+<span id="application-insights-custom-dimensions"></span>
 
-## Application Insights custom dimensions
+## What's next
 
-The diagnostic snapshot must become named telemetry properties to support searching, filtering, and alerts. [Part 3's Application Insights section](../programming-to-exceptions-logging-and-progress/#application-insights-custom-dimensions) shows the mapping and queries. The JSON envelope alone does not configure telemetry ingestion.
+This part followed a failure from the place it was detected to the log and the response. The message speaks to the person who has to act. The exception carries a reason, an action, a log event, a status, and contextual data captured where the failure happened. Methods higher up the call stack add what only they know. Failures from other code are translated where their meaning is understood. The entry point adds the request, redacts, logs and responds, and across services the whole chain comes back to the top.
 
-## Turn an unexpected failure into an explicit contract
-
-An unexpected-exception record is a starting point for investigation. Determine why the failure escaped as an unclassified framework or vendor exception. Correct the producer of invalid internal data, add missing boundary validation, or define a specific translation at the external boundary that understands it.
-
-Then verify the behavior. For a business refusal, inspect the concrete type, message, remedy, and context, together with the side effects the failed request must not leave. Assert the non-sensitive rejected value and permitted choices when those are part of the message contract. Test exception behavior through the operation that throws it; empty leaf-constructor tests say little about whether the failure contract is correct. For a technical failure, preserve its cause and verify the resulting durable state. Verify that the HTTP boundary writes the intended status and safe explanation while keeping internal details in the diagnostic record.
-
-Useful measures include how often unexpected failures escape, how long diagnosis takes, whether support can identify the responsible service, and whether users can correct a refusal from its message. A more explicit system can reduce unexpected failures as previously unknown scenarios gain validation, translation, and tests. That improvement has to be observed in the system; the hierarchy alone cannot guarantee it.
+[Programming to Exceptions, Part 3: Logging and Progress](../programming-to-exceptions-logging-and-progress/) picks up from the log record: what to log and where, how to make these records searchable in Application Insights, and how to report progress for work that takes a long time.
