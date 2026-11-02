@@ -342,8 +342,8 @@ Each collaborator is a small class with one job. `RequestDiagnostics` knows whic
 
 <!-- diagram:start exception-middleware-enrichment -->
 <figure id="exception-middleware-enrichment" class="article-diagram article-diagram--raster">
-  <img class="article-diagram__image" src="/images/diagrams/exception-middleware-enrichment.webp" alt="Exception-handling middleware surrounds a domain operation. A propagated exception and the original request meet at diagnostic enrichment, then produce an internal log record and a separate caller-safe HTTP response." width="1821" height="864" loading="lazy" decoding="async" />
-  <figcaption>The middleware has both the exception and the incoming request. It combines them into one diagnostic record for the log, and writes a separate response for the caller.</figcaption>
+  <img class="article-diagram__image" src="/images/diagrams/exception-middleware-enrichment.webp" alt="Exception-handling middleware surrounds a domain operation. A request enters the domain operation, and an exception propagates out of it to Catch escaping exception. From there, one path runs through Add request data, which also receives the request data, then Redact personal data, then Diagnostic log. A second path takes the exception to Translate to HTTP response, which sends a status code for a known failure or 500 for an unexpected one to the caller outside the middleware." width="1821" height="864" loading="lazy" decoding="async" />
+  <figcaption>The middleware catches the exception, adds the request data, removes personal information and logs one record. Separately, it translates the exception into the response the caller sees.</figcaption>
   <p class="article-diagram__full"><a href="/images/diagrams/exception-middleware-enrichment.webp">Open full-size diagram</a></p>
 </figure>
 <!-- diagram:end exception-middleware-enrichment -->
