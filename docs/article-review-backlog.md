@@ -16,6 +16,18 @@ anchors are retained the same way. Its middleware diagram,
 `exception-middleware-enrichment.webp`, was regenerated the same day to fix a
 misspelling and show the redaction step.
 
+Part 3, **Programming to Exceptions, Part 3: Logging and Progress**, now
+publishes the same kind of eight-step teaching rewrite, reviewed by Shiv without
+the independent fresh-session review. Its eight earlier section anchors are
+retained as hidden spans. The Application Insights details (3.x dropping scope
+values unless `IncludeScopes` is enabled, and log entries written without an
+exception object landing in `traces`) were checked against Microsoft's SDK
+guidance and exporter source on November 2, 2026; confirm them against a real
+resource before the next substantive edit. The reused
+`exception-context-custom-dimensions.webp` labels two dimensions `CorrelationId`
+and `CauseChain`, while the article uses `Request.CorrelationId` and
+`DownstreamFailure`; regenerate it if the mismatch matters.
+
 ## Mocking source attribution, October 25, 2026
 
 The targeted transport/Test Mediator revision is recorded in
