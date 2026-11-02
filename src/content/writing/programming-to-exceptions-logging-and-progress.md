@@ -144,7 +144,7 @@ Make it a [log search alert rule](https://learn.microsoft.com/en-us/azure/azure-
 
 <!-- diagram:start exception-context-custom-dimensions -->
 <figure id="exception-context-custom-dimensions" class="article-diagram article-diagram--raster">
-  <img class="article-diagram__image" src="/images/diagrams/exception-context-custom-dimensions.webp" alt="Incoming request information and throw-site context form an exception diagnostic record. Application Insights stores individual custom dimensions including ExceptionType, Failure.OriginatingService, Order.Reference, CorrelationId, and CauseChain, supporting filtering, frequency alerts, and reproduction." width="1942" height="809" loading="lazy" decoding="async" />
+  <img class="article-diagram__image" src="/images/diagrams/exception-context-custom-dimensions.webp" alt="Incoming request information and throw-site context form an exception diagnostic record. Application Insights stores individual custom dimensions including ExceptionType, Failure.OriginatingService, Order.Reference, Request.CorrelationId, and DownstreamFailure, supporting filtering, frequency alerts, and reproduction." width="1944" height="809" loading="lazy" decoding="async" />
   <figcaption>Useful context becomes searchable custom dimensions. Expose the originating service and other filter fields individually, preserve the cause chain, and use the captured request and relevant state to reproduce the problem.</figcaption>
   <p class="article-diagram__full"><a href="/images/diagrams/exception-context-custom-dimensions.webp">Open full-size diagram</a></p>
 </figure>

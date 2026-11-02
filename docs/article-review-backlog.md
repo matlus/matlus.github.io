@@ -23,10 +23,10 @@ retained as hidden spans. The Application Insights details (3.x dropping scope
 values unless `IncludeScopes` is enabled, and log entries written without an
 exception object landing in `traces`) were checked against Microsoft's SDK
 guidance and exporter source on November 2, 2026; confirm them against a real
-resource before the next substantive edit. The reused
-`exception-context-custom-dimensions.webp` labels two dimensions `CorrelationId`
-and `CauseChain`, while the article uses `Request.CorrelationId` and
-`DownstreamFailure`; regenerate it if the mismatch matters.
+resource before the next substantive edit. Its reused
+`exception-context-custom-dimensions.webp` was regenerated the same day so its
+dimension labels match the article: `Request.CorrelationId` and
+`DownstreamFailure` replace `CorrelationId` and `CauseChain`.
 
 ## Mocking source attribution, October 25, 2026
 
