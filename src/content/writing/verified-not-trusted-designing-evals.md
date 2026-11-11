@@ -25,6 +25,10 @@ draft: false
 status: established
 ---
 
+A tidy table can hide a wrong total. The findings sound confident, and nothing in the tone tells you where the arithmetic failed.
+
+The enemy here is the confident answer that feels verified because it reads smoothly. The same request can produce a different number with the same certainty. Before an answer touches a customer's records, we need evidence gathered on purpose, again and again.
+
 You have an application that uses a large language model. You give it an expense log and a separate file containing the user's budget notes. It produces tables, comparisons and three findings about the user's spending. The answer reads well. It even says it checked its calculations.
 
 What would you need to see before letting that answer affect a customer's records?
@@ -149,9 +153,11 @@ Notice the design choice. Keeping the reference away from the trial is a conditi
 
 ## Choose a grader by the evidence it examines
 
-A grader is the component that examines evidence and decides the outcome of a check. We choose it according to the requirement.
+A grader is the inspector that examines the evidence and rules on one check. Pick it by what needs proving.
 
-**Prefer a deterministic grader whenever code can establish whether the requirement was met.** Amounts, counts, structured fields and recorded tool outcomes can be checked with explicit rules. Adding a model judgment to those decisions gives us another varying system to evaluate. Use a model for the interpretation that remains necessary, and constrain that job with supplied evidence and a rubric. Then evaluate how consistently it applies that rubric.
+**Where code can settle the question, use code. Deterministic grading is the default.** Amounts, counts, structured fields and recorded tool outcomes can be checked with explicit rules. Think of a tape measure against a board: the length is judged against a fixed scale. A model judgment adds another varying system to evaluate. Use a model judge only for interpretation that code cannot settle. Give it a narrow job, the evidence it needs and a written rubric that says how to decide. Then check how consistently it applies that rubric.
+
+Remember what we are checking: the confident answer that sounds as though it has been verified. The grader is how we stop taking its word for it.
 
 This implementation has four named grader types:
 
@@ -596,5 +602,7 @@ The eval then exercises those paths through the application boundary, including 
 Start your own eval with one complete scenario and the outcome a user actually needs. Establish the reference independently. Select a grader for each obligation and give it the evidence required to decide. Run the real system repeatedly, retain the interaction and inspect disagreements. Report the provider, model, effort and observed pass rates with the results. Add scenarios as you learn where the system fails.
 
 The questions remain concrete: what must be right, what evidence establishes it, which code or judge examines that evidence, and what happens when it cannot establish the required result?
+
+The confident answer will keep arriving, tidy and certain. What changes is that you now have a way to examine it. You no longer have to take its word for it.
 
 That is how "verified, not trusted" becomes an implementation.

@@ -38,9 +38,16 @@ Review
 4. Structure and promises: Identify each section's contribution. Check that comparisons, questions, roadmaps, and promised measurements receive an answer. For a long article, check whether the reader can see the destination early and resume the explanation after a pause. Follow changes of domain and scope: does a second example explain what transfers, and is a second thesis connected to the original purpose? Before dense code, data or study sequences, check that the prose identifies what to look for and why it matters. Distinguish evidence from different populations or methods rather than treating it as one measurement. Test an important methodological distinction with a concrete case when the surrounding prose leaves the reader to invent the difference. Check that necessary diagram relationships also survive in the Markdown version. Cite passages that repeat one another or adjacent articles, and distinguish unnecessary repetition from a recap or return that advances the argument. Propose changes proportional to the reader's difficulty.
 5. Voice and scope: Your proposed wording and any outside suggestions must preserve the author's position, purposeful questions, personal experience, and degree of conviction. Avoid unsupported certainty, artificial balance, generic caveats, and changes to the argument. Verify outside critiques against the actual article and evidence; agreement among reviewers does not establish correctness.
 6. Presentation: Check source heading hierarchy and numbering. When a rendered page is available, inspect its contents entries, anchors, figures, captions, and collapsed blocks. Otherwise mark rendered inspection pending. It remains a required step after revision and before publication.
+7. Story arc: Apply all nine checks in [article-story-arc.md](../docs/article-story-arc.md): establishing shot/shared confusion, hook, illustrative word pictures, suitable structure, promises paid off, named obstacle, medicine/sugar, bookend and limits. Adapt to the article's form. Ground findings in reader difficulty and passages; do not require invented experience, blame, sensory decoration or a dramatic outline. Verify that an analogy preserves the technical distinction it teaches and that returns advance the lesson. Treat psychological explanations in outside critiques as claims requiring evidence, rather than publication criteria.
 
 Report
 Start with coverage, reader assumptions, and evidence limitations. Rank substantive findings by their effect on understanding or correctness, placing defects before optional preferences.
+
+Include a nine-item story-arc assessment, marking each met, needs revision or
+not applicable, with passage evidence or a reason. Reference ranked findings
+without duplicating them. A justified not-applicable decision is valid. Flag
+consequential unresolved items explicitly so they cannot disappear from the
+publication decision. Do not treat an absent named structure as an automatic failure.
 
 Name the clearest explanation and explain its teaching mechanism with a passage:
 for example, a worked trace, concrete numbers or a comparison that resolves a

@@ -26,6 +26,16 @@ explanation of essential diagram relationships. Report added ceremony, repeated
 orientation or weakened authorial positions as regressions when they impede the
 lesson. The review checklist does not require every article to add these devices.
 
+Independently verify all nine [story-arc checks](../docs/article-story-arc.md)
+on the candidate and report met, needs revision or not applicable with passage
+evidence or a reason. After your own comparison, check the writer's assessment
+and dispositions. Confirm that the opening's promises receive a useful payoff,
+the named obstacle and word pictures preserve technical meaning, and the ending
+uses the understanding developed in the article. Flag invented experience,
+unsupported causes, weakened rules, decorative repetition or lost limits as
+regressions. Identify consequential unresolved story-arc findings before giving
+the publication verdict; justified not-applicable decisions remain valid.
+
 Compare `datePublished` and `dateModified` against the baseline, including exact
 values and whether each field exists. Adding, removing or altering a date field
 is a regression unless a separate, explicit owner instruction authorizes that

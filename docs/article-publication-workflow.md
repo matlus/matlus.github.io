@@ -44,6 +44,14 @@ articles, also use the
 The writer reads the complete relevant source and builds the example and argument
 in the order the reader needs. Existing approved drafts may enter at review.
 
+Apply the nine [story-arc checks](article-story-arc.md). In the brief, identify
+the obstacle, reader outcome, intended progression and opening/ending connection
+where applicable. Check the draft for a recognizable situation, hook, concrete
+word pictures, suitable structure, paid-off promises, named obstacle, motivation,
+bookend and honest limits. Fit these to the article's form and preserve the
+foundation before the solution. Do not pass the writer's expected assessment to
+the independent reviewer or invent an anecdote to satisfy the checklist.
+
 ## 2. Independent teaching and evidence review
 
 Start a fresh session or sub-agent with no drafting conversation. In Codex, use
@@ -62,6 +70,12 @@ Require a coverage record, ranked findings with passages and evidence, and up to
 three priority changes. Missing evidence leaves the affected checks unverified.
 An incomplete article cannot receive a complete review. A zero-finding review
 is valid; optional stylistic preferences do not create a revision requirement.
+
+Require a separate nine-item story-arc assessment: met, needs revision or not
+applicable, with passages or an explanation. Existing teaching-path and evidence
+checks supply much of this evidence; reference them rather than repeating findings.
+An absent dramatic device alone is not a defect. A consequential unresolved
+story-arc finding must be adjudicated before the article is called ready.
 
 The same review includes a skeptical first-time reader's assessment. State the
 learning outcome and article form, locate the clearest and any muddy explanation,
@@ -89,12 +103,17 @@ against the evidence and recording accepted, rejected, optional and deferred
 items. Review consensus alone does not decide. Make the smallest supported
 corrections and preserve the author's intent and protected evidence.
 Compare both date fields against the baseline, including their presence.
+Record dispositions for story-arc findings alongside the other findings. Check
+that an added hook, analogy or bookend clarifies the lesson without changing a
+technical claim, inventing experience or weakening the author's position.
 
 Start a second fresh, read-only session using the
 [revision verification prompt](../prompts/verify-article-revision.md). It receives
 baseline and candidate, the brief and evidence, and the disposition record.
 It compares the texts before reading earlier conclusions and reports improvement,
 equivalence, regression or unresolved evidence. Regressions require correction.
+It also verifies the final nine-item story-arc assessment, including justified
+not-applicable decisions and any remaining needs-revision items.
 Use at most two revision/verification cycles per pass; if disagreement remains,
 record the exact issue and seek the owner's judgment where it affects meaning.
 Do not stop for approval on routine, supported editorial corrections already
@@ -185,8 +204,11 @@ article-production process separately from the byline.
 
 ### Automated checks
 
-Run the complete
+Run locally, before pushing, the complete
 publication checks in [AGENTS.md](../AGENTS.md), including both writing audits.
+Run the additional test scripts used by the checked-in deployment workflow too.
+Hosted CI being disabled or unavailable does not waive any local check. Story-arc
+judgment is a separate editorial gate; automated copy checks cannot certify it.
 The build validates companion dimensions and prompts, then checks that both the
 homepage and Writing index render companion cards. It also validates preview
 dimensions/provenance for published writing, chapters and overviews, then checks
@@ -207,10 +229,17 @@ coverage, findings and dispositions, independent comparison verdict, rendered
 inspection, audits and build. The receipt should let a future editor see what
 was checked without rerunning the entire process.
 Include the before/after date-field comparison in that receipt.
+Include the final nine-item story-arc assessment with passage evidence or a
+not-applicable reason, findings and their dispositions, and the independent
+comparison's confirmation. Resolve consequential outstanding findings before
+declaring the article ready for publication.
 
-GitHub's [deployment workflow](../.github/workflows/deploy.yml) repeats its
-automated repository checks, builds the approved content and deploys it. It does
-not start writing, review, revision or model sessions. Ordinary deployment retries
+Inspect the current publication mechanism rather than assuming hosted CI is
+enabled. The checked-in [deployment workflow](../.github/workflows/deploy.yml)
+can repeat automated checks, build and deploy; the complete local checks remain
+required. Record the actual deployment path and result separately from local
+validation. Deployment does not start writing, review, revision or model sessions.
+Ordinary deployment retries
 reuse the approved content. A later substantive article change starts a new
 editorial pass; a deployment retry alone does not.
 
@@ -219,6 +248,11 @@ Markdown twin and changed assets against the checked build. Complete existing
 public source-video and repository backlink requirements within authorization.
 
 ## Workflow trials
+
+The [story-arc integration trial](story-arc-workflow-evaluation-2026-11-11.md)
+records the nine-check parity assessment, five varied articles and unchanged
+reference/control behavior. Narrative refinements remain subject to evidence
+and independent comparison.
 
 The [reader-critique prompt evaluation](hana-reader-critique-prompt-evaluation.md)
 records the follow-up trial of article-form, explanation and preservation checks

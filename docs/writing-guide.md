@@ -8,7 +8,12 @@ blog-writing skill, review teaching and evidence in a fresh session, adjudicate
 and revise, independently check the revision, inspect the rendered page, then
 complete metadata, assets and publication checks. Original blog articles and
 their published copies remain protected. GitHub deployment repeats automated
-checks rather than the editorial sessions.
+checks rather than the editorial sessions. Run the complete checks locally before
+pushing, even when hosted checks are disabled or unavailable.
+
+Apply the nine [story-arc checks](article-story-arc.md) in drafting, independent
+review and revision verification. The final editorial receipt records each check
+with evidence or a reason it does not apply. Fit the arc to the article's purpose.
 
 Article edits preserve the exact `datePublished` and `dateModified` values and
 whether each field exists. Add neither field when absent. Keep displayed dates
