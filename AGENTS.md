@@ -18,9 +18,12 @@ decisions, and the reasoning behind choices that look arbitrary without it.
 [article publication workflow](docs/article-publication-workflow.md).**
 It sequences drafting with the blog-writing skill, fresh-session teaching and
 evidence review, verified revision, rendered inspection and publication checks.
+Apply all nine [story-arc checks](docs/article-story-arc.md) during drafting,
+independent review and revision verification. Record the final assessment before
+calling an article ready; adapt the arc to its form and preserve evidence.
 The review is a separate step. Protect Shiv's original blog articles and their
-published copies; this workflow does not authorize rewriting them. GitHub
-deployment runs automated checks and does not repeat editorial model sessions.
+published copies; this workflow does not authorize rewriting them. Run publication
+checks locally before pushing. Deployment does not repeat editorial model sessions.
 
 **Article edits preserve publication and update dates.** Keep the exact existing
 `datePublished` and `dateModified` values and whether each field is present.

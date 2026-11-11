@@ -9,6 +9,12 @@ it as accepted, rejected, deferred for evidence, or optional. Explain the decisi
 with a passage or source reference. A reviewer verdict alone does not justify a
 change. Keep useful repetition, deliberate questions and the author's conviction.
 
+Adjudicate findings from all nine [story-arc checks](../docs/article-story-arc.md)
+and retain the final assessment. Use the smallest supported change to resolve
+a reader difficulty. Keep personal accounts grounded in supplied experience,
+analogies faithful to the technical distinction, and limits intact. Do not add
+a villain, roadmap or closing refrain solely to satisfy a narrative template.
+
 Apply the smallest effective correction for accepted findings. Do not convert
 unverified claims into errors or add generic caveats to an established argument.
 An acceptable draft can remain unchanged. Record optional suggestions separately

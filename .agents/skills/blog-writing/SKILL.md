@@ -13,6 +13,13 @@ Read [clarity-and-editing.md](references/clarity-and-editing.md) and the relevan
 
 ## Establish the reader's path
 
+For Matlus articles, apply the [story-arc checklist](../../../docs/article-story-arc.md)
+while drafting and on the final pass. Check the opening, hook, concrete word
+pictures, progression, promises, obstacle, motivation, bookend and evidence limits.
+Adapt them to the article's form; do not invent personal experience or force a
+reference into a dramatic outline. Independent review and revision verification
+repeat these checks before publication.
+
 Identify what the reader is trying to do or understand, what they already know, and the specific difficulty or misconception this article addresses. Infer these from the request and source when possible. Ask only when a missing answer would change the article materially.
 
 Build the explanation in an order that makes each next step intelligible. A useful path is a recognizable situation, enough context to reason about it, a concrete example, the explanation of what happens, and the consequences or limits. Adapt that path to the subject. A short snippet may need only a situation, code, and a parameter explanation; a design argument needs the competing assumptions and their consequences. Do not force every article into the same outline.
