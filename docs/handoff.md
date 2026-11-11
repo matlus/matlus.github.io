@@ -1,5 +1,29 @@
 # Handoff
 
+## Story arc and Designing Evals light revision, November 11, 2026
+
+Shiv authorized incorporating issue #131's nine story-arc checks into every
+article's publishing pipeline and assessing issue #132's light revision.
+The [checklist](article-story-arc.md) now enters drafting, fresh teaching review,
+adjudication, independent comparison and the final publication receipt. The
+[parity/trial record](story-arc-workflow-evaluation-2026-11-11.md) explains the
+overlap with existing reader-path guidance and the five-article applicability
+trial. Reference articles retain their form; no invented anecdote is required.
+
+**Verified, Not Trusted: Designing Evals for AI Applications** adds an early
+confident-answer obstacle, the inspector/tape-measure picture and a closing
+return. The proposed personal memory was a placeholder, so the opening remains
+hypothetical. Dates, all metadata, code, numbers, models, tables, headings, URLs
+and artwork are unchanged. The [article receipt](eval-story-arc-revision-2026-11-11.md)
+records dispositions, evidence, rendered inspection and local checks. The PR
+carries final independent verdict, merge/deployment identity and live comparison.
+Unrelated work in the primary checkout is preserved through an isolated worktree.
+
+Run all checks locally before pushing even when hosted CI is unavailable. The
+live API currently lists the full Pages workflow as active, differing from the
+owner's expectation; no deployment configuration was changed. Verify actual
+publication separately against the merge and checked build.
+
 ## Article issues and Search Console follow-up, October 25, 2026
 
 The owner authorized assessment of article issues #82 and #124, supported edits
