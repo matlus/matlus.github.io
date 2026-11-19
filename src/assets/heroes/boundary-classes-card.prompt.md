@@ -1,0 +1,11 @@
+# Boundary Classes listing card
+
+Built-in image generation. The edit target was the 1600 x 534 article hero in `boundary-classes.webp`. The 1942 x 809 original was exported at 1200 x 500 WebP, quality 82, using `tools/prepare-image.mjs` with `--role card`. The export retains the four hatches and the central inspection scene. The new space continues the paper and floor above and below the retained scene.
+
+## Generation prompt
+
+Use case: faithful outpainting, companion website listing card for Boundary Classes: One Idea at Many Doors. Image 1 is the approved 1600 x 534 hero and the edit target. Retain its complete composition. The article follows a shipping quote across a boundary that checks and translates an outside reply. The cutaway shows four hatches joining one shared checkout workroom, with a large copper inspection gateway and its raw, rejected and clean slips as the central action.
+
+Canvas: exact 12:5 landscape, at least 1200 x 500 pixels, preferably 1968 x 820 or larger for downsampling. At export scale the unchanged hero occupies the full width and approximately 400 pixels of height. Add approximately 50 pixels above and 50 below. Preserve all four hatches, their positions and relative sizes, the continuous shared counter and warm-lit room, full copper arch and top pipe, brass inspection frame with its torn slip, clean quote tray, carrier parcel and crumpled outside slip, configuration dial, slate filing drawer and sage dispatch chute with its sealed envelope. No cast or people. Keep their scale and linework exactly as in the source. Do not zoom, crop, stretch or reframe.
+
+Extend only the sparse ivory drafting paper and the existing architectural sketch lines above, and continue the floor tiles and subtle ink details below. Keep the added bands naturally integrated and subordinate. Preserve the approved hero's ivory, ink contrast, gentle brightness and accent saturation. The original warm ivory and selective copper, slate and sage were designed using the Matlus Expense Analysis Part Two colour reference. No labels, added characters, extra hatches, foreground objects, graphic marks, borders, lettering or watermark. Four doors and the central quote should still read clearly at 366 x 153 and 320 pixels wide.

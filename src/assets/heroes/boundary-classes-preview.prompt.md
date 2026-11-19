@@ -1,0 +1,11 @@
+# Boundary Classes Discover and social preview
+
+Built-in image generation. The edit target was the approved 1200 x 500 listing card in `boundary-classes-card.webp`. The 1672 x 941 original was exported at 1200 x 675 WebP, quality 82, using `tools/prepare-image.mjs` with `--role preview`. The near-16:9 original was fitted without cropping the scene. The export keeps the four hatches and inspection props visible. The new space extends the paper and tiled floor.
+
+## Generation prompt
+
+Use case: faithful outpainting, separate 16:9 social and Discover image for Boundary Classes: One Idea at Many Doors. Image 1 is the selected 1200 x 500 listing card derived from the article hero. It is the edit target. The article teaches that the same application receives usable values from different boundaries. The four inspection hatches face the same checkout workroom. The largest copper gateway checks a carrier slip and hands the room a clean quote.
+
+Canvas: 16:9 landscape, at least 1200 x 675 pixels, preferably 1920 x 1080 or larger. Keep the entire source centered at its existing size and width. At the export scale it occupies a 1200 x 500 band. Add about 87 pixels above and 88 below. Keep all four hatches in the same order and relative scale, the continuous shared room, configuration dial and card, slate drawer and records, copper gateway and full top pipe, rejected slip under the brass inspection lens, clean quote in its tray, crumpled slip and parcel outside, and the sage chute and both sealed envelopes. No cast or people. No zoom, stretch, crop, altered relationships or new focal features.
+
+Continue the luminous warm paper and faint architectural drafting strokes above, and extend the existing perspective of the sketched floor tiles into subtly textured ivory below. Keep additions quieter than the four hatches. Match fine black ink, warm lamps, selectively rich copper and brass, subdued slate and sage, gentle brightness and moderate saturation. No added text, letters, numbers, marks, logos, diagrams, borders, watermark, graphics or invented props. The original drawing should stay readable at 366 x 206 and 320 x 180, with the copper gateway and three smaller hatches still visibly part of one room.
