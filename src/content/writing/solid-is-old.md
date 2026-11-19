@@ -15,7 +15,7 @@ draft: false
 
 “We designed the system using SOLID principles.”
 
-Whenever someone tells me that, I still want to see the design. The statement tells me very little about whether the system is understandable, whether its boundaries are useful or whether its abstractions express the problem it is meant to solve.
+Whenever someone tells me that, I still want to see the design. Show me the code that asks for the shows on a channel. If it has to open a SQL connection and write a query, the business code still knows how we store the shows. You could put an interface in front of that code and keep the same problem.
 
 Put ten people in a room and ask them to explain the principles. You are likely to hear different interpretations. Even when they agree on the words, the implementations can be very different. Reciting an acronym gives us no assurance about the result.
 
@@ -25,7 +25,7 @@ That observation does not make their formal meanings identical. Substitutability
 
 I do not give Single Responsibility and Interface Segregation the same prominence as Dependency Inversion. Broad phrases such as “one reason to change” leave too much room for interpretation, and giving a caller the surface it needs should already be part of designing a useful interface. I would rather explain those decisions through code.
 
-Let's concentrate on Dependency Inversion, and on the ingredient that makes it useful: a good abstraction.
+You can follow a recipe step by step and still serve a dish that tastes flat. It needed salt. For Dependency Inversion, that ingredient is a good abstraction. Let's follow the show query and see what the caller has to know before and after we change the contract.
 
 ## Which dependency are we inverting?
 
@@ -45,9 +45,9 @@ The data layer is closer to the domain in my designs, but it still has a boundar
 
 Suppose a domain manager directly uses `SqlShowStore`. The domain calls the store and references that concrete type. Both arrows point toward the SQL implementation.
 
-Introduce a domain-owned contract, `ShowStoreBase`, and have `SqlShowStore` implement it. The domain manager can now reference the contract, while the SQL implementation references that same contract to fulfill it.
+Give the domain a contract of its own, `ShowStoreBase`. The domain manager references that contract, and `SqlShowStore` implements it. The SQL implementation now depends on the domain's contract.
 
-At runtime, the domain manager still asks the selected store to do work. We have not made the database call the business operation in reverse. What changed is the direction of the source dependency on the concrete implementation.
+At runtime, the domain manager still asks the selected store to do the work.
 
 ![Before inversion, the domain references the SQL store directly. After inversion, the domain and SQL store both reference a domain-owned contract; the runtime call still reaches the selected SQL implementation.](/images/diagrams/design-dependency-inversion.svg)
 
@@ -85,13 +85,7 @@ Passing the dependency in the constructor is one way to supply the object. Depen
 
 ## The missing salt
 
-Imagine following a recipe meticulously, then serving a dish that tastes flat. You followed the steps, but an essential ingredient was missing: salt.
-
-I see the same problem in demonstrations of dependency inversion. Someone starts with a concrete dependency, extracts an interface and announces that the design is now correct. The example quietly assumes that the extracted interface was a good abstraction to begin with.
-
-That is the salt. Without it, the procedure does not produce the promised result.
-
-For example, this contract still depends on database details:
+Suppose we extract an interface from the SQL store and keep its existing method. We can point the source dependencies at that interface and still make the caller supply the connection and query.
 
 ```csharp
 // Deliberately unsuitable as a domain-facing abstraction.
@@ -159,7 +153,7 @@ Suppose the current data manager already exposes good domain-centered methods, a
 
 I do not think so. The concrete class already provides an abstraction through its public surface. You can give it clean signatures before there is any reason for polymorphism.
 
-If the requirement changes to use Oracle instead, you might replace the implementation behind that same surface. If the application needs to select between two stores, you can introduce a common base or interface and provide both implementations.
+Suppose we move the shows to Cosmos DB. If the new store can fulfill the same contract, the Cosmos implementation looks up the channel and maps its documents to `Show` objects. The caller still passes a channel ID and receives shows. If the application needs to select between two stores, you can introduce a common base or interface and provide both implementations.
 
 The important preparation was the method design. Extracting an interface from a clean contract preserves a clean contract. Extracting one from a leaky class preserves its leaks.
 
@@ -187,4 +181,4 @@ Take the contract in isolation. Can you understand it in the domain's language? 
 
 Then decide whether the system needs interchangeable implementations and where their selection belongs.
 
-Those questions are more demanding than extracting an interface, but they are also more useful. A good abstraction gives dependency inversion something worth protecting. Without that ingredient, we have followed the recipe and missed the flavor.
+When someone tells me the system uses SOLID, this is the part I want to see. Give me `GetShowsForChannel` and show me what the caller has to change if the shows move. The work that makes the move possible is in the contract. That's the salt.

@@ -1,6 +1,6 @@
 ---
 title: "Adapter Design Pattern: Testing Service Bus Using RabbitMQ Locally"
-description: "The Adapter pattern keeps application messaging independent of broker SDKs by translating messages, callbacks and acknowledgements between RabbitMQ and Service Bus."
+description: "The Adapter pattern lets application code publish, receive and acknowledge messages through RabbitMQ or Azure Service Bus using a shared contract."
 datePublished: 2020-06-21
 dateModified: 2020-06-21
 hero: adapter-pattern-rabbitmq
@@ -13,11 +13,11 @@ repositories:
 draft: false
 ---
 
-Suppose your application publishes messages to Azure Service Bus. Several developers need to run tests, and all of them are using the same topics and subscriptions in the cloud. One person's test can consume another person's message. Running the tests requires a connection to Azure, and the shared environment becomes part of everybody's working day.
+Suppose you run a test that publishes a message to Azure Service Bus. The publish succeeds, but your test waits for a message that never comes. A teammate running against the same subscription can receive it first. Now you have to work out whether the application is wrong or whether somebody else picked up your message.
 
 I want each developer to be able to use a local message broker. RabbitMQ can do that job. The application should still publish and receive messages in its own terms, regardless of which broker carries them.
 
-That last requirement is where the design starts. If Service Bus types have already spread throughout the application, changing the broker means changing application code. I want the dependency contained from the beginning.
+That last requirement is where the design starts. If the publisher expects a Service Bus message and the callback expects a Service Bus lock token, starting a RabbitMQ container leaves you with application code that still speaks Service Bus. What would the application need to publish and receive the same message through either broker?
 
 <div class="article-callout" role="note" aria-label="Note">
   <svg class="article-callout__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/icons/callouts.svg#note"></use></svg>
@@ -54,7 +54,7 @@ The same reasoning applies to messaging. I do not want to expose every capabilit
 
 Decoupling matters even when a library is pleasant to use. I treat code owned by another team, a vendor library, and relevant framework facilities as external dependencies. If their types become the language of my application, the application is tied to their decisions.
 
-The [Configuration Provider](/writing/configuration-provider-design-pattern/) is another example of taking responsibility for the contract the application sees. Reading a setting is only part of that job. The caller should receive the application's settings in a usable form without reconstructing the configuration mechanism at every call site.
+[The Configuration Provider: Roles and Responsibilities](/writing/configuration-provider-design-pattern/) applies the same idea to settings. Reading a setting is only part of that job. The caller should receive the application's settings in a usable form without reconstructing the configuration mechanism at every call site.
 
 ### But doesn't a Facade do something similar?
 
@@ -64,7 +64,7 @@ An Adapter reconciles interfaces. A Facade offers an entry point to a subsystem 
 
 Here I am adapting infrastructure libraries to a message-broker contract. Calling everything a *wrapper* hides that purpose. I want the name and public surface to tell me what responsibility the class has.
 
-Recognizing those distinctions takes practice. Go back to the intent when two patterns seem interchangeable. A similar-looking implementation does not make their purposes identical.
+When two classes look like the same pattern, start with what the caller expects of each. Here the caller supplies its own message and the Adapter makes it usable by the selected broker. We have to decide what goes in that message before either implementation can translate it.
 
 ## We can design the target contract ourselves
 
@@ -287,7 +287,7 @@ If application code directly constructs the RabbitMQ descendant, it still knows 
 
 For `RabbitMq`, it constructs the RabbitMQ pair. For `ServiceBus`, it constructs the Service Bus pair. An unsupported identifier raises `MessageBrokerTypeNotSupportedException`. Connection information belongs in configuration; it is not part of the application message.
 
-This is a [Factory](/writing/factory-pattern/). A method that creates objects does not automatically make the design the [Factory Method pattern](/writing/factory-method-pattern/). The role here is to translate a requested broker choice into concrete instances while returning the common contracts.
+The Factory here translates a broker choice into concrete instances and returns them through the common contracts. In Factory Method, the class that uses a dependency gives its descendants a method they can override to create that dependency. See [Factory Pattern: The Enabler of Polymorphism](/writing/factory-pattern/) and [Factory Method Pattern: The Most Beautiful Pattern We Lost](/writing/factory-method-pattern/) for both designs in code.
 
 The application-facing code can consequently have this shape:
 
@@ -320,8 +320,8 @@ The broker topology must already exist. The sample uses corresponding exchange/t
 
 ## What the local test tells us
 
-Changing the broker choice should leave the publishing and receiving application logic unchanged. That is the benefit the design is trying to deliver.
+With each broker configured and its topology in place, change `brokerType` and look at the callback. In either run you expect it to print `A video is ready for processing`. The caller sends the same bytes and gives the acknowledgement token back to the subscriber that handed it over. The adapters do the work that differs between the runs.
 
 Local tests can exercise serialization, application processing, and the RabbitMQ adapter without competing for a shared cloud subscription. They do not prove Service Bus configuration, settlement behavior, retries, or delivery semantics. Those need checks against that provider as well.
 
-The useful abstraction is the contract the application can rely on. It earns its place by containing the SDK types and the translation work, while leaving the application free to express what it wants to do.
+Back at your desk, you can give the test a local RabbitMQ queue of its own. Your teammate can run the same application code with a separate broker. Both runs use the application's message and callback, so changing where the message travels is a choice you make at the Factory.
